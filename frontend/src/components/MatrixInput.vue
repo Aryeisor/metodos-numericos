@@ -7,21 +7,26 @@ const props = defineProps({
 })
 const emit = defineEmits(['update:a', 'update:b', 'update:x0'])
 
+// Se guarda el valor tal cual lo escribe el usuario (sin convertir a Number
+// en cada tecla): mientras se escribe "-" o "-1." el navegador reporta un
+// valor numérico vacío, y forzar la conversión aquí reescribía el campo a
+// "0" en cada pulsación, impidiendo escribir números negativos o con punto
+// decimal. La conversión final a número ocurre al resolver el sistema.
 function onCellInput(i, j, value) {
   const newA = props.a.map((row) => [...row])
-  newA[i][j] = value === '' ? 0 : Number(value)
+  newA[i][j] = value
   emit('update:a', newA)
 }
 
 function onBInput(i, value) {
   const newB = [...props.b]
-  newB[i] = value === '' ? 0 : Number(value)
+  newB[i] = value
   emit('update:b', newB)
 }
 
 function onX0Input(i, value) {
   const newX0 = [...props.x0]
-  newX0[i] = value === '' ? 0 : Number(value)
+  newX0[i] = value
   emit('update:x0', newX0)
 }
 </script>

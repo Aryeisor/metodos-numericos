@@ -7,10 +7,19 @@ const props = defineProps({
 
 const n = computed(() => props.result.solution?.length ?? 0)
 
+const MAX_DECIMALS = 6
+
 function formatNumber(value) {
   if (value === null || value === undefined) return '—'
   if (!Number.isFinite(value)) return '∞'
-  return Number(value).toPrecision(8).replace(/\.?0+$/, (m) => (m.includes('.') ? '' : m))
+  if (value === 0) return '0'
+
+  // Máximo 6 dígitos después del punto decimal; si el valor exacto tiene
+  // menos, se conserva tal cual (ej. 0.5, 0.60625).
+  return value
+    .toFixed(MAX_DECIMALS)
+    .replace(/0+$/, '')
+    .replace(/\.$/, '')
 }
 </script>
 
@@ -40,6 +49,7 @@ function formatNumber(value) {
       </div>
     </div>
 
+    <h4 class="iterations-title">Detalle de iteraciones</h4>
     <div class="table-scroll">
       <table>
         <thead>
@@ -104,5 +114,13 @@ function formatNumber(value) {
 .solution-value {
   font-weight: 700;
   font-size: 1rem;
+}
+
+.iterations-title {
+  margin: 28px 0 10px;
+  padding-top: 20px;
+  border-top: 1px solid var(--color-border);
+  font-size: 0.95rem;
+  color: var(--color-text-muted);
 }
 </style>

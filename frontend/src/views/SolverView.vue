@@ -66,15 +66,20 @@ function loadExample(example) {
   formErrors.value = []
 }
 
+function toNumber(value) {
+  const parsed = Number(value)
+  return Number.isFinite(parsed) ? parsed : 0
+}
+
 async function handleSolve() {
   formErrors.value = []
   result.value = null
   loading.value = true
   try {
     const payload = {
-      A: A.value,
-      b: b.value,
-      x0: x0.value,
+      A: A.value.map((row) => row.map(toNumber)),
+      b: b.value.map(toNumber),
+      x0: x0.value.map(toNumber),
       tolerance: tolerance.value,
       max_iterations: maxIterations.value,
     }
