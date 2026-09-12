@@ -20,6 +20,9 @@ const selectedExampleId = ref('')
 const loading = ref(false)
 const formErrors = ref([])
 const result = ref(null)
+// Copia del sistema tal como se envió a la API: permite reconstruir en el
+// frontend el paso a paso de cada iteración sin pedir nada extra al backend.
+const solvedSystem = ref(null)
 
 function makeZeroMatrix(size) {
   return Array.from({ length: size }, () => Array(size).fill(0))
@@ -74,6 +77,7 @@ function toNumber(value) {
 async function handleSolve() {
   formErrors.value = []
   result.value = null
+  solvedSystem.value = null
   loading.value = true
   try {
     const payload = {
@@ -84,6 +88,7 @@ async function handleSolve() {
       max_iterations: maxIterations.value,
     }
     result.value = await solveSystem(method.value, payload)
+    solvedSystem.value = payload
   } catch (err) {
     if (err.response && err.response.data) {
       const data = err.response.data
@@ -184,7 +189,7 @@ onMounted(async () => {
     </button>
 
     <div v-if="result" class="card results-card">
-      <ResultsTable :result="result" />
+      <ResultsTable :result="result" :system="solvedSystem" />
     </div>
   </div>
 </template>
