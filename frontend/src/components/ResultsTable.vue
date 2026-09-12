@@ -1,11 +1,15 @@
 <script setup>
 import { computed, ref, watch } from 'vue'
 import ConvergenceChart from './ConvergenceChart.vue'
+import MathFormula from './MathFormula.vue'
+import { buildIterationDetail, formatNumber } from '../utils/iterationSteps'
 import {
-  buildIterationDetail,
-  formatNumber,
-  generalFormula,
-} from '../utils/iterationSteps'
+  errorFormulaLatex,
+  errorResultLatex,
+  errorSubstitutionLatex,
+  generalFormulaLatex,
+  substitutionLatex,
+} from '../utils/latexFormulas'
 import { exportResultToPdf } from '../utils/exportPdf'
 
 const PAGE_SIZE = 10
@@ -109,15 +113,6 @@ function detailFor(index) {
   })
 }
 
-function diffsExpression(detail) {
-  return detail.error.diffs
-    .map((d) => `|${formatNumber(d.current)} − ${formatNumber(d.previous)}|`)
-    .join(' , ')
-}
-
-function diffsValues(detail) {
-  return detail.error.diffs.map((d) => formatNumber(d.diff)).join(' , ')
-}
 </script>
 
 <template>
@@ -210,53 +205,54 @@ function diffsValues(detail) {
             <tr v-if="canExplain && expanded.has(row.iteration)" class="detail-row">
               <td :colspan="n + 3">
                 <div class="detail">
-                  <p class="detail-formula">
-                    <span class="detail-caption">Fórmula ({{ methodLabel }}):</span>
-                    <code>{{ generalFormula(result.method) }}</code>
-                  </p>
+                  <div class="detail-block">
+                    <span class="detail-caption">Fórmula ({{ methodLabel }})</span>
+                    <div class="formula-box">
+                      <MathFormula :expression="generalFormulaLatex(result.method)" display-mode />
+                    </div>
+                    <p class="detail-hint">
+                      <span class="legend-prev">■</span> valores de la iteración anterior
+                      <template v-if="isGaussSeidel">
+                        · <span class="legend-current">■</span> valores ya recalculados en esta
+                        misma iteración
+                      </template>
+                    </p>
+                  </div>
 
-                  <p v-if="isGaussSeidel" class="detail-hint">
-                    Los valores en <span class="value-new">azul</span> son los ya recalculados
-                    en esta misma iteración; el resto viene de la iteración anterior.
-                  </p>
-
-                  <div class="substitutions">
-                    <div
-                      v-for="v in detailFor(idx).variables"
-                      :key="v.index"
-                      class="substitution"
-                    >
-                      <span class="sub-var">
-                        x{{ v.index + 1 }}<sup>({{ row.iteration }})</sup>
-                      </span>
-                      <span>=</span>
-                      <span class="sub-expr">
-                        ( {{ formatNumber(v.independent) }}
-                        <template v-for="t in v.terms" :key="t.j">
-                          −
-                          ({{ formatNumber(t.coefficient) }})(<span
-                            :class="{ 'value-new': t.fromCurrent }"
-                            >{{ formatNumber(t.value) }}</span
-                          >)
-                        </template>
-                        ) / {{ formatNumber(v.diagonal) }}
-                      </span>
-                      <span>=</span>
-                      <span class="sub-result">{{ formatNumber(v.result) }}</span>
+                  <div class="detail-block">
+                    <span class="detail-caption">Sustitución numérica</span>
+                    <div class="substitution-grid" :class="{ 'wide-formulas': n >= 4 }">
+                      <div
+                        v-for="v in detailFor(idx).variables"
+                        :key="v.index"
+                        class="substitution-card"
+                      >
+                        <MathFormula
+                          :expression="substitutionLatex(v, row.iteration)"
+                          display-mode
+                        />
+                      </div>
                     </div>
                   </div>
 
-                  <div class="error-step">
-                    <span class="detail-caption">Error de la iteración:</span>
-                    <div class="error-line">
-                      error = máx( |xᵢ⁽ᵏ⁺¹⁾ − xᵢ⁽ᵏ⁾| )
-                    </div>
-                    <div class="error-line">= máx( {{ diffsExpression(detailFor(idx)) }} )</div>
-                    <div class="error-line">
-                      = máx( {{ diffsValues(detailFor(idx)) }} ) =
-                      <strong>{{
-                        row.error === null ? '—' : formatNumber(row.error)
-                      }}</strong>
+                  <div class="detail-block">
+                    <span class="detail-caption">Error de la iteración</span>
+                    <div class="error-grid">
+                      <div class="error-card">
+                        <MathFormula :expression="errorFormulaLatex()" display-mode />
+                      </div>
+                      <div class="error-card">
+                        <MathFormula
+                          :expression="errorSubstitutionLatex(detailFor(idx))"
+                          display-mode
+                        />
+                      </div>
+                      <div class="error-card">
+                        <MathFormula
+                          :expression="errorResultLatex(detailFor(idx))"
+                          display-mode
+                        />
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -390,72 +386,88 @@ function diffsValues(detail) {
   padding: 14px 16px;
 }
 
+/* Las etiquetas conservan la tipografía de la app; las fórmulas usan la fuente
+   matemática propia de KaTeX (no se sobrescribe font-family en sus contenedores). */
 .detail-caption {
   font-weight: 700;
   font-size: 0.82rem;
   color: var(--color-text-muted);
   display: block;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
 }
 
-.detail-formula {
-  margin: 0 0 10px;
+.detail-block {
+  margin-bottom: 18px;
 }
 
-.detail-formula code {
-  background: #eef1f5;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 0.85rem;
+.detail-block:last-child {
+  margin-bottom: 0;
+}
+
+.formula-box {
+  background: #ffffff;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 12px 16px;
+  overflow-x: auto;
 }
 
 .detail-hint {
-  margin: 0 0 10px;
-  font-size: 0.8rem;
+  margin: 8px 0 0;
+  font-size: 0.78rem;
   color: var(--color-text-muted);
 }
 
-.substitutions {
+.legend-prev {
+  color: #2563eb;
+}
+
+.legend-current {
+  color: #15803d;
+}
+
+/* Dos columnas en escritorio y una sola en pantallas angostas. El min() evita
+   que la columna quede más ancha que el contenedor en móvil. */
+.substitution-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(430px, 100%), 1fr));
+  gap: 12px;
+}
+
+/* Con 4 o más variables la sustitución es demasiado larga para dos columnas. */
+.substitution-grid.wide-formulas {
+  grid-template-columns: 1fr;
+}
+
+.substitution-card {
+  background: #ffffff;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 14px 16px;
+  overflow-x: auto;
+}
+
+/* Los tres pasos del error son encadenados (fórmula → sustitución → resultado):
+   se apilan a ancho completo porque son expresiones largas. */
+.error-grid {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  margin-bottom: 14px;
+  gap: 10px;
 }
 
-.substitution {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 6px;
-  font-size: 0.86rem;
-  font-family: 'Consolas', 'Courier New', monospace;
+.error-card {
+  background: #ffffff;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 12px 16px;
+  overflow-x: auto;
 }
 
-.sub-var {
-  font-weight: 700;
-  color: var(--color-text);
-  min-width: 42px;
-}
-
-.sub-result {
-  font-weight: 700;
-  color: var(--color-primary);
-}
-
-.value-new {
-  color: var(--color-primary);
-  font-weight: 700;
-}
-
-.error-step {
-  border-top: 1px dashed var(--color-border);
-  padding-top: 10px;
-}
-
-.error-line {
-  font-size: 0.86rem;
-  font-family: 'Consolas', 'Courier New', monospace;
-  margin-bottom: 3px;
+.substitution-card :deep(.katex),
+.error-card :deep(.katex) {
+  font-size: 1em;
 }
 
 .divergence-summary {

@@ -23,12 +23,6 @@ export function formatNumber(value) {
     .replace(/\.$/, '')
 }
 
-export function generalFormula(method) {
-  return method === 'gauss-seidel'
-    ? 'xᵢ⁽ᵏ⁺¹⁾ = ( bᵢ − Σ_{j<i} aᵢⱼ · xⱼ⁽ᵏ⁺¹⁾ − Σ_{j>i} aᵢⱼ · xⱼ⁽ᵏ⁾ ) / aᵢᵢ'
-    : 'xᵢ⁽ᵏ⁺¹⁾ = ( bᵢ − Σ_{j≠i} aᵢⱼ · xⱼ⁽ᵏ⁾ ) / aᵢᵢ'
-}
-
 /**
  * Devuelve el vector de x que sirvió de base para la iteración `index`
  * (0-based): la iteración 1 parte de x0, y la iteración k de la anterior.
@@ -96,15 +90,4 @@ export function buildIterationDetail({ A, b, x0, method, iterations, index }) {
       maxIndex,
     },
   }
-}
-
-/** Versión en texto plano de la sustitución de una variable (para el PDF). */
-export function substitutionToText(variable) {
-  const terms = variable.terms
-    .map((t) => `- (${formatNumber(t.coefficient)})(${formatNumber(t.value)})`)
-    .join(' ')
-  return (
-    `x${variable.index + 1} = (${formatNumber(variable.independent)} ${terms}) ` +
-    `/ ${formatNumber(variable.diagonal)} = ${formatNumber(variable.result)}`
-  )
 }
