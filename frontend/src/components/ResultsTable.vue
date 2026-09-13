@@ -75,6 +75,14 @@ const lastIteration = computed(
   () => props.result.iterations[props.result.iterations.length - 1] ?? null
 )
 
+// row_order[i] = fila original que quedó en la posición i (ambas 0-based).
+const reorderDescription = computed(() => {
+  if (!props.result.row_order) return ''
+  return props.result.row_order
+    .map((originalRow, position) => `fila ${originalRow + 1} → posición ${position + 1}`)
+    .join(', ')
+})
+
 function goToPage(page) {
   if (typeof page !== 'number') return
   currentPage.value = Math.min(Math.max(1, page), totalPages.value)
@@ -134,6 +142,13 @@ function detailFor(index) {
             Exportar PDF
           </button>
         </div>
+      </div>
+
+      <div v-if="result.reordered" class="alert alert-info">
+        <strong>↻ Filas reordenadas automáticamente.</strong>
+        El sistema no era diagonalmente dominante en el orden ingresado, pero se
+        reordenaron las filas ({{ reorderDescription }}) para garantizar la convergencia.
+        La solución es la misma; sólo cambió el orden de las ecuaciones.
       </div>
 
       <div v-for="(w, idx) in result.warnings" :key="idx" class="alert alert-warning">

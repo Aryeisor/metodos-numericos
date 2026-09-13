@@ -148,6 +148,12 @@ select {
   border: 1px solid #fca5a5;
 }
 
+.alert-info {
+  background: #e0edff;
+  color: #1e40af;
+  border: 1px solid #93c5fd;
+}
+
 table {
   border-collapse: collapse;
   width: 100%;

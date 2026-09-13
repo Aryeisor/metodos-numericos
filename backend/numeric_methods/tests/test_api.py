@@ -60,6 +60,76 @@ class SolveEndpointsTests(APITestCase):
         self.assertTrue(any("dominante" in w for w in data["warnings"]))
 
 
+class AutoReorderEndpointTests(APITestCase):
+    REORDERABLE = {
+        "A": [[1, 5, 1], [10, 2, 1], [2, 3, 10]],
+        "b": [-8, 9, 22],
+        "tolerance": 0.000001,
+        "max_iterations": 100,
+    }
+    UNFIXABLE = {
+        "A": [[1, 2, 3], [4, 5, 6], [7, 8, 10]],
+        "b": [6, 15, 25],
+        "tolerance": 0.000001,
+        "max_iterations": 100,
+    }
+
+    def test_reorders_by_default_and_converges(self):
+        response = self.client.post("/api/solve/jacobi/", self.REORDERABLE, format="json")
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertTrue(data["reordered"])
+        self.assertEqual(data["row_order"], [1, 0, 2])
+        self.assertTrue(data["converged"])
+        self.assertTrue(data["is_diagonally_dominant"])
+        self.assertEqual(data["warnings"], [])
+
+    def test_response_returns_the_reordered_system(self):
+        response = self.client.post("/api/solve/jacobi/", self.REORDERABLE, format="json")
+        data = response.json()
+        self.assertEqual(data["A"], [[10, 2, 1], [1, 5, 1], [2, 3, 10]])
+        self.assertEqual(data["b"], [9, -8, 22])
+
+    def test_reordered_solution_satisfies_the_original_system(self):
+        response = self.client.post(
+            "/api/solve/gauss-seidel/", self.REORDERABLE, format="json"
+        )
+        solution = response.json()["solution"]
+        for row, expected in zip(self.REORDERABLE["A"], self.REORDERABLE["b"]):
+            left = sum(row[j] * solution[j] for j in range(3))
+            self.assertAlmostEqual(left, expected, places=4)
+
+    def test_disabling_auto_reorder_keeps_previous_behaviour(self):
+        payload = {**self.REORDERABLE, "auto_reorder": False}
+        response = self.client.post("/api/solve/jacobi/", payload, format="json")
+        data = response.json()
+        self.assertFalse(data["reordered"])
+        self.assertIsNone(data["row_order"])
+        self.assertFalse(data["is_diagonally_dominant"])
+        self.assertTrue(any("dominante" in w for w in data["warnings"]))
+        self.assertEqual(data["A"], self.REORDERABLE["A"])
+
+    def test_system_without_valid_ordering_keeps_the_warning(self):
+        response = self.client.post("/api/solve/jacobi/", self.UNFIXABLE, format="json")
+        data = response.json()
+        self.assertFalse(data["reordered"])
+        self.assertIsNone(data["row_order"])
+        self.assertFalse(data["is_diagonally_dominant"])
+        self.assertTrue(any("dominante" in w for w in data["warnings"]))
+
+    def test_already_dominant_system_is_not_reordered(self):
+        payload = {
+            "A": [[10, -1, 2], [-1, 11, -1], [2, -1, 10]],
+            "b": [6, 22, -10],
+            "tolerance": 0.000001,
+            "max_iterations": 100,
+        }
+        response = self.client.post("/api/solve/jacobi/", payload, format="json")
+        data = response.json()
+        self.assertFalse(data["reordered"])
+        self.assertEqual(data["A"], payload["A"])
+
+
 class ExamplesEndpointTests(APITestCase):
     def test_examples_endpoint_returns_at_least_six_examples(self):
         response = self.client.get("/api/examples/")

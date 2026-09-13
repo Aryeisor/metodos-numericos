@@ -30,6 +30,13 @@ class LinearSystemSerializer(serializers.Serializer):
         min_value=1,
         help_text="Número máximo de iteraciones permitidas.",
     )
+    auto_reorder = serializers.BooleanField(
+        default=True,
+        help_text=(
+            "Si el sistema no es diagonalmente dominante, intentar reordenar "
+            "las filas para lograrlo (no altera la solución)."
+        ),
+    )
 
     def validate(self, data):
         A = data.get("A")

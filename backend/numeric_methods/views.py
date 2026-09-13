@@ -5,6 +5,7 @@ from rest_framework.views import APIView
 from .examples_data import EXAMPLES
 from .serializers import LinearSystemSerializer
 from .solvers import gauss_seidel, jacobi
+from .solvers.dominance import OrderingResult, find_dominant_ordering
 from .solvers.validation import MatrixValidationError, check_diagonal_dominance
 
 
@@ -24,8 +25,20 @@ class BaseSolveView(APIView):
         x0 = data.get("x0")
         tolerance = data["tolerance"]
         max_iterations = data["max_iterations"]
+        auto_reorder = data["auto_reorder"]
 
         is_dominant, offending_rows = check_diagonal_dominance(A)
+
+        # Preprocesamiento: si no es dominante, se intenta reordenar las filas.
+        # Sólo se reordenan ecuaciones (filas de A junto con b); las columnas no
+        # se tocan, así que x0 y el vector solución siguen indexados igual.
+        ordering = OrderingResult(False, None, A, b)
+        if not is_dominant and auto_reorder:
+            ordering = find_dominant_ordering(A, b)
+            if ordering.reordered:
+                A, b = ordering.A, ordering.b
+                is_dominant, offending_rows = check_diagonal_dominance(A)
+
         warnings = []
         if not is_dominant:
             warnings.append(
@@ -57,6 +70,13 @@ class BaseSolveView(APIView):
                 "converged": result["converged"],
                 "is_diagonally_dominant": is_dominant,
                 "warnings": warnings,
+                # A y b tal como se usaron realmente en el cálculo (ya
+                # reordenadas si hubo reordenamiento), para que el paso a paso
+                # del frontend coincida con las iteraciones devueltas.
+                "A": A,
+                "b": b,
+                "reordered": ordering.reordered,
+                "row_order": ordering.row_order,
             }
         )
 

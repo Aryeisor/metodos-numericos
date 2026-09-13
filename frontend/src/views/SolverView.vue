@@ -13,6 +13,7 @@ const x0 = ref(makeZeroVector(3))
 const tolerance = ref(0.000001)
 const maxIterations = ref(100)
 const method = ref('jacobi')
+const autoReorder = ref(true)
 
 const examples = ref([])
 const selectedExampleId = ref('')
@@ -86,9 +87,13 @@ async function handleSolve() {
       x0: x0.value.map(toNumber),
       tolerance: tolerance.value,
       max_iterations: maxIterations.value,
+      auto_reorder: autoReorder.value,
     }
-    result.value = await solveSystem(method.value, payload)
-    solvedSystem.value = payload
+    const response = await solveSystem(method.value, payload)
+    result.value = response
+    // El backend puede haber reordenado las filas: se usa el sistema tal como
+    // realmente se calculó para que el paso a paso coincida con las iteraciones.
+    solvedSystem.value = { ...payload, A: response.A, b: response.b }
   } catch (err) {
     if (err.response && err.response.data) {
       const data = err.response.data
@@ -165,6 +170,17 @@ onMounted(async () => {
           <input type="number" min="1" v-model.number="maxIterations" />
         </div>
       </div>
+
+      <label class="checkbox-field">
+        <input type="checkbox" v-model="autoReorder" />
+        <span>
+          Reordenar filas automáticamente si mejora la convergencia
+          <small>
+            Si la matriz no es diagonalmente dominante, se busca un orden de ecuaciones
+            que sí lo sea. No cambia la solución del sistema.
+          </small>
+        </span>
+      </label>
     </div>
 
     <div class="card">
@@ -236,6 +252,35 @@ onMounted(async () => {
 .example-desc {
   font-size: 0.78rem;
   color: var(--color-text-muted);
+}
+
+.checkbox-field {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  margin: 4px 0 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-text);
+  cursor: pointer;
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.checkbox-field input {
+  margin-top: 2px;
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.checkbox-field small {
+  display: block;
+  font-weight: 400;
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  margin-top: 2px;
 }
 
 .solve-btn {

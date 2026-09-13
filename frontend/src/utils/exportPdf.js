@@ -92,6 +92,20 @@ export function exportResultToPdf({ result, system, chartImage }) {
     `Tolerancia: ${system.tolerance}    ·    Máximo de iteraciones: ${system.max_iterations}`
   )
 
+  if (result.reordered && result.row_order) {
+    // Flecha ASCII: la fuente estándar de jsPDF (WinAnsi) no tiene el glifo "→".
+    const mapping = result.row_order
+      .map((originalRow, position) => `fila ${originalRow + 1} -> posición ${position + 1}`)
+      .join(', ')
+    y = paragraph(
+      doc,
+      y,
+      `Nota: las filas se reordenaron automáticamente (${mapping}) para lograr ` +
+        'dominancia diagonal. La tabla anterior muestra el sistema ya reordenado; ' +
+        'la solución es la misma que la del orden original.'
+    )
+  }
+
   // --- Resultado ---------------------------------------------------------
   y = sectionTitle(doc, y + 2, 'Resultado')
   y = paragraph(
