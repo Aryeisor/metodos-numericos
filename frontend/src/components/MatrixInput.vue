@@ -84,40 +84,75 @@ function onX0Input(i, value) {
 </template>
 
 <style scoped>
+/* Encabezados e inputs centrados en su columna, para que cada coeficiente
+   quede alineado bajo su variable. */
+.matrix-table th,
+.matrix-table td {
+  text-align: center;
+  padding: var(--space-2);
+}
+
+.matrix-table th {
+  font-style: italic;
+}
+
+.matrix-table tbody tr:nth-child(even) {
+  background: transparent;
+}
+
 .matrix-table input {
-  width: 80px;
+  width: 84px;
+  text-align: right;
 }
 
 .eq-sign {
   border: none;
   text-align: center;
-  font-weight: 700;
-  padding: 0 4px;
+  font-weight: var(--weight-semibold);
+  color: var(--color-ink-muted);
+  padding: 0 var(--space-1);
 }
 
 .x0-row {
-  margin-top: 16px;
+  margin-top: var(--space-5);
 }
 
 .x0-inputs {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: var(--space-3);
 }
 
 .x0-item {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: var(--space-1);
 }
 
 .x0-label {
-  font-size: 0.75rem;
-  color: var(--color-text-muted);
-  font-weight: 600;
+  font-size: var(--text-small);
+  color: var(--color-ink-muted);
+  font-weight: var(--weight-medium);
 }
 
 .x0-item input {
-  width: 90px;
+  width: 92px;
+  text-align: right;
+}
+
+/* En móvil un sistema 3x3 completo (con b) cabe sin desplazamiento; con más
+   variables la tabla sigue siendo desplazable dentro de su contenedor. */
+@media (max-width: 480px) {
+  .matrix-table th,
+  .matrix-table td {
+    padding: var(--space-1);
+  }
+
+  .matrix-table input,
+  .x0-item input {
+    width: 64px;
+    padding-left: var(--space-2);
+    padding-right: var(--space-2);
+  }
 }
 </style>

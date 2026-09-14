@@ -132,15 +132,15 @@ onBeforeUnmount(() => {
 
 <style scoped>
 .chart-block {
-  margin-top: 24px;
-  padding-top: 20px;
-  border-top: 1px solid var(--color-border);
+  margin-top: var(--space-6);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--color-line);
 }
 
 .chart-title {
-  margin: 0 0 12px;
-  font-size: 0.95rem;
-  color: var(--color-text-muted);
+  margin: 0 0 var(--space-3);
+  font-size: var(--text-subsection);
+  color: var(--color-ink);
 }
 
 .chart-canvas-wrapper {

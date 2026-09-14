@@ -169,26 +169,29 @@ const tex = {
 
 <style scoped>
 h3 {
-  margin-top: 18px;
+  margin-top: var(--space-5);
 }
 
 ul,
 ol {
-  padding-left: 22px;
+  padding-left: var(--space-5);
 }
 
 li {
-  margin-bottom: 6px;
+  margin-bottom: var(--space-2);
 }
 
+/* font-size fijo: KaTeX se dimensiona en em, y así las fórmulas en bloque
+   conservan exactamente el tamaño que tenían antes de la escala tipográfica. */
 .theory-formula {
-  margin: 10px 0;
+  margin: var(--space-3) 0;
+  font-size: 1rem;
 }
 
 .formula-legend {
-  margin: -2px 0 12px;
-  font-size: 0.78rem;
-  color: var(--color-text-muted);
+  margin: calc(-1 * var(--space-1)) 0 var(--space-4);
+  font-size: var(--text-small);
+  color: var(--color-ink-muted);
 }
 
 /* KaTeX inline trae 1.21em por defecto: se reduce para no alterar el

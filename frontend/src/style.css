@@ -1,20 +1,93 @@
+/* ==========================================================================
+   Sistema de diseño
+   --------------------------------------------------------------------------
+   Único punto de verdad para color, tipografía, espaciado, bordes y
+   elevación. Los componentes deben consumir estos tokens y no valores sueltos.
+   ========================================================================== */
+
 :root {
-  --color-bg: #f5f7fa;
-  --color-surface: #ffffff;
-  --color-border: #dfe4ea;
-  --color-text: #1f2937;
-  --color-text-muted: #6b7280;
-  --color-primary: #2563eb;
-  --color-primary-dark: #1d4ed8;
+  /* ---- Color: paleta base -------------------------------------------------
+     Fondo claro y sobrio (las fórmulas de KaTeX se leen mejor sobre claro).
+     El acento es un azul petróleo: se distingue del azul con el que se
+     resaltan los valores de la iteración anterior en las fórmulas (#2563eb),
+     así "interactivo" y "dato resaltado" nunca se confunden.               */
+  --color-page: #f6f7f9;          /* fondo de la página                     */
+  --color-surface: #ffffff;       /* tarjetas, inputs, cajas de fórmula     */
+  --color-ink: #1e293b;           /* texto principal (slate, no negro)  14.6:1 */
+  --color-ink-muted: #5b6474;     /* descripciones, labels, metadatos    6.0:1 */
+  --color-accent: #0e5a6d;        /* todo lo interactivo                 7.8:1 */
+
+  /* ---- Color: derivados de la paleta base ------------------------------- */
+  --color-accent-hover: #0a4655;
+  --color-accent-soft: #e8f1f3;   /* fondo de elemento seleccionado / hover */
+  --color-line: #dde2e8;          /* bordes de contenedores y divisores     */
+  --color-line-strong: #8a94a3;   /* bordes de inputs (≥ 3:1, WCAG 1.4.11)  */
+  --color-sunken: #f2f4f7;        /* cabeceras de tabla, zonas hundidas     */
+  --color-focus-ring: rgba(14, 90, 109, 0.3);
+
+  /* ---- Color: semánticos (se conservan los existentes) ------------------ */
   --color-success: #15803d;
   --color-success-bg: #dcfce7;
   --color-warning: #92400e;
   --color-warning-bg: #fef3c7;
+  --color-warning-line: #fcd34d;
   --color-danger: #b91c1c;
   --color-danger-bg: #fee2e2;
-  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --color-danger-line: #fca5a5;
+
+  /* ---- Tipografía --------------------------------------------------------
+     Una sola familia sans-serif para la interfaz; KaTeX usa su propia fuente
+     matemática. La jerarquía se construye con tamaño y peso.               */
+  --font-sans: 'Segoe UI', system-ui, -apple-system, 'Helvetica Neue', Arial, sans-serif;
+
+  --text-app-title: 1.125rem;     /* 18px · 700 · nombre de la aplicación   */
+  --text-section: 1.375rem;       /* 22px · 600 · títulos de sección        */
+  --text-subsection: 1.0625rem;   /* 17px · 600 · subtítulos dentro de tarjeta */
+  --text-card-title: 0.9375rem;   /* 15px · 600 · nombre de ejemplo, etc.   */
+  --text-body: 0.9375rem;         /* 15px · 400 · cuerpo                    */
+  --text-small: 0.8125rem;        /* 13px · 400/500 · labels y secundario   */
+
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+
+  --leading-tight: 1.3;
+  --leading-body: 1.6;
+
+  /* ---- Espaciado: escala de 4px ----------------------------------------- */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+
+  /* ---- Bordes: un radio por nivel de jerarquía ---------------------------
+     Controles < superficies anidadas < contenedores principales.           */
+  --radius-control: 6px;          /* inputs, selects, botones               */
+  --radius-nested: 8px;           /* tarjetas de ejemplo, alertas, fórmulas */
+  --radius-container: 12px;       /* tarjetas de sección                    */
+  --radius-pill: 999px;           /* insignias de estado                    */
+
+  /* ---- Elevación ---------------------------------------------------------
+     Sólo los elementos clicables tienen sombra. Los contenedores estáticos
+     se delimitan únicamente con borde.                                      */
+  --shadow-interactive: 0 1px 2px rgba(30, 41, 59, 0.06), 0 1px 3px rgba(30, 41, 59, 0.08);
+  --shadow-interactive-hover: 0 2px 4px rgba(30, 41, 59, 0.06), 0 6px 16px rgba(30, 41, 59, 0.1);
+  --focus-ring: 0 0 0 3px var(--color-focus-ring);
+
+  /* ---- Movimiento: sólo hover/focus de elementos interactivos ----------- */
+  --transition-fast: 120ms ease;
+
+  font-family: var(--font-sans);
   color-scheme: light;
 }
+
+/* ==========================================================================
+   Base
+   ========================================================================== */
 
 * {
   box-sizing: border-box;
@@ -24,8 +97,16 @@ html,
 body {
   margin: 0;
   padding: 0;
-  background: var(--color-bg);
-  color: var(--color-text);
+  background: var(--color-page);
+}
+
+/* El tamaño base va sólo en body: fijarlo en html cambiaría el valor de rem y
+   encogería toda la escala (incluidas las fórmulas de KaTeX). */
+body {
+  color: var(--color-ink);
+  font-size: var(--text-body);
+  line-height: var(--leading-body);
+  -webkit-font-smoothing: antialiased;
 }
 
 #app {
@@ -34,89 +115,166 @@ body {
   flex-direction: column;
 }
 
+h2,
+h3,
+h4 {
+  color: var(--color-ink);
+  line-height: var(--leading-tight);
+  letter-spacing: -0.01em;
+}
+
+h2 {
+  font-size: var(--text-section);
+  font-weight: var(--weight-semibold);
+  margin: 0 0 var(--space-2);
+}
+
+h3 {
+  font-size: var(--text-subsection);
+  font-weight: var(--weight-semibold);
+  margin: var(--space-5) 0 var(--space-2);
+}
+
+h4 {
+  font-size: var(--text-card-title);
+  font-weight: var(--weight-semibold);
+}
+
+p {
+  margin: 0 0 var(--space-3);
+}
+
 a {
-  color: var(--color-primary);
+  color: var(--color-accent);
 }
 
-button {
-  font-family: inherit;
-}
-
+button,
 input,
 select {
   font-family: inherit;
+  color: inherit;
 }
+
+:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+/* ==========================================================================
+   Layout
+   ========================================================================== */
 
 .container {
   max-width: 1100px;
   margin: 0 auto;
-  padding: 24px 16px 48px;
+  padding: var(--space-6) var(--space-4) var(--space-7);
   width: 100%;
 }
 
 .card {
   background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: 10px;
-  padding: 20px;
-  margin-bottom: 20px;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-container);
+  padding: var(--space-6);
+  margin-bottom: var(--space-6);
 }
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 var(--space-5);
+}
+
+@media (max-width: 640px) {
+  .container {
+    padding-top: var(--space-5);
+  }
+
+  .card {
+    padding: var(--space-5) var(--space-4);
+    margin-bottom: var(--space-5);
+  }
+
+  h2 {
+    font-size: 1.1875rem;
+  }
+
+  .grid-2 {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ==========================================================================
+   Botones
+   ========================================================================== */
 
 .btn {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 9px 16px;
-  border-radius: 6px;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-control);
   border: 1px solid transparent;
   cursor: pointer;
-  font-size: 0.95rem;
-  font-weight: 600;
-  transition: background-color 0.15s ease, opacity 0.15s ease;
+  font-size: var(--text-body);
+  font-weight: var(--weight-semibold);
+  line-height: 1.4;
+  transition: background-color var(--transition-fast), border-color var(--transition-fast),
+    box-shadow var(--transition-fast);
 }
 
 .btn:disabled {
-  opacity: 0.6;
+  opacity: 0.55;
   cursor: not-allowed;
 }
 
 .btn-primary {
-  background: var(--color-primary);
-  color: white;
+  background: var(--color-accent);
+  color: #ffffff;
+  box-shadow: var(--shadow-interactive);
 }
 
 .btn-primary:hover:not(:disabled) {
-  background: var(--color-primary-dark);
+  background: var(--color-accent-hover);
+}
+
+.btn-primary:focus-visible {
+  box-shadow: var(--shadow-interactive), var(--focus-ring);
 }
 
 .btn-secondary {
   background: var(--color-surface);
-  color: var(--color-text);
-  border-color: var(--color-border);
+  color: var(--color-ink);
+  border-color: var(--color-line);
 }
 
 .btn-secondary:hover:not(:disabled) {
-  background: #eef1f5;
+  background: var(--color-sunken);
+  border-color: var(--color-line-strong);
 }
 
 .btn-outline {
-  background: transparent;
-  color: var(--color-primary);
-  border-color: var(--color-primary);
-  padding: 6px 12px;
-  font-size: 0.85rem;
+  background: var(--color-surface);
+  color: var(--color-accent);
+  border-color: var(--color-accent);
+  padding: var(--space-1) var(--space-3);
+  font-size: var(--text-small);
 }
 
 .btn-outline:hover:not(:disabled) {
-  background: #eef4ff;
+  background: var(--color-accent-soft);
 }
+
+/* ==========================================================================
+   Insignias y alertas
+   ========================================================================== */
 
 .badge {
   display: inline-block;
-  padding: 3px 10px;
-  border-radius: 999px;
-  font-size: 0.8rem;
-  font-weight: 600;
+  padding: 2px var(--space-3);
+  border-radius: var(--radius-pill);
+  font-size: var(--text-small);
+  font-weight: var(--weight-semibold);
 }
 
 .badge-success {
@@ -130,49 +288,56 @@ select {
 }
 
 .alert {
-  border-radius: 8px;
-  padding: 12px 14px;
-  margin-bottom: 12px;
-  font-size: 0.9rem;
+  border-radius: var(--radius-nested);
+  padding: var(--space-3) var(--space-4);
+  margin-bottom: var(--space-3);
+  font-size: var(--text-small);
+  line-height: 1.5;
 }
 
 .alert-warning {
   background: var(--color-warning-bg);
   color: var(--color-warning);
-  border: 1px solid #fcd34d;
+  border: 1px solid var(--color-warning-line);
 }
 
 .alert-danger {
   background: var(--color-danger-bg);
   color: var(--color-danger);
-  border: 1px solid #fca5a5;
+  border: 1px solid var(--color-danger-line);
+}
+
+.alert-info {
+  background: var(--color-accent-soft);
+  color: var(--color-accent-hover);
+  border: 1px solid #b7d3da;
 }
 
 /* Caja de fórmula en bloque, compartida por Teoría y el paso a paso de Resolver. */
 .formula-box {
-  background: #ffffff;
-  border: 1px solid var(--color-border);
-  border-radius: 8px;
-  padding: 12px 16px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-nested);
+  padding: var(--space-3) var(--space-4);
   overflow-x: auto;
 }
 
-.alert-info {
-  background: #e0edff;
-  color: #1e40af;
-  border: 1px solid #93c5fd;
-}
+/* ==========================================================================
+   Tablas
+   ========================================================================== */
 
 table {
   border-collapse: collapse;
   width: 100%;
-  font-size: 0.9rem;
+  font-size: var(--text-small);
+  line-height: 1.4;
+  font-variant-numeric: tabular-nums;
 }
 
 th,
 td {
-  border: 1px solid var(--color-border);
-  padding: 6px 10px;
+  border: 1px solid var(--color-line);
+  padding: 6px var(--space-3);
   text-align: right;
 }
 
@@ -182,8 +347,9 @@ td:first-child {
 }
 
 th {
-  background: #f1f5f9;
-  font-weight: 600;
+  background: var(--color-sunken);
+  color: var(--color-ink-muted);
+  font-weight: var(--weight-semibold);
 }
 
 tbody tr:nth-child(even) {
@@ -194,35 +360,60 @@ tbody tr:nth-child(even) {
   overflow-x: auto;
 }
 
+/* ==========================================================================
+   Formularios
+   ========================================================================== */
+
 label {
   display: block;
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--color-text-muted);
-  margin-bottom: 4px;
+  font-size: var(--text-small);
+  font-weight: var(--weight-medium);
+  color: var(--color-ink-muted);
+  margin-bottom: var(--space-1);
 }
 
 input[type='number'],
-input[type='text'] {
+input[type='text'],
+select {
   width: 100%;
-  padding: 6px 8px;
-  border: 1px solid var(--color-border);
-  border-radius: 6px;
-  font-size: 0.9rem;
+  min-height: 36px;
+  padding: 6px var(--space-3);
+  background: var(--color-surface);
+  border: 1px solid var(--color-line-strong);
+  border-radius: var(--radius-control);
+  font-size: var(--text-body);
+  color: var(--color-ink);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+input[type='number']:hover,
+input[type='text']:hover,
+select:hover {
+  border-color: var(--color-ink-muted);
+}
+
+input[type='number']:focus,
+input[type='text']:focus,
+select:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: var(--focus-ring);
+}
+
+select {
+  cursor: pointer;
+}
+
+input[type='checkbox'] {
+  accent-color: var(--color-accent);
+}
+
+input[type='checkbox']:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+  border-radius: 3px;
 }
 
 .field {
-  margin-bottom: 14px;
-}
-
-.grid-2 {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 14px;
-}
-
-@media (max-width: 640px) {
-  .grid-2 {
-    grid-template-columns: 1fr;
-  }
+  margin-bottom: var(--space-4);
 }

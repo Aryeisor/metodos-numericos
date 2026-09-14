@@ -212,63 +212,82 @@ onMounted(async () => {
 
 <style scoped>
 .hint {
-  color: var(--color-text-muted);
-  font-size: 0.85rem;
-  margin-top: -6px;
+  color: var(--color-ink-muted);
+  font-size: var(--text-small);
+  margin: 0 0 var(--space-5);
 }
 
 .examples-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 10px;
+  gap: var(--space-3);
 }
 
+/* Elementos clicables: única familia con sombra, para diferenciarlos de los
+   contenedores estáticos que sólo llevan borde. */
 .example-btn {
   text-align: left;
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--color-line);
   background: var(--color-surface);
-  border-radius: 8px;
-  padding: 10px 12px;
+  border-radius: var(--radius-nested);
+  padding: var(--space-3) var(--space-4);
   cursor: pointer;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: var(--space-1);
+  box-shadow: var(--shadow-interactive);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast),
+    background-color var(--transition-fast);
 }
 
 .example-btn:hover {
-  border-color: var(--color-primary);
+  border-color: var(--color-line-strong);
+  box-shadow: var(--shadow-interactive-hover);
+}
+
+.example-btn:focus-visible {
+  border-color: var(--color-accent);
+  box-shadow: var(--shadow-interactive), var(--focus-ring);
 }
 
 .example-btn.active {
-  border-color: var(--color-primary);
-  background: #eef4ff;
+  border-color: var(--color-accent);
+  background: var(--color-accent-soft);
+  box-shadow: inset 0 0 0 1px var(--color-accent);
 }
 
 .example-name {
-  font-weight: 700;
-  font-size: 0.9rem;
+  font-size: var(--text-card-title);
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-tight);
+  color: var(--color-ink);
+}
+
+.example-btn.active .example-name {
+  color: var(--color-accent-hover);
 }
 
 .example-desc {
-  font-size: 0.78rem;
-  color: var(--color-text-muted);
+  font-size: var(--text-small);
+  line-height: 1.45;
+  color: var(--color-ink-muted);
 }
 
 .checkbox-field {
   display: flex;
   align-items: flex-start;
-  gap: 9px;
-  margin: 4px 0 0;
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: var(--color-text);
+  gap: var(--space-3);
+  margin: var(--space-1) 0 0;
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-line);
+  font-size: var(--text-body);
+  font-weight: var(--weight-medium);
+  color: var(--color-ink);
   cursor: pointer;
-  text-transform: none;
-  letter-spacing: normal;
 }
 
 .checkbox-field input {
-  margin-top: 2px;
+  margin: 3px 0 0;
   width: 16px;
   height: 16px;
   cursor: pointer;
@@ -277,15 +296,20 @@ onMounted(async () => {
 
 .checkbox-field small {
   display: block;
-  font-weight: 400;
-  font-size: 0.8rem;
-  color: var(--color-text-muted);
+  font-weight: var(--weight-regular);
+  font-size: var(--text-small);
+  color: var(--color-ink-muted);
   margin-top: 2px;
 }
 
+/* Aire entre el título de sección y su contenido (formulario o matriz). */
+.card > h2 + div {
+  margin-top: var(--space-5);
+}
+
 .solve-btn {
-  margin-bottom: 20px;
-  padding: 10px 24px;
+  margin-bottom: var(--space-6);
+  padding: var(--space-3) var(--space-6);
   font-size: 1rem;
 }
 

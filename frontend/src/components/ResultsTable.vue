@@ -320,64 +320,70 @@ function detailFor(index) {
 <style scoped>
 .summary-header {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 10px;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
 }
 
 .summary-header h3 {
   margin: 0;
+  font-size: var(--text-section);
 }
 
 .summary-actions {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: var(--space-3);
 }
 
 .meta {
-  color: var(--color-text-muted);
-  font-size: 0.9rem;
+  color: var(--color-ink-muted);
+  font-size: var(--text-small);
+  margin: var(--space-4) 0 var(--space-2);
 }
 
 .solution-grid {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
-  margin-top: 10px;
+  gap: var(--space-3);
 }
 
 .solution-item {
-  background: #eef4ff;
-  border-radius: 8px;
-  padding: 8px 14px;
+  background: var(--color-sunken);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-nested);
+  padding: var(--space-2) var(--space-4);
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-width: 90px;
+  min-width: 96px;
 }
 
 .solution-label {
-  font-size: 0.75rem;
-  color: var(--color-text-muted);
-  font-weight: 600;
+  font-size: var(--text-small);
+  font-style: italic;
+  color: var(--color-ink-muted);
 }
 
 .solution-value {
-  font-weight: 700;
-  font-size: 1rem;
+  font-weight: var(--weight-semibold);
+  font-size: var(--text-subsection);
+  font-variant-numeric: tabular-nums;
+  color: var(--color-ink);
 }
 
 .iterations-title {
-  margin: 28px 0 10px;
-  padding-top: 20px;
-  border-top: 1px solid var(--color-border);
-  font-size: 0.95rem;
-  color: var(--color-text-muted);
+  margin: var(--space-6) 0 var(--space-3);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--color-line);
+  font-size: var(--text-subsection);
+  color: var(--color-ink);
 }
 
 .expand-col {
-  width: 34px;
+  width: 40px;
   text-align: center;
 }
 
@@ -385,36 +391,40 @@ function detailFor(index) {
   border: none;
   background: transparent;
   cursor: pointer;
-  color: var(--color-primary);
-  font-size: 0.9rem;
-  padding: 2px 6px;
-  border-radius: 4px;
+  color: var(--color-accent);
+  font-size: var(--text-small);
+  line-height: 1;
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-control);
+  transition: background-color var(--transition-fast);
 }
 
 .expand-btn:hover {
-  background: #eef4ff;
+  background: var(--color-accent-soft);
 }
 
+/* font-size fijo: KaTeX se dimensiona en em, y así las fórmulas del paso a
+   paso conservan el tamaño que tenían antes de la escala tipográfica. */
 .detail-row td {
-  background: #fafbfc;
+  background: var(--color-page);
   text-align: left;
-  padding: 14px 16px;
+  padding: var(--space-4);
+  font-size: 0.9rem;
+  line-height: var(--leading-body);
 }
 
 /* Las etiquetas conservan la tipografía de la app; las fórmulas usan la fuente
    matemática propia de KaTeX (no se sobrescribe font-family en sus contenedores). */
 .detail-caption {
-  font-weight: 700;
-  font-size: 0.82rem;
-  color: var(--color-text-muted);
+  font-weight: var(--weight-semibold);
+  font-size: var(--text-small);
+  color: var(--color-ink);
   display: block;
-  margin-bottom: 8px;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
+  margin-bottom: var(--space-2);
 }
 
 .detail-block {
-  margin-bottom: 18px;
+  margin-bottom: var(--space-5);
 }
 
 .detail-block:last-child {
@@ -422,9 +432,9 @@ function detailFor(index) {
 }
 
 .detail-hint {
-  margin: 8px 0 0;
-  font-size: 0.78rem;
-  color: var(--color-text-muted);
+  margin: var(--space-2) 0 0;
+  font-size: var(--text-small);
+  color: var(--color-ink-muted);
 }
 
 .legend-prev {
@@ -440,7 +450,7 @@ function detailFor(index) {
 .substitution-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(430px, 100%), 1fr));
-  gap: 12px;
+  gap: var(--space-3);
 }
 
 /* Con 4 o más variables la sustitución es demasiado larga para dos columnas. */
@@ -449,10 +459,10 @@ function detailFor(index) {
 }
 
 .substitution-card {
-  background: #ffffff;
-  border: 1px solid var(--color-border);
-  border-radius: 8px;
-  padding: 14px 16px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-nested);
+  padding: var(--space-3) var(--space-4);
   overflow-x: auto;
 }
 
@@ -461,14 +471,14 @@ function detailFor(index) {
 .error-grid {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: var(--space-2);
 }
 
 .error-card {
-  background: #ffffff;
-  border: 1px solid var(--color-border);
-  border-radius: 8px;
-  padding: 12px 16px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-nested);
+  padding: var(--space-3) var(--space-4);
   overflow-x: auto;
 }
 
@@ -481,30 +491,32 @@ function detailFor(index) {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 10px;
+  gap: var(--space-2) var(--space-3);
 }
 
 .pagination {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 6px;
-  margin-top: 14px;
+  gap: var(--space-1);
+  margin-top: var(--space-4);
 }
 
 .page-btn {
-  padding: 5px 11px;
-  font-size: 0.85rem;
+  min-width: 34px;
+  justify-content: center;
+  padding: var(--space-1) var(--space-3);
+  font-size: var(--text-small);
 }
 
 .page-gap {
-  color: var(--color-text-muted);
-  padding: 0 2px;
+  color: var(--color-ink-muted);
+  padding: 0 var(--space-1);
 }
 
 .page-info {
   margin-left: auto;
-  font-size: 0.8rem;
-  color: var(--color-text-muted);
+  font-size: var(--text-small);
+  color: var(--color-ink-muted);
 }
 </style>
