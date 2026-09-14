@@ -148,6 +148,15 @@ select {
   border: 1px solid #fca5a5;
 }
 
+/* Caja de fórmula en bloque, compartida por Teoría y el paso a paso de Resolver. */
+.formula-box {
+  background: #ffffff;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 12px 16px;
+  overflow-x: auto;
+}
+
 .alert-info {
   background: #e0edff;
   color: #1e40af;

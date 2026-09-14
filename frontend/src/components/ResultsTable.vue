@@ -421,14 +421,6 @@ function detailFor(index) {
   margin-bottom: 0;
 }
 
-.formula-box {
-  background: #ffffff;
-  border: 1px solid var(--color-border);
-  border-radius: 8px;
-  padding: 12px 16px;
-  overflow-x: auto;
-}
-
 .detail-hint {
   margin: 8px 0 0;
   font-size: 0.78rem;
