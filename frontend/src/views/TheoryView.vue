@@ -1,10 +1,12 @@
 <script setup>
 import MathFormula from '../components/MathFormula.vue'
+import { buildIterationDetail, formatNumber } from '../utils/iterationSteps'
 import {
   CURRENT_COLOR,
   PREVIOUS_COLOR,
   errorFormulaLatex,
   generalFormulaLatex,
+  substitutionLatex,
 } from '../utils/latexFormulas'
 
 // Las fórmulas de iteración y de error vienen de las mismas funciones que usa
@@ -31,7 +33,82 @@ const tex = {
   after: 'x_{i+1}, \\dots, x_n',
   jBefore: 'j < i',
   eps: '\\varepsilon',
+
+  // Radio espectral
+  recurrence: 'x^{(k+1)} = T\\, x^{(k)} + c',
+  splitting: 'A = D + L + U',
+  jacobiMatrix: 'T_J = -D^{-1} (L + U)',
+  gaussSeidelMatrix: 'T_{GS} = -(D + L)^{-1} U',
+  spectralRadius: '\\rho(T) = \\max_i \\left| \\lambda_i \\right| < 1',
+  rho: '\\rho(T)',
+  exampleSize: '3 \\times 3',
+  rhoJacobi: '\\rho(T_J) = 0.3',
+  rhoGaussSeidel: '\\rho(T_{GS}) \\approx 0.089443',
+
+  // Ejemplo resuelto
+  exampleSystem:
+    '\\begin{cases} 10x_1 + 2x_2 + x_3 = 17 \\\\ x_1 + 10x_2 + 2x_3 = 27 \\\\ 2x_1 + x_2 + 10x_3 = 34 \\end{cases}',
+  exampleSolution: 'x = (1,\\ 2,\\ 3)',
+  exampleStart: 'x^{(0)} = (0,\\ 0,\\ 0)',
 }
+
+/* Ejemplo trabajado a mano. Los vectores de cada iteración son datos ya
+   verificados contra los solvers del backend; las sustituciones numéricas se
+   generan con las mismas utilidades que el paso a paso de Resolver, así que
+   la notación y la aritmética mostrada son idénticas en toda la app. */
+const EXAMPLE = {
+  A: [
+    [10, 2, 1],
+    [1, 10, 2],
+    [2, 1, 10],
+  ],
+  b: [17, 27, 34],
+  x0: [0, 0, 0],
+}
+
+const EXAMPLE_ITERATIONS = {
+  jacobi: [
+    [1.7, 2.7, 3.4],
+    [0.82, 1.85, 2.79],
+    [1.051, 2.06, 3.0509999999999997],
+  ],
+  'gauss-seidel': [
+    [1.7, 2.5300000000000002, 2.807],
+    [0.9132999999999999, 2.04727, 3.012613],
+    [0.9892847, 1.9985489300000001, 3.002288167],
+  ],
+}
+
+function workedSteps(method) {
+  const iterations = EXAMPLE_ITERATIONS[method].map((x, i) => ({
+    iteration: i + 1,
+    x,
+    error: null,
+  }))
+
+  return iterations.map((row, index) => {
+    const detail = buildIterationDetail({ ...EXAMPLE, method, iterations, index })
+    return {
+      iteration: row.iteration,
+      x: row.x,
+      substitutions: detail.variables.map((variable) => substitutionLatex(variable, row.iteration)),
+    }
+  })
+}
+
+const jacobiSteps = workedSteps('jacobi')
+const gaussSeidelSteps = workedSteps('gauss-seidel')
+
+function vectorLatex(name, x) {
+  const values = x.map((value) => formatNumber(value)).join(',\\ ')
+  return `${name ? `${name} = ` : ''}(${values})`
+}
+
+// Filas de la tabla comparativa: las dos trayectorias intercaladas por iteración.
+const comparisonRows = jacobiSteps.flatMap((step, i) => [
+  { key: `j${i}`, iteration: step.iteration, method: 'Jacobi', x: step.x, first: true },
+  { key: `g${i}`, iteration: step.iteration, method: 'Gauss-Seidel', x: gaussSeidelSteps[i].x },
+])
 </script>
 
 <template>
@@ -70,6 +147,67 @@ const tex = {
           Si se cumple para todas las filas, ambos métodos convergen para cualquier vector inicial.
           Si no se cumple, el método puede converger o no; la aplicación lo advierte pero permite
           continuar.
+        </li>
+      </ul>
+
+      <h3>La condición real de convergencia: el radio espectral</h3>
+      <p>
+        La dominancia diagonal es cómoda de verificar, pero no es la condición que realmente
+        gobierna la convergencia. Ambos métodos pueden escribirse como una única recurrencia
+        matricial:
+      </p>
+      <div class="formula-box theory-formula">
+        <MathFormula :expression="tex.recurrence" display-mode />
+      </div>
+      <p>
+        donde <MathFormula expression="T" /> es la <strong>matriz de iteración</strong>, que resulta
+        de despejar la recurrencia a partir de la descomposición
+        <MathFormula :expression="tex.splitting" /> (con <MathFormula expression="D" /> la diagonal,
+        <MathFormula expression="L" /> la parte triangular inferior y
+        <MathFormula expression="U" /> la superior; en la notación de más abajo,
+        <MathFormula expression="R = L + U" />). Cada método tiene la suya:
+      </p>
+      <div class="formula-pair">
+        <div class="formula-box theory-formula">
+          <MathFormula :expression="tex.jacobiMatrix" display-mode />
+        </div>
+        <div class="formula-box theory-formula">
+          <MathFormula :expression="tex.gaussSeidelMatrix" display-mode />
+        </div>
+      </div>
+      <p>
+        La condición <strong>necesaria y suficiente</strong> de convergencia es que el
+        <strong>radio espectral</strong> de esa matriz —el mayor de los módulos de sus valores
+        propios <MathFormula expression="\lambda_i" />— sea menor que 1:
+      </p>
+      <div class="formula-box theory-formula">
+        <MathFormula :expression="tex.spectralRadius" display-mode />
+      </div>
+      <p>
+        Si se cumple, el método converge para <em>cualquier</em> vector inicial, y cuanto más
+        pequeño sea <MathFormula :expression="tex.rho" />, más rápido lo hace. En el sistema
+        <MathFormula :expression="tex.exampleSize" /> que se resuelve más abajo, los radios
+        espectrales son <MathFormula :expression="tex.rhoJacobi" /> y
+        <MathFormula :expression="tex.rhoGaussSeidel" />: ambos bastante menores que 1, y el de
+        Gauss-Seidel es más de tres veces más pequeño, lo que explica que converja más rápido.
+      </p>
+      <p>
+        Calcular <MathFormula :expression="tex.rho" /> exige resolver un problema de valores
+        propios, más costoso que el propio sistema. Por eso en la práctica se usa la dominancia
+        diagonal como <strong>atajo</strong>: se comprueba con una simple suma por filas y
+        <em>garantiza</em> <MathFormula :expression="tex.rho" /> &lt; 1. Pero es sólo una condición
+        suficiente, y de ahí las dos situaciones que se ven en la aplicación:
+      </p>
+      <ul>
+        <li>
+          Una matriz diagonalmente dominante <strong>siempre</strong> converge: el atajo nunca falla
+          cuando se cumple.
+        </li>
+        <li>
+          Una matriz que no lo es <strong>puede converger igualmente</strong>, porque lo que
+          importa es <MathFormula :expression="tex.rho" />. Es el caso de los sistemas que la
+          aplicación arregla reordenando filas: el sistema original ya tenía solución, sólo estaba
+          escrito en un orden que ocultaba la dominancia.
         </li>
       </ul>
     </div>
@@ -118,6 +256,39 @@ const tex = {
           iteraciones, o al alcanzar el número máximo de iteraciones configurado.
         </li>
       </ol>
+
+      <h3>Ejemplo resuelto: tres iteraciones de Jacobi</h3>
+      <p>
+        Tomemos este sistema, cuya solución exacta es
+        <MathFormula :expression="tex.exampleSolution" />, partiendo de
+        <MathFormula :expression="tex.exampleStart" />:
+      </p>
+      <div class="formula-box theory-formula">
+        <MathFormula :expression="tex.exampleSystem" display-mode />
+      </div>
+      <p>
+        En cada paso, <strong>las dos</strong> componentes se calculan con los valores de la
+        iteración anterior (en <span class="legend-prev">azul</span>):
+      </p>
+
+      <div v-for="step in jacobiSteps" :key="step.iteration" class="worked-step">
+        <p class="worked-step-title">Iteración {{ step.iteration }}</p>
+        <div class="formula-pair">
+          <div
+            v-for="(latex, i) in step.substitutions"
+            :key="i"
+            class="formula-box theory-formula"
+          >
+            <MathFormula :expression="latex" display-mode />
+          </div>
+        </div>
+      </div>
+
+      <p>
+        Tras tres iteraciones vamos por
+        <MathFormula :expression="vectorLatex('x^{(3)}', jacobiSteps[2].x)" />, todavía a cierta
+        distancia de <MathFormula :expression="tex.exampleSolution" />.
+      </p>
     </div>
 
     <div class="card">
@@ -163,6 +334,147 @@ const tex = {
           iteraciones, o al alcanzar el número máximo de iteraciones configurado.
         </li>
       </ol>
+
+      <h3>Ejemplo resuelto: el mismo sistema con Gauss-Seidel</h3>
+      <p>
+        Resolvamos el mismo sistema y desde el mismo punto de partida, para poder comparar. La
+        única diferencia está en <MathFormula :expression="tex.xi" /> de la segunda ecuación: ya no
+        usa el valor anterior, sino el <span class="legend-current">recién calculado</span> en esta
+        misma iteración.
+      </p>
+      <div class="formula-box theory-formula">
+        <MathFormula :expression="tex.exampleSystem" display-mode />
+      </div>
+
+      <div v-for="step in gaussSeidelSteps" :key="step.iteration" class="worked-step">
+        <p class="worked-step-title">Iteración {{ step.iteration }}</p>
+        <div class="formula-pair">
+          <div
+            v-for="(latex, i) in step.substitutions"
+            :key="i"
+            class="formula-box theory-formula"
+          >
+            <MathFormula :expression="latex" display-mode />
+          </div>
+        </div>
+      </div>
+
+      <p>
+        Con el mismo número de iteraciones, Gauss-Seidel llega a
+        <MathFormula :expression="vectorLatex('x^{(3)}', gaussSeidelSteps[2].x)" />, muy cerca ya de
+        <MathFormula :expression="tex.exampleSolution" />, mientras que Jacobi seguía en
+        <MathFormula :expression="vectorLatex('', jacobiSteps[2].x)" />. Reutilizar los valores
+        nuevos dentro de la misma iteración acelera la convergencia.
+      </p>
+
+      <h4 class="table-caption">Comparación iteración a iteración</h4>
+      <div class="table-scroll">
+        <table class="comparison-table numeric-table">
+          <thead>
+            <tr>
+              <th>Iteración</th>
+              <th>Método</th>
+              <th><MathFormula expression="x_1" /></th>
+              <th><MathFormula expression="x_2" /></th>
+              <th><MathFormula expression="x_3" /></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="row in comparisonRows" :key="row.key" :class="{ 'group-start': row.first }">
+              <td>{{ row.first ? row.iteration : '' }}</td>
+              <td>{{ row.method }}</td>
+              <td v-for="(value, i) in row.x" :key="i">{{ formatNumber(value) }}</td>
+            </tr>
+            <tr class="exact-row group-start">
+              <td></td>
+              <td>Solución exacta</td>
+              <td>1</td>
+              <td>2</td>
+              <td>3</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="table-note">
+        Puedes cargar este mismo sistema en la vista <strong>Resolver</strong> para verlo converger
+        hasta el final.
+      </p>
+    </div>
+
+    <div class="card">
+      <h2>Jacobi frente a Gauss-Seidel</h2>
+      <p>
+        Ambos métodos resuelven el mismo problema y comparten las mismas condiciones de
+        convergencia, pero se comportan de forma distinta en tres aspectos prácticos:
+      </p>
+      <div class="table-scroll">
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th>Criterio</th>
+              <th>Jacobi</th>
+              <th>Gauss-Seidel</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">Velocidad de convergencia</th>
+              <td>
+                Más lenta. Cada iteración usa sólo información de la anterior, así que la mejora por
+                paso es menor.
+              </td>
+              <td>
+                Generalmente converge en menos iteraciones para el mismo sistema, porque aprovecha
+                los valores actualizados de inmediato. En el ejemplo de arriba,
+                <MathFormula :expression="tex.rho" /> pasa de 0.3 a 0.089443.
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">Uso de memoria</th>
+              <td>
+                Necesita dos vectores: <MathFormula :expression="tex.xCurrent" /> completo se
+                conserva mientras se construye <MathFormula :expression="tex.xNext" />.
+              </td>
+              <td>
+                Actualiza el vector <em>in situ</em>: no hace falta conservar la iteración anterior
+                completa, sólo el valor previo de la componente que se está sustituyendo.
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">Paralelización</th>
+              <td>
+                Trivialmente paralelizable: dentro de una iteración, cada componente de
+                <MathFormula :expression="tex.xNext" /> es independiente de las demás y puede
+                calcularse a la vez.
+              </td>
+              <td>
+                No es directamente paralelizable: cada componente depende de las que acaban de
+                actualizarse en esa misma iteración, lo que impone un orden secuencial.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="table-note">
+        En resumen: Gauss-Seidel suele ser preferible en un cálculo secuencial, mientras que Jacobi
+        resulta atractivo cuando se dispone de varios procesadores.
+      </p>
+    </div>
+
+    <div class="card">
+      <h2>Referencias</h2>
+      <ul class="references">
+        <li>
+          Burden, R. L., Faires, J. D., &amp; Burden, A. M. (2016).
+          <em>Numerical analysis</em> (10.ª ed.). Cengage Learning. (Capítulo 7: técnicas iterativas
+          en álgebra matricial, donde se presentan los métodos de Jacobi y Gauss-Seidel con esta
+          misma notación, junto con el teorema de convergencia basado en el radio espectral.)
+        </li>
+        <li>
+          Chapra, S. C., &amp; Canale, R. P. (2015).
+          <em>Métodos numéricos para ingenieros</em> (7.ª ed.). McGraw-Hill.
+        </li>
+      </ul>
     </div>
   </div>
 </template>
@@ -194,6 +506,103 @@ li {
   color: var(--color-ink-muted);
 }
 
+/* Fórmulas emparejadas (las matrices de iteración, o las componentes de un
+   paso del ejemplo). El ancho mínimo es el mismo que usa el paso a paso de
+   Resolver: por debajo, las sustituciones con fracción quedan cortadas. */
+.formula-pair {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(430px, 100%), 1fr));
+  gap: var(--space-3);
+}
+
+.formula-pair .theory-formula {
+  margin: 0;
+}
+
+.worked-step {
+  margin-bottom: var(--space-4);
+}
+
+.worked-step-title {
+  margin: 0 0 var(--space-2);
+  font-size: var(--text-small);
+  font-weight: var(--weight-semibold);
+  color: var(--color-ink-muted);
+}
+
+.legend-prev {
+  color: v-bind(PREVIOUS_COLOR);
+  font-weight: var(--weight-semibold);
+}
+
+.legend-current {
+  color: v-bind(CURRENT_COLOR);
+  font-weight: var(--weight-semibold);
+}
+
+/* Tablas de texto: a diferencia de las de resultados numéricos, se alinean a
+   la izquierda y dejan respirar el contenido. */
+.comparison-table th,
+.comparison-table td {
+  text-align: left;
+  vertical-align: top;
+  padding: var(--space-3);
+  line-height: 1.5;
+}
+
+.comparison-table tbody th {
+  font-weight: var(--weight-semibold);
+  color: var(--color-ink);
+  background: var(--color-sunken);
+  white-space: nowrap;
+}
+
+.comparison-table td {
+  font-size: var(--text-small);
+}
+
+.exact-row td {
+  font-weight: var(--weight-semibold);
+  color: var(--color-accent);
+}
+
+/* Valores numéricos alineados a la derecha; las dos primeras columnas son
+   etiquetas y se quedan a la izquierda. */
+.numeric-table td:nth-child(n + 3),
+.numeric-table th:nth-child(n + 3) {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.numeric-table tbody tr {
+  background: transparent;
+}
+
+.group-start td {
+  border-top: 2px solid var(--color-line);
+}
+
+.table-caption {
+  margin: var(--space-5) 0 var(--space-2);
+  color: var(--color-ink-muted);
+}
+
+.table-note {
+  margin-top: var(--space-3);
+  font-size: var(--text-small);
+  color: var(--color-ink-muted);
+}
+
+.references {
+  padding-left: var(--space-5);
+  font-size: var(--text-small);
+  color: var(--color-ink-muted);
+}
+
+.references li {
+  margin-bottom: var(--space-3);
+}
+
 /* KaTeX inline trae 1.21em por defecto: se reduce para no alterar el
    interlineado de los párrafos. Las fórmulas en bloque conservan su tamaño. */
 .theory :deep(.math:not(.math-display) .katex) {
@@ -208,7 +617,7 @@ li {
   }
 
   .theory-formula :deep(.katex-display > .katex) {
-    font-size: 0.85em;
+    font-size: 0.8em;
   }
 }
 </style>
