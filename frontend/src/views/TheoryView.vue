@@ -99,6 +99,78 @@ function workedSteps(method) {
 const jacobiSteps = workedSteps('jacobi')
 const gaussSeidelSteps = workedSteps('gauss-seidel')
 
+/* Pasos del algoritmo como datos: cada descripción es una lista de fragmentos
+   donde las cadenas son texto y los objetos { m } son fórmulas que se
+   renderizan con MathFormula en línea. Así los dos métodos comparten los tres
+   pasos que son idénticos y sólo cambia el segundo. */
+const STEP_START = {
+  title: 'Vector inicial',
+  body: [
+    'Se parte de una aproximación inicial ',
+    { m: tex.x0 },
+    ' (por defecto, ceros) y se fija una tolerancia ',
+    { m: tex.eps },
+    '.',
+  ],
+}
+
+const STEP_ERROR = {
+  title: 'Medir el error',
+  body: [
+    'Se calcula la norma infinito entre dos iteraciones sucesivas: ',
+    { m: tex.error },
+    '.',
+  ],
+}
+
+const STEP_STOP = {
+  title: 'Criterio de parada',
+  body: [
+    'El proceso se detiene cuando el error es menor que ',
+    { m: tex.eps },
+    ' y se han ejecutado al menos 6 iteraciones, o al alcanzar el número máximo de iteraciones configurado.',
+  ],
+}
+
+const ALGORITHM_STEPS = {
+  jacobi: [
+    STEP_START,
+    {
+      title: 'Calcular la nueva iteración',
+      body: [
+        'En cada iteración ',
+        { m: tex.kRange },
+        ' se calcula ',
+        { m: tex.xiNext },
+        ' para todo ',
+        { m: 'i' },
+        ' con la fórmula anterior, usando únicamente los valores de ',
+        { m: tex.xCurrent },
+        '.',
+      ],
+    },
+    STEP_ERROR,
+    STEP_STOP,
+  ],
+  'gauss-seidel': [
+    STEP_START,
+    {
+      title: 'Actualizar componente a componente',
+      body: [
+        'En cada iteración se recorre ',
+        { m: tex.iRange },
+        ' actualizando ',
+        { m: tex.xi },
+        ' in situ, de modo que para ',
+        { m: tex.jBefore },
+        ' ya se usan los valores recalculados en esa misma iteración.',
+      ],
+    },
+    STEP_ERROR,
+    STEP_STOP,
+  ],
+}
+
 function vectorLatex(name, x) {
   const values = x.map((value) => formatNumber(value)).join(',\\ ')
   return `${name ? `${name} = ` : ''}(${values})`
@@ -214,7 +286,7 @@ const comparisonRows = jacobiSteps.flatMap((step, i) => [
 
     <div class="card">
       <h2>Método de Jacobi</h2>
-      <p><strong>Definición formal:</strong></p>
+      <h3 class="first-heading">Definición formal</h3>
       <p>
         Se descompone <MathFormula :expression="tex.decomposition" />, donde
         <MathFormula expression="D" /> es la diagonal de <MathFormula expression="A" /> y
@@ -233,27 +305,18 @@ const comparisonRows = jacobiSteps.flatMap((step, i) => [
         valores de la iteración anterior completa <MathFormula :expression="tex.xCurrent" />; ningún
         valor recién calculado se reutiliza dentro de la misma iteración.
       </p>
-      <p><strong>Algoritmo de aplicación:</strong></p>
-      <ol>
-        <li>
-          Elegir un vector inicial <MathFormula :expression="tex.x0" /> (por defecto, ceros) y una
-          tolerancia <MathFormula :expression="tex.eps" />.
-        </li>
-        <li>
-          Para cada iteración <MathFormula :expression="tex.kRange" />, calcular
-          <MathFormula :expression="tex.xiNext" /> para todo <MathFormula expression="i" /> usando la
-          fórmula anterior, a partir de <MathFormula :expression="tex.xCurrent" />.
-        </li>
-        <li>
-          Calcular el error como la norma infinito entre iteraciones sucesivas:
-          <div class="formula-box theory-formula">
-            <MathFormula :expression="tex.error" display-mode />
-          </div>
-        </li>
-        <li>
-          Detener el proceso cuando el error sea menor que
-          <MathFormula :expression="tex.eps" /> <em>y</em> se hayan ejecutado al menos 6
-          iteraciones, o al alcanzar el número máximo de iteraciones configurado.
+      <h3>Algoritmo de aplicación</h3>
+      <ol class="steps">
+        <li v-for="(step, i) in ALGORITHM_STEPS.jacobi" :key="i" class="step">
+          <span class="step-number" aria-hidden="true">{{ i + 1 }}</span>
+          <h4 class="step-title">{{ step.title }}</h4>
+          <p class="step-text">
+            <template v-for="(part, j) in step.body" :key="j">
+              <MathFormula v-if="part.m" :expression="part.m" /><template v-else>{{
+                part
+              }}</template>
+            </template>
+          </p>
         </li>
       </ol>
 
@@ -267,7 +330,7 @@ const comparisonRows = jacobiSteps.flatMap((step, i) => [
         <MathFormula :expression="tex.exampleSystem" display-mode />
       </div>
       <p>
-        En cada paso, <strong>las dos</strong> componentes se calculan con los valores de la
+        En cada paso, <strong>las tres</strong> componentes se calculan con los valores de la
         iteración anterior (en <span class="legend-prev">azul</span>):
       </p>
 
@@ -293,7 +356,7 @@ const comparisonRows = jacobiSteps.flatMap((step, i) => [
 
     <div class="card">
       <h2>Método de Gauss-Seidel</h2>
-      <p><strong>Definición formal:</strong></p>
+      <h3 class="first-heading">Definición formal</h3>
       <p>
         Es una variante de Jacobi que acelera la convergencia reutilizando, dentro de la misma
         iteración, los valores de <MathFormula expression="x" /> que ya fueron actualizados:
@@ -312,35 +375,27 @@ const comparisonRows = jacobiSteps.flatMap((step, i) => [
         <MathFormula :expression="tex.after" /> aún de la iteración anterior. Esto normalmente reduce
         el número de iteraciones necesarias respecto a Jacobi.
       </p>
-      <p><strong>Algoritmo de aplicación:</strong></p>
-      <ol>
-        <li>
-          Elegir un vector inicial <MathFormula :expression="tex.x0" /> (por defecto, ceros) y una
-          tolerancia <MathFormula :expression="tex.eps" />.
-        </li>
-        <li>
-          Para cada iteración <MathFormula expression="k" />, recorrer
-          <MathFormula :expression="tex.iRange" /> actualizando
-          <MathFormula :expression="tex.xi" /> <em>in situ</em>, usando los valores ya actualizados de la propia iteración para
-          <MathFormula :expression="tex.jBefore" />.
-        </li>
-        <li>
-          Calcular el error como la norma infinito entre <MathFormula :expression="tex.xNext" /> y
-          <MathFormula :expression="tex.xCurrent" />.
-        </li>
-        <li>
-          Detener el proceso cuando el error sea menor que
-          <MathFormula :expression="tex.eps" /> <em>y</em> se hayan ejecutado al menos 6
-          iteraciones, o al alcanzar el número máximo de iteraciones configurado.
+      <h3>Algoritmo de aplicación</h3>
+      <ol class="steps">
+        <li v-for="(step, i) in ALGORITHM_STEPS['gauss-seidel']" :key="i" class="step">
+          <span class="step-number" aria-hidden="true">{{ i + 1 }}</span>
+          <h4 class="step-title">{{ step.title }}</h4>
+          <p class="step-text">
+            <template v-for="(part, j) in step.body" :key="j">
+              <MathFormula v-if="part.m" :expression="part.m" /><template v-else>{{
+                part
+              }}</template>
+            </template>
+          </p>
         </li>
       </ol>
 
       <h3>Ejemplo resuelto: el mismo sistema con Gauss-Seidel</h3>
       <p>
         Resolvamos el mismo sistema y desde el mismo punto de partida, para poder comparar. La
-        única diferencia está en <MathFormula :expression="tex.xi" /> de la segunda ecuación: ya no
-        usa el valor anterior, sino el <span class="legend-current">recién calculado</span> en esta
-        misma iteración.
+        diferencia aparece a partir de la segunda ecuación: en cuanto una componente se recalcula,
+        las siguientes ya usan ese valor <span class="legend-current">recién calculado</span> en
+        lugar del de la iteración anterior.
       </p>
       <div class="formula-box theory-formula">
         <MathFormula :expression="tex.exampleSystem" display-mode />
@@ -517,6 +572,59 @@ li {
 
 .formula-pair .theory-formula {
   margin: 0;
+}
+
+/* Pasos del algoritmo: tarjetas numeradas que se recorren de un vistazo, en
+   lugar de una lista de párrafos. */
+.steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: none;
+}
+
+.step {
+  position: relative;
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-nested);
+  padding: var(--space-4);
+  margin: 0;
+}
+
+.step-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-pill);
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+  font-size: var(--text-small);
+  font-weight: var(--weight-bold);
+  margin-bottom: var(--space-2);
+}
+
+.step-title {
+  margin: 0 0 var(--space-1);
+  font-size: var(--text-card-title);
+  color: var(--color-ink);
+}
+
+.step-text {
+  margin: 0;
+  font-size: var(--text-small);
+  line-height: 1.55;
+  color: var(--color-ink-muted);
+}
+
+/* Las fórmulas en línea dentro de un paso no deben agrandar el interlineado. */
+.step-text :deep(.katex) {
+  font-size: 1em;
 }
 
 .worked-step {
