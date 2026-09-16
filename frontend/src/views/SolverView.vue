@@ -70,21 +70,35 @@ function loadExample(example) {
   formErrors.value = []
 }
 
-function toNumber(value) {
-  const parsed = Number(value)
-  return Number.isFinite(parsed) ? parsed : 0
+// Los campos de A, b y x0 entregan números ya parseados (con la precisión
+// completa de la fracción escrita); un NaN significa que ese campo es inválido.
+function hasInvalidValues() {
+  return (
+    A.value.some((row) => row.some((v) => !Number.isFinite(v))) ||
+    b.value.some((v) => !Number.isFinite(v)) ||
+    x0.value.some((v) => !Number.isFinite(v))
+  )
 }
 
 async function handleSolve() {
   formErrors.value = []
   result.value = null
   solvedSystem.value = null
+
+  if (hasInvalidValues()) {
+    formErrors.value = [
+      'Hay campos del sistema con un valor inválido (marcados en rojo). ' +
+        'Corrígelos antes de resolver.',
+    ]
+    return
+  }
+
   loading.value = true
   try {
     const payload = {
-      A: A.value.map((row) => row.map(toNumber)),
-      b: b.value.map(toNumber),
-      x0: x0.value.map(toNumber),
+      A: A.value.map((row) => [...row]),
+      b: [...b.value],
+      x0: [...x0.value],
       tolerance: tolerance.value,
       max_iterations: maxIterations.value,
       auto_reorder: autoReorder.value,
