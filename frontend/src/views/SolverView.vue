@@ -231,15 +231,24 @@ onMounted(async () => {
   margin: 0 0 var(--space-5);
 }
 
+/* Flexbox en vez de grid: con columnas de grid los tracks ocupan todo el
+   ancho y no hay espacio libre que repartir, así que las tarjetas sobrantes
+   de la última fila quedan siempre pegadas a la izquierda. */
 .examples-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: var(--space-3);
 }
 
 /* Elementos clicables: única familia con sombra, para diferenciarlos de los
-   contenedores estáticos que sólo llevan borde. */
+   contenedores estáticos que sólo llevan borde.
+
+   El ancho se fija por breakpoint (ver abajo) en vez de dejar que crezcan:
+   así una fila completa llena el ancho igual que antes, y las tarjetas
+   sobrantes de la última fila conservan su tamaño y sólo quedan centradas. */
 .example-btn {
+  flex: 0 1 100%;
   text-align: left;
   border: 1px solid var(--color-line);
   background: var(--color-surface);
@@ -319,6 +328,27 @@ onMounted(async () => {
 /* Aire entre el título de sección y su contenido (formulario o matriz). */
 .card > h2 + div {
   margin-top: var(--space-5);
+}
+
+/* Tarjetas por fila según el ancho de pantalla. El ancho es
+   (100% - huecos) / columnas, de modo que una fila completa llena
+   exactamente el contenedor, como hacía la grilla anterior. */
+@media (min-width: 641px) {
+  .example-btn {
+    flex-basis: calc(50% - var(--space-3) * 0.5);
+  }
+}
+
+@media (min-width: 800px) {
+  .example-btn {
+    flex-basis: calc(33.3333% - var(--space-3) * 0.6667);
+  }
+}
+
+@media (min-width: 1024px) {
+  .example-btn {
+    flex-basis: calc(25% - var(--space-3) * 0.75);
+  }
 }
 
 .solve-btn {
