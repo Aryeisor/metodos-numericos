@@ -2,7 +2,10 @@
 //
 // Contrato que SolverView y ResultsTable esperan de cada categoría:
 //   createStore()                 estado del formulario + mutaciones
-//   configTitle / formTitle       títulos de las tarjetas del formulario
+//   configTitle / formTitle       títulos de las tarjetas del formulario; los pone
+//                                 cada categoría (ej. no lineales: "Sistema de
+//                                 ecuaciones f(x) = 0"; polinomios: "Coeficientes
+//                                 del polinomio")
 //   configFields                  componente dentro de la cuadrícula de configuración
 //   configExtras                  componente debajo de la cuadrícula
 //   form + formBindings(store)    componente de entrada y sus props/eventos
@@ -11,7 +14,9 @@
 //   resultSummary                 bloque extra en el resumen del resultado
 //   iterationDetail               detalle expandible de cada iteración
 //   pdfReport({result, system})   partes del PDF propias de la categoría
-//   theoryAnchor(slug)            ancla de la sección de teoría del método
+//   theoryPage                    página de teoría; recibe el prop `method`
+//   theorySections                métodos con teoría escrita: { slug: sección }.
+//                                 Un método sin entrada aquí no aparece en "Teoría ▾"
 import MatrixInput from '../../components/MatrixInput.vue'
 import LinearConfigExtras from './LinearConfigExtras.vue'
 import LinearConfigFields from './LinearConfigFields.vue'
@@ -19,6 +24,7 @@ import LinearIterationDetail from './LinearIterationDetail.vue'
 import LinearResultSummary from './LinearResultSummary.vue'
 import { linearPdfReport } from './pdf'
 import { createLinearSystemStore } from './store'
+import LinearTheoryPage, { THEORY_SECTIONS } from './theory/LinearTheoryPage.vue'
 
 export default {
   createStore: createLinearSystemStore,
@@ -50,5 +56,6 @@ export default {
   iterationDetail: LinearIterationDetail,
   pdfReport: linearPdfReport,
 
-  theoryAnchor: (slug) => `metodo-${slug}`,
+  theoryPage: LinearTheoryPage,
+  theorySections: THEORY_SECTIONS,
 }

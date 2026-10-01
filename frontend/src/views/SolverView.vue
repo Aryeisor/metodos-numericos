@@ -106,7 +106,7 @@ async function handleSolve() {
           else messages.push(String(val))
         }
       }
-      formErrors.value = messages.length ? messages : ['Ocurrió un error al validar el sistema.']
+      formErrors.value = messages.length ? messages : ['Ocurrió un error al validar los datos.']
     } else {
       formErrors.value = ['No fue posible conectar con el servidor. Verifica que el backend esté corriendo.']
     }
@@ -139,7 +139,7 @@ function handleExportPdf(chartImage) {
   <div v-else>
     <div class="card">
       <h2>Ejemplos precargados</h2>
-      <p class="hint">Selecciona un sistema de ejemplo para cargarlo en el formulario.</p>
+      <p class="hint">Selecciona un ejemplo para cargarlo en el formulario.</p>
       <div class="examples-grid">
         <button
           v-for="ex in examples"

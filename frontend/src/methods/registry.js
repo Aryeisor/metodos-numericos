@@ -57,10 +57,19 @@ export function getMethod(slug) {
   return state.methods.find((method) => method.slug === slug) ?? null
 }
 
-/** Métodos agrupados por categoría, en el orden en que los entrega el backend. */
-export function methodsByCategory() {
+/** True si la categoría del método tiene teoría escrita para él. */
+export function hasTheory(method) {
+  return Boolean(method.ui.theorySections?.[method.slug])
+}
+
+/**
+ * Métodos agrupados por categoría, en el orden en que los entrega el backend.
+ * Con `filter`, sólo los que lo cumplen; una categoría que se queda sin
+ * métodos no aparece.
+ */
+export function methodsByCategory(filter = () => true) {
   const groups = []
-  for (const method of state.methods) {
+  for (const method of state.methods.filter(filter)) {
     let group = groups.find((g) => g.category === method.category)
     if (!group) {
       group = { category: method.category, label: method.categoryLabel, methods: [] }
@@ -77,6 +86,4 @@ export function siblingMethods(slug) {
   return method ? state.methods.filter((m) => m.category === method.category) : []
 }
 
-export function solveRouteName(slug) {
-  return `solve-${slug}`
-}
+export { solveRouteName, theoryRouteName } from './routeNames'
