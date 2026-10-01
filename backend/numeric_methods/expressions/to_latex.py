@@ -65,8 +65,61 @@ def _split_fraction(mul):
     return sign, numerator, denominator
 
 
+class _LogBase(sp.Function):
+    r"""Sólo para imprimir: log(a)/log(b) se dibuja como \log_{b}(a) en LaTeX y
+    como log(a) / log(a, b) en texto (ver to_text.py)."""
+
+    nargs = 2
+
+    def _latex(self, printer):
+        arg, base = self.args
+        return rf"\log_{{{printer._print(base)}}}{{\left({printer._print(arg)} \right)}}"
+
+    def _sympystr(self, printer):
+        arg, base = self.args
+        if base == 10:
+            return f"log({printer._print(arg)})"
+        return f"log({printer._print(arg)}, {printer._print(base)})"
+
+
+def _flatten_mul(mul):
+    factors = []
+    for arg in mul.args:
+        factors.extend(_flatten_mul(arg) if isinstance(arg, sp.Mul) else [arg])
+    return factors
+
+
+def group_log_bases(mul):
+    """Reescribe cada par log(a)·1/log(b), con b numérico, como _LogBase(a, b).
+
+    Es la forma en que el parser guarda `log(x)` (base 10). Los productos sin
+    evaluar pueden venir anidados (`2*log(x)` es Mul(2, Mul(log(x), 1/log(10)))),
+    por eso se aplanan. Devuelve None si no hay ningún par.
+    """
+    factors = _flatten_mul(mul)
+    logs = [i for i, f in enumerate(factors) if isinstance(f, sp.log)]
+    inverses = [
+        i for i, f in enumerate(factors)
+        if isinstance(f, sp.Pow) and f.exp == -1
+        and isinstance(f.base, sp.log) and f.base.args[0].is_Number
+    ]
+    pairs = list(zip(logs, inverses))
+    if not pairs:
+        return None
+    used = {i for pair in pairs for i in pair}
+    items = [f for i, f in enumerate(factors) if i not in used] + [
+        _LogBase(factors[log].args[0], factors[inverse].base.args[0])
+        for log, inverse in pairs
+    ]
+    return items[0] if len(items) == 1 else sp.Mul(*items, evaluate=False)
+
+
 class _FractionPrinter(LatexPrinter):
     def _print_Mul(self, expr):
+        with_base = group_log_bases(expr)
+        if with_base is not None:
+            return self._print(with_base)
+
         if _is_canonical(expr):
             return super()._print_Mul(expr)
 
@@ -88,7 +141,9 @@ class _FractionPrinter(LatexPrinter):
 
 
 def _latex(expr, **settings):
-    return _FractionPrinter({"order": "none", **settings}).doprint(expr)
+    # ln_notation: el logaritmo natural se ve como \ln, igual que se escribe
+    # (`log` es base 10 y se ve como \log_{10}).
+    return _FractionPrinter({"order": "none", "ln_notation": True, **settings}).doprint(expr)
 
 
 def expression_to_latex(expr):
@@ -117,3 +172,17 @@ def function_to_latex(name, variables, expr):
     args = ", ".join(sp.latex(s) for s in symbols)
     head = sp.latex(sp.Symbol(name)) if name else "f"
     return f"{head}({args}) = {expression_to_latex(expr)}"
+
+
+def equation_to_latex(name, lhs, rhs, variables):
+    """LaTeX de una ecuación tal como la devuelve `parser.parse_equation`.
+
+    Muestra lo que se escribió, sin interpretarlo para ningún método:
+    "f1(x, y) = ..." como función, "lhs = rhs" con sus dos lados y una
+    expresión suelta tal cual.
+    """
+    if name:
+        return function_to_latex(name, variables, lhs)
+    if rhs is None:
+        return expression_to_latex(lhs)
+    return f"{expression_to_latex(lhs)} = {expression_to_latex(rhs)}"

@@ -22,4 +22,15 @@ export function solveSystem(method, payload) {
     .then((res) => res.data)
 }
 
+/**
+ * LaTeX de una ecuación tal como la interpreta el parser del backend (sin
+ * resolver nada). Rechaza con la respuesta 400 si no es válida. `signal`
+ * permite cancelar la petición si el usuario sigue escribiendo.
+ */
+export function previewExpression(equation, variables, { signal } = {}) {
+  return apiClient
+    .post('/expressions/preview', { equation, variables }, { signal })
+    .then((res) => res.data.latex)
+}
+
 export default apiClient

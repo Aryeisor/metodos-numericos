@@ -4,6 +4,7 @@ from rest_framework.views import APIView
 
 from .examples_data import EXAMPLES, all_examples
 from .registry import get_method, public_catalog
+from .serializers.expressions import ExpressionPreviewSerializer
 from .solvers.validation import InputValidationError
 
 
@@ -54,3 +55,17 @@ class ExamplesListView(APIView):
                 status=status.HTTP_404_NOT_FOUND,
             )
         return Response(EXAMPLES[method])
+
+
+class ExpressionPreviewView(APIView):
+    """POST /api/expressions/preview -> {"latex": ...} de una ecuación.
+
+    Genérico (no depende de ningún método): el frontend lo llama mientras el
+    usuario escribe para mostrarle cómo se interpretó su ecuación. Sólo
+    parsea; los errores de parseo responden 400 con el mensaje por campo.
+    """
+
+    def post(self, request):
+        serializer = ExpressionPreviewSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        return Response({"latex": serializer.validated_data["latex"]})

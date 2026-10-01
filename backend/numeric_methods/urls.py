@@ -1,7 +1,7 @@
-from django.urls import path
+from django.urls import path, re_path
 
 from .registry import METHODS
-from .views import BaseSolveView, ExamplesListView, MethodsListView
+from .views import BaseSolveView, ExamplesListView, ExpressionPreviewView, MethodsListView
 
 # Una ruta de resolución por método registrado: /api/solve/<slug>/
 solve_patterns = [
@@ -13,4 +13,6 @@ urlpatterns = [
     *solve_patterns,
     path("methods/", MethodsListView.as_view(), name="methods-list"),
     path("examples/", ExamplesListView.as_view(), name="examples-list"),
+    # Con o sin barra final: un POST no puede redirigirse a la versión con barra.
+    re_path(r"^expressions/preview/?$", ExpressionPreviewView.as_view(), name="expression-preview"),
 ]

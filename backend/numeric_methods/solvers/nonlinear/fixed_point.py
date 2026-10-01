@@ -52,6 +52,7 @@ import sympy as sp
 
 from ...expressions.parser import ExpressionError, make_symbols, parse_equation
 from ...expressions.to_latex import expression_to_latex, substitution_template_latex
+from ...expressions.to_text import expression_to_text
 from ..base import IterationStep, SolverResult
 from ..validation import DEFAULT_MAX_ITERATIONS, DEFAULT_TOLERANCE, MIN_ITERATIONS, InputValidationError
 
@@ -88,11 +89,6 @@ class FixedPointFunction:
     g: sp.Expr
     dependencies: list
     evaluate: object
-
-
-def _user_text(expr):
-    """Expresión sympy escrita como la escribiría el usuario (x^2, no x**2)."""
-    return sp.sstr(expr).replace("**", "^")
 
 
 def estimate_degree(expr, symbol):
@@ -154,7 +150,7 @@ def isolate(equation, symbol, index):
     if not real:
         raise NonlinearValidationError(f"{cannot} {rewrite}")
     if len(real) > 1:
-        options = "; ".join(f"{name} = {_user_text(s)}" for s in real)
+        options = "; ".join(f"{name} = {expression_to_text(s)}" for s in real)
         raise NonlinearValidationError(
             f"La ecuación {index} admite {len(real)} despejes reales de {name} "
             f"({options}), así que el despeje automático es ambiguo. Reescribe la "
@@ -345,7 +341,7 @@ def solve_fixed_point(data):
                     # x_i = g_i(...), el despeje que se itera.
                     "g_latex": expression_to_latex(f.g),
                     # El mismo despeje en texto plano (para el PDF).
-                    "g_text": _user_text(f.g),
+                    "g_text": expression_to_text(f.g),
                     # g_i con marcadores @@j@@ en lugar de cada variable j.
                     "g_template": substitution_template_latex(f.g, placeholders),
                     "dependencies": f.dependencies,

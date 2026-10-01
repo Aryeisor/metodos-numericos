@@ -49,6 +49,21 @@ MAX_MAGNITUDE = 1e100
 # cuelga el proceso; lo mismo `(1/2)**(10**50)`, cuyo valor en float es 0.
 MAX_EXPONENT = 1000
 
+def _log(arg, base=10, evaluate=False):
+    r"""`log(x)` es el logaritmo en base 10 (como en las calculadoras); `ln(x)`
+    es el natural. `log(x, b)` permite otra base.
+
+    Se representa como `log(x)/log(b)` con logaritmos naturales de sympy: así
+    `solve`, la derivación y `lambdify` lo tratan sin casos especiales, y el
+    árbol sólo contiene nodos que la validación ya admite. `to_latex` lo dibuja
+    como \log_{b}.
+
+    `evaluate` lo pasa `parse_expr` a toda función; el usuario no puede
+    escribirlo porque el '=' no es un token válido dentro de una expresión.
+    """
+    return sp.Mul(sp.log(arg), sp.Pow(sp.log(base), -1), evaluate=False)
+
+
 ALLOWED_FUNCTIONS = {
     "sin": sp.sin,
     "cos": sp.cos,
@@ -60,7 +75,7 @@ ALLOWED_FUNCTIONS = {
     "cosh": sp.cosh,
     "tanh": sp.tanh,
     "exp": sp.exp,
-    "log": sp.log,
+    "log": _log,
     "ln": sp.log,
     "sqrt": sp.sqrt,
     "abs": sp.Abs,
@@ -137,6 +152,7 @@ def _validate_tokens(text, allowed_names):
         raise ExpressionError("La expresión no está bien formada.") from exc
 
     depth = 0
+    previous = None
     for token in tokens:
         kind, value = token.type, token.string
         if kind in (tokenize.NEWLINE, tokenize.NL, tokenize.ENDMARKER, tokenize.INDENT, tokenize.DEDENT):
@@ -144,6 +160,15 @@ def _validate_tokens(text, allowed_names):
         if kind == tokenize.NUMBER:
             if not _NUMBER.match(value):
                 raise ExpressionError(f"Número no válido: '{value}'.")
+            # Python parte "007" en '00' y '7', y "1.5.2" en '1.5' y '.2'; la
+            # multiplicación implícita los convertiría en 0·7 y 1.5·0.2 sin
+            # avisar. Dos números seguidos siempre son un error de escritura.
+            if previous is not None and previous.type == tokenize.NUMBER:
+                raise ExpressionError(
+                    f"Número no válido: hay dos números seguidos ('{previous.string}' y "
+                    f"'{value}'). Revisa ceros a la izquierda o puntos decimales, o "
+                    "sepáralos con un operador."
+                )
         elif kind == tokenize.NAME:
             if value not in allowed_names:
                 raise ExpressionError(
@@ -156,6 +181,7 @@ def _validate_tokens(text, allowed_names):
                 raise ExpressionError("La expresión tiene demasiados paréntesis anidados.")
         else:
             raise ExpressionError(f"Símbolo no permitido: '{value}'.")
+        previous = token
 
 
 def _global_dict():

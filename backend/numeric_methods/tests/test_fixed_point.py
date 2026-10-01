@@ -320,7 +320,7 @@ class FixedPointEndpointTests(APITestCase):
         response = self.client.get("/api/examples/?method=punto-fijo")
         self.assertEqual(response.status_code, 200)
         examples = response.json()
-        self.assertEqual(len(examples), 3)
+        self.assertEqual(len(examples), 4)
         for example in examples:
             with self.subTest(example=example["id"]):
                 payload = {k: example[k] for k in

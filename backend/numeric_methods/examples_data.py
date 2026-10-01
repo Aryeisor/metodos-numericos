@@ -161,6 +161,20 @@ NONLINEAR_SYSTEM_EXAMPLES = [
         "tolerance": 0.000001,
         "max_iterations": 100,
     },
+    {
+        "id": "algebraico-2x2",
+        "name": "Algebraico 2x2",
+        "description": "Dos ecuaciones polinómicas simples, sin trigonometría; buen primer contacto con el despeje automático.",
+        "n": 2,
+        "variables": ["x", "y"],
+        "equations": [
+            "3*x - y**2 - 1 = 0",
+            "x**2 + 4*y - 2 = 0",
+        ],
+        "x0": [0, 0],
+        "tolerance": 0.000001,
+        "max_iterations": 100,
+    },
 ]
 
 

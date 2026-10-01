@@ -2,7 +2,13 @@
 // Formulario de un sistema no lineal: una fila por ecuación con la variable
 // que se despeja de ella, controles para agregar/quitar ecuaciones y el punto
 // inicial x0 (acepta fracciones, como los campos de los sistemas lineales).
+// Una barra de símbolos inserta en la última ecuación que tuvo el foco y cada
+// ecuación muestra en vivo cómo la interpretó el parser del backend.
 import { computed, reactive, ref, watch } from 'vue'
+import MathFormula from '../../components/MathFormula.vue'
+import MathSymbolToolbar from '../../components/MathSymbolToolbar.vue'
+import MathSyntaxHelp from '../../components/MathSyntaxHelp.vue'
+import { useExpressionPreviews } from '../../composables/useExpressionPreviews'
 import { formatNumber } from '../../utils/iterationSteps'
 import { INPUT_ERROR_MESSAGES, parseNumericInput } from '../../utils/numberInput'
 import { MAX_EQUATIONS, MIN_EQUATIONS } from './store'
@@ -13,6 +19,30 @@ const props = defineProps({
 
 const state = computed(() => props.store.state)
 const n = computed(() => state.value.equations.length)
+
+// Vista previa por fila: LaTeX si la ecuación es válida, o su error.
+const { previews } = useExpressionPreviews(
+  () => state.value.equations,
+  () => state.value.variables
+)
+
+const previewOf = (i) => previews.value[i] ?? { status: 'empty', stale: false }
+const isInvalid = (i) => previewOf(i).status === 'invalid' && !previewOf(i).stale
+
+// Punto Fijo interpreta una expresión sin '=' como "expresión = 0"; la vista
+// previa lo muestra así para que se vea exactamente lo que se va a resolver.
+function previewLatex(i) {
+  const { latex } = previewOf(i)
+  return state.value.equations[i].includes('=') ? latex : `${latex} = 0`
+}
+
+// Barra de símbolos: inserta en la última ecuación que tuvo el foco (la
+// primera, si todavía ninguna lo tuvo).
+const listRef = ref(null)
+const activeIndex = ref(0)
+const symbolTarget = () =>
+  listRef.value?.querySelectorAll('.equation-input')[Math.min(activeIndex.value, n.value - 1)] ??
+  null
 
 function updateEquation(index, text) {
   state.value.equations = state.value.equations.map((v, i) => (i === index ? text : v))
@@ -62,6 +92,9 @@ function onX0Blur(index) {
 
 function removeEquation(index) {
   props.store.removeEquation(index)
+  // La fila activa de la barra de símbolos sigue apuntando a la misma ecuación.
+  if (index < activeIndex.value) activeIndex.value -= 1
+  activeIndex.value = Math.min(activeIndex.value, n.value - 1)
   // Los errores de x0 están indexados por posición: se descartan al quitar filas.
   for (const key of Object.keys(x0Errors)) delete x0Errors[key]
 }
@@ -77,7 +110,13 @@ const x0ErrorList = computed(() =>
 
 <template>
   <div>
-    <div class="equation-list">
+    <MathSymbolToolbar
+      class="equation-toolbar"
+      :target="symbolTarget"
+      :target-label="`ecuación ${Math.min(activeIndex, n - 1) + 1}`"
+    />
+
+    <div ref="listRef" class="equation-list">
       <div class="equation-head" aria-hidden="true">
         <span></span>
         <span>Variable</span>
@@ -85,7 +124,7 @@ const x0ErrorList = computed(() =>
         <span></span>
       </div>
       <div v-for="(text, i) in state.equations" :key="i" class="equation-row">
-        <span class="equation-index">{{ i + 1 }}</span>
+        <span class="equation-index" :class="{ 'is-target': i === activeIndex }">{{ i + 1 }}</span>
         <input
           type="text"
           class="variable-input"
@@ -103,7 +142,11 @@ const x0ErrorList = computed(() =>
           :value="text"
           :placeholder="i === 0 ? 'ej. 3*x - cos(y) - 1 = 0' : ''"
           :aria-label="`Ecuación ${i + 1}`"
+          :class="{ 'is-invalid': isInvalid(i) }"
+          :aria-invalid="isInvalid(i)"
+          :aria-describedby="`equation-preview-${i}`"
           @input="updateEquation(i, $event.target.value)"
+          @focus="activeIndex = i"
         />
         <button
           type="button"
@@ -115,6 +158,17 @@ const x0ErrorList = computed(() =>
         >
           ×
         </button>
+        <!-- Vista previa: aparece cuando llega la primera respuesta; mientras
+             se consulta un cambio se sigue viendo la anterior, atenuada. -->
+        <div
+          :id="`equation-preview-${i}`"
+          class="equation-preview"
+          :class="{ 'is-stale': previewOf(i).stale, 'is-error': previewOf(i).status === 'invalid' }"
+          aria-live="polite"
+        >
+          <MathFormula v-if="previewOf(i).status === 'valid'" :expression="previewLatex(i)" />
+          <span v-else-if="previewOf(i).status === 'invalid'">{{ previewOf(i).error }}</span>
+        </div>
       </div>
     </div>
 
@@ -131,9 +185,13 @@ const x0ErrorList = computed(() =>
     <p class="input-hint">
       La ecuación de cada fila se despeja automáticamente para la variable de esa fila.
       Puedes escribirla igualada a cero (<code>3*x - cos(y) - 1 = 0</code>) o con dos lados
-      (<code>y = (sin(x) + 2)/4</code>). Usa <code>^</code> para potencias y las funciones
-      sin, cos, tan, exp, log, sqrt, abs (entre otras) y las constantes pi y e.
+      (<code>y = (sin(x) + 2)/4</code>). Debajo de cada ecuación verás cómo se interpretó.
     </p>
+
+    <div class="syntax-block">
+      <p class="syntax-caption">Cómo escribir cada operación</p>
+      <MathSyntaxHelp />
+    </div>
 
     <div class="x0-row">
       <label>Punto inicial x0 (opcional, por defecto ceros)</label>
@@ -194,9 +252,60 @@ const x0ErrorList = computed(() =>
   text-align: right;
 }
 
+.equation-index.is-target {
+  color: var(--color-accent);
+}
+
 .variable-input,
 .equation-input {
   font-family: 'Consolas', 'Courier New', monospace;
+}
+
+.equation-toolbar {
+  margin-bottom: var(--space-4);
+}
+
+/* Debajo del campo de la ecuación, en la misma columna. Vacía (sin
+   respuesta todavía o fila en blanco) no ocupa espacio. */
+.equation-preview {
+  grid-column: 3 / 4;
+  margin-top: calc(-1 * var(--space-1));
+  padding: var(--space-1) var(--space-2);
+  overflow-x: auto;
+  font-size: var(--text-small);
+  color: var(--color-ink);
+  background: var(--color-sunken);
+  border-radius: var(--radius-control);
+  transition: opacity var(--transition-fast);
+}
+
+.equation-preview:empty {
+  display: none;
+}
+
+.equation-preview.is-error {
+  color: var(--color-danger);
+  background: var(--color-danger-bg);
+}
+
+/* Se está consultando un cambio: se ve la vista previa anterior, atenuada. */
+.equation-preview.is-stale {
+  opacity: 0.5;
+}
+
+.equation-preview :deep(.katex) {
+  font-size: 1.1em;
+}
+
+.syntax-block {
+  margin-top: var(--space-4);
+}
+
+.syntax-caption {
+  margin: 0 0 var(--space-2);
+  font-size: var(--text-small);
+  font-weight: var(--weight-semibold);
+  color: var(--color-ink);
 }
 
 .remove-btn {
@@ -279,6 +388,11 @@ const x0ErrorList = computed(() =>
   .equation-head,
   .equation-row {
     grid-template-columns: 1rem 3.5rem minmax(0, 1fr) auto;
+  }
+
+  /* En móvil la vista previa usa también el ancho de la columna de variable. */
+  .equation-preview {
+    grid-column: 2 / 5;
   }
 
   .x0-item input {
