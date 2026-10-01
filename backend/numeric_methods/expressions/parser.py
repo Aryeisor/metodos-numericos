@@ -354,7 +354,9 @@ def parse_equation(text, variables):
 
     left, right = text.split("=")
     header = _FUNCTION_HEADER.match(left)
-    if header:
+    # "sqrt(x) = y + 1" es una ecuación, no la definición de una función
+    # llamada "sqrt": los nombres de funciones conocidas no son encabezados.
+    if header and header.group(1) not in ALLOWED_FUNCTIONS:
         name = header.group(1)
         args = [a.strip() for a in header.group(2).split(",") if a.strip()]
         if args != list(variables):

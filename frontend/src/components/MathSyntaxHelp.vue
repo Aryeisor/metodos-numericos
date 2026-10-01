@@ -10,6 +10,8 @@ const ROWS = [
   { name: 'Valor absoluto', syntax: ['abs(x)'] },
   { name: 'Exponencial', syntax: ['exp(x)', 'e^x'] },
   { name: 'Trigonométricas', syntax: ['sin(x)', 'cos(x)', 'tan(x)'] },
+  { name: 'Trigonométricas inversas', syntax: ['asin(x)', 'acos(x)', 'atan(x)'] },
+  { name: 'Hiperbólicas', syntax: ['sinh(x)', 'cosh(x)', 'tanh(x)'] },
   { name: 'Constantes', syntax: ['pi', 'e'] },
   { name: 'Producto', syntax: ['3*x', '3x'] },
   { name: 'División', syntax: ['(x + 1)/2'] },

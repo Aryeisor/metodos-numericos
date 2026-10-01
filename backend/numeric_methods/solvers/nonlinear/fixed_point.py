@@ -55,6 +55,7 @@ from ...expressions.to_latex import expression_to_latex, substitution_template_l
 from ...expressions.to_text import expression_to_text
 from ..base import IterationStep, SolverResult
 from ..validation import DEFAULT_MAX_ITERATIONS, DEFAULT_TOLERANCE, MIN_ITERATIONS, InputValidationError
+from .isolation_steps import isolation_steps
 
 CATEGORY = "nonlinear_system"
 METHOD = "punto-fijo"
@@ -89,6 +90,8 @@ class FixedPointFunction:
     g: sp.Expr
     dependencies: list
     evaluate: object
+    # Paso a paso del despeje (ver isolation_steps.py).
+    isolation: dict
 
 
 def estimate_degree(expr, symbol):
@@ -203,6 +206,7 @@ def build_fixed_point_system(equations, variables):
                 # Una sola función de floats para todo el método; el orden de
                 # los argumentos es el de las variables.
                 evaluate=sp.lambdify(symbols, g, modules=["math", "mpmath"]),
+                isolation=isolation_steps(lhs, rhs, symbol, g),
             )
         )
 
@@ -345,6 +349,8 @@ def solve_fixed_point(data):
                     # g_i con marcadores @@j@@ en lugar de cada variable j.
                     "g_template": substitution_template_latex(f.g, placeholders),
                     "dependencies": f.dependencies,
+                    # Cómo se llegó de la ecuación a g_i: {kind, steps}.
+                    "isolation": f.isolation,
                 }
                 for f in functions
             ],
