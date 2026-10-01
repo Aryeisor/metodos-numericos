@@ -1,7 +1,7 @@
 from django.test import SimpleTestCase
 
-from numeric_methods.solvers import gauss_seidel, jacobi
-from numeric_methods.solvers.validation import (
+from numeric_methods.solvers.linear import gauss_seidel, jacobi
+from numeric_methods.solvers.linear.validation import (
     MatrixValidationError,
     check_diagonal_dominance,
 )

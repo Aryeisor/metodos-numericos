@@ -1,8 +1,8 @@
 from django.test import SimpleTestCase
 
-from numeric_methods.solvers import gauss_seidel, jacobi
-from numeric_methods.solvers.dominance import find_dominant_ordering
-from numeric_methods.solvers.validation import check_diagonal_dominance
+from numeric_methods.solvers.linear import gauss_seidel, jacobi
+from numeric_methods.solvers.linear.dominance import find_dominant_ordering
+from numeric_methods.solvers.linear.validation import check_diagonal_dominance
 
 # No es dominante en el orden dado, pero sí lo es reordenando las filas.
 REORDERABLE_A = [

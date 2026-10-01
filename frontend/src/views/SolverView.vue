@@ -1,19 +1,43 @@
 <script setup>
-import { onMounted, ref } from 'vue'
-import MatrixInput from '../components/MatrixInput.vue'
+import { computed, ref, shallowRef, watch } from 'vue'
+import { useRouter } from 'vue-router'
 import ResultsTable from '../components/ResultsTable.vue'
 import { fetchExamples, solveSystem } from '../api/client'
+import { getMethod, siblingMethods, solveRouteName } from '../methods/registry'
+import { exportResultToPdf } from '../utils/exportPdf'
 
-const MIN_VARIABLES = 3
+const props = defineProps({
+  // Slug del método activo; lo fija la ruta /resolver/<slug>.
+  method: { type: String, default: null },
+})
 
-const n = ref(3)
-const A = ref(makeZeroMatrix(3))
-const b = ref(makeZeroVector(3))
-const x0 = ref(makeZeroVector(3))
+const router = useRouter()
+
+const activeMethod = computed(() => getMethod(props.method))
+const ui = computed(() => activeMethod.value?.ui ?? null)
+const siblings = computed(() => siblingMethods(props.method))
+
+// Selector "Método": cambia de ruta. Como todas las rutas de resolución usan
+// esta misma vista, los datos del formulario se conservan entre métodos de la
+// misma categoría.
+const selectedMethod = computed({
+  get: () => props.method,
+  set: (slug) => router.push({ name: solveRouteName(slug) }),
+})
+
+// Estado propio de la categoría (para sistemas lineales: n, A, b, x0...). Se
+// recrea sólo si cambia la categoría, no al cambiar de método dentro de ella.
+const store = shallowRef(null)
+watch(
+  () => activeMethod.value?.category,
+  () => {
+    store.value = ui.value ? ui.value.createStore() : null
+  },
+  { immediate: true }
+)
+
 const tolerance = ref(0.000001)
 const maxIterations = ref(100)
-const method = ref('jacobi')
-const autoReorder = ref(true)
 
 const examples = ref([])
 const selectedExampleId = ref('')
@@ -21,48 +45,25 @@ const selectedExampleId = ref('')
 const loading = ref(false)
 const formErrors = ref([])
 const result = ref(null)
-// Copia del sistema tal como se envió a la API: permite reconstruir en el
+// Datos de entrada tal como se resolvieron: permiten reconstruir en el
 // frontend el paso a paso de cada iteración sin pedir nada extra al backend.
 const solvedSystem = ref(null)
 
-function makeZeroMatrix(size) {
-  return Array.from({ length: size }, () => Array(size).fill(0))
-}
-
-function makeZeroVector(size) {
-  return Array(size).fill(0)
-}
-
-function setN(newN) {
-  const size = Math.max(MIN_VARIABLES, Math.min(12, Math.floor(newN) || MIN_VARIABLES))
-  const newA = makeZeroMatrix(size)
-  const newB = makeZeroVector(size)
-  const newX0 = makeZeroVector(size)
-
-  for (let i = 0; i < Math.min(size, n.value); i++) {
-    for (let j = 0; j < Math.min(size, n.value); j++) {
-      newA[i][j] = A.value[i][j]
+watch(
+  () => props.method,
+  async (slug) => {
+    if (!getMethod(slug)) return
+    try {
+      examples.value = await fetchExamples(slug)
+    } catch (err) {
+      formErrors.value = ['No fue posible cargar los ejemplos desde el servidor.']
     }
-    newB[i] = b.value[i]
-    newX0[i] = x0.value[i]
-  }
-
-  n.value = size
-  A.value = newA
-  b.value = newB
-  x0.value = newX0
-  selectedExampleId.value = ''
-}
-
-function onNInput(event) {
-  setN(Number(event.target.value))
-}
+  },
+  { immediate: true }
+)
 
 function loadExample(example) {
-  n.value = example.n
-  A.value = example.A.map((row) => [...row])
-  b.value = [...example.b]
-  x0.value = example.x0 ? [...example.x0] : makeZeroVector(example.n)
+  store.value.loadExample(example)
   tolerance.value = example.tolerance
   maxIterations.value = example.max_iterations
   selectedExampleId.value = example.id
@@ -70,44 +71,26 @@ function loadExample(example) {
   formErrors.value = []
 }
 
-// Los campos de A, b y x0 entregan números ya parseados (con la precisión
-// completa de la fracción escrita); un NaN significa que ese campo es inválido.
-function hasInvalidValues() {
-  return (
-    A.value.some((row) => row.some((v) => !Number.isFinite(v))) ||
-    b.value.some((v) => !Number.isFinite(v)) ||
-    x0.value.some((v) => !Number.isFinite(v))
-  )
-}
-
 async function handleSolve() {
   formErrors.value = []
   result.value = null
   solvedSystem.value = null
 
-  if (hasInvalidValues()) {
-    formErrors.value = [
-      'Hay campos del sistema con un valor inválido (marcados en rojo). ' +
-        'Corrígelos antes de resolver.',
-    ]
+  if (store.value.hasInvalidValues()) {
+    formErrors.value = [ui.value.invalidMessage]
     return
   }
 
   loading.value = true
   try {
     const payload = {
-      A: A.value.map((row) => [...row]),
-      b: [...b.value],
-      x0: [...x0.value],
+      ...store.value.buildPayload(),
       tolerance: tolerance.value,
       max_iterations: maxIterations.value,
-      auto_reorder: autoReorder.value,
     }
-    const response = await solveSystem(method.value, payload)
+    const response = await solveSystem(props.method, payload)
     result.value = response
-    // El backend puede haber reordenado las filas: se usa el sistema tal como
-    // realmente se calculó para que el paso a paso coincida con las iteraciones.
-    solvedSystem.value = { ...payload, A: response.A, b: response.b }
+    solvedSystem.value = ui.value.solvedSystem(payload, response)
   } catch (err) {
     if (err.response && err.response.data) {
       const data = err.response.data
@@ -132,17 +115,28 @@ async function handleSolve() {
   }
 }
 
-onMounted(async () => {
-  try {
-    examples.value = await fetchExamples()
-  } catch (err) {
-    formErrors.value = ['No fue posible cargar los ejemplos desde el servidor.']
-  }
-})
+// Nombre del método con el que se obtuvo el resultado (puede diferir del
+// método activo si el usuario cambió de método sin volver a resolver).
+const resultMethodName = computed(
+  () => getMethod(result.value?.method)?.name ?? result.value?.method ?? ''
+)
+
+function handleExportPdf(chartImage) {
+  exportResultToPdf({
+    result: result.value,
+    methodName: resultMethodName.value,
+    chartImage,
+    report: ui.value.pdfReport({ result: result.value, system: solvedSystem.value }),
+  })
+}
 </script>
 
 <template>
-  <div>
+  <div v-if="!activeMethod" class="alert alert-danger">
+    No fue posible cargar los métodos desde el servidor. Verifica que el backend esté corriendo.
+  </div>
+
+  <div v-else>
     <div class="card">
       <h2>Ejemplos precargados</h2>
       <p class="hint">Selecciona un sistema de ejemplo para cargarlo en el formulario.</p>
@@ -162,17 +156,18 @@ onMounted(async () => {
     </div>
 
     <div class="card">
-      <h2>Configuración del sistema</h2>
+      <h2>{{ ui.configTitle }}</h2>
       <div class="grid-2">
-        <div class="field">
-          <label>Número de variables (n ≥ 3)</label>
-          <input type="number" min="3" max="12" :value="n" @change="onNInput" />
-        </div>
+        <component
+          :is="ui.configFields"
+          v-if="ui.configFields"
+          :store="store"
+          @structure-changed="selectedExampleId = ''"
+        />
         <div class="field">
           <label>Método</label>
-          <select v-model="method">
-            <option value="jacobi">Jacobi</option>
-            <option value="gauss-seidel">Gauss-Seidel</option>
+          <select v-model="selectedMethod">
+            <option v-for="m in siblings" :key="m.slug" :value="m.slug">{{ m.name }}</option>
           </select>
         </div>
         <div class="field">
@@ -185,29 +180,12 @@ onMounted(async () => {
         </div>
       </div>
 
-      <label class="checkbox-field">
-        <input type="checkbox" v-model="autoReorder" />
-        <span>
-          Reordenar filas automáticamente si mejora la convergencia
-          <small>
-            Si la matriz no es diagonalmente dominante, se busca un orden de ecuaciones
-            que sí lo sea. No cambia la solución del sistema.
-          </small>
-        </span>
-      </label>
+      <component :is="ui.configExtras" v-if="ui.configExtras" :store="store" />
     </div>
 
     <div class="card">
-      <h2>Sistema A·x = b</h2>
-      <MatrixInput
-        :n="n"
-        :a="A"
-        :b="b"
-        :x0="x0"
-        @update:a="(v) => (A = v)"
-        @update:b="(v) => (b = v)"
-        @update:x0="(v) => (x0 = v)"
-      />
+      <h2>{{ ui.formTitle }}</h2>
+      <component :is="ui.form" v-bind="ui.formBindings(store)" />
     </div>
 
     <div v-if="formErrors.length" class="alert alert-danger">
@@ -219,7 +197,25 @@ onMounted(async () => {
     </button>
 
     <div v-if="result" class="card results-card">
-      <ResultsTable :result="result" :system="solvedSystem" />
+      <ResultsTable
+        :result="result"
+        :method-name="resultMethodName"
+        :tolerance="solvedSystem ? solvedSystem.tolerance : null"
+        @export-pdf="handleExportPdf"
+      >
+        <template v-if="ui.resultSummary" #summary>
+          <component :is="ui.resultSummary" :result="result" />
+        </template>
+        <template v-if="ui.iterationDetail && solvedSystem" #iteration-detail="{ index }">
+          <component
+            :is="ui.iterationDetail"
+            :result="result"
+            :system="solvedSystem"
+            :index="index"
+            :method-name="resultMethodName"
+          />
+        </template>
+      </ResultsTable>
     </div>
   </div>
 </template>
@@ -294,35 +290,6 @@ onMounted(async () => {
   font-size: var(--text-small);
   line-height: 1.45;
   color: var(--color-ink-muted);
-}
-
-.checkbox-field {
-  display: flex;
-  align-items: flex-start;
-  gap: var(--space-3);
-  margin: var(--space-1) 0 0;
-  padding-top: var(--space-4);
-  border-top: 1px solid var(--color-line);
-  font-size: var(--text-body);
-  font-weight: var(--weight-medium);
-  color: var(--color-ink);
-  cursor: pointer;
-}
-
-.checkbox-field input {
-  margin: 3px 0 0;
-  width: 16px;
-  height: 16px;
-  cursor: pointer;
-  flex-shrink: 0;
-}
-
-.checkbox-field small {
-  display: block;
-  font-weight: var(--weight-regular);
-  font-size: var(--text-small);
-  color: var(--color-ink-muted);
-  margin-top: 2px;
 }
 
 /* Aire entre el título de sección y su contenido (formulario o matriz). */

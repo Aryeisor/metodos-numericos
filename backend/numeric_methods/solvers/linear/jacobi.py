@@ -20,12 +20,8 @@ fácilmente testeable.
 
 import math
 
-from .validation import (
-    DEFAULT_MAX_ITERATIONS,
-    MIN_ITERATIONS,
-    validate_diagonal_nonzero,
-    validate_dimensions,
-)
+from ..validation import DEFAULT_MAX_ITERATIONS, MIN_ITERATIONS
+from .validation import validate_diagonal_nonzero, validate_dimensions
 
 
 def solve(A, b, x0=None, tolerance=1e-6, max_iterations=DEFAULT_MAX_ITERATIONS):

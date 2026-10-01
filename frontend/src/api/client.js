@@ -7,13 +7,19 @@ const apiClient = axios.create({
   },
 })
 
-export function fetchExamples() {
-  return apiClient.get('/examples/').then((res) => res.data)
+/** Catálogo de métodos registrados en el backend: [{slug, name, category, category_label}]. */
+export function fetchMethods() {
+  return apiClient.get('/methods/').then((res) => res.data)
+}
+
+export function fetchExamples(method) {
+  return apiClient.get('/examples/', { params: { method } }).then((res) => res.data)
 }
 
 export function solveSystem(method, payload) {
-  const path = method === 'gauss-seidel' ? '/solve/gauss-seidel/' : '/solve/jacobi/'
-  return apiClient.post(path, payload).then((res) => res.data)
+  return apiClient
+    .post(`/solve/${encodeURIComponent(method)}/`, payload)
+    .then((res) => res.data)
 }
 
 export default apiClient

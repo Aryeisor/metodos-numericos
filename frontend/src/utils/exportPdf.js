@@ -3,21 +3,19 @@ import autoTable from 'jspdf-autotable'
 
 import { formatNumber } from './iterationSteps'
 
-const MARGIN = 14
-const CONTENT_WIDTH = 210 - MARGIN * 2 // A4 vertical
+// Primitivas de maquetación compartidas con las secciones propias de cada
+// categoría de métodos (ver methods/*/pdf.js).
+export const MARGIN = 14
+export const CONTENT_WIDTH = 210 - MARGIN * 2 // A4 vertical
 const PAGE_HEIGHT = 297
 
-function methodLabel(method) {
-  return method === 'gauss-seidel' ? 'Gauss-Seidel' : 'Jacobi'
-}
-
-function ensureSpace(doc, y, needed) {
+export function ensureSpace(doc, y, needed) {
   if (y + needed <= PAGE_HEIGHT - MARGIN) return y
   doc.addPage()
   return MARGIN
 }
 
-function sectionTitle(doc, y, text) {
+export function sectionTitle(doc, y, text) {
   const nextY = ensureSpace(doc, y, 12)
   doc.setFont('helvetica', 'bold')
   doc.setFontSize(12)
@@ -26,7 +24,7 @@ function sectionTitle(doc, y, text) {
   return nextY + 6
 }
 
-function paragraph(doc, y, text) {
+export function paragraph(doc, y, text) {
   const lines = doc.splitTextToSize(text, CONTENT_WIDTH)
   const nextY = ensureSpace(doc, y, lines.length * 5)
   doc.setFont('helvetica', 'normal')
@@ -37,88 +35,53 @@ function paragraph(doc, y, text) {
 }
 
 /**
- * Genera y descarga un PDF con el sistema resuelto, el resultado final, el
+ * Genera y descarga un PDF con los datos de entrada, el resultado final, el
  * gráfico de convergencia y la tabla completa de iteraciones (sin paginar).
+ *
+ * `report` lo aporta la categoría del método:
+ *   title             título del documento
+ *   writeInputSection(doc, y) -> y   sección con los datos de entrada
+ *   statusExtras      textos adicionales para la línea de estado del resultado
+ *   fileStem          nombre base del archivo (sin fecha ni extensión)
  */
-export function exportResultToPdf({ result, system, chartImage }) {
+export function exportResultToPdf({ result, methodName, chartImage, report }) {
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' })
-  const n = result.solution.length
-  const label = methodLabel(result.method)
+  const variables = result.variables ?? result.solution.map((_, i) => `x${i + 1}`)
 
   doc.setFont('helvetica', 'bold')
   doc.setFontSize(16)
   doc.setTextColor(31, 41, 55)
-  doc.text('Sistemas de ecuaciones lineales — Métodos iterativos', MARGIN, MARGIN + 4)
+  doc.text(report.title, MARGIN, MARGIN + 4)
 
   doc.setFont('helvetica', 'normal')
   doc.setFontSize(10)
   doc.setTextColor(107, 114, 128)
   doc.text(
-    `Método de ${label}  ·  Generado el ${new Date().toLocaleString('es-CO')}`,
+    `Método de ${methodName}  ·  Generado el ${new Date().toLocaleString('es-CO')}`,
     MARGIN,
     MARGIN + 11
   )
 
   let y = MARGIN + 20
 
-  // --- Datos del sistema -------------------------------------------------
-  y = sectionTitle(doc, y, 'Datos del sistema')
-
-  const variableHeaders = Array.from({ length: n }, (_, i) => `x${i + 1}`)
-  autoTable(doc, {
-    startY: y,
-    head: [[...variableHeaders, 'b']],
-    body: system.A.map((row, i) => [
-      ...row.map((value) => formatNumber(value)),
-      formatNumber(system.b[i]),
-    ]),
-    theme: 'grid',
-    margin: { left: MARGIN, right: MARGIN },
-    styles: { fontSize: 9, halign: 'right', cellPadding: 2 },
-    headStyles: { fillColor: [37, 99, 235], halign: 'center' },
-  })
-  y = doc.lastAutoTable.finalY + 6
-
-  y = paragraph(
-    doc,
-    y,
-    `Número de variables (n): ${n}    ·    Vector inicial x0: [${system.x0
-      .map((v) => formatNumber(v))
-      .join(', ')}]`
-  )
-  y = paragraph(
-    doc,
-    y,
-    `Tolerancia: ${system.tolerance}    ·    Máximo de iteraciones: ${system.max_iterations}`
-  )
-
-  if (result.reordered && result.row_order) {
-    // Flecha ASCII: la fuente estándar de jsPDF (WinAnsi) no tiene el glifo "→".
-    const mapping = result.row_order
-      .map((originalRow, position) => `fila ${originalRow + 1} -> posición ${position + 1}`)
-      .join(', ')
-    y = paragraph(
-      doc,
-      y,
-      `Nota: las filas se reordenaron automáticamente (${mapping}) para lograr ` +
-        'dominancia diagonal. La tabla anterior muestra el sistema ya reordenado; ' +
-        'la solución es la misma que la del orden original.'
-    )
-  }
+  // --- Datos de entrada (propios de la categoría) -------------------------
+  y = report.writeInputSection(doc, y)
 
   // --- Resultado ---------------------------------------------------------
   y = sectionTitle(doc, y + 2, 'Resultado')
   y = paragraph(
     doc,
     y,
-    `Estado: ${result.converged ? 'CONVERGIÓ' : 'NO CONVERGIÓ'}    ·    ` +
-      `Iteraciones ejecutadas: ${result.iterations_used}    ·    ` +
-      `Matriz diagonalmente dominante: ${result.is_diagonally_dominant ? 'sí' : 'no'}`
+    [
+      `Estado: ${result.converged ? 'CONVERGIÓ' : 'NO CONVERGIÓ'}`,
+      `Iteraciones ejecutadas: ${result.iterations_used}`,
+      ...(report.statusExtras ?? []),
+    ].join('    ·    ')
   )
 
   autoTable(doc, {
     startY: y,
-    head: [variableHeaders],
+    head: [variables],
     body: [result.solution.map((value) => formatNumber(value))],
     theme: 'grid',
     margin: { left: MARGIN, right: MARGIN },
@@ -146,7 +109,7 @@ export function exportResultToPdf({ result, system, chartImage }) {
   y = sectionTitle(doc, y, 'Detalle completo de iteraciones')
   autoTable(doc, {
     startY: y,
-    head: [['Iter.', ...variableHeaders, 'Error']],
+    head: [['Iter.', ...variables, 'Error']],
     body: result.iterations.map((row) => [
       row.iteration,
       ...row.x.map((value) => formatNumber(value)),
@@ -159,8 +122,6 @@ export function exportResultToPdf({ result, system, chartImage }) {
     columnStyles: { 0: { halign: 'center' } },
   })
 
-  const fileName = `${result.method}-${n}x${n}-${new Date()
-    .toISOString()
-    .slice(0, 10)}.pdf`
-  doc.save(fileName)
+  const stem = report.fileStem ?? result.method
+  doc.save(`${stem}-${new Date().toISOString().slice(0, 10)}.pdf`)
 }

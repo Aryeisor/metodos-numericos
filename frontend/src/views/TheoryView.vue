@@ -284,7 +284,7 @@ const comparisonRows = jacobiSteps.flatMap((step, i) => [
       </ul>
     </div>
 
-    <div class="card">
+    <div id="metodo-jacobi" class="card">
       <h2>Método de Jacobi</h2>
       <h3 class="first-heading">Definición formal</h3>
       <p>
@@ -354,7 +354,7 @@ const comparisonRows = jacobiSteps.flatMap((step, i) => [
       </p>
     </div>
 
-    <div class="card">
+    <div id="metodo-gauss-seidel" class="card">
       <h2>Método de Gauss-Seidel</h2>
       <h3 class="first-heading">Definición formal</h3>
       <p>

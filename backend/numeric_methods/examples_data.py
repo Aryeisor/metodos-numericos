@@ -1,10 +1,13 @@
-"""Ejemplos precargados de sistemas de ecuaciones lineales.
+"""Ejemplos precargados, organizados por método.
 
-Cada ejemplo tiene al menos 3 variables. Se sirven a través del endpoint
-GET /api/examples/ para que el frontend los pueda cargar con un clic.
+Se sirven a través de GET /api/examples/?method=<slug> para que el frontend
+los pueda cargar con un clic. Los métodos de una misma familia pueden
+compartir la misma lista (Jacobi y Gauss-Seidel resuelven los mismos
+sistemas).
 """
 
-EXAMPLES = [
+# Sistemas lineales: cada ejemplo tiene al menos 3 variables.
+LINEAR_SYSTEM_EXAMPLES = [
     {
         "id": "basico-3x3",
         "name": "Sistema básico 3x3",
@@ -109,3 +112,19 @@ EXAMPLES = [
         "max_iterations": 100,
     },
 ]
+
+EXAMPLES = {
+    "jacobi": LINEAR_SYSTEM_EXAMPLES,
+    "gauss-seidel": LINEAR_SYSTEM_EXAMPLES,
+}
+
+
+def all_examples():
+    """Todos los ejemplos sin repetir, en orden de aparición."""
+    seen, unique = set(), []
+    for examples in EXAMPLES.values():
+        for example in examples:
+            if example["id"] not in seen:
+                seen.add(example["id"])
+                unique.append(example)
+    return unique

@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
-from .solvers.validation import DEFAULT_MAX_ITERATIONS, MIN_VARIABLES
+from ..solvers.linear.validation import MIN_VARIABLES
+from ..solvers.validation import DEFAULT_MAX_ITERATIONS, DEFAULT_TOLERANCE
 
 
 class LinearSystemSerializer(serializers.Serializer):
@@ -21,7 +22,7 @@ class LinearSystemSerializer(serializers.Serializer):
         help_text="Vector inicial x0 (opcional, por defecto ceros).",
     )
     tolerance = serializers.FloatField(
-        default=1e-6,
+        default=DEFAULT_TOLERANCE,
         min_value=0,
         help_text="Tolerancia de error entre iteraciones sucesivas (ej. 0.000001).",
     )

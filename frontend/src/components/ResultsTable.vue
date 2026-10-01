@@ -1,30 +1,31 @@
 <script setup>
-import { computed, ref, watch } from 'vue'
+// Vista genérica del resultado de cualquier método: resumen, gráfico de
+// convergencia, tabla paginada de iteraciones y exportación a PDF. No asume
+// que la entrada sea una matriz: lo propio de cada categoría llega por slots.
+//
+// Slots:
+//   summary                         bloque extra en el resumen (ej. reordenamiento)
+//   iteration-detail { index, row } detalle expandible de una iteración; si no
+//                                   se provee, la tabla no muestra el botón de expandir
+import { computed, ref, useSlots, watch } from 'vue'
 import ConvergenceChart from './ConvergenceChart.vue'
-import MathFormula from './MathFormula.vue'
-import { buildIterationDetail, formatNumber } from '../utils/iterationSteps'
-import {
-  errorFormulaLatex,
-  errorResultLatex,
-  errorSubstitutionLatex,
-  generalFormulaLatex,
-  substitutionLatex,
-} from '../utils/latexFormulas'
-import { exportResultToPdf } from '../utils/exportPdf'
+import { formatNumber } from '../utils/iterationSteps'
 
 const PAGE_SIZE = 10
 
 const props = defineProps({
   result: { type: Object, required: true },
-  system: { type: Object, default: null },
+  methodName: { type: String, required: true },
+  tolerance: { type: Number, default: null },
 })
+const emit = defineEmits(['export-pdf'])
+const slots = useSlots()
 
-const n = computed(() => props.result.solution?.length ?? 0)
-const methodLabel = computed(() =>
-  props.result.method === 'gauss-seidel' ? 'Gauss-Seidel' : 'Jacobi'
+// Nombres de las incógnitas en el orden de la solución y de cada iteración.
+const variables = computed(
+  () => props.result.variables ?? props.result.solution.map((_, i) => `x${i + 1}`)
 )
-const isGaussSeidel = computed(() => props.result.method === 'gauss-seidel')
-const canExplain = computed(() => Boolean(props.system))
+const canExplain = computed(() => Boolean(slots['iteration-detail']))
 
 const expanded = ref(new Set())
 const currentPage = ref(1)
@@ -75,32 +76,13 @@ const lastIteration = computed(
   () => props.result.iterations[props.result.iterations.length - 1] ?? null
 )
 
-// row_order[i] = fila original que quedó en la posición i (ambas 0-based).
-const reorderDescription = computed(() => {
-  if (!props.result.row_order) return ''
-  return props.result.row_order
-    .map((originalRow, position) => `fila ${originalRow + 1} → posición ${position + 1}`)
-    .join(', ')
-})
-
 function goToPage(page) {
   if (typeof page !== 'number') return
   currentPage.value = Math.min(Math.max(1, page), totalPages.value)
 }
 
-const exporting = ref(false)
-
 function handleExportPdf() {
-  exporting.value = true
-  try {
-    exportResultToPdf({
-      result: props.result,
-      system: props.system,
-      chartImage: chartRef.value?.toImage() ?? null,
-    })
-  } finally {
-    exporting.value = false
-  }
+  emit('export-pdf', chartRef.value?.toImage() ?? null)
 }
 
 function toggleRow(iteration) {
@@ -109,71 +91,24 @@ function toggleRow(iteration) {
   else next.add(iteration)
   expanded.value = next
 }
-
-function detailFor(index) {
-  return buildIterationDetail({
-    A: props.system.A,
-    b: props.system.b,
-    x0: props.system.x0,
-    method: props.result.method,
-    iterations: props.result.iterations,
-    index,
-  })
-}
-
 </script>
 
 <template>
   <div class="results">
     <div class="summary">
       <div class="summary-header">
-        <h3>Resultado ({{ methodLabel }})</h3>
+        <h3>Resultado ({{ methodName }})</h3>
         <div class="summary-actions">
           <span class="badge" :class="result.converged ? 'badge-success' : 'badge-danger'">
             {{ result.converged ? 'Convergió' : 'No convergió' }}
           </span>
-          <button
-            v-if="system"
-            type="button"
-            class="btn btn-outline"
-            :disabled="exporting"
-            @click="handleExportPdf"
-          >
+          <button type="button" class="btn btn-outline" @click="handleExportPdf">
             Exportar PDF
           </button>
         </div>
       </div>
 
-      <div v-if="result.reordered" class="alert alert-info">
-        <strong>↻ Filas reordenadas automáticamente.</strong>
-        El sistema no era diagonalmente dominante en el orden ingresado, pero se
-        reordenaron las filas ({{ reorderDescription }}) para garantizar la convergencia.
-        La solución es la misma; sólo cambió el orden de las ecuaciones.
-
-        <p class="reordered-caption">Sistema que se resolvió:</p>
-        <div class="table-scroll">
-          <!-- A y b vienen tal cual de la respuesta: son los valores que el
-               backend usó realmente, no una reconstrucción a partir del mapeo. -->
-          <table class="reordered-table">
-            <thead>
-              <tr>
-                <th class="origin-col"><span class="visually-hidden">Fila original</span></th>
-                <th v-for="j in n" :key="'rh-' + j">x{{ j }}</th>
-                <th></th>
-                <th>b</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="(row, i) in result.A" :key="'rr-' + i">
-                <th scope="row" class="origin-col">Fila {{ result.row_order[i] + 1 }} →</th>
-                <td v-for="(value, j) in row" :key="'rv-' + j">{{ formatNumber(value) }}</td>
-                <td class="eq-sign">=</td>
-                <td>{{ formatNumber(result.b[i]) }}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
+      <slot name="summary" />
 
       <div v-for="(w, idx) in result.warnings" :key="idx" class="alert alert-warning">
         ⚠ {{ w }}
@@ -185,7 +120,7 @@ function detailFor(index) {
 
       <div class="solution-grid">
         <div v-for="(value, i) in result.solution" :key="i" class="solution-item">
-          <span class="solution-label">x{{ i + 1 }}</span>
+          <span class="solution-label">{{ variables[i] }}</span>
           <span class="solution-value">{{ formatNumber(value) }}</span>
         </div>
       </div>
@@ -194,7 +129,7 @@ function detailFor(index) {
     <ConvergenceChart
       ref="chartRef"
       :iterations="result.iterations"
-      :tolerance="system ? system.tolerance : null"
+      :tolerance="tolerance"
       :converged="result.converged"
     />
 
@@ -208,7 +143,7 @@ function detailFor(index) {
           lastIteration.error === null ? '—' : formatNumber(lastIteration.error)
         }}</strong>
         · Tolerancia solicitada:
-        <strong>{{ system ? formatNumber(system.tolerance) : '—' }}</strong>
+        <strong>{{ tolerance !== null ? formatNumber(tolerance) : '—' }}</strong>
       </span>
     </div>
 
@@ -218,12 +153,12 @@ function detailFor(index) {
           <tr>
             <th v-if="canExplain" class="expand-col"></th>
             <th>Iter.</th>
-            <th v-for="i in n" :key="'th-' + i">x{{ i }}</th>
+            <th v-for="name in variables" :key="'th-' + name">{{ name }}</th>
             <th>Error</th>
           </tr>
         </thead>
         <tbody>
-          <template v-for="{ row, index: idx } in pagedIterations" :key="row.iteration">
+          <template v-for="{ row, index } in pagedIterations" :key="row.iteration">
             <tr>
               <td v-if="canExplain" class="expand-col">
                 <button
@@ -242,59 +177,8 @@ function detailFor(index) {
             </tr>
 
             <tr v-if="canExplain && expanded.has(row.iteration)" class="detail-row">
-              <td :colspan="n + 3">
-                <div class="detail">
-                  <div class="detail-block">
-                    <span class="detail-caption">Fórmula ({{ methodLabel }})</span>
-                    <div class="formula-box">
-                      <MathFormula :expression="generalFormulaLatex(result.method)" display-mode />
-                    </div>
-                    <p class="detail-hint">
-                      <span class="legend-prev">■</span> valores de la iteración anterior
-                      <template v-if="isGaussSeidel">
-                        · <span class="legend-current">■</span> valores ya recalculados en esta
-                        misma iteración
-                      </template>
-                    </p>
-                  </div>
-
-                  <div class="detail-block">
-                    <span class="detail-caption">Sustitución numérica</span>
-                    <div class="substitution-grid" :class="{ 'wide-formulas': n >= 4 }">
-                      <div
-                        v-for="v in detailFor(idx).variables"
-                        :key="v.index"
-                        class="substitution-card"
-                      >
-                        <MathFormula
-                          :expression="substitutionLatex(v, row.iteration)"
-                          display-mode
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="detail-block">
-                    <span class="detail-caption">Error de la iteración</span>
-                    <div class="error-grid">
-                      <div class="error-card">
-                        <MathFormula :expression="errorFormulaLatex()" display-mode />
-                      </div>
-                      <div class="error-card">
-                        <MathFormula
-                          :expression="errorSubstitutionLatex(detailFor(idx))"
-                          display-mode
-                        />
-                      </div>
-                      <div class="error-card">
-                        <MathFormula
-                          :expression="errorResultLatex(detailFor(idx))"
-                          display-mode
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
+              <td :colspan="variables.length + 3">
+                <slot name="iteration-detail" :index="index" :row="row" />
               </td>
             </tr>
           </template>
@@ -435,136 +319,6 @@ function detailFor(index) {
   padding: var(--space-4);
   font-size: 0.9rem;
   line-height: var(--leading-body);
-}
-
-/* Las etiquetas conservan la tipografía de la app; las fórmulas usan la fuente
-   matemática propia de KaTeX (no se sobrescribe font-family en sus contenedores). */
-.detail-caption {
-  font-weight: var(--weight-semibold);
-  font-size: var(--text-small);
-  color: var(--color-ink);
-  display: block;
-  margin-bottom: var(--space-2);
-}
-
-.detail-block {
-  margin-bottom: var(--space-5);
-}
-
-.detail-block:last-child {
-  margin-bottom: 0;
-}
-
-.detail-hint {
-  margin: var(--space-2) 0 0;
-  font-size: var(--text-small);
-  color: var(--color-ink-muted);
-}
-
-.legend-prev {
-  color: #2563eb;
-}
-
-.legend-current {
-  color: #15803d;
-}
-
-/* Dos columnas en escritorio y una sola en pantallas angostas. El min() evita
-   que la columna quede más ancha que el contenedor en móvil. */
-.substitution-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(430px, 100%), 1fr));
-  gap: var(--space-3);
-}
-
-/* Con 4 o más variables la sustitución es demasiado larga para dos columnas. */
-.substitution-grid.wide-formulas {
-  grid-template-columns: 1fr;
-}
-
-.substitution-card {
-  background: var(--color-surface);
-  border: 1px solid var(--color-line);
-  border-radius: var(--radius-nested);
-  padding: var(--space-3) var(--space-4);
-  overflow-x: auto;
-}
-
-/* Los tres pasos del error son encadenados (fórmula → sustitución → resultado):
-   se apilan a ancho completo porque son expresiones largas. */
-.error-grid {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-}
-
-.error-card {
-  background: var(--color-surface);
-  border: 1px solid var(--color-line);
-  border-radius: var(--radius-nested);
-  padding: var(--space-3) var(--space-4);
-  overflow-x: auto;
-}
-
-.substitution-card :deep(.katex),
-.error-card :deep(.katex) {
-  font-size: 1em;
-}
-
-/* Matriz reordenada dentro del banner: mismo lenguaje visual que la tabla del
-   formulario "Sistema A·x = b", pero en modo solo lectura. */
-.reordered-caption {
-  margin: var(--space-3) 0 var(--space-2);
-  font-weight: var(--weight-semibold);
-}
-
-.reordered-table {
-  background: var(--color-surface);
-  width: auto;
-  min-width: min(100%, 320px);
-}
-
-.reordered-table th,
-.reordered-table td {
-  text-align: center;
-  padding: var(--space-2) var(--space-3);
-  color: var(--color-ink);
-  border-color: var(--color-line);
-}
-
-.reordered-table thead th {
-  font-style: italic;
-  color: var(--color-ink-muted);
-}
-
-.reordered-table tbody tr {
-  background: var(--color-surface);
-}
-
-.reordered-table .origin-col {
-  text-align: right;
-  white-space: nowrap;
-  font-style: normal;
-  font-weight: var(--weight-semibold);
-  font-size: var(--text-small);
-  color: var(--color-accent);
-  background: var(--color-sunken);
-}
-
-.reordered-table .eq-sign {
-  border-left: none;
-  border-right: none;
-  color: var(--color-ink-muted);
-  padding: 0 var(--space-1);
-}
-
-.visually-hidden {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip: rect(0 0 0 0);
-  white-space: nowrap;
 }
 
 .divergence-summary {
