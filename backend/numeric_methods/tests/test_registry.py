@@ -62,7 +62,11 @@ class MethodsEndpointTests(APITestCase):
         self.assertEqual(response.json(), public_catalog())
         self.assertEqual(
             [(m["slug"], m["category_label"]) for m in response.json()],
-            [("jacobi", "Sistemas lineales"), ("gauss-seidel", "Sistemas lineales")],
+            [
+                ("jacobi", "Sistemas lineales"),
+                ("gauss-seidel", "Sistemas lineales"),
+                ("punto-fijo", "Ecuaciones no lineales"),
+            ],
         )
 
     def test_catalog_does_not_expose_internals(self):

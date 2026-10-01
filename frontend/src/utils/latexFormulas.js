@@ -10,7 +10,7 @@ export const PREVIOUS_COLOR = '#2563eb'
 export const CURRENT_COLOR = '#15803d'
 
 /** Pasa el número ya formateado a LaTeX (notación científica incluida). */
-function latexNumber(value) {
+export function latexNumber(value) {
   const text = formatNumber(value)
   if (text === '∞') return '\\infty'
   if (text === '—') return '\\text{---}'
@@ -24,7 +24,7 @@ function latexNumber(value) {
   return text
 }
 
-function colorize(latex, color) {
+export function colorize(latex, color) {
   return `\\textcolor{${color}}{${latex}}`
 }
 

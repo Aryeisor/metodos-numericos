@@ -12,7 +12,9 @@ from dataclasses import dataclass
 from typing import Callable
 
 from .serializers.linear import LinearSystemSerializer
+from .serializers.nonlinear import NonlinearSystemSerializer
 from .solvers.linear.runner import solve_gauss_seidel, solve_jacobi
+from .solvers.nonlinear.fixed_point import solve_fixed_point
 
 # Categorías conocidas, en el orden en que se muestran en el menú.
 CATEGORIES = {
@@ -52,6 +54,13 @@ METHODS = {
             category="linear_system",
             serializer=LinearSystemSerializer,
             solver=solve_gauss_seidel,
+        ),
+        MethodSpec(
+            slug="punto-fijo",
+            name="Punto Fijo (Iterativo Secuencial)",
+            category="nonlinear_system",
+            serializer=NonlinearSystemSerializer,
+            solver=solve_fixed_point,
         ),
     )
 }

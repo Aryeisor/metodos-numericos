@@ -87,12 +87,24 @@ class _FractionPrinter(LatexPrinter):
         return self._print(sp.Mul(*ordered, evaluate=False))
 
 
-def _latex(expr):
-    return _FractionPrinter({"order": "none"}).doprint(expr)
+def _latex(expr, **settings):
+    return _FractionPrinter({"order": "none", **settings}).doprint(expr)
 
 
 def expression_to_latex(expr):
     return _latex(expr)
+
+
+def substitution_template_latex(expr, placeholders):
+    """LaTeX de `expr` con cada símbolo reemplazado por un marcador de texto.
+
+    `placeholders` es {Symbol: "marcador"}. El frontend reemplaza cada marcador
+    por el valor numérico que corresponda en cada iteración, sin que haga falta
+    sustituir ni imprimir nada en el backend por iteración. Los productos se
+    escriben con `\\cdot` porque, una vez sustituidos, `x y` se leería como un
+    solo número ("0.5 0.3").
+    """
+    return _latex(expr, symbol_names=placeholders, mul_symbol="dot")
 
 
 def matrix_to_latex(matrix):

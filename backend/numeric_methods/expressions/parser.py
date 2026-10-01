@@ -304,13 +304,27 @@ def parse_function(text, variables):
 
     En la forma con encabezado, sus argumentos deben coincidir con `variables`.
     """
+    name, lhs, rhs = parse_equation(text, variables)
+    if rhs is None:
+        return name, lhs
+    return name, sp.Add(lhs, sp.Mul(-1, rhs, evaluate=False), evaluate=False)
+
+
+def parse_equation(text, variables):
+    """Como `parse_function`, pero conserva los dos lados de la ecuación.
+
+    Devuelve (nombre, lado_izquierdo, lado_derecho); el lado derecho es None
+    cuando no hay '=' o cuando la forma es "f1(x, y) = ..." (la expresión
+    completa es la función). Sirve para mostrar la ecuación tal como se
+    escribió.
+    """
     if not isinstance(text, str) or not text.strip():
         raise ExpressionError("La expresión está vacía.")
     if "==" in text or text.count("=") > 1:
         raise ExpressionError("Usa un único '=' para separar los dos lados.")
 
     if "=" not in text:
-        return None, parse_expression(text, variables)
+        return None, parse_expression(text, variables), None
 
     left, right = text.split("=")
     header = _FUNCTION_HEADER.match(left)
@@ -322,11 +336,9 @@ def parse_function(text, variables):
                 f"Los argumentos de {name}({', '.join(args)}) no coinciden con las "
                 f"variables declaradas ({', '.join(variables)})."
             )
-        return name, parse_expression(right, variables)
+        return name, parse_expression(right, variables), None
 
-    lhs = parse_expression(left, variables)
-    rhs = parse_expression(right, variables)
-    return None, sp.Add(lhs, sp.Mul(-1, rhs, evaluate=False), evaluate=False)
+    return None, parse_expression(left, variables), parse_expression(right, variables)
 
 
 def parse_system(texts, variables):

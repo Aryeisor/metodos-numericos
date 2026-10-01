@@ -113,9 +113,61 @@ LINEAR_SYSTEM_EXAMPLES = [
     },
 ]
 
+# Sistemas no lineales f_i(x) = 0. La ecuación i se despeja automáticamente
+# para la variable i, así que cada una debe tener un único despeje real de su
+# variable. Todos convergen con punto fijo secuencial desde el x0 indicado.
+NONLINEAR_SYSTEM_EXAMPLES = [
+    {
+        "id": "trigonometrico-2x2",
+        "name": "Trigonométrico 2x2",
+        "description": "Dos ecuaciones con seno y coseno; variables x, y.",
+        "n": 2,
+        "variables": ["x", "y"],
+        "equations": [
+            "3*x - cos(y) - 1 = 0",
+            "4*y - sin(x) - 2 = 0",
+        ],
+        "x0": [0, 0],
+        "tolerance": 0.000001,
+        "max_iterations": 100,
+    },
+    {
+        "id": "burden-faires-3x3",
+        "name": "Burden y Faires 3x3",
+        "description": "Ejemplo clásico con coseno, raíz y exponencial; solución (0.5, 0, -π/6).",
+        "n": 3,
+        "variables": ["x1", "x2", "x3"],
+        "equations": [
+            "3*x1 - cos(x2*x3) - 1/2 = 0",
+            "x2 = sqrt(x1^2 + sin(x3) + 1.06)/9 - 0.1",
+            "exp(-x1*x2) + 20*x3 + (10*pi - 3)/3 = 0",
+        ],
+        "x0": [0.1, 0.1, -0.1],
+        "tolerance": 0.000001,
+        "max_iterations": 100,
+    },
+    {
+        "id": "polinomico-3x3",
+        "name": "Polinómico 3x3",
+        "description": "Términos cuadráticos y productos cruzados, desde el origen.",
+        "n": 3,
+        "variables": ["x1", "x2", "x3"],
+        "equations": [
+            "6*x1 - x2^2 - x3 - 1 = 0",
+            "8*x2 - x1*x3 - 2 = 0",
+            "5*x3 - x1 - x2^2 - 3 = 0",
+        ],
+        "x0": [0, 0, 0],
+        "tolerance": 0.000001,
+        "max_iterations": 100,
+    },
+]
+
+
 EXAMPLES = {
     "jacobi": LINEAR_SYSTEM_EXAMPLES,
     "gauss-seidel": LINEAR_SYSTEM_EXAMPLES,
+    "punto-fijo": NONLINEAR_SYSTEM_EXAMPLES,
 }
 
 

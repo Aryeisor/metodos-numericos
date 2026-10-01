@@ -8,10 +8,12 @@
 import { markRaw, reactive, readonly } from 'vue'
 import { fetchMethods } from '../api/client'
 import linearSystem from './linear'
+import nonlinearSystem from './nonlinear'
 
 // markRaw: contienen componentes, que no deben volverse objetos reactivos.
 const CATEGORY_UI = {
   linear_system: markRaw(linearSystem),
+  nonlinear_system: markRaw(nonlinearSystem),
 }
 
 const state = reactive({

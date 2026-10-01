@@ -136,7 +136,15 @@ class ExamplesEndpointTests(APITestCase):
         self.assertEqual(response.status_code, 200)
         data = response.json()
         self.assertGreaterEqual(len(data), 6)
+        # Sin ?method se mezclan las categorías: cada ejemplo se valida según
+        # su forma (sistema lineal A|b o sistema no lineal de ecuaciones).
         for example in data:
-            self.assertGreaterEqual(example["n"], 3)
-            self.assertEqual(len(example["A"]), example["n"])
-            self.assertEqual(len(example["b"]), example["n"])
+            with self.subTest(example=example["id"]):
+                if "A" in example:
+                    self.assertGreaterEqual(example["n"], 3)
+                    self.assertEqual(len(example["A"]), example["n"])
+                    self.assertEqual(len(example["b"]), example["n"])
+                else:
+                    self.assertGreaterEqual(example["n"], 2)
+                    self.assertEqual(len(example["equations"]), example["n"])
+                    self.assertEqual(len(example["variables"]), example["n"])

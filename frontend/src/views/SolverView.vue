@@ -25,17 +25,6 @@ const selectedMethod = computed({
   set: (slug) => router.push({ name: solveRouteName(slug) }),
 })
 
-// Estado propio de la categoría (para sistemas lineales: n, A, b, x0...). Se
-// recrea sólo si cambia la categoría, no al cambiar de método dentro de ella.
-const store = shallowRef(null)
-watch(
-  () => activeMethod.value?.category,
-  () => {
-    store.value = ui.value ? ui.value.createStore() : null
-  },
-  { immediate: true }
-)
-
 const tolerance = ref(0.000001)
 const maxIterations = ref(100)
 
@@ -48,6 +37,23 @@ const result = ref(null)
 // Datos de entrada tal como se resolvieron: permiten reconstruir en el
 // frontend el paso a paso de cada iteración sin pedir nada extra al backend.
 const solvedSystem = ref(null)
+
+// Estado propio de la categoría (para sistemas lineales: n, A, b, x0...). Se
+// recrea sólo si cambia la categoría, no al cambiar de método dentro de ella.
+// Al cambiar de categoría también se descarta el resultado anterior: lo
+// dibujan los componentes de la categoría y su forma es distinta.
+const store = shallowRef(null)
+watch(
+  () => activeMethod.value?.category,
+  () => {
+    store.value = ui.value ? ui.value.createStore() : null
+    result.value = null
+    solvedSystem.value = null
+    formErrors.value = []
+    selectedExampleId.value = ''
+  },
+  { immediate: true }
+)
 
 watch(
   () => props.method,
