@@ -1,6 +1,10 @@
+import time
+from unittest import mock
+
 import sympy as sp
 from django.test import SimpleTestCase
 
+from numeric_methods.expressions import parser as parser_module
 from numeric_methods.expressions.differentiate import derivative, gradient, jacobian
 from numeric_methods.expressions.parser import (
     ExpressionError,
@@ -8,6 +12,7 @@ from numeric_methods.expressions.parser import (
     parse_expression,
     parse_function,
     parse_system,
+    validate_expression_tree,
 )
 from numeric_methods.expressions.to_latex import (
     expression_to_latex,
@@ -155,3 +160,211 @@ class ToLatexTests(SimpleTestCase):
         latex = matrix_to_latex([[entry, x], [3 * y**2, 1]])
         self.assertIn(r"\begin{matrix}", latex)
         self.assertIn("2 x + y", latex)
+
+
+class LexicalLayerTests(SimpleTestCase):
+    """Capa 1: lo que se rechaza antes de llegar a parse_expr."""
+
+    def test_attacks_never_reach_parse_expr(self):
+        with mock.patch.object(parser_module, "parse_expr") as parse_expr:
+            for text in ParserSecurityTests.ATTACKS:
+                with self.subTest(text=text), self.assertRaises(ExpressionError):
+                    parse_expression(text, XY)
+            parse_expr.assert_not_called()
+
+    def test_rejects_line_breaks_instead_of_silently_truncating(self):
+        # Antes, "x\n+y" se parseaba como "x": se perdía "+y" sin ningún error.
+        for text in ["x\n+y", "x\r\n+ y", "x \\\n+ y", "x\r+y"]:
+            with self.subTest(text=text), self.assertRaises(ExpressionError):
+                parse_expression(text, XY)
+
+    def test_rejects_control_and_invisible_characters(self):
+        for text in ["x\x00+y", "x\x0b+y", "x​+y", "x +y", "x﻿"]:
+            with self.subTest(text=repr(text)), self.assertRaises(ExpressionError):
+                parse_expression(text, XY)
+
+    def test_rejects_unicode_lookalikes(self):
+        # dígito arábigo, signo menos U+2212, espacio de no separación, x de ancho completo
+        for text in ["١ + x", "x − y", "x + y", "ｘ + y"]:
+            with self.subTest(text=repr(text)), self.assertRaises(ExpressionError):
+                parse_expression(text, XY)
+
+    def test_accepts_tabs_and_surrounding_spaces(self):
+        x, y = symbols()
+        self.assertEqual(sp.simplify(parse_expression("  x\t+\ty  ", XY) - (x + y)), 0)
+
+
+class GlobalDictTests(SimpleTestCase):
+    """Capa 2: los únicos nombres visibles para el eval interno de parse_expr."""
+
+    def test_contains_only_the_minimum_required(self):
+        names = set(parser_module._global_dict())
+        expected = (
+            {"__builtins__", "Add", "Mul", "Pow", "Integer", "Float"}
+            | set(parser_module.ALLOWED_FUNCTIONS)
+            | set(parser_module.ALLOWED_CONSTANTS)
+        )
+        self.assertEqual(names, expected)
+
+    def test_builtins_are_empty(self):
+        self.assertEqual(parser_module._global_dict()["__builtins__"], {})
+
+    def test_cannot_build_arbitrary_symbols(self):
+        # Sin `Symbol`, la transformación auto_symbol no puede fabricar nombres.
+        self.assertNotIn("Symbol", parser_module._global_dict())
+
+    def test_no_dunder_or_module_entries(self):
+        for name, value in parser_module._global_dict().items():
+            with self.subTest(name=name):
+                self.assertFalse(name.startswith("__") and name != "__builtins__")
+                self.assertNotEqual(type(value).__name__, "module")
+
+
+class TreeValidationTests(SimpleTestCase):
+    """Capa 3: el árbol ya parseado sólo puede contener lo permitido.
+
+    Se prueba directamente con árboles construidos a mano, porque la capa
+    léxica impide producirlos desde texto: es la defensa por si ésta fallara.
+    """
+
+    def setUp(self):
+        self.symbols = make_symbols(XY)
+        self.x = self.symbols["x"]
+
+    def assert_rejected(self, expr):
+        with self.assertRaises(ExpressionError):
+            validate_expression_tree(expr, self.symbols)
+
+    def test_accepts_whitelisted_tree(self):
+        x, y = self.symbols["x"], self.symbols["y"]
+        validate_expression_tree(
+            sp.sin(x) * sp.exp(y) + sp.log(x, 2) + sp.sqrt(y) + sp.Abs(x) + sp.pi + sp.E,
+            self.symbols,
+        )
+
+    def test_rejects_undeclared_symbol(self):
+        self.assert_rejected(self.x + sp.Symbol("z", real=True))
+
+    def test_rejects_symbol_with_different_assumptions(self):
+        self.assert_rejected(self.x + sp.Symbol("x"))
+
+    def test_rejects_functions_outside_whitelist(self):
+        for expr in (sp.Function("f")(self.x), sp.gamma(self.x), sp.Integral(self.x, self.x),
+                     sp.Derivative(self.x, self.x), sp.floor(self.x),
+                     sp.Piecewise((self.x, self.x > 0), (0, True))):
+            with self.subTest(expr=type(expr).__name__):
+                self.assert_rejected(expr)
+
+    def test_rejects_non_finite_and_complex_constants(self):
+        for expr in (sp.oo, -sp.oo, sp.zoo, sp.nan, sp.I * self.x):
+            with self.subTest(expr=str(expr)):
+                self.assert_rejected(expr)
+
+    def test_rejects_non_expressions(self):
+        for expr in (sp.Tuple(self.x, 1), sp.Eq(self.x, 1), sp.Lambda(self.x, self.x)):
+            with self.subTest(expr=type(expr).__name__):
+                self.assert_rejected(expr)
+
+
+class ResourceLimitTests(SimpleTestCase):
+    """Entradas cortas que serían costosísimas al evaluarse numéricamente."""
+
+    def assert_rejected_fast(self, text):
+        start = time.perf_counter()
+        with self.assertRaises(ExpressionError):
+            parse_expression(text, XY)
+        self.assertLess(time.perf_counter() - start, 0.5)
+
+    def test_rejects_numeric_power_towers(self):
+        # 11 caracteres: con lambdify, 9**9**9 cuelga el proceso calculando enteros.
+        for text in ["9**9**9", "9**9**9 * x", "x**(9**9**9)", "2**2**2**2**2**2", "sin(9^9^9)"]:
+            with self.subTest(text=text):
+                self.assert_rejected_fast(text)
+
+    def test_rejects_huge_exponents(self):
+        # Con floats desbordan al instante, pero con enteros exactos cuelgan.
+        for text in ["x**(10**50)", "(1/2)**(10**50)", "y^1001"]:
+            with self.subTest(text=text):
+                self.assert_rejected_fast(text)
+
+    def test_rejects_huge_numbers(self):
+        for text in ["1e999", "10**400", "9" * 120, "1e101 * x"]:
+            with self.subTest(text=text[:20]):
+                self.assert_rejected_fast(text)
+
+    def test_rejects_literal_division_by_zero(self):
+        for text in ["1/0", "x/0", "0**-1", "1/(1-1)", "y/(2 - 2)"]:
+            with self.subTest(text=text):
+                self.assert_rejected_fast(text)
+
+    def test_rejects_excessive_nesting_and_length(self):
+        for text in ["**".join(["x"] * 45), "(" * 31 + "x" + ")" * 31, "x+" * 150 + "x"]:
+            with self.subTest(text=text[:20]):
+                self.assert_rejected_fast(text)
+
+    def test_reasonable_expressions_stay_accepted(self):
+        for text in [
+            "x**1000",
+            "**".join(["x"] * 35),
+            " + ".join(f"{k}*x**{k}*y" for k in range(1, 25)),
+            "1e100 * x",
+            "sin(" * 25 + "x" + ")" * 25,
+        ]:
+            with self.subTest(text=text[:20]):
+                parse_expression(text, XY)
+
+
+class FractionLatexTests(SimpleTestCase):
+    """Una división escrita por el usuario se dibuja siempre como una fracción."""
+
+    def latex(self, text):
+        return expression_to_latex(parse_expression(text, XY))
+
+    def test_simple_numeric_fraction(self):
+        self.assertEqual(self.latex("1/3"), r"\frac{1}{3}")
+        self.assertEqual(self.latex("2/3"), r"\frac{2}{3}")
+        self.assertEqual(self.latex("-1/3"), r"- \frac{1}{3}")
+
+    def test_symbolic_numerator_and_denominator(self):
+        self.assertEqual(self.latex("1/x"), r"\frac{1}{x}")
+        self.assertEqual(self.latex("(x+1)/(y-2)"), r"\frac{x + 1}{y - 2}")
+        self.assertEqual(self.latex("-x/2"), r"- \frac{x}{2}")
+        self.assertEqual(self.latex("x/y/2"), r"\frac{x}{2 y}")
+        self.assertEqual(self.latex("x*(1/3)"), r"\frac{x}{3}")
+
+    def test_fraction_inside_larger_expression(self):
+        self.assertEqual(self.latex("x - 1/3"), r"x - \frac{1}{3}")
+        self.assertEqual(
+            self.latex("sin(x/2) + (x+1)/3 - y/2"),
+            r"\sin{\left(\frac{x}{2} \right)} + \frac{x + 1}{3} - \frac{y}{2}",
+        )
+        self.assertEqual(self.latex("x**(1/2)"), r"x^{\frac{1}{2}}")
+
+    def test_nested_fraction(self):
+        self.assertEqual(self.latex("1/(1/x)"), r"\frac{1}{\frac{1}{x}}")
+
+    def test_never_renders_division_as_product_by_reciprocal(self):
+        for text in ["1/3", "1/x", "x*(1/3)", "(1/3)*x", "1/3 + 1/4", "1/x**2", "1/(1/x)", "x**(1/2)"]:
+            with self.subTest(text=text):
+                latex = self.latex(text)
+                self.assertNotIn(r"\cdot \frac", latex)
+                self.assertNotIn(r"1 \frac", latex)
+                self.assertNotIn(r"\left(-1\right)", latex)
+
+    def test_evaluate_false_is_preserved_for_other_operations(self):
+        self.assertEqual(self.latex("x + x"), "x + x")
+        self.assertEqual(self.latex("x - x"), "x - x")
+
+    def test_evaluated_derivatives_render_exactly_as_standard_sympy(self):
+        system = parse_system(["x**2 + x*y - 10", "y + 3*x*y**2 - 57"], XY)
+        J = jacobian([expr for _, expr in system], XY)
+        for entry in J:
+            self.assertEqual(expression_to_latex(entry), sp.latex(entry, order="none"))
+        self.assertEqual(matrix_to_latex(J), sp.latex(J, order="none"))
+
+    def test_derivative_with_divisions_from_user_input(self):
+        # La derivada arrastra la división sin evaluar que escribió el usuario.
+        _, expr = parse_function("g(x, y) = exp(-x/2) + x/(1+y)", XY)
+        latex = expression_to_latex(jacobian([expr], XY)[0])
+        self.assertIn(r"e^{- \frac{x}{2}}", latex)
+        self.assertNotIn(r"\left(-1\right)", latex)
