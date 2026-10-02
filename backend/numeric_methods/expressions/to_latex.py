@@ -146,8 +146,13 @@ def _latex(expr, **settings):
     return _FractionPrinter({"order": "none", "ln_notation": True, **settings}).doprint(expr)
 
 
-def expression_to_latex(expr):
-    return _latex(expr)
+def expression_to_latex(expr, order="none"):
+    """Por defecto conserva el orden en que se escribieron los términos. Para
+    expresiones calculadas (derivadas, f = lhs − rhs) se puede pasar
+    order=None: el orden estándar de sympy, polinomios por grado descendente
+    y la constante al final ("x^{2} + x y - 10").
+    """
+    return _latex(expr, order=order)
 
 
 def substitution_template_latex(expr, placeholders):

@@ -16,6 +16,18 @@ const CATEGORY_UI = {
   nonlinear_system: markRaw(nonlinearSystem),
 }
 
+/**
+ * Interfaz de un método: la de su categoría, con lo propio del método
+ * (`methods[slug]`) por encima. Si el método no tiene nada propio se devuelve
+ * el mismo objeto de la categoría, así que los métodos que comparten
+ * formulario (Jacobi y Gauss-Seidel) siguen compartiéndolo.
+ */
+function methodUi(category, slug) {
+  const base = CATEGORY_UI[category]
+  const own = base.methods?.[slug]
+  return own ? markRaw({ ...base, ...own }) : base
+}
+
 const state = reactive({
   status: 'idle', // idle | loading | ready | error
   methods: [], // [{ slug, name, category, categoryLabel, ui }]
@@ -42,7 +54,7 @@ export function loadMethodRegistry() {
             name: method.name,
             category: method.category,
             categoryLabel: method.category_label,
-            ui: CATEGORY_UI[method.category],
+            ui: methodUi(method.category, method.slug),
           }))
         state.status = 'ready'
       })

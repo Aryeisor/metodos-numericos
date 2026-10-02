@@ -12,9 +12,10 @@ from dataclasses import dataclass
 from typing import Callable
 
 from .serializers.linear import LinearSystemSerializer
-from .serializers.nonlinear import NonlinearSystemSerializer
+from .serializers.nonlinear import NewtonSystemSerializer, NonlinearSystemSerializer
 from .solvers.linear.runner import solve_gauss_seidel, solve_jacobi
 from .solvers.nonlinear.fixed_point import solve_fixed_point
+from .solvers.nonlinear.newton import solve_newton
 
 # Categorías conocidas, en el orden en que se muestran en el menú.
 CATEGORIES = {
@@ -61,6 +62,13 @@ METHODS = {
             category="nonlinear_system",
             serializer=NonlinearSystemSerializer,
             solver=solve_fixed_point,
+        ),
+        MethodSpec(
+            slug="newton",
+            name="Newton",
+            category="nonlinear_system",
+            serializer=NewtonSystemSerializer,
+            solver=solve_newton,
         ),
     )
 }

@@ -66,6 +66,7 @@ class MethodsEndpointTests(APITestCase):
                 ("jacobi", "Sistemas lineales"),
                 ("gauss-seidel", "Sistemas lineales"),
                 ("punto-fijo", "Ecuaciones no lineales"),
+                ("newton", "Ecuaciones no lineales"),
             ],
         )
 
@@ -83,7 +84,7 @@ class ExamplesByMethodTests(APITestCase):
                 self.assertEqual(len(response.json()), 6)
 
     def test_unknown_method_returns_404(self):
-        response = self.client.get("/api/examples/?method=newton")
+        response = self.client.get("/api/examples/?method=bairstow")
         self.assertEqual(response.status_code, 404)
 
     def test_without_method_returns_each_example_once(self):

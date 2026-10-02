@@ -1,9 +1,8 @@
 <script setup>
-// Formulario de un sistema no lineal: una fila por ecuación con la variable
-// que se despeja de ella, controles para agregar/quitar ecuaciones y el punto
-// inicial x0 (acepta fracciones, como los campos de los sistemas lineales).
-// Una barra de símbolos inserta en la última ecuación que tuvo el foco y cada
-// ecuación muestra en vivo cómo la interpretó el parser del backend.
+// Formulario de Newton: las variables se declaran en orden en un campo propio
+// y las ecuaciones se escriben sin asociarlas a ninguna variable (no se
+// despeja nada). Reutiliza la barra de símbolos, la vista previa en vivo y el
+// punto inicial con fracciones de Punto Fijo.
 import { computed, ref } from 'vue'
 import MathSymbolToolbar from '../../components/MathSymbolToolbar.vue'
 import MathSyntaxHelp from '../../components/MathSyntaxHelp.vue'
@@ -18,18 +17,23 @@ const props = defineProps({
 
 const state = computed(() => props.store.state)
 const n = computed(() => state.value.equations.length)
+const variables = computed(() => props.store.variables())
 
-// Vista previa por fila: LaTeX si la ecuación es válida, o su error.
 const { previews } = useExpressionPreviews(
   () => state.value.equations,
-  () => state.value.variables
+  () => variables.value
 )
-
 const previewOf = (i) => previews.value[i] ?? { status: 'empty', stale: false }
 const isInvalid = (i) => previewOf(i).status === 'invalid' && !previewOf(i).stale
 
-// Barra de símbolos: inserta en la última ecuación que tuvo el foco (la
-// primera, si todavía ninguna lo tuvo).
+// Newton resuelve un sistema lineal n×n en cada iteración: hacen falta tantas
+// variables como ecuaciones.
+const countMismatch = computed(() =>
+  variables.value.length !== n.value
+    ? `Hay ${n.value} ecuaciones y ${variables.value.length} variables: deben coincidir.`
+    : ''
+)
+
 const listRef = ref(null)
 const activeIndex = ref(0)
 const symbolTarget = () =>
@@ -40,13 +44,8 @@ function updateEquation(index, text) {
   state.value.equations = state.value.equations.map((v, i) => (i === index ? text : v))
 }
 
-function updateVariable(index, text) {
-  state.value.variables = state.value.variables.map((v, i) => (i === index ? text : v))
-}
-
 function removeEquation(index) {
   props.store.removeEquation(index)
-  // La fila activa de la barra de símbolos sigue apuntando a la misma ecuación.
   if (index < activeIndex.value) activeIndex.value -= 1
   activeIndex.value = Math.min(activeIndex.value, n.value - 1)
 }
@@ -54,6 +53,24 @@ function removeEquation(index) {
 
 <template>
   <div>
+    <div class="variables-field">
+      <label for="newton-variables">Variables, en orden</label>
+      <input
+        id="newton-variables"
+        type="text"
+        class="variables-input"
+        spellcheck="false"
+        autocomplete="off"
+        placeholder="ej. x, y, z"
+        :value="state.variablesText"
+        aria-describedby="newton-variables-hint"
+        @input="store.setVariablesText($event.target.value)"
+      />
+      <p id="newton-variables-hint" class="input-hint">
+        Separadas por comas. El orden fija las columnas del Jacobiano y el de x0.
+      </p>
+    </div>
+
     <MathSymbolToolbar
       class="equation-toolbar"
       :target="symbolTarget"
@@ -63,7 +80,6 @@ function removeEquation(index) {
     <div ref="listRef" class="equation-list">
       <div class="equation-head" aria-hidden="true">
         <span></span>
-        <span>Variable</span>
         <span>Ecuación</span>
         <span></span>
       </div>
@@ -71,24 +87,15 @@ function removeEquation(index) {
         <span class="equation-index" :class="{ 'is-target': i === activeIndex }">{{ i + 1 }}</span>
         <input
           type="text"
-          class="variable-input"
-          spellcheck="false"
-          autocomplete="off"
-          :value="state.variables[i]"
-          :aria-label="`Variable que se despeja de la ecuación ${i + 1}`"
-          @input="updateVariable(i, $event.target.value)"
-        />
-        <input
-          type="text"
           class="equation-input"
           spellcheck="false"
           autocomplete="off"
           :value="text"
-          :placeholder="i === 0 ? 'ej. 3*x - cos(y) - 1 = 0' : ''"
+          :placeholder="i === 0 ? 'ej. x^2 + x*y - 10 = 0' : ''"
           :aria-label="`Ecuación ${i + 1}`"
           :class="{ 'is-invalid': isInvalid(i) }"
           :aria-invalid="isInvalid(i)"
-          :aria-describedby="`equation-preview-${i}`"
+          :aria-describedby="`newton-preview-${i}`"
           @input="updateEquation(i, $event.target.value)"
           @focus="activeIndex = i"
         />
@@ -102,7 +109,7 @@ function removeEquation(index) {
         >
           ×
         </button>
-        <EquationPreview :id="`equation-preview-${i}`" :preview="previewOf(i)" :text="text" />
+        <EquationPreview :id="`newton-preview-${i}`" :preview="previewOf(i)" :text="text" />
       </div>
     </div>
 
@@ -115,11 +122,12 @@ function removeEquation(index) {
       + Agregar ecuación
     </button>
     <span v-if="n >= MAX_EQUATIONS" class="limit-note">Máximo {{ MAX_EQUATIONS }} ecuaciones.</span>
+    <p v-if="countMismatch" class="count-mismatch" role="status">{{ countMismatch }}</p>
 
     <p class="input-hint">
-      La ecuación de cada fila se despeja automáticamente para la variable de esa fila.
-      Puedes escribirla igualada a cero (<code>3*x - cos(y) - 1 = 0</code>) o con dos lados
-      (<code>y = (sin(x) + 2)/4</code>). Debajo de cada ecuación verás cómo se interpretó.
+      Escribe cada ecuación igualada a cero (<code>x^2 + x*y - 10 = 0</code>) o con dos lados
+      (<code>x^2 + x*y = 10</code>); no hace falta despejar nada. Debajo de cada ecuación verás
+      cómo se interpretó.
     </p>
 
     <div class="syntax-block">
@@ -129,24 +137,37 @@ function removeEquation(index) {
 
     <InitialPointInput
       :values="state.x0"
-      :labels="state.variables"
+      :labels="variables"
       @update:values="(values) => (state.x0 = values)"
     />
   </div>
 </template>
 
 <style scoped>
+.variables-field {
+  margin-bottom: var(--space-4);
+}
+
+.variables-input {
+  max-width: 320px;
+  font-family: 'Consolas', 'Courier New', monospace;
+}
+
+.equation-toolbar {
+  margin-bottom: var(--space-4);
+}
+
 .equation-list {
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
 }
 
-/* Columnas: número | variable | ecuación | quitar. */
+/* Columnas: número | ecuación | quitar. */
 .equation-head,
 .equation-row {
   display: grid;
-  grid-template-columns: 1.5rem 6rem minmax(0, 1fr) auto;
+  grid-template-columns: 1.5rem minmax(0, 1fr) auto;
   gap: var(--space-2);
   align-items: center;
 }
@@ -168,29 +189,13 @@ function removeEquation(index) {
   color: var(--color-accent);
 }
 
-.variable-input,
 .equation-input {
   font-family: 'Consolas', 'Courier New', monospace;
 }
 
-.equation-toolbar {
-  margin-bottom: var(--space-4);
-}
-
 /* Vista previa debajo del campo de la ecuación, en la misma columna. */
 .equation-preview {
-  grid-column: 3 / 4;
-}
-
-.syntax-block {
-  margin-top: var(--space-4);
-}
-
-.syntax-caption {
-  margin: 0 0 var(--space-2);
-  font-size: var(--text-small);
-  font-weight: var(--weight-semibold);
-  color: var(--color-ink);
+  grid-column: 2 / 3;
 }
 
 .remove-btn {
@@ -212,15 +217,36 @@ function removeEquation(index) {
   color: var(--color-ink-muted);
 }
 
+.count-mismatch {
+  margin: var(--space-2) 0 0;
+  font-size: var(--text-small);
+  color: var(--color-warning);
+}
+
 .input-hint {
   margin: var(--space-3) 0 0;
   font-size: var(--text-small);
   color: var(--color-ink-muted);
 }
 
+.variables-field .input-hint {
+  margin-top: var(--space-1);
+}
+
 .input-hint code {
   font-family: 'Consolas', 'Courier New', monospace;
   font-size: 0.95em;
+  color: var(--color-ink);
+}
+
+.syntax-block {
+  margin-top: var(--space-4);
+}
+
+.syntax-caption {
+  margin: 0 0 var(--space-2);
+  font-size: var(--text-small);
+  font-weight: var(--weight-semibold);
   color: var(--color-ink);
 }
 
@@ -233,18 +259,14 @@ function removeEquation(index) {
   box-shadow: 0 0 0 3px var(--color-danger-bg);
 }
 
-/* En pantallas angostas la variable y la ecuación comparten fila con menos
-   espacio para el nombre. */
 @media (max-width: 480px) {
   .equation-head,
   .equation-row {
-    grid-template-columns: 1rem 3.5rem minmax(0, 1fr) auto;
+    grid-template-columns: 1rem minmax(0, 1fr) auto;
   }
 
-  /* En móvil la vista previa usa también el ancho de la columna de variable. */
-  .equation-preview {
-    grid-column: 2 / 5;
+  .variables-input {
+    max-width: none;
   }
-
 }
 </style>

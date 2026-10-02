@@ -178,10 +178,62 @@ NONLINEAR_SYSTEM_EXAMPLES = [
 ]
 
 
+# Sistemas no lineales para Newton. Las variables se declaran en orden por
+# separado (no se despeja ninguna ecuación). Todos convergen desde el x0
+# indicado; el primero es el mismo sistema del ejemplo «Algebraico 2x2» de
+# Punto Fijo, para comparar ambos métodos.
+NEWTON_EXAMPLES = [
+    {
+        "id": "newton-algebraico-2x2",
+        "name": "Algebraico 2x2",
+        "description": "El mismo sistema del ejemplo de Punto Fijo: compara cuántas iteraciones necesita cada método.",
+        "n": 2,
+        "variables": ["x", "y"],
+        "equations": [
+            "3*x - y**2 - 1 = 0",
+            "x**2 + 4*y - 2 = 0",
+        ],
+        "x0": [0, 0],
+        "tolerance": 0.000001,
+        "max_iterations": 100,
+    },
+    {
+        "id": "newton-chapra-2x2",
+        "name": "Clásico 2x2 (Chapra)",
+        "description": "x² + xy = 10 y y + 3xy² = 57 desde (1.5, 3.5); solución exacta (2, 3).",
+        "n": 2,
+        "variables": ["x", "y"],
+        "equations": [
+            "x^2 + x*y - 10 = 0",
+            "y + 3*x*y^2 - 57 = 0",
+        ],
+        "x0": [1.5, 3.5],
+        "tolerance": 0.000001,
+        "max_iterations": 100,
+    },
+    {
+        "id": "newton-burden-faires-3x3",
+        "name": "Burden y Faires 3x3",
+        "description": "Coseno, seno y exponencial con tres variables; solución (0.5, 0, -π/6).",
+        "n": 3,
+        "variables": ["x1", "x2", "x3"],
+        "equations": [
+            "3*x1 - cos(x2*x3) - 1/2 = 0",
+            "x1^2 - 81*(x2 + 0.1)^2 + sin(x3) + 1.06 = 0",
+            "exp(-x1*x2) + 20*x3 + (10*pi - 3)/3 = 0",
+        ],
+        "x0": [0.1, 0.1, -0.1],
+        "tolerance": 0.000001,
+        "max_iterations": 100,
+    },
+]
+
+
 EXAMPLES = {
     "jacobi": LINEAR_SYSTEM_EXAMPLES,
     "gauss-seidel": LINEAR_SYSTEM_EXAMPLES,
     "punto-fijo": NONLINEAR_SYSTEM_EXAMPLES,
+    "newton": NEWTON_EXAMPLES,
 }
 
 

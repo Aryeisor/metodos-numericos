@@ -1,7 +1,8 @@
 from rest_framework import serializers
 
 from ..expressions.parser import ExpressionError, make_symbols, parse_function
-from ..solvers.nonlinear.fixed_point import MAX_EQUATIONS, MIN_EQUATIONS
+from ..solvers.nonlinear.common import MAX_EQUATIONS, MIN_EQUATIONS
+from ..solvers.nonlinear.newton import structure_errors
 from ..solvers.validation import DEFAULT_MAX_ITERATIONS, DEFAULT_TOLERANCE
 
 
@@ -85,4 +86,26 @@ class NonlinearSystemSerializer(serializers.Serializer):
         if equation_errors:
             raise serializers.ValidationError({"equations": equation_errors})
 
+        return data
+
+
+class NewtonSystemSerializer(NonlinearSystemSerializer):
+    """Entrada de Newton: la misma forma que Punto Fijo (ecuaciones, variables
+    en orden, x0, tolerancia, máximo de iteraciones). Aquí las variables no se
+    asocian a una ecuación: su orden fija el orden de las columnas del
+    Jacobiano y de x0.
+
+    Además rechaza los sistemas cuyo Jacobiano sería singular en cualquier
+    punto: una variable que no aparece en ninguna ecuación, o una ecuación
+    sin variables.
+    """
+
+    def validate(self, data):
+        data = super().validate(data)
+        variables = data["variables"]
+        symbols = list(make_symbols(variables).values())
+        functions = [parse_function(text, variables)[1] for text in data["equations"]]
+        errors = structure_errors(functions, symbols)
+        if errors:
+            raise serializers.ValidationError({"equations": errors})
         return data

@@ -47,23 +47,24 @@ No depende de Django: puede usarse y testearse de forma aislada.
 import math
 from dataclasses import dataclass
 
-import mpmath
 import sympy as sp
 
 from ...expressions.parser import ExpressionError, make_symbols, parse_equation
 from ...expressions.to_latex import expression_to_latex, substitution_template_latex
 from ...expressions.to_text import expression_to_text
 from ..base import IterationStep, SolverResult
-from ..validation import DEFAULT_MAX_ITERATIONS, DEFAULT_TOLERANCE, MIN_ITERATIONS, InputValidationError
+from ..validation import DEFAULT_MAX_ITERATIONS, DEFAULT_TOLERANCE, MIN_ITERATIONS
+from .common import (  # noqa: F401  (MIN/MAX_EQUATIONS se reexportan)
+    CATEGORY,
+    MAX_EQUATIONS,
+    MIN_EQUATIONS,
+    NonlinearValidationError,
+    to_real,
+)
 from .isolation_steps import isolation_steps
 
-CATEGORY = "nonlinear_system"
 METHOD = "punto-fijo"
 
-MIN_EQUATIONS = 2
-# Cota práctica: cada despeje automático que no tiene solución cerrada puede
-# tardar algunos segundos en fallar.
-MAX_EQUATIONS = 6
 # Grado máximo de una ecuación en la variable que se despeja. Hasta cuártica
 # sympy despeja en menos de un segundo aun con coeficientes simbólicos.
 MAX_SOLVE_DEGREE = 4
@@ -71,10 +72,6 @@ MAX_SOLVE_DEGREE = 4
 # Marcador de cada variable en la plantilla de sustitución que se envía al
 # frontend (ver `substitution_template_latex`).
 PLACEHOLDER = "@@{}@@"
-
-
-class NonlinearValidationError(InputValidationError):
-    """Sistema no lineal que no puede resolverse por punto fijo."""
 
 
 @dataclass
@@ -215,19 +212,6 @@ def build_fixed_point_system(equations, variables):
     return functions
 
 
-def _to_real(value):
-    """Convierte el resultado de g_i a float, o None si no es real y finito."""
-    if isinstance(value, (complex, mpmath.mpc)):
-        if value.imag != 0:
-            return None
-        value = value.real
-    try:
-        value = float(value)
-    except (TypeError, ValueError, OverflowError):
-        return None
-    return value if math.isfinite(value) else None
-
-
 def iterate(functions, x0, tolerance=DEFAULT_TOLERANCE, max_iterations=DEFAULT_MAX_ITERATIONS):
     """Itera x_i = g_i(...) con actualización secuencial.
 
@@ -256,7 +240,7 @@ def iterate(functions, x0, tolerance=DEFAULT_TOLERANCE, max_iterations=DEFAULT_M
             # anterior: eso es exactamente la actualización secuencial.
             inputs.append([x[j] for j in function.dependencies])
             try:
-                value = _to_real(function.evaluate(*x))
+                value = to_real(function.evaluate(*x))
             except (ArithmeticError, ValueError, TypeError):
                 value = None
             if value is None:

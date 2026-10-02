@@ -11,9 +11,15 @@ from .parser import make_symbols
 
 
 def _as_symbols(variables):
-    if all(isinstance(v, sp.Symbol) for v in variables):
-        return list(variables)
-    return list(make_symbols(variables).values())
+    """Símbolos con las mismas suposiciones que los del parser (real=True).
+
+    Todo se normaliza por nombre. Antes, un Symbol("x") sin `real=True` se
+    usaba tal cual y sympy lo trataba como una variable distinta de la x del
+    parser: la derivada salía 0 sin ningún aviso. Mezclar nombres y símbolos
+    también fallaba con un mensaje engañoso.
+    """
+    names = [v.name if isinstance(v, sp.Symbol) else v for v in variables]
+    return list(make_symbols(names).values())
 
 
 def derivative(expr, variable):

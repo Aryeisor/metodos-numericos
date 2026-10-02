@@ -25,6 +25,7 @@ import cmath
 
 import sympy as sp
 
+from ...expressions.normalize import evaluate_tree
 from ...expressions.to_latex import expression_to_latex
 from ...expressions.to_text import expression_to_text
 
@@ -34,15 +35,6 @@ _SAMPLES = (0.37, 1.13, 0.71, 1.59, 0.53)
 _RELATIVE_TOLERANCE = 1e-9
 
 _ROOT_NAMES = {2: "raíz cuadrada", 3: "raíz cúbica"}
-
-
-def _evaluated(expr):
-    """Reconstruye el árbol con evaluación normal de sympy (aplana productos y
-    sumas anidados, junta coeficientes). Es barato: el parser ya acota la
-    magnitud de los números y los exponentes."""
-    if not expr.args:
-        return expr
-    return expr.func(*[_evaluated(arg) for arg in expr.args])
 
 
 def _step(description, latex=None):
@@ -96,7 +88,7 @@ def _divided(numerator, denominator):
 def _already_grouped(lhs, rhs, symbol):
     """True si la ecuación ya tiene sólo términos con x a la izquierda y
     ninguno a la derecha (ej. "3x = y^2 + 1"): no hay nada que pasar de lado."""
-    return not rhs.has(symbol) and _evaluated(lhs).xreplace({symbol: 0}) == 0
+    return not rhs.has(symbol) and evaluate_tree(lhs).xreplace({symbol: 0}) == 0
 
 
 def _linear_steps(f, symbol, g):
@@ -187,7 +179,7 @@ def isolation_steps(lhs, rhs, symbol, g):
     steps = [_step("Ecuación original:", original)]
 
     # Forma evaluada (sin expandir): agrupa términos y reparte el signo de rhs.
-    f = _evaluated(sp.Add(lhs, sp.Mul(-1, rhs, evaluate=False), evaluate=False))
+    f = evaluate_tree(sp.Add(lhs, sp.Mul(-1, rhs, evaluate=False), evaluate=False))
 
     if lhs == symbol and not rhs.has(symbol):
         kind, middle = "linear", []  # ya viene despejada

@@ -38,13 +38,15 @@ const result = ref(null)
 // frontend el paso a paso de cada iteración sin pedir nada extra al backend.
 const solvedSystem = ref(null)
 
-// Estado propio de la categoría (para sistemas lineales: n, A, b, x0...). Se
-// recrea sólo si cambia la categoría, no al cambiar de método dentro de ella.
-// Al cambiar de categoría también se descarta el resultado anterior: lo
-// dibujan los componentes de la categoría y su forma es distinta.
+// Estado del formulario (para sistemas lineales: n, A, b, x0...). Se recrea
+// sólo si cambia el formulario, no al cambiar entre métodos que lo comparten
+// (Jacobi y Gauss-Seidel). Métodos de una misma categoría pueden tener
+// formularios distintos (Punto Fijo y Newton), así que la clave es la función
+// que crea el estado, no la categoría. Al cambiar también se descarta el
+// resultado anterior: su forma es distinta y lo dibujan otros componentes.
 const store = shallowRef(null)
 watch(
-  () => activeMethod.value?.category,
+  () => ui.value?.createStore,
   () => {
     store.value = ui.value ? ui.value.createStore() : null
     result.value = null
