@@ -1,6 +1,6 @@
 <script setup>
 // Sustituciones numéricas de cada iteración del ejemplo resuelto.
-import MathFormula from '../../../components/MathFormula.vue'
+import MathFormula from '../MathFormula.vue'
 
 defineProps({
   steps: { type: Array, required: true },

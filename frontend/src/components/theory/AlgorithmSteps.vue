@@ -1,7 +1,7 @@
 <script setup>
 // Pasos del algoritmo como tarjetas numeradas. Cada paso: { title, body },
 // donde body mezcla texto y fórmulas { m } que se renderizan en línea.
-import MathFormula from '../../../components/MathFormula.vue'
+import MathFormula from '../MathFormula.vue'
 
 defineProps({
   steps: { type: Array, required: true },

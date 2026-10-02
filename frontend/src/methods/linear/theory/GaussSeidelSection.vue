@@ -1,8 +1,8 @@
 <script setup>
 // Teoría propia del método de Gauss-Seidel.
 import MathFormula from '../../../components/MathFormula.vue'
-import AlgorithmSteps from './AlgorithmSteps.vue'
-import WorkedIterations from './WorkedIterations.vue'
+import AlgorithmSteps from '../../../components/theory/AlgorithmSteps.vue'
+import WorkedIterations from '../../../components/theory/WorkedIterations.vue'
 import { theoryRouteName } from '../../routeNames'
 import {
   ALGORITHM_STEPS,

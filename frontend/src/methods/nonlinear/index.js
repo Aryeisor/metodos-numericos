@@ -1,13 +1,14 @@
 // Interfaz de la categoría "nonlinear_system" (Punto Fijo).
 // Cumple el contrato documentado en methods/linear/index.js.
 //
-// Sin teoría escrita todavía: `theorySections` vacío hace que los métodos de
-// esta categoría aparezcan en "Resolver ▾" pero no en "Teoría ▾".
+// Los métodos con entrada en THEORY_SECTIONS aparecen en "Teoría ▾"; uno que
+// no la tenga aparece sólo en "Resolver ▾".
 import NonlinearIterationDetail from './NonlinearIterationDetail.vue'
 import NonlinearResultSummary from './NonlinearResultSummary.vue'
 import NonlinearSystemInput from './NonlinearSystemInput.vue'
 import { nonlinearPdfReport } from './pdf'
 import { createNonlinearSystemStore } from './store'
+import NonlinearTheoryPage, { THEORY_SECTIONS } from './theory/NonlinearTheoryPage.vue'
 
 export default {
   createStore: createNonlinearSystemStore,
@@ -31,6 +32,6 @@ export default {
   iterationDetail: NonlinearIterationDetail,
   pdfReport: nonlinearPdfReport,
 
-  theoryPage: null,
-  theorySections: {},
+  theoryPage: NonlinearTheoryPage,
+  theorySections: THEORY_SECTIONS,
 }
