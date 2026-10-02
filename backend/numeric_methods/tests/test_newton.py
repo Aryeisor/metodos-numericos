@@ -269,7 +269,7 @@ class NewtonEndpointTests(APITestCase):
         self.assertTrue(data["converged"])
         self.assertEqual(data["variables"], XY)
         self.assertEqual(set(data["iterations"][0]["extra"]),
-                         {"point", "F", "J", "minus_F", "D", "D_i", "matrices", "delta"})
+                         {"point", "F", "F_terms", "J", "minus_F", "D", "D_i", "matrices", "delta"})
         self.assertIn("latex", data["jacobian"])
 
     def test_examples_by_method(self):

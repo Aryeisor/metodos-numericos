@@ -1,9 +1,12 @@
-// LaTeX del paso a paso de Newton. No se calcula nada: los valores de cada
-// iteración (F, J, D, D_i con sus matrices, Δx) vienen del backend en
-// iteration.extra, y aquí sólo se les da formato, en el mismo orden en que se
-// resuelve a mano: J(x) → evaluación → sistema lineal → D → D_i → Δx_i →
-// actualización → error.
+// LaTeX del paso a paso de Newton, en el mismo orden en que se resuelve a
+// mano: J(x) → evaluación → sistema lineal → D → D_i → Δx_i → actualización →
+// error. Los valores de cada iteración (F y sus términos, J, D, D_i con sus
+// matrices, Δx) y el desglose de las derivadas vienen del backend; aquí se les
+// da formato. Lo único que se calcula es lo intermedio de cada determinante
+// (productos ad y bc, menores), sólo para mostrarlo: el valor final de D y de
+// cada D_i sigue siendo el del backend.
 import { CURRENT_COLOR, PREVIOUS_COLOR, colorize, latexNumber } from '../../utils/latexFormulas'
+import { fillTemplate } from './formulas'
 
 export { CURRENT_COLOR, PREVIOUS_COLOR }
 
@@ -62,19 +65,6 @@ export function linearSystemLatex(result, row) {
   return `${bmatrix(numbers(J))} ${unknowns} = ${column(minusF.map(latexNumber))}`
 }
 
-/** Paso 4: D = |J| = valor. */
-export function determinantLatex(row) {
-  return `D = \\det J = ${vmatrix(numbers(row.extra.J))} = \\mathbf{${latexNumber(row.extra.D)}}`
-}
-
-/** Paso 5: D_i con la columna i (reemplazada por −F) resaltada. */
-export function columnDeterminantLatex(result, row, j) {
-  const matrix = row.extra.matrices[j].map((r) =>
-    r.map((value, c) => (c === j ? colorize(latexNumber(value), CURRENT_COLOR) : latexNumber(value)))
-  )
-  return `${subscriptD(result, j)} = ${vmatrix(matrix)} = \\mathbf{${latexNumber(row.extra.D_i[j])}}`
-}
-
 /** Paso 6: Δx_i = D_i / D. */
 export function incrementLatex(result, row, j) {
   const { D, D_i: Di, delta: deltas } = row.extra
@@ -102,4 +92,129 @@ export function errorLatex(result, row) {
     `\\text{error} = \\max_{i} \\left| \\Delta x_i \\right| = \\max\\left( ${parts} \\right) = ` +
     `\\mathbf{${latexNumber(row.error)}}`
   )
+}
+
+// ---------------------------------------------------------------------------
+// Sub-pasos: derivadas parciales, sustitución en F y cálculo de determinantes.
+// ---------------------------------------------------------------------------
+
+/** Título de una entrada del Jacobiano: ∂f_i/∂x_j. */
+export function partialTitleLatex(result, i, j) {
+  return `\\frac{\\partial f_{${i + 1}}}{\\partial ${result.variables_latex[j]}}`
+}
+
+/** Desglose de ∂f_i/∂x_j que calcula el backend (una vez): {terms, sum_latex}. */
+export function partialSteps(result, i, j) {
+  return result.jacobian.steps[i][j]
+}
+
+/**
+ * f_i(x^(k)) paso a paso: sustitución sin simplificar → valor de cada término
+ * → resultado. Los términos y sus valores vienen del backend
+ * (equations[i].terms, extra.F_terms); aquí sólo se les da formato.
+ */
+export function functionSubstitutionLatex(result, row, i) {
+  const k = row.iteration - 1
+  const point = row.extra.point
+  const terms = result.equations[i].terms
+  const values = row.extra.F_terms[i]
+
+  const substituted = terms
+    .map(({ sign, template }, t) => {
+      const body = fillTemplate(template, (j) => {
+        const latex = latexNumber(point[j])
+        return { latex, color: PREVIOUS_COLOR, parenthesize: point[j] < 0 || latex.includes('\\times') }
+      })
+      if (t === 0) return sign === '-' ? `- ${body}` : body
+      return `${sign} ${body}`
+    })
+    .join(' ')
+
+  const evaluated = terms
+    .map(({ sign }, t) => {
+      // Valor de la parte sin signo del término (el signo ya está escrito).
+      const magnitude = sign === '-' ? -values[t] : values[t]
+      if (t === 0) return sign === '-' ? `- ${term(magnitude)}` : latexNumber(magnitude)
+      return `${sign} ${term(magnitude)}`
+    })
+    .join(' ')
+
+  const lines = [`f_{${i + 1}}\\left(x^{(${k})}\\right) &= ${substituted}`]
+  if (terms.length > 1) lines.push(`&= ${evaluated}`)
+  lines.push(`&= \\mathbf{${latexNumber(row.extra.F[i])}}`)
+  return `\\begin{aligned} ${lines.join(' \\\\ ')} \\end{aligned}`
+}
+
+/** Determinante (sólo para mostrar los menores de una expansión). */
+function det(matrix) {
+  if (matrix.length === 1) return matrix[0][0]
+  if (matrix.length === 2) return matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0]
+  return matrix[0].reduce(
+    (sum, value, j) => sum + (j % 2 ? -1 : 1) * value * det(minor(matrix, j)),
+    0
+  )
+}
+
+const minor = (matrix, j) => matrix.slice(1).map((r) => r.filter((_, c) => c !== j))
+
+// Entrada de la matriz, en color si pertenece a la columna reemplazada por −F.
+function entry(value, column, colorColumn) {
+  const latex = latexNumber(value)
+  return column === colorColumn ? colorize(latex, CURRENT_COLOR) : latex
+}
+
+const paren = (latex) => `\\left(${latex}\\right)`
+
+/**
+ * Cálculo de un determinante en renglones alineados, empezando por
+ * `label = |matriz|` y terminando en `value` (el valor del backend).
+ *  - 2×2: ad − bc con los valores sustituidos y los dos productos.
+ *  - n×n (n ≥ 3): expansión por cofactores a lo largo de la primera fila;
+ *    se muestran los menores, el valor de cada uno y los productos, sin
+ *    desarrollar los menores (cada uno es otro determinante más pequeño).
+ * `colorColumn` resalta la columna reemplazada por −F (en los D_i).
+ */
+export function determinantStepsLatex(label, matrix, value, colorColumn = null) {
+  const lines = [
+    `${label} &= ${vmatrix(matrix.map((r) => r.map((v, c) => entry(v, c, colorColumn))))}`,
+  ]
+
+  if (matrix.length === 2) {
+    const [[a, b], [c, d]] = matrix
+    const show = (v, col) => paren(entry(v, col, colorColumn))
+    lines.push(`&= ${show(a, 0)}${show(d, 1)} - ${show(b, 1)}${show(c, 0)}`)
+    lines.push(`&= ${latexNumber(a * d)} - ${term(b * c)}`)
+  } else if (matrix.length > 2) {
+    const signs = matrix[0].map((_, j) => (j % 2 ? '-' : '+'))
+    const join = (parts) =>
+      parts.map((part, j) => (j === 0 ? (signs[j] === '-' ? `- ${part}` : part) : `${signs[j]} ${part}`)).join(' ')
+    const minors = matrix[0].map((_, j) => minor(matrix, j))
+    const minorValues = minors.map(det)
+    const coefficient = (j) => paren(entry(matrix[0][j], j, colorColumn))
+
+    lines.push(
+      `&= ${join(
+        minors.map((m, j) =>
+          `${coefficient(j)} ${vmatrix(m.map((r) => r.map((v, c) => entry(v, c < j ? c : c + 1, colorColumn))))}`
+        )
+      )}`
+    )
+    lines.push(`&= ${join(minorValues.map((m, j) => `${coefficient(j)}${paren(latexNumber(m))}`))}`)
+    // El primer producto va sin paréntesis aunque sea negativo (abre la línea).
+    const products = minorValues.map((m, j) => matrix[0][j] * m)
+    lines.push(`&= ${join(products.map((p, j) => (j === 0 ? latexNumber(p) : term(p))))}`)
+  }
+
+  lines.push(`&= \\mathbf{${latexNumber(value)}}`)
+  return `\\begin{aligned} ${lines.join(' \\\\ ')} \\end{aligned}`
+}
+
+/** F(x) = [f_1; f_2; ...] simbólico. */
+export function functionsLatex(result) {
+  return `F(x) = ${column(result.equations.map((e) => e.function_latex))}`
+}
+
+/** J(x) = [∂f_i/∂x_j] simbólico. */
+export function jacobianLatex(result) {
+  return `J(x) = ${bmatrix(result.jacobian.latex)}`
 }

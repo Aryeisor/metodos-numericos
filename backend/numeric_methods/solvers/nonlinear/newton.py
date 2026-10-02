@@ -37,14 +37,17 @@ import sympy as sp
 from ...expressions.differentiate import jacobian
 from ...expressions.normalize import evaluate_tree
 from ...expressions.parser import ExpressionError, make_symbols, parse_equation
-from ...expressions.to_latex import expression_to_latex
+from ...expressions.to_latex import expression_to_latex, substitution_template_latex
 from ...expressions.to_text import expression_to_text
 from ...linalg.cramer import SingularMatrixError, cramer
 from ..base import IterationStep, SolverResult
 from ..validation import DEFAULT_MAX_ITERATIONS, DEFAULT_TOLERANCE, MIN_ITERATIONS
 from .common import CATEGORY, NonlinearValidationError, to_real
+from .derivative_steps import entry_steps
 
 METHOD = "newton"
+# Marcador de la variable j en las plantillas de sustitución (como en Punto Fijo).
+PLACEHOLDER = "@@{}@@"
 _MODULES = ["math", "mpmath"]
 
 
@@ -56,8 +59,12 @@ class NewtonSystem:
     functions: list
     equations_latex: list
     jacobian: sp.Matrix
+    # Términos aditivos de cada f_i, en el orden en que se muestran.
+    terms: list
     evaluate_f: object
     evaluate_j: object
+    # Valor de cada término (para mostrar la sustitución en F término a término).
+    evaluate_terms: object
 
 
 def structure_errors(functions, symbols):
@@ -118,15 +125,18 @@ def build_newton_system(equations, variables):
         raise NonlinearValidationError(errors)
 
     J = jacobian(functions, symbols)
+    terms = [f.as_ordered_terms() for f in functions]
     return NewtonSystem(
         names=list(variables),
         symbols=symbols,
         functions=functions,
         equations_latex=equations_latex,
         jacobian=J,
+        terms=terms,
         # Listas (no Matrix): así lambdify devuelve floats y no una matriz de mpmath.
         evaluate_f=sp.lambdify(symbols, functions, modules=_MODULES),
         evaluate_j=sp.lambdify(symbols, J.tolist(), modules=_MODULES),
+        evaluate_terms=sp.lambdify(symbols, terms, modules=_MODULES),
     )
 
 
@@ -172,6 +182,9 @@ def iterate(system, x0, tolerance=DEFAULT_TOLERANCE, max_iterations=DEFAULT_MAX_
         J = _evaluate(system.evaluate_j, x)
         extra["F"] = F
         extra["J"] = J
+        if not _has_none(F):
+            # Sólo para mostrar f_i(x) término a término; F sigue siendo el de arriba.
+            extra["F_terms"] = _evaluate(system.evaluate_terms, x)
         if _has_none(F) or _has_none(J):
             failure = {"iteration": k, "reason": "non_finite"}
             iterations.append({"iteration": k, "x": [None] * n, "error": None, "extra": extra})
@@ -217,6 +230,14 @@ def iterate(system, x0, tolerance=DEFAULT_TOLERANCE, max_iterations=DEFAULT_MAX_
     }
 
 
+def _term_template(term, placeholders):
+    negative = term.could_extract_minus_sign()
+    return {
+        "sign": "-" if negative else "+",
+        "template": substitution_template_latex(-term if negative else term, placeholders),
+    }
+
+
 def _failure_warning(failure):
     k = failure["iteration"]
     point = f"x^({k - 1})"
@@ -254,6 +275,7 @@ def solve_newton(data):
         )
 
     J = system.jacobian
+    placeholders = {s: PLACEHOLDER.format(j) for j, s in enumerate(system.symbols)}
     return SolverResult(
         method=METHOD,
         category=CATEGORY,
@@ -275,13 +297,23 @@ def solve_newton(data):
                     "equation_latex": equation_latex,
                     "function_latex": expression_to_latex(f, order=None),
                     "function_text": expression_to_text(f),
+                    # Términos de f_i para mostrar la sustitución: signo y plantilla
+                    # (con marcadores @@j@@) de la parte sin signo de cada uno.
+                    "terms": [_term_template(t, placeholders) for t in terms],
                 }
-                for equation_latex, f in zip(system.equations_latex, system.functions)
+                for equation_latex, f, terms in zip(
+                    system.equations_latex, system.functions, system.terms
+                )
             ],
             # Jacobiano simbólico, calculado una sola vez: J[i][j] = ∂f_i/∂x_j.
             "jacobian": {
                 "latex": [[expression_to_latex(v, order=None) for v in row] for row in J.tolist()],
                 "text": [[expression_to_text(v) for v in row] for row in J.tolist()],
+                # Desglose de cada derivada parcial, término a término.
+                "steps": [
+                    [entry_steps(f, s, f"f_{{{i + 1}}}") for s in system.symbols]
+                    for i, f in enumerate(system.functions)
+                ],
             },
             "failure": raw["failure"],
         },

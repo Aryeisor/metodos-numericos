@@ -38,7 +38,7 @@ function isWholeGroup(template, offset, length) {
 // Un valor que es base de una potencia, o negativo en medio de una
 // operación, se escribe entre paréntesis: (-0.5)^{2}, 3 - (-0.5); pero
 // sin(-0.5), no sin((-0.5)).
-function fillTemplate(template, render) {
+export function fillTemplate(template, render) {
   return template.replace(PLACEHOLDER, (match, j, caret, offset) => {
     const { latex, color, parenthesize } = render(Number(j))
     const wrap = caret || (parenthesize && !isWholeGroup(template, offset, match.length))
