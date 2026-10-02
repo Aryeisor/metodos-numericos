@@ -9,7 +9,7 @@
 // Los métodos con entrada en THEORY_SECTIONS aparecen en "Teoría ▾"; uno que
 // no la tenga (hoy, Newton) aparece sólo en "Resolver ▾".
 import NewtonIterationDetail from './NewtonIterationDetail.vue'
-import NewtonResultSummary from './NewtonResultSummary.vue'
+import NewtonJacobianSection from './NewtonJacobianSection.vue'
 import NewtonSystemInput from './NewtonSystemInput.vue'
 import NonlinearIterationDetail from './NonlinearIterationDetail.vue'
 import NonlinearResultSummary from './NonlinearResultSummary.vue'
@@ -50,7 +50,10 @@ export default {
     newton: {
       createStore: createNewtonStore,
       form: NewtonSystemInput,
-      resultSummary: NewtonResultSummary,
+      // El sistema y la Jacobiana (con su derivación) no cambian entre
+      // iteraciones: van una sola vez antes de la tabla, no en el resumen.
+      resultSummary: null,
+      beforeIterations: NewtonJacobianSection,
       iterationDetail: NewtonIterationDetail,
       pdfReport: newtonPdfReport,
     },

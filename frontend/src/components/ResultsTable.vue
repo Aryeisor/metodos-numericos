@@ -5,6 +5,9 @@
 //
 // Slots:
 //   summary                         bloque extra en el resumen (ej. reordenamiento)
+//   before-iterations               sección fija entre el gráfico y la tabla de
+//                                   iteraciones, para lo que no cambia de una
+//                                   iteración a otra (ej. el Jacobiano de Newton)
 //   iteration-detail { index, row } detalle expandible de una iteración; si no
 //                                   se provee, la tabla no muestra el botón de expandir
 import { computed, ref, useSlots, watch } from 'vue'
@@ -132,6 +135,8 @@ function toggleRow(iteration) {
       :tolerance="tolerance"
       :converged="result.converged"
     />
+
+    <slot name="before-iterations" />
 
     <h4 class="iterations-title">Detalle de iteraciones</h4>
 

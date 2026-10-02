@@ -32,12 +32,6 @@ function pointLatex(values, k) {
   return `x^{(${k})} = \\left(${values.map(latexNumber).join(',\\ ')}\\right)`
 }
 
-/** F(x) = [f_1; f_2; ...] y J(x) = [∂f_i/∂x_j], simbólicos. */
-export function symbolicSystemLatex(result) {
-  const functions = column(result.equations.map((e) => e.function_latex))
-  return `F(x) = ${functions}, \\qquad J(x) = ${bmatrix(result.jacobian.latex)}`
-}
-
 export function generalStepLatex() {
   return (
     `J\\left(${colorize('x^{(k)}', PREVIOUS_COLOR)}\\right)\\, \\Delta x = ` +

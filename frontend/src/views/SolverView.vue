@@ -214,6 +214,10 @@ function handleExportPdf(chartImage) {
         <template v-if="ui.resultSummary" #summary>
           <component :is="ui.resultSummary" :result="result" />
         </template>
+        <!-- Opcional: lo que no cambia entre iteraciones (ej. el Jacobiano de Newton). -->
+        <template v-if="ui.beforeIterations" #before-iterations>
+          <component :is="ui.beforeIterations" :result="result" />
+        </template>
         <template v-if="ui.iterationDetail && solvedSystem" #iteration-detail="{ index }">
           <component
             :is="ui.iterationDetail"

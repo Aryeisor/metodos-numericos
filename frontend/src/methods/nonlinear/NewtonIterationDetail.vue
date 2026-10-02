@@ -1,10 +1,13 @@
 <script setup>
-// Detalle expandible de una iteración de Newton, en el mismo orden en que se
-// resuelve a mano en clase: Jacobiana simbólica → F y J evaluados → sistema
-// lineal J·Δx = −F → D → D_i por variable (regla de Cramer) → Δx_i = D_i / D →
-// actualización x^(k+1) = x^(k) + Δx → error. Dentro de los bloques 1, 2, 4 y 5
-// se muestran además los sub-pasos: cada derivada parcial término a término,
-// la sustitución en cada f_i y el cálculo de cada determinante.
+// Detalle expandible de una iteración de Newton: sólo lo que cambia de una
+// iteración a otra, en el mismo orden en que se resuelve a mano en clase:
+// F y J evaluados en x^(k) → sistema lineal J·Δx = −F → D → D_i por variable
+// (regla de Cramer) → Δx_i = D_i / D → actualización x^(k+1) = x^(k) + Δx →
+// error. Dentro de los bloques 1, 3 y 4 se muestran además los sub-pasos: la
+// sustitución en cada f_i y el cálculo de cada determinante.
+//
+// Lo que no cambia (F(x), la derivación de cada ∂f_i/∂x_j y la Jacobiana
+// simbólica) se muestra una sola vez antes de la tabla: NewtonJacobianSection.
 import { computed } from 'vue'
 import MathFormula from '../../components/MathFormula.vue'
 import {
@@ -14,13 +17,8 @@ import {
   errorLatex,
   evaluationLatex,
   functionSubstitutionLatex,
-  functionsLatex,
-  generalStepLatex,
   incrementLatex,
-  jacobianLatex,
   linearSystemLatex,
-  partialSteps,
-  partialTitleLatex,
   updateLatex,
 } from './newtonFormulas'
 
@@ -36,12 +34,7 @@ const k = computed(() => row.value.iteration - 1) // punto en el que se evalúa
 const variables = computed(() => props.result.variables.map((_, j) => j))
 const evaluation = computed(() => evaluationLatex(row.value))
 const equations = computed(() => props.result.equations.map((_, i) => i))
-// Entradas del Jacobiano en orden de filas: (f_1, x_1), (f_1, x_2), ...
-const entries = computed(() =>
-  equations.value.flatMap((i) => variables.value.map((j) => ({ i, j })))
-)
 const variableLatex = (j) => props.result.variables_latex[j]
-const PARTIAL = '\\partial f_i / \\partial x_j'
 
 // Hasta dónde llegó el cálculo (si el método se detuvo en esta iteración).
 const hasValues = computed(() => Boolean(row.value.extra.F && row.value.extra.J))
@@ -54,39 +47,7 @@ const singular = computed(() => props.result.failure?.reason === 'singular' && !
 <template>
   <div class="detail">
     <div class="detail-block">
-      <span class="detail-caption">1. Sistema y matriz Jacobiana ({{ methodName }})</span>
-      <div class="formula-box">
-        <MathFormula :expression="functionsLatex(result)" display-mode />
-      </div>
-      <p class="sub-caption">
-        Cada entrada <MathFormula :expression="PARTIAL" /> se obtiene derivando
-        <MathFormula expression="f_i" /> término a término:
-      </p>
-      <div class="partials-grid">
-        <div v-for="{ i, j } in entries" :key="`${i}-${j}`" class="step-card partial-card">
-          <p class="partial-title"><MathFormula :expression="partialTitleLatex(result, i, j)" /></p>
-          <ul class="partial-terms">
-            <li v-for="(term, t) in partialSteps(result, i, j).terms" :key="t">
-              <div class="partial-formula"><MathFormula :expression="term.latex" /></div>
-              <span class="partial-rule">{{ term.rule }}</span>
-            </li>
-          </ul>
-          <div v-if="partialSteps(result, i, j).sum_latex" class="partial-sum">
-            <MathFormula :expression="partialSteps(result, i, j).sum_latex" />
-          </div>
-        </div>
-      </div>
-      <p class="sub-caption">Con todas las entradas se arma la matriz Jacobiana:</p>
-      <div class="formula-box">
-        <MathFormula :expression="jacobianLatex(result)" display-mode />
-      </div>
-      <div class="formula-box general-step">
-        <MathFormula :expression="generalStepLatex()" display-mode />
-      </div>
-    </div>
-
-    <div class="detail-block">
-      <span class="detail-caption">2. Evaluación en el punto actual</span>
+      <span class="detail-caption">1. Evaluación en el punto actual</span>
       <div class="step-card">
         <MathFormula :expression="evaluation.point" display-mode />
       </div>
@@ -100,6 +61,11 @@ const singular = computed(() => props.result.failure?.reason === 'singular' && !
             <MathFormula :expression="functionSubstitutionLatex(result, row, i)" display-mode />
           </div>
         </div>
+        <p class="sub-caption">
+          <MathFormula expression="J\left(x^{(k)}\right)" /> resulta de sustituir el punto en la
+          matriz <MathFormula expression="J(x)" /> de la sección «Sistema y matriz Jacobiana», arriba
+          de esta tabla.
+        </p>
         <div class="step-grid">
           <div class="step-card"><MathFormula :expression="evaluation.F" display-mode /></div>
           <div class="step-card"><MathFormula :expression="evaluation.J" display-mode /></div>
@@ -113,14 +79,14 @@ const singular = computed(() => props.result.failure?.reason === 'singular' && !
 
     <template v-if="hasValues">
       <div class="detail-block">
-        <span class="detail-caption">3. Sistema lineal planteado</span>
+        <span class="detail-caption">2. Sistema lineal planteado</span>
         <div class="step-card">
           <MathFormula :expression="linearSystemLatex(result, row)" display-mode />
         </div>
       </div>
 
       <div v-if="hasDeterminant" class="detail-block">
-        <span class="detail-caption">4. Determinante de la Jacobiana</span>
+        <span class="detail-caption">3. Determinante de la Jacobiana</span>
         <div class="step-card">
           <MathFormula :expression="determinantStepsLatex('D', row.extra.J, row.extra.D)" display-mode />
         </div>
@@ -133,7 +99,7 @@ const singular = computed(() => props.result.failure?.reason === 'singular' && !
 
     <template v-if="solved">
       <div class="detail-block">
-        <span class="detail-caption">5. Determinantes por variable (regla de Cramer)</span>
+        <span class="detail-caption">4. Determinantes por variable (regla de Cramer)</span>
         <p class="detail-hint">
           <span class="legend-current">■</span> columna reemplazada por
           <MathFormula expression="-F" />
@@ -149,7 +115,7 @@ const singular = computed(() => props.result.failure?.reason === 'singular' && !
       </div>
 
       <div class="detail-block">
-        <span class="detail-caption">6. Incrementos</span>
+        <span class="detail-caption">5. Incrementos</span>
         <div class="step-grid">
           <div v-for="j in variables" :key="j" class="step-card">
             <MathFormula :expression="incrementLatex(result, row, j)" display-mode />
@@ -160,7 +126,7 @@ const singular = computed(() => props.result.failure?.reason === 'singular' && !
 
     <template v-if="finished">
       <div class="detail-block">
-        <span class="detail-caption">7. Actualización</span>
+        <span class="detail-caption">6. Actualización</span>
         <p class="detail-hint">
           <span class="legend-prev">■</span> valores de la iteración anterior
         </p>
@@ -172,7 +138,7 @@ const singular = computed(() => props.result.failure?.reason === 'singular' && !
       </div>
 
       <div class="detail-block">
-        <span class="detail-caption">8. Error de la iteración</span>
+        <span class="detail-caption">7. Error de la iteración</span>
         <div class="step-card">
           <MathFormula :expression="errorLatex(result, row)" display-mode />
         </div>
@@ -230,48 +196,6 @@ const singular = computed(() => props.result.failure?.reason === 'singular' && !
   margin: var(--space-3) 0 var(--space-2);
   font-size: var(--text-small);
   color: var(--color-ink-muted);
-}
-
-/* Una tarjeta por entrada del Jacobiano, en el orden de la matriz. */
-.partials-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(430px, 100%), 1fr));
-  gap: var(--space-3);
-}
-
-.partial-title {
-  margin: 0 0 var(--space-2);
-}
-
-.partial-terms {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-}
-
-.partial-formula {
-  overflow-x: auto;
-}
-
-.partial-rule {
-  display: block;
-  font-size: var(--text-small);
-  color: var(--color-ink-muted);
-}
-
-.partial-sum {
-  margin-top: var(--space-2);
-  padding-top: var(--space-2);
-  border-top: 1px dashed var(--color-line);
-  font-weight: var(--weight-semibold);
-  overflow-x: auto;
-}
-
-.general-step {
-  margin-top: var(--space-2);
 }
 
 /* Una tarjeta por variable; dos columnas cuando caben. */
