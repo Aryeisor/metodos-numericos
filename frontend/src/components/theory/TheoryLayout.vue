@@ -121,6 +121,23 @@ import { CURRENT_COLOR, PREVIOUS_COLOR } from '../../utils/latexFormulas'
   color: var(--color-ink-muted);
 }
 
+/* Iteraciones con sub-pasos con nombre (Newton): el título de la iteración
+   resalta un poco más y cada sub-paso lleva el suyo. */
+.theory .worked-step:has(.worked-group) > .worked-step-title {
+  color: var(--color-ink);
+  font-size: var(--text-body);
+}
+
+.theory .worked-group + .worked-group {
+  margin-top: var(--space-3);
+}
+
+.theory .worked-group-title {
+  margin: 0 0 var(--space-2);
+  font-size: var(--text-small);
+  color: var(--color-ink-muted);
+}
+
 .theory .legend-prev {
   color: v-bind(PREVIOUS_COLOR);
   font-weight: var(--weight-semibold);

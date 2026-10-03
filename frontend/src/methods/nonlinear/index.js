@@ -7,7 +7,7 @@
 // de cada método va en `methods[slug]` y methods/registry.js lo combina.
 //
 // Los métodos con entrada en THEORY_SECTIONS aparecen en "Teoría ▾"; uno que
-// no la tenga (hoy, Newton) aparece sólo en "Resolver ▾".
+// no la tenga aparece sólo en "Resolver ▾".
 import NewtonIterationDetail from './NewtonIterationDetail.vue'
 import NewtonJacobianSection from './NewtonJacobianSection.vue'
 import NewtonSystemInput from './NewtonSystemInput.vue'

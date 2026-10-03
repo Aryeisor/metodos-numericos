@@ -1,0 +1,363 @@
+{
+  "variables": [
+    "x",
+    "y"
+  ],
+  "variables_latex": [
+    "x",
+    "y"
+  ],
+  "x0": [
+    1.5,
+    3.5
+  ],
+  "equations": [
+    {
+      "function_latex": "x^{2} + x y - 10",
+      "terms": [
+        {
+          "sign": "+",
+          "template": "@@0@@^{2}"
+        },
+        {
+          "sign": "+",
+          "template": "@@0@@ \\cdot @@1@@"
+        },
+        {
+          "sign": "-",
+          "template": "10"
+        }
+      ]
+    },
+    {
+      "function_latex": "3 x y^{2} + y - 57",
+      "terms": [
+        {
+          "sign": "+",
+          "template": "3 \\cdot @@0@@ \\cdot @@1@@^{2}"
+        },
+        {
+          "sign": "+",
+          "template": "@@1@@"
+        },
+        {
+          "sign": "-",
+          "template": "57"
+        }
+      ]
+    }
+  ],
+  "jacobian": {
+    "latex": [
+      [
+        "2 x + y",
+        "x"
+      ],
+      [
+        "3 y^{2}",
+        "6 x y + 1"
+      ]
+    ],
+    "steps": [
+      [
+        {
+          "terms": [
+            {
+              "latex": "\\frac{\\partial}{\\partial x}\\left(x^{2}\\right) = 2 \\cdot x = 2 x",
+              "rule": "regla de la potencia"
+            },
+            {
+              "latex": "\\frac{\\partial}{\\partial x}\\left(x y\\right) = y",
+              "rule": "la derivada de x respecto a x es 1 (y se trata como constante respecto a x)"
+            },
+            {
+              "latex": "\\frac{\\partial}{\\partial x}\\left(-10\\right) = 0",
+              "rule": "derivada de una constante"
+            }
+          ],
+          "sum_latex": "\\frac{\\partial f_{1}}{\\partial x} = 2 x + y + 0 = 2 x + y"
+        },
+        {
+          "terms": [
+            {
+              "latex": "\\frac{\\partial}{\\partial y}\\left(x^{2}\\right) = 0",
+              "rule": "no depende de y: se trata como constante"
+            },
+            {
+              "latex": "\\frac{\\partial}{\\partial y}\\left(x y\\right) = x",
+              "rule": "la derivada de y respecto a y es 1 (x se trata como constante respecto a y)"
+            },
+            {
+              "latex": "\\frac{\\partial}{\\partial y}\\left(-10\\right) = 0",
+              "rule": "derivada de una constante"
+            }
+          ],
+          "sum_latex": "\\frac{\\partial f_{1}}{\\partial y} = 0 + x + 0 = x"
+        }
+      ],
+      [
+        {
+          "terms": [
+            {
+              "latex": "\\frac{\\partial}{\\partial x}\\left(3 x y^{2}\\right) = 3 y^{2}",
+              "rule": "la derivada de x respecto a x es 1 (3*y^2 se trata como constante respecto a x)"
+            },
+            {
+              "latex": "\\frac{\\partial}{\\partial x}\\left(y\\right) = 0",
+              "rule": "no depende de x: se trata como constante"
+            },
+            {
+              "latex": "\\frac{\\partial}{\\partial x}\\left(-57\\right) = 0",
+              "rule": "derivada de una constante"
+            }
+          ],
+          "sum_latex": "\\frac{\\partial f_{2}}{\\partial x} = 3 y^{2} + 0 + 0 = 3 y^{2}"
+        },
+        {
+          "terms": [
+            {
+              "latex": "\\frac{\\partial}{\\partial y}\\left(3 x y^{2}\\right) = 3 x \\cdot 2 \\cdot y = 6 x y",
+              "rule": "regla de la potencia (3*x se trata como constante respecto a y)"
+            },
+            {
+              "latex": "\\frac{\\partial}{\\partial y}\\left(y\\right) = 1",
+              "rule": "la derivada de y respecto a y es 1"
+            },
+            {
+              "latex": "\\frac{\\partial}{\\partial y}\\left(-57\\right) = 0",
+              "rule": "derivada de una constante"
+            }
+          ],
+          "sum_latex": "\\frac{\\partial f_{2}}{\\partial y} = 6 x y + 1 + 0 = 6 x y + 1"
+        }
+      ]
+    ]
+  },
+  "iterations": [
+    {
+      "iteration": 1,
+      "x": [
+        2.0360288230584467,
+        2.843875100080064
+      ],
+      "error": 0.6561248999199359,
+      "extra": {
+        "point": [
+          1.5,
+          3.5
+        ],
+        "F": [
+          -2.5,
+          1.625
+        ],
+        "J": [
+          [
+            6.5,
+            1.5
+          ],
+          [
+            36.75,
+            32.5
+          ]
+        ],
+        "F_terms": [
+          [
+            2.25,
+            5.25,
+            -10.0
+          ],
+          [
+            55.125,
+            3.5,
+            -57.0
+          ]
+        ],
+        "minus_F": [
+          2.5,
+          -1.625
+        ],
+        "D": 156.125,
+        "D_i": [
+          83.6875,
+          -102.4375
+        ],
+        "matrices": [
+          [
+            [
+              2.5,
+              1.5
+            ],
+            [
+              -1.625,
+              32.5
+            ]
+          ],
+          [
+            [
+              6.5,
+              2.5
+            ],
+            [
+              36.75,
+              -1.625
+            ]
+          ]
+        ],
+        "delta": [
+          0.5360288230584468,
+          -0.6561248999199359
+        ]
+      }
+    },
+    {
+      "iteration": 2,
+      "x": [
+        1.9987006090558244,
+        3.002288562924508
+      ],
+      "error": 0.15841346284444413,
+      "extra": {
+        "point": [
+          2.0360288230584467,
+          2.843875100080064
+        ],
+        "F": [
+          -0.06437495873400323,
+          -4.756208497308407
+        ],
+        "J": [
+          [
+            6.915932746196957,
+            2.0360288230584467
+          ],
+          [
+            24.26287675456618,
+            35.74127003764741
+          ]
+        ],
+        "F_terms": [
+          [
+            4.145413368324763,
+            5.7902116729412345,
+            -10.0
+          ],
+          [
+            49.39991640261153,
+            2.843875100080064,
+            -57.0
+          ]
+        ],
+        "minus_F": [
+          0.06437495873400323,
+          4.756208497308407
+        ],
+        "D": 197.78430344142237,
+        "D_i": [
+          -7.382934805221001,
+          31.331696404432027
+        ],
+        "matrices": [
+          [
+            [
+              0.06437495873400323,
+              2.0360288230584467
+            ],
+            [
+              4.756208497308407,
+              35.74127003764741
+            ]
+          ],
+          [
+            [
+              6.915932746196957,
+              0.06437495873400323
+            ],
+            [
+              24.26287675456618,
+              4.756208497308407
+            ]
+          ]
+        ],
+        "delta": [
+          -0.037328214002622304,
+          0.15841346284444413
+        ]
+      }
+    },
+    {
+      "iteration": 3,
+      "x": [
+        1.99999998387626,
+        2.999999413388913
+      ],
+      "error": 0.002289149535594948,
+      "extra": {
+        "point": [
+          1.9987006090558244,
+          3.002288562924508
+        ],
+        "F": [
+          -0.004519896081326635,
+          0.049571150135946596
+        ],
+        "J": [
+          [
+            6.999689781036157,
+            1.9987006090558244
+          ],
+          [
+            27.04120984520192,
+            37.0040558756713
+          ]
+        ],
+        "F_terms": [
+          [
+            3.9948041246401234,
+            6.00067597927855,
+            -10.0
+          ],
+          [
+            54.04728258721144,
+            3.002288562924508,
+            -57.0
+          ]
+        ],
+        "minus_F": [
+          0.004519896081326635,
+          -0.049571150135946596
+        ],
+        "D": 204.9696291826159,
+        "D_i": [
+          0.26633237511395275,
+          -0.4692061314544539
+        ],
+        "matrices": [
+          [
+            [
+              0.004519896081326635,
+              1.9987006090558244
+            ],
+            [
+              -0.049571150135946596,
+              37.0040558756713
+            ]
+          ],
+          [
+            [
+              6.999689781036157,
+              0.004519896081326635
+            ],
+            [
+              27.04120984520192,
+              -0.049571150135946596
+            ]
+          ]
+        ],
+        "delta": [
+          0.0012993748204357936,
+          -0.002289149535594948
+        ]
+      }
+    }
+  ]
+}

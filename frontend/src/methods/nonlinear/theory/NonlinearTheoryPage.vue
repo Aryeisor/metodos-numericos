@@ -1,11 +1,13 @@
 <script>
 import FixedPointSection from './FixedPointSection.vue'
+import NewtonSection from './NewtonSection.vue'
 import NonlinearFundamentalsSection from './NonlinearFundamentalsSection.vue'
 import NonlinearReferencesSection from './NonlinearReferencesSection.vue'
 
 /** Métodos de la categoría que tienen teoría escrita, y su sección propia. */
 export const THEORY_SECTIONS = {
   'punto-fijo': FixedPointSection,
+  newton: NewtonSection,
 }
 </script>
 
@@ -14,9 +16,8 @@ export const THEORY_SECTIONS = {
 //
 // Misma estructura que la de sistemas lineales: el fundamento común y las
 // referencias se muestran en todas las páginas de la categoría (un único
-// componente cada uno), y en medio va la sección propia del método. Cuando
-// se agregue Newton, basta con añadir su sección a THEORY_SECTIONS: hereda el
-// fundamento y las referencias sin reescribirlos.
+// componente cada uno), y en medio va la sección propia del método. Las
+// referencias indican qué sección de la bibliografía cubre el método.
 import { computed } from 'vue'
 import TheoryLayout from '../../../components/theory/TheoryLayout.vue'
 
@@ -31,6 +32,6 @@ const section = computed(() => THEORY_SECTIONS[props.method])
   <TheoryLayout>
     <NonlinearFundamentalsSection />
     <component :is="section" />
-    <NonlinearReferencesSection />
+    <NonlinearReferencesSection :method="method" />
   </TheoryLayout>
 </template>
