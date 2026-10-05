@@ -6,11 +6,11 @@
 //                  la tolerancia de Bairstow es un error relativo en %, y el
 //                  máximo de iteraciones es por factor.
 //
-// Sin teoría escrita todavía: `theorySections` vacío hace que Bairstow
-// aparezca en "Resolver ▾" pero no en "Teoría ▾".
+// Los métodos con entrada en THEORY_SECTIONS aparecen en "Teoría ▾".
 import PolynomialInput from './PolynomialInput.vue'
 import PolynomialResult from './PolynomialResult.vue'
 import { createPolynomialStore } from './store'
+import PolynomialTheoryPage, { THEORY_SECTIONS } from './theory/PolynomialTheoryPage.vue'
 
 export default {
   createStore: createPolynomialStore,
@@ -37,6 +37,6 @@ export default {
   iterationDetail: null,
   pdfReport: null,
 
-  theoryPage: null,
-  theorySections: {},
+  theoryPage: PolynomialTheoryPage,
+  theorySections: THEORY_SECTIONS,
 }

@@ -70,8 +70,8 @@ iterativos, y para estudiar la teoría de cada método.
 
 ### Vista «Teoría» (`/teoria/<método>`)
 
-Una página por método, con el mismo formato en los cuatro que la tienen
-(Jacobi, Gauss-Seidel, Punto Fijo y Newton): fundamento común
+Una página por método, con el mismo formato en los cinco (Jacobi,
+Gauss-Seidel, Punto Fijo, Newton y Bairstow): fundamento común
 de la categoría, definición formal en LaTeX, condición de convergencia,
 restricciones, algoritmo en tarjetas, ejemplo resuelto paso a paso con datos
 reales del solver, tabla comparativa y referencias bibliográficas (APA).
@@ -81,9 +81,14 @@ reales del solver, tabla comparativa y referencias bibliográficas (APA).
 - **No lineales:** concepto de punto fijo y contracción; esquema simultáneo
   frente a secuencial; derivación de Newton, regla de Cramer y convergencia
   cuadrática; Punto Fijo frente a Newton.
-
-La página de teoría de **Bairstow está pendiente**: por ahora el método sólo
-aparece en «Resolver ▾».
+- **Polinomios:** teorema fundamental del álgebra, pares conjugados como
+  factores cuadráticos reales y deflación; división entre `x² − r·x − s`,
+  derivación de la recurrencia de los `b` y su equivalencia con la división
+  sintética de cuatro filas; demostración de que las derivadas parciales son
+  los coeficientes `c` (por eso no se calcula `c₀`) y de que la matriz del
+  sistema es la Jacobiana de Newton; el ejemplo de Chapra y Canale resuelto
+  con datos reales del solver; Bairstow frente a Newton-Raphson y frente a
+  Newton para sistemas.
 
 Los menús «Resolver ▾» y «Teoría ▾» se generan automáticamente a partir del
 catálogo de métodos del backend, agrupados por categoría.
@@ -419,7 +424,7 @@ metodos/
         │   ├── linear/              # Formulario, detalle de iteración, PDF y teoría de Jacobi / Gauss-Seidel
         │   ├── nonlinear/           # Formularios, detalles, PDF y teoría de Punto Fijo y Newton
         │   └── polynomial/          # Bairstow: formulario (texto o coeficientes), vista de resultado
-        │                            # por factores, tablas sintéticas, paso a paso y PDF
+        │                            # por factores, tablas sintéticas, paso a paso, PDF y teoría
         ├── components/              # ResultsTable, ConvergenceChart, MathFormula, MatrixInput,
         │   │                        # MathSymbolToolbar, MathSyntaxHelp, NavMenu,
         │   │                        # NumericFieldsInput (x0, r0/s0, coeficientes), EquationPreview
@@ -520,4 +525,3 @@ python manage.py test numeric_methods
 - Los métodos para sistemas no lineales admiten de 2 a 6 ecuaciones; los
   lineales, de 3 a 12 variables en el formulario; Bairstow, polinomios de
   grado 3 a 10.
-- La página de teoría de Bairstow está pendiente.
