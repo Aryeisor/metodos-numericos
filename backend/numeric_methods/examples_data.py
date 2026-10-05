@@ -229,11 +229,77 @@ NEWTON_EXAMPLES = [
 ]
 
 
+def _polynomial_example(id, name, description, degree, *, text=None, coefficients=None,
+                        r0=-1, s0=-1, tolerance=0.0001):
+    """Ejemplo de Bairstow en modo texto o en modo coeficientes (uno de los dos)."""
+    return {
+        "id": id,
+        "name": name,
+        "description": description,
+        "n": degree,
+        "mode": "text" if text is not None else "coefficients",
+        "polynomial": text,
+        "coefficients": coefficients,
+        "r0": r0,
+        "s0": s0,
+        "tolerance": tolerance,  # en porcentaje
+        "max_iterations": 100,
+    }
+
+
+# Polinomios para Bairstow. Cada expansión se verificó con sympy contra sus
+# raíces, y cada ejemplo converge con el r₀ y s₀ indicados (−1 y −1 salvo
+# donde se aclara). Unos se cargan como texto y otros como coeficientes.
+POLYNOMIAL_EXAMPLES = [
+    _polynomial_example(
+        "bairstow-chapra", "Clásico de Chapra y Canale",
+        "Grado 5; raíces −1, 0.5, 2 y 1 ± 0.5i. Tolerancia 1 %, como en el libro.", 5,
+        text="x^5 - 3.5x^4 + 2.75x^3 + 2.125x^2 - 3.875x + 1.25", tolerance=1,
+    ),
+    _polynomial_example(
+        "bairstow-cubica-reales", "Cúbica con raíces reales",
+        "x³ − 6x² + 11x − 6, raíces 1, 2 y 3.", 3,
+        coefficients=[1, -6, 11, -6],
+    ),
+    _polynomial_example(
+        "bairstow-cubica-compleja", "Cúbica con par complejo",
+        "x³ − x² + x − 1, raíces 1 y ± i. Desde r₀ = s₀ = −1 el sistema se vuelve singular: usa r₀ = 0.5, s₀ = −0.5.", 3,
+        text="x^3 - x^2 + x - 1", r0=0.5, s0=-0.5,
+    ),
+    _polynomial_example(
+        "bairstow-terminos-faltantes", "Términos faltantes",
+        "x⁴ − 5x² + 4: coeficientes 0 en x³ y x; raíces ±1 y ±2.", 4,
+        coefficients=[1, 0, -5, 0, 4],
+    ),
+    _polynomial_example(
+        "bairstow-dos-pares", "Dos pares complejos",
+        "x⁴ − 2x³ + 6x² − 2x + 5, raíces ± i y 1 ± 2i.", 4,
+        text="x^4 - 2x^3 + 6x^2 - 2x + 5",
+    ),
+    _polynomial_example(
+        "bairstow-principal-2", "Coeficiente principal ≠ 1",
+        "2x³ + x² + x − 1, raíces 0.5 y (−1 ± i√3)/2.", 3,
+        coefficients=[2, 1, 1, -1],
+    ),
+    _polynomial_example(
+        "bairstow-grado-6", "Grado 6, tres factores",
+        "x⁶ − x⁵ + 2x⁴ − 6x³ − 4x² − 8x + 16, raíces −1 ± i, 1, 2 y ± 2i.", 6,
+        text="x^6 - x^5 + 2x^4 - 6x^3 - 4x^2 - 8x + 16",
+    ),
+    _polynomial_example(
+        "bairstow-raiz-nula", "Con raíz nula (paso previo)",
+        "x⁵ − x⁴ − 7x³ + x² + 6x: primero se extrae x = 0; raíces 0, 1, −1, 3 y −2.", 5,
+        text="x^5 - x^4 - 7x^3 + x^2 + 6x",
+    ),
+]
+
+
 EXAMPLES = {
     "jacobi": LINEAR_SYSTEM_EXAMPLES,
     "gauss-seidel": LINEAR_SYSTEM_EXAMPLES,
     "punto-fijo": NONLINEAR_SYSTEM_EXAMPLES,
     "newton": NEWTON_EXAMPLES,
+    "bairstow": POLYNOMIAL_EXAMPLES,
 }
 
 

@@ -13,9 +13,11 @@ from typing import Callable
 
 from .serializers.linear import LinearSystemSerializer
 from .serializers.nonlinear import NewtonSystemSerializer, NonlinearSystemSerializer
+from .serializers.polynomial import PolynomialSerializer
 from .solvers.linear.runner import solve_gauss_seidel, solve_jacobi
 from .solvers.nonlinear.fixed_point import solve_fixed_point
 from .solvers.nonlinear.newton import solve_newton
+from .solvers.polynomial.bairstow import solve_bairstow
 
 # Categorías conocidas, en el orden en que se muestran en el menú.
 CATEGORIES = {
@@ -69,6 +71,13 @@ METHODS = {
             category="nonlinear_system",
             serializer=NewtonSystemSerializer,
             solver=solve_newton,
+        ),
+        MethodSpec(
+            slug="bairstow",
+            name="Bairstow",
+            category="polynomial",
+            serializer=PolynomialSerializer,
+            solver=solve_bairstow,
         ),
     )
 }

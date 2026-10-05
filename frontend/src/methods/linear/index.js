@@ -17,6 +17,15 @@
 //   theoryPage                    página de teoría; recibe el prop `method`
 //   theorySections                métodos con teoría escrita: { slug: sección }.
 //                                 Un método sin entrada aquí no aparece en "Teoría ▾"
+//
+// Opcionales (si faltan, todo funciona como en esta categoría):
+//   methods[slug]                 lo que cambia para un método concreto (ej. Newton)
+//   beforeIterations              sección fija entre el gráfico y la tabla de iteraciones
+//   resultView                    vista completa del resultado en lugar de ResultsTable
+//                                 (recibe result, system y methodName; exporta su PDF)
+//   toleranceLabel                texto del campo de tolerancia
+//   defaultTolerance              tolerancia por defecto al entrar en la categoría
+//   maxIterationsLabel            texto del campo de máximo de iteraciones
 import MatrixInput from '../../components/MatrixInput.vue'
 import LinearConfigExtras from './LinearConfigExtras.vue'
 import LinearConfigFields from './LinearConfigFields.vue'

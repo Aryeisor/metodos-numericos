@@ -17,10 +17,12 @@ export function formatNumber(value) {
     return value.toExponential(2)
   }
 
-  return value
+  const text = value
     .toFixed(MAX_DECIMALS)
     .replace(/0+$/, '')
     .replace(/\.$/, '')
+  // Un negativo diminuto (p. ej. -1e-9) redondea a "-0".
+  return text === '-0' ? '0' : text
 }
 
 /**

@@ -6,6 +6,14 @@ const props = defineProps({
   iterations: { type: Array, required: true },
   tolerance: { type: Number, default: null },
   converged: { type: Boolean, default: false },
+  // Opcionales (Bairstow). Sin ellos el gráfico es el de siempre: una serie
+  // con el `error` de cada iteración.
+  //   series         [{ label, values, color }]: varias series en lugar del error
+  //   yLabel         título del eje del error
+  //   toleranceLabel texto de la línea de tolerancia en la leyenda
+  series: { type: Array, default: null },
+  yLabel: { type: String, default: 'Error (escala log)' },
+  toleranceLabel: { type: String, default: null },
 })
 
 const canvasRef = ref(null)
@@ -53,28 +61,40 @@ function logAxisLabel(value) {
 // línea se continúa con spanGaps.
 function buildData() {
   const labels = props.iterations.map((it) => it.iteration)
-  const errors = props.iterations.map((it) =>
-    it.error !== null && it.error > 0 && Number.isFinite(it.error) ? it.error : null
-  )
+  const positive = (value) =>
+    value !== null && value !== undefined && value > 0 && Number.isFinite(value) ? value : null
 
-  const datasets = [
-    {
-      label: 'Error por iteración',
-      data: errors,
-      borderColor: props.converged ? '#2563eb' : '#b91c1c',
-      backgroundColor: props.converged ? 'rgba(37, 99, 235, 0.12)' : 'rgba(185, 28, 28, 0.12)',
-      borderWidth: 2,
-      pointRadius: 2,
-      pointHoverRadius: 5,
-      tension: 0.15,
-      spanGaps: true,
-      fill: true,
-    },
-  ]
+  const datasets = props.series
+    ? props.series.map((serie) => ({
+        label: serie.label,
+        data: serie.values.map(positive),
+        borderColor: serie.color,
+        backgroundColor: serie.color,
+        borderWidth: 2,
+        pointRadius: 2,
+        pointHoverRadius: 5,
+        tension: 0.15,
+        spanGaps: true,
+        fill: false,
+      }))
+    : [
+        {
+          label: 'Error por iteración',
+          data: props.iterations.map((it) => positive(it.error)),
+          borderColor: props.converged ? '#2563eb' : '#b91c1c',
+          backgroundColor: props.converged ? 'rgba(37, 99, 235, 0.12)' : 'rgba(185, 28, 28, 0.12)',
+          borderWidth: 2,
+          pointRadius: 2,
+          pointHoverRadius: 5,
+          tension: 0.15,
+          spanGaps: true,
+          fill: true,
+        },
+      ]
 
   if (props.tolerance && props.tolerance > 0) {
     datasets.push({
-      label: `Tolerancia (${formatChartNumber(props.tolerance)})`,
+      label: props.toleranceLabel ?? `Tolerancia (${formatChartNumber(props.tolerance)})`,
       data: labels.map(() => props.tolerance),
       borderColor: '#15803d',
       borderWidth: 2,
@@ -100,7 +120,7 @@ function buildOptions() {
       },
       y: {
         type: 'logarithmic',
-        title: { display: true, text: 'Error (escala log)' },
+        title: { display: true, text: props.yLabel },
         grid: { color: 'rgba(0,0,0,0.05)' },
         ticks: { callback: logAxisLabel },
       },

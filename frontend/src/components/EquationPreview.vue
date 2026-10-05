@@ -4,7 +4,7 @@
 // primera respuesta; mientras se consulta un cambio se sigue viendo la
 // anterior, atenuada. Vacía no ocupa espacio.
 import { computed } from 'vue'
-import MathFormula from '../../components/MathFormula.vue'
+import MathFormula from './MathFormula.vue'
 
 const props = defineProps({
   // { status: 'empty' | 'pending' | 'valid' | 'invalid', latex, error, stale }

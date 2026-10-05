@@ -8,8 +8,8 @@ import { computed, ref } from 'vue'
 import MathSymbolToolbar from '../../components/MathSymbolToolbar.vue'
 import MathSyntaxHelp from '../../components/MathSyntaxHelp.vue'
 import { useExpressionPreviews } from '../../composables/useExpressionPreviews'
-import EquationPreview from './EquationPreview.vue'
-import InitialPointInput from './InitialPointInput.vue'
+import EquationPreview from '../../components/EquationPreview.vue'
+import NumericFieldsInput from '../../components/NumericFieldsInput.vue'
 import { MAX_EQUATIONS, MIN_EQUATIONS } from './store'
 
 const props = defineProps({
@@ -127,7 +127,7 @@ function removeEquation(index) {
       <MathSyntaxHelp />
     </div>
 
-    <InitialPointInput
+    <NumericFieldsInput
       :values="state.x0"
       :labels="state.variables"
       @update:values="(values) => (state.x0 = values)"

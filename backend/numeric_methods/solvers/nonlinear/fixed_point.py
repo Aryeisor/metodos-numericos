@@ -49,6 +49,7 @@ from dataclasses import dataclass
 
 import sympy as sp
 
+from ...expressions.normalize import estimate_degree  # noqa: F401  (se reexporta)
 from ...expressions.parser import ExpressionError, make_symbols, parse_equation
 from ...expressions.to_latex import expression_to_latex, substitution_template_latex
 from ...expressions.to_text import expression_to_text
@@ -89,26 +90,6 @@ class FixedPointFunction:
     evaluate: object
     # Paso a paso del despeje (ver isolation_steps.py).
     isolation: dict
-
-
-def estimate_degree(expr, symbol):
-    """Cota superior del grado de `expr` en `symbol`, sin expandir.
-
-    Suma en productos, máximo en sumas, multiplica en potencias de exponente
-    numérico. Dentro de funciones (sin, exp, ...) cuenta el grado de sus
-    argumentos, de modo que `exp(x^1000)` también se detecta.
-    """
-    if not expr.has(symbol):
-        return 0
-    if expr == symbol:
-        return 1
-    if isinstance(expr, sp.Add):
-        return max(estimate_degree(arg, symbol) for arg in expr.args)
-    if isinstance(expr, sp.Mul):
-        return sum(estimate_degree(arg, symbol) for arg in expr.args)
-    if isinstance(expr, sp.Pow) and expr.exp.is_Number:
-        return estimate_degree(expr.base, symbol) * abs(float(expr.exp))
-    return max(1, *(estimate_degree(arg, symbol) for arg in expr.args))
 
 
 def _is_real_candidate(solution):

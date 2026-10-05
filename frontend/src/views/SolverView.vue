@@ -27,6 +27,7 @@ const selectedMethod = computed({
 
 const tolerance = ref(0.000001)
 const maxIterations = ref(100)
+let previousDefaultTolerance
 
 const examples = ref([])
 const selectedExampleId = ref('')
@@ -45,9 +46,19 @@ const solvedSystem = ref(null)
 // que crea el estado, no la categoría. Al cambiar también se descarta el
 // resultado anterior: su forma es distinta y lo dibujan otros componentes.
 const store = shallowRef(null)
+const DEFAULT_TOLERANCE = 0.000001
 watch(
   () => ui.value?.createStore,
-  () => {
+  (_, previousCreateStore) => {
+    // Una categoría puede tener su propia tolerancia por defecto (Bairstow
+    // usa %). Al entrar en ella se aplica; al salir, se vuelve a la general.
+    // Entre categorías sin tolerancia propia se conserva lo que haya escrito.
+    const own = ui.value?.defaultTolerance
+    const leavingOwn = previousCreateStore && previousDefaultTolerance !== undefined
+    if (own !== undefined) tolerance.value = own
+    else if (leavingOwn) tolerance.value = DEFAULT_TOLERANCE
+    previousDefaultTolerance = own
+
     store.value = ui.value ? ui.value.createStore() : null
     result.value = null
     solvedSystem.value = null
@@ -179,11 +190,11 @@ function handleExportPdf(chartImage) {
           </select>
         </div>
         <div class="field">
-          <label>Tolerancia (criterio de parada)</label>
+          <label>{{ ui.toleranceLabel ?? 'Tolerancia (criterio de parada)' }}</label>
           <input type="number" step="any" v-model.number="tolerance" />
         </div>
         <div class="field">
-          <label>Máximo de iteraciones (mínimo real: 6)</label>
+          <label>{{ ui.maxIterationsLabel ?? 'Máximo de iteraciones (mínimo real: 6)' }}</label>
           <input type="number" min="1" v-model.number="maxIterations" />
         </div>
       </div>
@@ -205,7 +216,18 @@ function handleExportPdf(chartImage) {
     </button>
 
     <div v-if="result" class="card results-card">
+      <!-- Una categoría cuyo resultado no es una sola tabla de iteraciones
+           (Bairstow: varios factores, cada uno con su tabla y su gráfico)
+           aporta su propia vista completa, PDF incluido. -->
+      <component
+        :is="ui.resultView"
+        v-if="ui.resultView && solvedSystem"
+        :result="result"
+        :system="solvedSystem"
+        :method-name="resultMethodName"
+      />
       <ResultsTable
+        v-else-if="!ui.resultView"
         :result="result"
         :method-name="resultMethodName"
         :tolerance="solvedSystem ? solvedSystem.tolerance : null"

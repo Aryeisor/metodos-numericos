@@ -1,19 +1,27 @@
 <script setup>
-// Punto inicial x0 de un sistema no lineal: un campo por variable que acepta
-// decimales y fracciones (6/7). Lo usan los formularios de Punto Fijo y de
-// Newton.
+// Fila de campos numéricos que aceptan decimales y fracciones (6/7). Por
+// defecto es el punto inicial x0 de Punto Fijo y Newton; Bairstow la usa
+// también para r₀ y s₀ y para los coeficientes del polinomio (con otro título,
+// sufijo y etiquetas de error).
 //
 // El componente es dueño del TEXTO; hacia afuera sólo emite números con su
 // precisión completa (NaN mientras el texto no sea válido). Mismo criterio
 // que MatrixInput: el error se muestra al salir del campo.
 import { computed, reactive, ref, watch } from 'vue'
-import { formatNumber } from '../../utils/iterationSteps'
-import { INPUT_ERROR_MESSAGES, parseNumericInput } from '../../utils/numberInput'
+import { formatNumber } from '../utils/iterationSteps'
+import { INPUT_ERROR_MESSAGES, parseNumericInput } from '../utils/numberInput'
 
 const props = defineProps({
   values: { type: Array, required: true },
   // Nombre de la variable de cada campo (puede estar vacío mientras se escribe).
   labels: { type: Array, required: true },
+  // Opcionales; los valores por defecto son los del punto inicial x0.
+  title: { type: String, default: 'Punto inicial x0 (opcional, por defecto ceros)' },
+  // Se agrega al nombre de cada campo (x⁽⁰⁾).
+  suffix: { type: String, default: '⁽⁰⁾' },
+  // Cómo se nombra cada campo en la lista de errores y para lectores de
+  // pantalla; por defecto "<nombre> inicial" / "Valor inicial de <nombre>".
+  errorLabels: { type: Array, default: null },
 })
 const emit = defineEmits(['update:values'])
 
@@ -66,7 +74,7 @@ const nameOf = (i) => props.labels[i] || `variable ${i + 1}`
 const errorList = computed(() =>
   Object.keys(errors).map((index) => ({
     index,
-    label: `${nameOf(Number(index))} inicial`,
+    label: props.errorLabels?.[index] ?? `${nameOf(Number(index))} inicial`,
     message: errors[index],
   }))
 )
@@ -74,17 +82,17 @@ const errorList = computed(() =>
 
 <template>
   <div class="x0-row">
-    <label>Punto inicial x0 (opcional, por defecto ceros)</label>
+    <label>{{ title }}</label>
     <div class="x0-inputs">
       <div v-for="(value, i) in values" :key="'x0-' + i" class="x0-item">
-        <span class="x0-label">{{ labels[i] || '?' }}⁽⁰⁾</span>
+        <span class="x0-label">{{ labels[i] || '?' }}{{ suffix }}</span>
         <input
           type="text"
           inputmode="decimal"
           :value="texts[i]"
           :class="{ 'is-invalid': errors[i] }"
           :aria-invalid="Boolean(errors[i])"
-          :aria-label="`Valor inicial de ${nameOf(i)}`"
+          :aria-label="errorLabels?.[i] ?? `Valor inicial de ${nameOf(i)}`"
           :title="errors[i]"
           @input="onInput(i, $event.target.value)"
           @focus="editingIndex = i"

@@ -144,7 +144,13 @@ class ExamplesEndpointTests(APITestCase):
                     self.assertGreaterEqual(example["n"], 3)
                     self.assertEqual(len(example["A"]), example["n"])
                     self.assertEqual(len(example["b"]), example["n"])
-                else:
+                elif "equations" in example:
                     self.assertGreaterEqual(example["n"], 2)
                     self.assertEqual(len(example["equations"]), example["n"])
                     self.assertEqual(len(example["variables"]), example["n"])
+                else:
+                    # Polinomio (Bairstow): texto o coeficientes, exactamente uno.
+                    self.assertGreaterEqual(example["n"], 3)
+                    self.assertEqual(example["polynomial"] is None, example["coefficients"] is not None)
+                    if example["coefficients"] is not None:
+                        self.assertEqual(len(example["coefficients"]), example["n"] + 1)

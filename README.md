@@ -1,8 +1,8 @@
 # Métodos Numéricos Iterativos
 
 Aplicación web full-stack para resolver, paso a paso, sistemas de ecuaciones
-**lineales** y **no lineales** con métodos iterativos, y para estudiar la
-teoría de cada método.
+**lineales** y **no lineales** y las **raíces de polinomios** con métodos
+iterativos, y para estudiar la teoría de cada método.
 
 | Categoría | Método | Qué resuelve |
 | --- | --- | --- |
@@ -10,6 +10,7 @@ teoría de cada método.
 | Sistemas lineales | **Gauss-Seidel** | `A·x = b`, n × n con n ≥ 3 |
 | Ecuaciones no lineales | **Punto Fijo (Iterativo Secuencial)** | `F(x) = 0`, de 2 a 6 ecuaciones, despejando cada una automáticamente |
 | Ecuaciones no lineales | **Newton** | `F(x) = 0`, de 2 a 6 ecuaciones, con la matriz Jacobiana y la regla de Cramer |
+| Polinomios | **Bairstow** | Todas las raíces (reales y complejas) de un polinomio de grado 3 a 10, extrayendo factores cuadráticos `x² − r·x − s` |
 
 - **Backend:** Django + Django REST Framework (API REST) y sympy para el
   manejo simbólico de las ecuaciones.
@@ -37,14 +38,18 @@ teoría de cada método.
 
 ### Vista «Resolver» (`/resolver/<método>`)
 
-- **Ejemplos precargados** por método (13 en total), que se cargan en el
-  formulario con un clic.
+- **Ejemplos precargados** por método (21 en total: 6 lineales compartidos por
+  Jacobi y Gauss-Seidel, 4 de Punto Fijo, 3 de Newton y 8 de Bairstow), que se
+  cargan en el formulario con un clic.
 - **Formulario propio de cada categoría:**
   - Sistemas lineales: matriz `A`, vector `b` y vector inicial `x0`; acepta
     decimales, negativos y **fracciones** (`6/7`), y el cálculo usa el valor
     exacto, no el redondeado que se ve.
   - Sistemas no lineales: una fila por ecuación, con controles para agregar o
     quitar ecuaciones, y el punto inicial `x0` (también con fracciones).
+  - Polinomios: dos modos de entrada, **escribir el polinomio** en x (con
+    barra de símbolos reducida y vista previa) o **coeficientes** (selector
+    de grado y una casilla por potencia), y los valores iniciales `r₀`, `s₀`.
 - **Barra de símbolos matemáticos** (√, xⁿ, log, ln, exp, sin, cos, tan, π, e,
   |x|, paréntesis y un desplegable «Más funciones» con trigonométricas
   inversas e hiperbólicas). Inserta en la posición del cursor del campo activo
@@ -58,10 +63,15 @@ teoría de cada método.
   renderizadas con KaTeX (ver [Detalle de cada método](#detalle-de-cada-método)).
 - **Exportación a PDF** del resultado: datos del sistema, solución, gráfico y
   tabla completa de iteraciones.
+- En **Bairstow**, el resultado se organiza por **factor**: un bloque
+  plegable por cada factor cuadrático, con su tabla de iteraciones, su gráfico
+  de ε_r y ε_s y su cierre (discriminante, raíces y deflación); después, el
+  resumen de raíces con la comprobación `|f(x)|` y la factorización completa.
 
 ### Vista «Teoría» (`/teoria/<método>`)
 
-Una página por método, con el mismo formato en los cuatro: fundamento común
+Una página por método, con el mismo formato en los cuatro que la tienen
+(Jacobi, Gauss-Seidel, Punto Fijo y Newton): fundamento común
 de la categoría, definición formal en LaTeX, condición de convergencia,
 restricciones, algoritmo en tarjetas, ejemplo resuelto paso a paso con datos
 reales del solver, tabla comparativa y referencias bibliográficas (APA).
@@ -71,6 +81,9 @@ reales del solver, tabla comparativa y referencias bibliográficas (APA).
 - **No lineales:** concepto de punto fijo y contracción; esquema simultáneo
   frente a secuencial; derivación de Newton, regla de Cramer y convergencia
   cuadrática; Punto Fijo frente a Newton.
+
+La página de teoría de **Bairstow está pendiente**: por ahora el método sólo
+aparece en «Resolver ▾».
 
 Los menús «Resolver ▾» y «Teoría ▾» se generan automáticamente a partir del
 catálogo de métodos del backend, agrupados por categoría.
@@ -154,15 +167,20 @@ escribir igualadas a cero (`3*x - cos(y) - 1 = 0`) o con dos lados
 Dos números seguidos (`007`, `1.5.2`, `2 3`) se rechazan como error de
 escritura, en lugar de interpretarse como una multiplicación.
 
+En Bairstow, el polinomio se escribe con la misma sintaxis, sólo en la
+variable `x` y sin funciones (`x^3 - 6x^2 + 11x - 6`, `(x - 1)(x + 2)(x - 3)`,
+`x^3 = 2x - 1`); se expande y se pasa a coeficientes antes de resolver.
+
 ---
 
 ## Detalle de cada método
 
-Reglas comunes a los cuatro métodos: tolerancia por defecto `0.000001`,
+Reglas comunes a los métodos de sistemas: tolerancia por defecto `0.000001`,
 máximo de iteraciones por defecto `100`, **mínimo de 6 iteraciones** aunque
 la tolerancia se alcance antes, y el error de cada iteración se mide en
 norma infinito. Si un valor deja de ser un número real finito, el método se
-detiene y se reporta como no convergente, con una advertencia.
+detiene y se reporta como no convergente, con una advertencia. Bairstow tiene
+reglas propias de tolerancia y error (ver su sección).
 
 ### Jacobi y Gauss-Seidel (sistemas lineales)
 
@@ -212,6 +230,38 @@ detiene y se reporta como no convergente, con una advertencia.
   actual, sistema lineal planteado, determinantes (`ad − bc` en 2×2,
   expansión por cofactores en 3×3 o más), incrementos, actualización y error.
 
+### Bairstow (raíces de polinomios)
+
+- Polinomio de **grado 3 a 10** con coeficientes reales, escrito como texto o
+  dado por coeficientes (de mayor a menor potencia, sin ceros a la izquierda).
+  Grados 1 y 2 se rechazan con un mensaje que indica cómo resolverlos.
+- Busca factores cuadráticos **`x² − r·x − s`**. Valores iniciales `r₀ = s₀ =
+  −1` por defecto; cada factor arranca con los mismos `r₀`, `s₀`.
+- En cada iteración: división sintética para los `b`
+  (`b_i = a_i + r·b_{i+1} + s·b_{i+2}`), segunda división para los `c` (sobre
+  los `b`; `c₀` no se calcula), sistema 2×2 `c₂Δr + c₃Δs = −b₁`,
+  `c₁Δr + c₂Δs = −b₀` resuelto por la **regla de Cramer** (`linalg/cramer.py`), actualización y errores
+  relativos `ε_r = |Δr / r_nuevo|·100` y `ε_s = |Δs / s_nuevo|·100`.
+- La **tolerancia `εs` está en porcentaje** (por defecto `0.0001 %`). Un
+  factor converge cuando `ε_r ≤ εs` y `ε_s ≤ εs`, con un **mínimo de 6
+  iteraciones**; el máximo de iteraciones es **por factor**. Si `r` o `s`
+  tienden a 0 (`|valor| < 10⁻¹²`), se usa el error absoluto, con una
+  advertencia.
+- **Cierre de cada factor:** discriminante `Δ = r² + 4s` (raíces reales,
+  doble o complejas conjugadas) y **deflación**: se recalculan los `b` con
+  los `r` y `s` finales y el cociente pasa al siguiente factor. Cuando queda
+  grado 2 o 1, se cierra directamente (fórmula cuadrática o despeje).
+- **Paso previo:** si el término independiente es 0, se extraen primero las
+  raíces `x = 0` (factor `x^k`).
+- Si un factor falla (sistema singular `D ≈ 0`, valores no finitos o máximo de
+  iteraciones), el método se detiene, lo reporta como no convergente y
+  muestra las raíces encontradas hasta ese momento.
+- Cada raíz se comprueba evaluando `|f(raíz)|` (Horner con aritmética
+  compleja).
+- Paso a paso de cada iteración (8 pasos): valores actuales, tabla de los
+  `b`, tabla de los `c`, sistema 2×2, regla de Cramer con los determinantes
+  desglosados, incrementos, actualización y errores relativos.
+
 ---
 
 ## API
@@ -226,6 +276,7 @@ Todas las rutas cuelgan de `/api/`.
 | POST | `/api/solve/gauss-seidel/` | Resuelve un sistema lineal con Gauss-Seidel |
 | POST | `/api/solve/punto-fijo/` | Resuelve un sistema no lineal con Punto Fijo |
 | POST | `/api/solve/newton/` | Resuelve un sistema no lineal con Newton |
+| POST | `/api/solve/bairstow/` | Halla todas las raíces de un polinomio con Bairstow |
 | POST | `/api/expressions/preview` | Valida una ecuación y devuelve su LaTeX (no resuelve nada) |
 
 ### Cuerpo de la petición
@@ -259,6 +310,27 @@ En Punto Fijo, la ecuación `i` se despeja para la variable `i`; en Newton,
 `variables` sólo fija el orden. `x0` es opcional en todos los métodos (por
 defecto, ceros), igual que `tolerance` y `max_iterations`.
 
+Polinomios (Bairstow), con **exactamente uno** de `polynomial` (texto) o
+`coefficients` (de mayor a menor potencia):
+
+```json
+{
+  "polynomial": "x^5 - 3.5x^4 + 2.75x^3 + 2.125x^2 - 3.875x + 1.25",
+  "r0": -1,
+  "s0": -1,
+  "tolerance": 0.0001,
+  "max_iterations": 100
+}
+```
+
+```json
+{ "coefficients": [1, -6, 11, -6], "r0": -1, "s0": -1 }
+```
+
+En Bairstow, `tolerance` está en **porcentaje** (por defecto `0.0001`, debe
+ser mayor que 0) y `max_iterations` es por factor. `r0` y `s0` son opcionales
+(por defecto `−1`).
+
 Vista previa de una ecuación:
 
 ```json
@@ -291,6 +363,17 @@ Campos propios de cada categoría:
   simbólica con el desglose de cada derivada (`jacobian`), `x0`, `failure`. En
   cada iteración, `extra` incluye `F`, `J`, `D`, `D_i` con sus matrices y
   `Δx`.
+- **Bairstow:** `polynomial` (grado, coeficientes, LaTeX, texto y modo de
+  entrada), `r0`, `s0`, `tolerance_percent`, `zero_roots` (raíces nulas
+  extraídas en el paso previo), `factors` (por factor: polinomio que se
+  divide, método —`bairstow`, `cuadratica_directa` o `lineal_directa`—,
+  `iteration_indices` hacia `iterations`, `r`, `s`, discriminante, raíces,
+  cociente y residuo), `roots` (`{re, im, check}` con `check = |f(raíz)|`),
+  `factorization` (LaTeX), `notes` y `failure`. `iterations` reúne las
+  iteraciones de todos los factores (cada `extra` lleva su `factor`, las
+  tablas `b` y `c`, el sistema 2×2, los determinantes, `Δr`, `Δs`, `ε_r` y
+  `ε_s`); `solution` y `variables` son el `[r, s]` del último factor
+  iterado.
 
 Los errores de validación de la entrada responden **400** con listas planas de
 mensajes por campo. Un despeje imposible en Punto Fijo responde **400** con el
@@ -308,11 +391,11 @@ metodos/
 │       ├── registry.py              # Registro de métodos: slug, nombre, categoría, serializer y solver
 │       ├── views.py, urls.py        # Una ruta /api/solve/<slug>/ por método registrado + methods, examples, preview
 │       ├── examples_data.py         # Ejemplos precargados por método
-│       ├── serializers/             # Validación de entrada: linear.py, nonlinear.py, expressions.py
+│       ├── serializers/             # Validación de entrada: linear.py, nonlinear.py, polynomial.py, expressions.py
 │       ├── expressions/             # Manejo simbólico de ecuaciones (sympy)
 │       │   ├── parser.py            #   Parseo seguro de texto del usuario
 │       │   ├── differentiate.py     #   Derivadas parciales, gradiente y Jacobiano
-│       │   ├── normalize.py         #   Forma evaluada de una expresión parseada
+│       │   ├── normalize.py         #   Forma evaluada de una expresión parseada y estimación de su grado
 │       │   ├── to_latex.py          #   Conversión a LaTeX
 │       │   └── to_text.py           #   Conversión a texto plano (mensajes y PDF)
 │       ├── linalg/cramer.py         # Determinante por cofactores y regla de Cramer (Python puro)
@@ -321,7 +404,9 @@ metodos/
 │       │   ├── validation.py        #   Constantes comunes (tolerancia, máx. y mín. de iteraciones)
 │       │   ├── linear/              #   Jacobi, Gauss-Seidel, dominancia y reordenamiento
 │       │   ├── nonlinear/           #   Punto Fijo (+ despeje paso a paso) y Newton (+ derivadas paso a paso)
-│       │   └── polynomial/          #   Reservado para métodos de polinomios
+│       │   └── polynomial/          #   Bairstow: bairstow.py (iteración, deflación y cierres),
+│       │                            #   synthetic.py (divisiones sintéticas b y c), validation.py
+│       │                            #   (grado, coeficientes, texto → coeficientes), latex.py
 │       └── tests/                   # Tests unitarios y de API
 └── frontend/
     └── src/
@@ -332,9 +417,12 @@ metodos/
         ├── methods/
         │   ├── registry.js          # Asocia cada categoría (y método) con su interfaz
         │   ├── linear/              # Formulario, detalle de iteración, PDF y teoría de Jacobi / Gauss-Seidel
-        │   └── nonlinear/           # Formularios, detalles, PDF y teoría de Punto Fijo y Newton
+        │   ├── nonlinear/           # Formularios, detalles, PDF y teoría de Punto Fijo y Newton
+        │   └── polynomial/          # Bairstow: formulario (texto o coeficientes), vista de resultado
+        │                            # por factores, tablas sintéticas, paso a paso y PDF
         ├── components/              # ResultsTable, ConvergenceChart, MathFormula, MatrixInput,
-        │   │                        # MathSymbolToolbar, MathSyntaxHelp, NavMenu
+        │   │                        # MathSymbolToolbar, MathSyntaxHelp, NavMenu,
+        │   │                        # NumericFieldsInput (x0, r0/s0, coeficientes), EquationPreview
         │   └── theory/              # Piezas comunes de las páginas de teoría
         ├── composables/             # useExpressionPreviews (vista previa en vivo)
         └── utils/                   # PDF, formato numérico, fórmulas LaTeX, entrada con fracciones
@@ -368,7 +456,10 @@ sin tocar `views.py` ni `urls.py`.
   de la categoría (`methods/<categoría>/index.js`).
 - Una categoría nueva sólo requiere registrar su interfaz en
   `methods/registry.js`. El contrato que debe cumplir está documentado en
-  `methods/linear/index.js`.
+  `methods/linear/index.js`. Si su resultado no encaja en la tabla única de
+  iteraciones (como Bairstow, con varios factores), puede declarar su propia
+  vista en `resultView`, y ajustar `toleranceLabel`, `defaultTolerance` y
+  `maxIterationsLabel`.
 - Para que el método aparezca en «Teoría ▾», basta con agregar su sección a
   `THEORY_SECTIONS` en la página de teoría de su categoría.
 
@@ -404,7 +495,7 @@ cd backend
 python manage.py test numeric_methods
 ```
 
-**232 tests**, todos en verde:
+**257 tests**, todos en verde:
 
 | Archivo | Tests | Qué cubre |
 | --- | --- | --- |
@@ -418,6 +509,7 @@ python manage.py test numeric_methods
 | `test_isolation_steps.py` | 20 | Despeje paso a paso de Punto Fijo |
 | `test_newton.py` | 31 | Newton y regla de Cramer: iteraciones calculadas a mano, Jacobiana singular, endpoint |
 | `test_newton_steps.py` | 16 | Derivadas parciales paso a paso y sustitución en F |
+| `test_bairstow.py` | 25 | Bairstow: divisiones sintéticas, primera iteración de Chapra calculada a mano, ejemplos, raíces nulas, raíz doble, cierres directos, fallos y endpoint |
 
 ---
 
@@ -425,7 +517,7 @@ python manage.py test numeric_methods
 
 - No hay autenticación ni persistencia: los resultados no se guardan y los
   ejemplos viven en `backend/numeric_methods/examples_data.py`.
-- La categoría «Polinomios» está reservada en el registro (prevista para
-  Bairstow) y todavía no tiene métodos implementados.
 - Los métodos para sistemas no lineales admiten de 2 a 6 ecuaciones; los
-  lineales, de 3 a 12 variables en el formulario.
+  lineales, de 3 a 12 variables en el formulario; Bairstow, polinomios de
+  grado 3 a 10.
+- La página de teoría de Bairstow está pendiente.
