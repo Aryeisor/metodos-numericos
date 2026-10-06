@@ -23,14 +23,15 @@ iterativos, y para estudiar la teoría de cada método.
 
 1. [Funcionalidades](#funcionalidades)
 2. [Requisitos e instalación](#requisitos-e-instalación)
-3. [Cómo escribir las ecuaciones](#cómo-escribir-las-ecuaciones)
-4. [Detalle de cada método](#detalle-de-cada-método)
-5. [API](#api)
-6. [Estructura del proyecto](#estructura-del-proyecto)
-7. [Arquitectura: cómo agregar un método](#arquitectura-cómo-agregar-un-método)
-8. [Seguridad del parser de expresiones](#seguridad-del-parser-de-expresiones)
-9. [Tests](#tests)
-10. [Notas y alcance](#notas-y-alcance)
+3. [Ejecutar con Docker](#ejecutar-con-docker)
+4. [Cómo escribir las ecuaciones](#cómo-escribir-las-ecuaciones)
+5. [Detalle de cada método](#detalle-de-cada-método)
+6. [API](#api)
+7. [Estructura del proyecto](#estructura-del-proyecto)
+8. [Arquitectura: cómo agregar un método](#arquitectura-cómo-agregar-un-método)
+9. [Seguridad del parser de expresiones](#seguridad-del-parser-de-expresiones)
+10. [Tests](#tests)
+11. [Notas y alcance](#notas-y-alcance)
 
 ---
 
@@ -145,6 +146,107 @@ El frontend consume la API en `http://127.0.0.1:8000/api`, configurable en
 
 Dependencias principales: Vue 3.5, Vue Router 4, Axios, KaTeX (fórmulas),
 Chart.js (gráfico de convergencia) y jsPDF + jspdf-autotable (PDF).
+
+---
+
+## Ejecutar con Docker
+
+Alternativa al modo desarrollo pensada para exposiciones: toda la aplicación
+arranca con **un solo comando** y queda en **http://localhost:8080**, sin
+abrir terminales para el backend y el frontend. Es una configuración tipo
+producción: el frontend compilado servido por **nginx**, el backend con
+**gunicorn** y un solo puerto (sin recarga en caliente).
+
+```
+Navegador → http://localhost:8080 → nginx (contenedor frontend)
+                                      ├── /        → Vue compilado (dist)
+                                      └── /api/... → gunicorn + Django (contenedor backend)
+```
+
+El navegador solo habla con nginx (mismo origen, sin CORS) y el backend no
+publica su puerto al equipo.
+
+> **El modo desarrollo sigue exactamente igual que antes**
+> (`python manage.py runserver` + `npm run dev`). Docker es opcional y no
+> cambia nada de ese flujo.
+
+### Requisito
+
+[Docker Desktop](https://www.docker.com/products/docker-desktop/) (en Windows,
+con WSL 2). Debe estar abierto antes de usar los comandos.
+
+### Primera vez
+
+```bash
+docker compose up -d --build
+```
+
+Descarga las imágenes base, instala dependencias y compila el frontend:
+**tarda varios minutos**. Las siguientes veces es casi inmediato.
+
+### Uso diario
+
+```bash
+docker compose up -d      # iniciar  → http://localhost:8080
+docker compose down       # detener
+```
+
+O con **doble clic** en los scripts de la raíz:
+
+| Script | Qué hace |
+|---|---|
+| `iniciar.bat` | Inicia, espera a que el backend esté listo y abre el navegador |
+| `detener.bat` | Detiene la aplicación |
+| `reconstruir.bat` | Reconstruye con el código actual e inicia |
+
+Los contenedores tienen `restart: unless-stopped`: si no se detuvieron con
+`down`, **vuelven a levantarse solos** al abrir Docker Desktop.
+
+### Después de cambiar código
+
+```bash
+docker compose up -d --build     # o doble clic en reconstruir.bat
+```
+
+### Ver logs
+
+```bash
+docker compose logs -f backend
+docker compose logs -f frontend
+```
+
+### Sin internet
+
+Una vez construidas las imágenes, la aplicación funciona **sin internet**
+(solo la construcción descarga paquetes).
+
+### Desde otro dispositivo de la misma red Wi-Fi
+
+Abrir `http://<IP-del-equipo>:8080` (la IP se ve con `ipconfig`, en
+«Dirección IPv4»). La primera vez, el firewall de Windows puede pedir permiso
+para Docker: hay que permitirlo en redes privadas.
+
+### Configuración
+
+`docker-compose.yml` ya trae valores por defecto (`DJANGO_DEBUG=0`,
+`DJANGO_ALLOWED_HOSTS=*`). Para cambiarlos, copiar `.env.example` como `.env`
+en la raíz y editarlo; `.env` no se sube al repositorio.
+
+### Problemas comunes
+
+- **El puerto 8080 está ocupado:** en `docker-compose.yml`, cambiar
+  `"8080:80"` por otro puerto libre, por ejemplo `"8090:80"`, y abrir
+  `http://localhost:8090`.
+- **Docker Desktop no está iniciado:** aparece un error como
+  `error during connect` o `cannot find the file specified`
+  (`iniciar.bat` lo avisa con un mensaje). Abrir Docker Desktop, esperar a que
+  diga «Engine running» y repetir.
+- **Un script falla por saltos de línea CRLF:** los `.sh` deben tener saltos
+  de línea LF para ejecutarse dentro de Linux (`.gitattributes` lo fuerza con
+  `*.sh text eol=lf`; este proyecto no usa ninguno, el arranque está en el
+  `CMD` del `Dockerfile`). Si un `.bat` se ve mal o no ejecuta, debe tener
+  CRLF (`*.bat text eol=crlf`). Si se editó a mano, volver a guardarlo con el
+  salto de línea correcto (en VS Code, abajo a la derecha: «LF» / «CRLF»).
 
 ---
 
@@ -390,7 +492,12 @@ motivo en `detail`.
 
 ```
 metodos/
+├── docker-compose.yml               # Ejecución con Docker (nginx + gunicorn) en :8080
+├── .env.example                     # Variables de entorno de ejemplo para Docker
+├── iniciar.bat, detener.bat,        # Scripts de doble clic para Docker en Windows
+│   reconstruir.bat
 ├── backend/
+│   ├── Dockerfile                   # Imagen del backend (Python 3.12 + gunicorn)
 │   ├── core/                        # Configuración de Django (settings, urls)
 │   └── numeric_methods/             # App principal
 │       ├── registry.py              # Registro de métodos: slug, nombre, categoría, serializer y solver
@@ -414,6 +521,8 @@ metodos/
 │       │                            #   (grado, coeficientes, texto → coeficientes), latex.py
 │       └── tests/                   # Tests unitarios y de API
 └── frontend/
+    ├── Dockerfile                   # Compila con Node y sirve dist/ con nginx
+    ├── nginx.conf                   # Fallback a index.html, proxy /api/, gzip y caché
     └── src/
         ├── main.js                  # Carga el catálogo de métodos antes de montar la app
         ├── api/client.js            # Cliente Axios

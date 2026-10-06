@@ -1,0 +1,2 @@
+# Variables de entorno reales de Docker (usar .env.example como plantilla)
+.env

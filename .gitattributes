@@ -1,0 +1,4 @@
+# Los scripts de shell deben tener LF o fallan dentro de los contenedores Linux.
+*.sh text eol=lf
+# Los .bat de Windows necesitan CRLF.
+*.bat text eol=crlf

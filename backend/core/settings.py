@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -20,12 +21,25 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-=*hi)-a*@jya5y#$6+*z*lh2n7!)&m@s+*c=w4yj0g4*ri^1(d'
+# Los valores por defecto son los del modo desarrollo (runserver); Docker los
+# sobrescribe con variables de entorno (ver docker-compose.yml y .env.example).
+SECRET_KEY = os.environ.get(
+    'DJANGO_SECRET_KEY',
+    'django-insecure-=*hi)-a*@jya5y#$6+*z*lh2n7!)&m@s+*c=w4yj0g4*ri^1(d',
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DJANGO_DEBUG', '1') == '1'
 
-ALLOWED_HOSTS = []
+
+def _env_list(name):
+    """Lista separada por comas de una variable de entorno ('' -> [])."""
+    return [item.strip() for item in os.environ.get(name, '').split(',') if item.strip()]
+
+
+ALLOWED_HOSTS = _env_list('DJANGO_ALLOWED_HOSTS')
+
+CSRF_TRUSTED_ORIGINS = _env_list('DJANGO_CSRF_TRUSTED_ORIGINS')
 
 
 # Application definition
@@ -53,7 +67,9 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-CORS_ALLOWED_ORIGINS = [
+# Solo hace falta en desarrollo (Vite en :5173 y Django en :8000). En Docker el
+# navegador habla únicamente con nginx, que es el mismo origen.
+CORS_ALLOWED_ORIGINS = _env_list('DJANGO_CORS_ALLOWED_ORIGINS') or [
     'http://localhost:5173',
     'http://127.0.0.1:5173',
 ]

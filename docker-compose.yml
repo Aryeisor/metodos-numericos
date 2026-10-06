@@ -1,0 +1,31 @@
+# Arranque de toda la aplicación con un solo comando:
+#   docker compose up -d          -> http://localhost:8080
+# El modo desarrollo (runserver + npm run dev) no usa este archivo.
+
+services:
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    environment:
+      DJANGO_DEBUG: ${DJANGO_DEBUG:-0}
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:-docker-cambia-esta-clave-por-una-propia}
+      # "*" porque el Host llega desde nginx con lo que escribió el navegador:
+      # localhost, la IP del equipo en la red Wi-Fi (que cambia), etc. El backend
+      # no publica puertos, así que solo nginx puede llegar a él.
+      DJANGO_ALLOWED_HOSTS: ${DJANGO_ALLOWED_HOSTS:-*}
+    # Sin "ports": el backend solo es accesible dentro de la red de Compose.
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/methods/', timeout=5)"]
+      interval: 10s
+      timeout: 6s
+      retries: 5
+      start_period: 20s
+
+  frontend:
+    build: ./frontend
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    depends_on:
+      backend:
+        condition: service_healthy
