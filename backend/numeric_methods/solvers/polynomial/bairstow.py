@@ -28,7 +28,8 @@ iteraciones). Antes de todo, las raíces x = 0 se extraen como factor xᵏ.
 Las raíces de x² − r·x − s son (r ± √Δ)/2 con Δ = r² + 4s; si Δ < 0 forman un
 par complejo con parte real r/2 e imaginaria √(−Δ)/2. El método no usa
 aritmética compleja: las partes real e imaginaria se calculan con floats.
-Sólo la comprobación final |f(raíz)| usa `complex`, y es informativa.
+Sólo la comprobación final (|f(raíz)| y la sustitución término a término)
+usa `complex`, y es informativa.
 
 No depende de Django: puede usarse y testearse de forma aislada.
 """
@@ -57,6 +58,9 @@ VARIABLES = ["r", "s"]
 ZERO_THRESHOLD = 1e-12
 # Discriminante despreciable frente a la escala de r² y 4s: raíz doble.
 DISCRIMINANT_TOLERANCE = 1e-12
+# Comprobación: |f(raíz)| relativo a la escala de los términos por debajo del
+# cual se muestra «≈ 0» (ver _verification).
+CHECK_RELATIVE = 1e-6
 
 METHOD_BAIRSTOW = "bairstow"
 METHOD_QUADRATIC = "cuadratica_directa"
@@ -228,13 +232,57 @@ def _linear_closure(index, coefficients):
     }
 
 
-def _check(coefficients, root):
-    """|f(raíz)| con el polinomio original (Horner con `complex`, informativo)."""
+def _horner(coefficients, root):
+    """f(raíz) con el polinomio original (Horner con `complex`, informativo)."""
     z = complex(root["re"], root["im"])
     value = 0j
     for a in coefficients:
         value = value * z + a
-    return abs(value)
+    return value
+
+
+def _check(coefficients, root):
+    """|f(raíz)| con el polinomio original."""
+    return abs(_horner(coefficients, root))
+
+
+def _verification(coefficients, root):
+    """Sustitución de la raíz en el polinomio original, término a término.
+
+    Sólo es una verificación (no forma parte del método), así que usa
+    `complex`. Por cada término no nulo: potencia, coeficiente, xᵏ y aₖ·xᵏ
+    (parte real e imaginaria). El valor de f(x) es el de Horner, el mismo
+    que da la columna |f(x)|.
+
+    Criterio de «≈ 0»: |f(x)| ≤ CHECK_RELATIVE · max(1, Σ|aₖ·xᵏ|). La suma de
+    las magnitudes de los términos es la escala natural del redondeo: una
+    raíz grande en un polinomio de grado alto deja un residuo absoluto mayor
+    aunque sea igual de precisa.
+    """
+    z = complex(root["re"], root["im"])
+    degree = len(coefficients) - 1
+    terms, scale = [], 0.0
+    for p, a in enumerate(coefficients):
+        if a == 0:
+            continue
+        power = degree - p
+        x_power = z ** power
+        value = a * x_power
+        scale += abs(value)
+        terms.append({
+            "power": power,
+            "coefficient": a,
+            "x_power": {"re": x_power.real, "im": x_power.imag},
+            "value": {"re": value.real, "im": value.imag},
+        })
+    value = _horner(coefficients, root)
+    return {
+        "terms": terms,
+        "value": {"re": value.real, "im": value.imag},
+        "abs": abs(value),
+        "scale": scale,
+        "is_zero": abs(value) <= CHECK_RELATIVE * max(1.0, scale),
+    }
 
 
 def _failure_warning(factor_number, failure, tolerance, max_iterations):
@@ -364,6 +412,7 @@ def solve_bairstow(data):
 
     for root in roots:
         root["check"] = _check(coefficients, root)
+        root["verification"] = _verification(coefficients, root)
 
     converged = failure is None
     factor_latex = [f["factor_latex"] for f in factors if "factor_latex" in f]

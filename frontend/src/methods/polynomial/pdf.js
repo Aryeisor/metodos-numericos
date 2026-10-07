@@ -1,14 +1,14 @@
 // PDF del resultado de Bairstow, con el mismo estilo que el de los demás
 // métodos (utils/exportPdf.js): datos de entrada, tabla de coeficientes, por
 // cada factor su tabla de iteraciones y su gráfico, tabla de raíces y
-// factorización. La fuente estándar de jsPDF (WinAnsi) no tiene letras
+// factorización y comprobación de cada raíz. La fuente estándar de jsPDF (WinAnsi) no tiene letras
 // griegas ni superíndices como ⁴: se escriben "Dr", "er", "x^4".
 import jsPDF from 'jspdf'
 import autoTable from 'jspdf-autotable'
 
 import { CONTENT_WIDTH, MARGIN, ensureSpace, paragraph, sectionTitle } from '../../utils/exportPdf'
 import { formatNumber } from '../../utils/iterationSteps'
-import { polynomialText } from './formulas'
+import { CHECK_TEXT_STYLE, complexCheckRows, complexCheckText, polynomialText, realCheckText } from './formulas'
 
 const HEAD = { fillColor: [37, 99, 235], halign: 'center' }
 
@@ -191,6 +191,51 @@ export function exportBairstowPdf({ result, system, methodName, chartImages }) {
     if (result.zero_roots) parts.push(result.zero_roots === 1 ? 'x' : `x^${result.zero_roots}`)
     for (const factor of result.factors) if (factor.factor_latex) parts.push(`(${factorText(factor)})`)
     y = paragraph(doc, y, `Factorización: f(x) = ${parts.join(' · ')}`)
+  }
+
+  // --- Comprobación ---------------------------------------------------------
+  const realRoots = result.roots.filter((root) => root.im === 0 && root.verification)
+  const complexRoots = result.roots.filter((root) => root.im > 0 && root.verification)
+  if (realRoots.length || complexRoots.length) {
+    y = sectionTitle(doc, y + 2, 'Comprobación')
+    y = paragraph(doc, y, 'Cada raíz se reemplaza en el polinomio original; el resultado debe dar 0.')
+    // Las raíces nulas son todas iguales: una sola línea.
+    const zeros = realRoots.filter((root) => root.re === 0).length
+    realRoots
+      .filter((root, i) => root.re !== 0 || realRoots.findIndex((other) => other.re === 0) === i)
+      .forEach((root) => {
+        const multiplicity = root.re === 0 && zeros > 1 ? ` (raíz de multiplicidad ${zeros})` : ''
+        y = paragraph(doc, y, realCheckText(root) + multiplicity)
+      })
+
+    for (const root of complexRoots) {
+      const { lhs, rows, sum, result: final, ok } = complexCheckRows(root, CHECK_TEXT_STYLE)
+      const exact = root.verification.abs === 0 ? '' : ` (|f| = ${root.verification.abs.toExponential(1)})`
+      y = paragraph(doc, y + 2, `${lhs}:`)
+      autoTable(doc, {
+        startY: y,
+        head: [['Término', 'Potencia de x', 'Coeficiente · potencia']],
+        body: rows.map((row) => [row.term, row.power ?? '-', row.value]),
+        foot: [['Suma', '', `${sum}  ${ok ? `${final} OK` : '(!)'}${exact}`]],
+        theme: 'grid',
+        margin: { left: MARGIN, right: MARGIN },
+        styles: { fontSize: 9, cellPadding: 2 },
+        headStyles: HEAD,
+        footStyles: { fillColor: [243, 244, 246], textColor: [31, 41, 55] },
+        columnStyles: { 2: { halign: 'right' } },
+      })
+      y = doc.lastAutoTable.finalY + 4
+      y = paragraph(
+        doc,
+        y,
+        `La raíz conjugada ${complexCheckText(root.re, -root.im)} ` +
+          (ok ? 'también cumple f = 0' : 'da el valor conjugado (el mismo residuo)') +
+          ', porque los coeficientes del polinomio son reales.'
+      )
+    }
+
+    const residue = [...realRoots, ...complexRoots].some((root) => !root.verification.is_zero)
+    if (residue) y = paragraph(doc, y, '(!) La raíz es aproximada; el residuo depende de la tolerancia usada.')
   }
 
   doc.save(`bairstow-grado${polynomial.degree}-${new Date().toISOString().slice(0, 10)}.pdf`)

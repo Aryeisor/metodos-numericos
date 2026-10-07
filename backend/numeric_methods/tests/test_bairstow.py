@@ -19,6 +19,7 @@ CHAPRA_COEFFICIENTS = [1, -3.5, 2.75, 2.125, -3.875, 1.25]
 
 # Raíces esperadas de cada ejemplo precargado (re, im).
 EXPECTED_ROOTS = {
+    "bairstow-cubica-enteras": [(1, 0), (-2, 0), (3, 0)],
     "bairstow-chapra": [(-1, 0), (0.5, 0), (2, 0), (1, 0.5), (1, -0.5)],
     "bairstow-cubica-reales": [(1, 0), (2, 0), (3, 0)],
     "bairstow-cubica-compleja": [(1, 0), (0, 1), (0, -1)],
@@ -130,7 +131,8 @@ class ChapraFinalResultTests(SimpleTestCase):
 class ExamplesTests(SimpleTestCase):
     def test_every_example_converges_to_the_expected_roots(self):
         examples = EXAMPLES["bairstow"]
-        self.assertGreaterEqual(len(examples), 6)
+        self.assertEqual(len(examples), 9)
+        self.assertEqual(set(EXPECTED_ROOTS), {e["id"] for e in examples})
         self.assertEqual({e["mode"] for e in examples}, {"text", "coefficients"})
         for example in examples:
             with self.subTest(example=example["id"]):
@@ -333,3 +335,72 @@ class BairstowEndpointTests(APITestCase):
         data = response.json()
         self.assertFalse(data["converged"])
         self.assertEqual(data["failure"]["reason"], "singular")
+
+
+class VerificationTests(SimpleTestCase):
+    """Apartado «Comprobación»: sustitución de cada raíz en el polinomio original."""
+
+    def by_root(self, result):
+        return {(round(r["re"], 6), round(r["im"], 6)): r["verification"] for r in result["roots"]}
+
+    def test_integer_roots_term_by_term(self):
+        result = solve(text="x^3 - 2x^2 - 5x + 6", r0=-1, s0=-1, tolerance=1)
+        self.assertTrue(result["converged"])
+        checks = self.by_root(result)
+        expected = {1: [1, -2, -5, 6], -2: [-8, -8, 10, 6], 3: [27, -18, -15, 6]}
+        self.assertEqual(sorted(checks), sorted((float(x), 0.0) for x in expected))
+        for root, values in expected.items():
+            with self.subTest(root=root):
+                check = checks[(float(root), 0.0)]
+                self.assertEqual([t["value"]["re"] for t in check["terms"]], values)
+                self.assertEqual([t["power"] for t in check["terms"]], [3, 2, 1, 0])
+                self.assertEqual([t["coefficient"] for t in check["terms"]], [1, -2, -5, 6])
+                self.assertTrue(all(t["value"]["im"] == 0 for t in check["terms"]))
+                self.assertEqual(check["value"], {"re": 0.0, "im": 0.0})
+                self.assertEqual(check["abs"], 0.0)
+                self.assertTrue(check["is_zero"])
+        json.dumps(result, allow_nan=False)
+
+    def test_missing_powers_are_omitted(self):
+        result = solve(coefficients=[1, 0, -5, 0, 4])
+        for root in result["roots"]:
+            with self.subTest(root=root["re"]):
+                self.assertEqual([t["power"] for t in root["verification"]["terms"]], [4, 2, 0])
+                self.assertTrue(root["verification"]["is_zero"])
+
+    def test_complex_pair_is_approximately_zero(self):
+        result = solve(text="x^3 - x^2 + x - 1", r0=0.5, s0=-0.5)
+        self.assertTrue(result["converged"])
+        complex_roots = [r for r in result["roots"] if r["im"] != 0]
+        self.assertEqual(len(complex_roots), 2)
+        for root in complex_roots:
+            check = root["verification"]
+            self.assertTrue(check["is_zero"])
+            self.assertAlmostEqual(check["value"]["re"], 0, places=6)
+            self.assertAlmostEqual(check["value"]["im"], 0, places=6)
+            self.assertAlmostEqual(check["abs"], root["check"])
+            # (±i)³ = ∓i: el término x³ es imaginario puro.
+            cube = check["terms"][0]
+            self.assertEqual(cube["power"], 3)
+            self.assertAlmostEqual(cube["x_power"]["re"], 0, places=6)
+            self.assertAlmostEqual(cube["x_power"]["im"], -round(root["im"]), places=6)
+
+    def test_zero_root_is_checked(self):
+        result = solve(text="x^5 - x^4 - 7x^3 + x^2 + 6x")
+        zero = [r for r in result["roots"] if r.get("source") == "paso_previo"]
+        self.assertEqual(len(zero), 1)
+        check = zero[0]["verification"]
+        # a₀ = 0 no aparece; los demás términos valen 0 en x = 0.
+        self.assertEqual([t["power"] for t in check["terms"]], [5, 4, 3, 2, 1])
+        self.assertTrue(all(t["value"]["re"] == 0 for t in check["terms"]))
+        self.assertEqual(check["value"], {"re": 0.0, "im": 0.0})
+        self.assertTrue(check["is_zero"])
+
+    def test_large_tolerance_leaves_a_visible_residue(self):
+        # Con εs = 1 % el residuo de Chapra sigue siendo ≈ 0 relativo a la
+        # escala; con εs = 10 % el factor se cierra antes y el residuo se nota.
+        chapra = solve(text=CHAPRA, tolerance=1)
+        self.assertTrue(all(r["verification"]["is_zero"] for r in chapra["roots"]))
+        loose = solve(text=CHAPRA, tolerance=10)
+        self.assertTrue(loose["converged"])
+        self.assertTrue(any(not r["verification"]["is_zero"] for r in loose["roots"]))

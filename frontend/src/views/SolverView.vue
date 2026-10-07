@@ -1,6 +1,7 @@
 <script setup>
-import { computed, ref, shallowRef, watch } from 'vue'
+import { computed, nextTick, ref, shallowRef, watch } from 'vue'
 import { useRouter } from 'vue-router'
+import ConfirmDialog from '../components/ConfirmDialog.vue'
 import ResultsTable from '../components/ResultsTable.vue'
 import { fetchExamples, solveSystem } from '../api/client'
 import { getMethod, siblingMethods, solveRouteName } from '../methods/registry'
@@ -25,9 +26,14 @@ const selectedMethod = computed({
   set: (slug) => router.push({ name: solveRouteName(slug) }),
 })
 
-const tolerance = ref(0.000001)
-const maxIterations = ref(100)
+const DEFAULT_TOLERANCE = 0.000001
+const DEFAULT_MAX_ITERATIONS = 100
+const tolerance = ref(DEFAULT_TOLERANCE)
+const maxIterations = ref(DEFAULT_MAX_ITERATIONS)
 let previousDefaultTolerance
+
+// Tolerancia por defecto del método activo (Bairstow tiene la suya, en %).
+const defaultTolerance = () => ui.value?.defaultTolerance ?? DEFAULT_TOLERANCE
 
 const examples = ref([])
 const selectedExampleId = ref('')
@@ -46,7 +52,6 @@ const solvedSystem = ref(null)
 // que crea el estado, no la categoría. Al cambiar también se descarta el
 // resultado anterior: su forma es distinta y lo dibujan otros componentes.
 const store = shallowRef(null)
-const DEFAULT_TOLERANCE = 0.000001
 watch(
   () => ui.value?.createStore,
   (_, previousCreateStore) => {
@@ -90,6 +95,10 @@ function loadExample(example) {
   formErrors.value = []
 }
 
+// Cada petición de resolver lleva un número; «Limpiar» lo incrementa, así que
+// una respuesta que llega después (de una petición ya descartada) se ignora.
+let solveRequestId = 0
+
 async function handleSolve() {
   formErrors.value = []
   result.value = null
@@ -100,6 +109,8 @@ async function handleSolve() {
     return
   }
 
+  const requestId = ++solveRequestId
+  const isCurrent = () => requestId === solveRequestId
   loading.value = true
   try {
     const payload = {
@@ -108,9 +119,11 @@ async function handleSolve() {
       max_iterations: maxIterations.value,
     }
     const response = await solveSystem(props.method, payload)
+    if (!isCurrent()) return
     result.value = response
     solvedSystem.value = ui.value.solvedSystem(payload, response)
   } catch (err) {
+    if (!isCurrent()) return
     if (err.response && err.response.data) {
       const data = err.response.data
       const messages = []
@@ -130,8 +143,69 @@ async function handleSolve() {
       formErrors.value = ['No fue posible conectar con el servidor. Verifica que el backend esté corriendo.']
     }
   } finally {
-    loading.value = false
+    if (isCurrent()) loading.value = false
   }
+}
+
+// --- Limpiar -----------------------------------------------------------------
+// Deja la vista como al abrir el método: el estado inicial sale de la misma
+// función que crea el formulario al entrar (ui.createStore), y la tolerancia y
+// el máximo de iteraciones de los mismos valores por defecto. El método, la
+// ruta y la categoría no cambian.
+//
+// Los formularios guardan estado propio (el texto de cada casilla, sus
+// errores, las vistas previas LaTeX): `formKey` los vuelve a montar desde cero.
+const formKey = ref(0)
+const formCardRef = ref(null)
+const confirmOpen = ref(false)
+
+const snapshot = (s) => JSON.stringify(s.state)
+// Estado inicial del formulario del método activo, para compararlo.
+const initialSnapshot = computed(() => (ui.value ? snapshot(ui.value.createStore()) : null))
+
+const formIsInitial = computed(
+  () =>
+    !store.value ||
+    (snapshot(store.value) === initialSnapshot.value &&
+      tolerance.value === defaultTolerance() &&
+      maxIterations.value === DEFAULT_MAX_ITERATIONS)
+)
+// Con datos escritos o un resultado en pantalla se pide confirmación; sólo
+// con errores o una marca de ejemplo se limpia directamente.
+const clearNeedsConfirm = computed(() => !formIsInitial.value || Boolean(result.value))
+const canClear = computed(
+  () => clearNeedsConfirm.value || formErrors.value.length > 0 || Boolean(selectedExampleId.value) || loading.value
+)
+
+function requestClear() {
+  if (!canClear.value) return
+  if (clearNeedsConfirm.value) confirmOpen.value = true
+  else clearExercise()
+}
+
+function confirmClear() {
+  confirmOpen.value = false
+  clearExercise()
+}
+
+const FIRST_FIELD = 'input:not([disabled]):not([readonly]), textarea:not([disabled]), select:not([disabled])'
+
+async function clearExercise() {
+  solveRequestId++ // descarta la respuesta de una petición en curso
+  loading.value = false
+  store.value = ui.value.createStore()
+  tolerance.value = defaultTolerance()
+  maxIterations.value = DEFAULT_MAX_ITERATIONS
+  result.value = null
+  solvedSystem.value = null
+  formErrors.value = []
+  selectedExampleId.value = ''
+  formKey.value++
+
+  await nextTick()
+  const card = formCardRef.value
+  card?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  card?.querySelector(FIRST_FIELD)?.focus({ preventScroll: true })
 }
 
 // Nombre del método con el que se obtuvo el resultado (puede diferir del
@@ -180,6 +254,7 @@ function handleExportPdf(chartImage) {
         <component
           :is="ui.configFields"
           v-if="ui.configFields"
+          :key="formKey"
           :store="store"
           @structure-changed="selectedExampleId = ''"
         />
@@ -199,21 +274,41 @@ function handleExportPdf(chartImage) {
         </div>
       </div>
 
-      <component :is="ui.configExtras" v-if="ui.configExtras" :store="store" />
+      <component :is="ui.configExtras" v-if="ui.configExtras" :key="formKey" :store="store" />
     </div>
 
-    <div class="card">
+    <div ref="formCardRef" class="card form-card">
       <h2>{{ ui.formTitle }}</h2>
-      <component :is="ui.form" v-bind="ui.formBindings(store)" />
+      <component :is="ui.form" :key="formKey" v-bind="ui.formBindings(store)" />
     </div>
 
     <div v-if="formErrors.length" class="alert alert-danger">
       <div v-for="(msg, idx) in formErrors" :key="idx">{{ msg }}</div>
     </div>
 
-    <button class="btn btn-primary solve-btn" type="button" :disabled="loading" @click="handleSolve">
-      {{ loading ? 'Resolviendo...' : 'Resolver' }}
-    </button>
+    <div class="solve-actions">
+      <button class="btn btn-primary solve-btn" type="button" :disabled="loading" @click="handleSolve">
+        {{ loading ? 'Resolviendo...' : 'Resolver' }}
+      </button>
+      <button
+        class="btn btn-outline solve-btn"
+        type="button"
+        aria-label="Limpiar formulario y resultado"
+        :disabled="!canClear"
+        @click="requestClear"
+      >
+        Limpiar
+      </button>
+    </div>
+
+    <ConfirmDialog
+      :open="confirmOpen"
+      message="¿Borrar el ejercicio actual? Se perderán los datos y el resultado."
+      confirm-label="Limpiar"
+      cancel-label="Cancelar"
+      @confirm="confirmClear"
+      @cancel="confirmOpen = false"
+    />
 
     <div v-if="result" class="card results-card">
       <!-- Una categoría cuyo resultado no es una sola tabla de iteraciones
@@ -352,10 +447,41 @@ function handleExportPdf(chartImage) {
   }
 }
 
-.solve-btn {
+/* Resolver (principal, relleno) y Limpiar (secundario, con borde) en la misma
+   fila y con el mismo alto. */
+.solve-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: var(--space-3);
   margin-bottom: var(--space-6);
+}
+
+.solve-btn {
+  justify-content: center;
   padding: var(--space-3) var(--space-6);
   font-size: 1rem;
+}
+
+/* Al limpiar, la página sube hasta el formulario; el margen deja ver el título. */
+.form-card {
+  scroll-margin-top: var(--space-5);
+}
+
+/* En móvil, los dos botones reparten la fila con el mismo ancho; si no caben,
+   quedan uno debajo del otro a todo el ancho. */
+@media (max-width: 480px) {
+  .solve-btn {
+    flex: 1 1 0;
+    padding-left: var(--space-4);
+    padding-right: var(--space-4);
+  }
+}
+
+@media (max-width: 300px) {
+  .solve-actions {
+    flex-direction: column;
+  }
 }
 
 .results-card {

@@ -30,6 +30,120 @@ export function checkLatex(value) {
   return `${mantissa} \\times 10^{${Number(exponent)}}`
 }
 
+// --- Comprobación: sustitución de cada raíz en el polinomio original ------
+// Los valores (xᵏ, aₖ·xᵏ, f(x) y si se considera ≈ 0) vienen del backend en
+// root.verification; aquí sólo se escriben. Dos estilos: LaTeX para la vista
+// y texto ASCII para el PDF.
+const LATEX_STYLE = {
+  number: latexNumber,
+  power: (base, k) => `${base}^{${k}}`,
+  constant: 'a_0',
+}
+export const CHECK_TEXT_STYLE = {
+  number: formatNumber,
+  power: (base, k) => `${base}^${k}`,
+  constant: 'a0',
+}
+
+/** Suma de partes con signo ya resuelto: "1 - 2 - 5 + 6". */
+function signedSum(parts) {
+  return parts
+    .map(({ negative, body }, i) => (i === 0 ? `${negative ? '-' : ''}${body}` : `${negative ? '-' : '+'} ${body}`))
+    .join(' ')
+}
+
+/** Valor real redondeado como parte de una suma: signo aparte y |valor|. */
+function signedValue(value, style) {
+  const text = style.number(Math.abs(value))
+  return { negative: value < 0 && text !== '0', body: text }
+}
+
+/**
+ * Línea de comprobación de una raíz real, en cuatro partes alineables:
+ *   f(−2) | = (−2)^3 − 2(−2)^2 − 5(−2) + 6 | = −8 − 8 + 10 + 6 | = 0
+ * `result` es la parte final ('0', '≈ 0' o el residuo) y `ok` si es ≈ 0.
+ * La raíz nula (paso previo) queda f(0) = a₀ = 0.
+ */
+export function realCheckParts(root, style = LATEX_STYLE) {
+  const check = root.verification
+  const x = style.number(root.re)
+  const isZeroRoot = root.re === 0
+  const base = `(${x})`
+  const substitution = isZeroRoot
+    ? style.constant
+    : signedSum(
+        check.terms.map(({ power, coefficient }) => {
+          const coef = style.number(Math.abs(coefficient))
+          const variable = power === 0 ? '' : power === 1 ? base : style.power(base, power)
+          const body = !variable ? coef : coef === '1' ? variable : `${coef}${variable}`
+          return { negative: coefficient < 0, body }
+        })
+      )
+  const evaluated = isZeroRoot ? null : signedSum(check.terms.map((t) => signedValue(t.value.re, style)))
+  return {
+    lhs: `f(${x})`,
+    substitution,
+    evaluated,
+    result: checkResult(check, style),
+    ok: check.is_zero,
+  }
+}
+
+/** Parte final: 0 exacto, ≈ 0 o el residuo con su valor. */
+function checkResult(check, style) {
+  if (check.is_zero) return check.abs === 0 ? '= 0' : style === LATEX_STYLE ? '\\approx 0' : '~ 0'
+  const { re, im } = check.value
+  return `= ${im === 0 ? style.number(re) : complexIn(re, im, style)}`
+}
+
+/** p + qi con el redondeo del resto del resultado (sólo la parte que no es 0). */
+function complexIn(re, im, style) {
+  const real = style.number(re)
+  const imaginaryAbs = style.number(Math.abs(im))
+  if (imaginaryAbs === '0') return real
+  const imaginary = imaginaryAbs === '1' ? 'i' : `${imaginaryAbs}${style === LATEX_STYLE ? '\\,' : ''}i`
+  if (real === '0') return im < 0 ? `-${imaginary}` : imaginary
+  return `${real} ${im < 0 ? '-' : '+'} ${imaginary}`
+}
+
+/** p + qi redondeado, en LaTeX o en texto ASCII (PDF). */
+export const complexLatex = (re, im) => complexIn(re, im, LATEX_STYLE)
+export const complexCheckText = (re, im) => complexIn(re, im, CHECK_TEXT_STYLE)
+
+/**
+ * Comprobación de una raíz compleja (la de parte imaginaria positiva), como
+ * filas de tabla: término aₖxᵏ, xᵏ = (a + bi)ᵏ y aₖ·xᵏ, más la suma.
+ */
+export function complexCheckRows(root, style = LATEX_STYLE) {
+  const check = root.verification
+  const z = complexIn(root.re, root.im, style)
+  const rows = check.terms.map(({ power, coefficient, x_power: xp, value }) => {
+    const variable = power === 0 ? '' : power === 1 ? 'x' : style.power('x', power)
+    const coef = style.number(Math.abs(coefficient))
+    const body = !variable ? coef : coef === '1' ? variable : `${coef}${style === LATEX_STYLE ? '\\,' : ''}${variable}`
+    return {
+      term: `${coefficient < 0 ? '-' : ''}${body}`,
+      power:
+        power === 0 ? null : power === 1 ? z : `${style.power(`(${z})`, power)} = ${complexIn(xp.re, xp.im, style)}`,
+      value: complexIn(value.re, value.im, style),
+    }
+  })
+  return {
+    lhs: `f(${z})`,
+    rows,
+    sum: complexIn(check.value.re, check.value.im, style),
+    result: checkResult(check, style),
+    ok: check.is_zero,
+  }
+}
+
+/** Línea de texto (PDF) de una raíz real: "f(-2) = (-2)^3 - ... = -8 - 8 + 10 + 6 = 0 OK". */
+export function realCheckText(root) {
+  const { lhs, substitution, evaluated, result, ok } = realCheckParts(root, CHECK_TEXT_STYLE)
+  const exact = ok && root.verification.abs !== 0 ? ` (${root.verification.abs.toExponential(1)})` : ''
+  return [lhs, `= ${substitution}`, evaluated && `= ${evaluated}`, result].filter(Boolean).join(' ') + (ok ? ` OK${exact}` : ' (!)')
+}
+
 /** Polinomio en texto plano (para el PDF), desde coeficientes descendentes. */
 export function polynomialText(coefficients) {
   const degree = coefficients.length - 1

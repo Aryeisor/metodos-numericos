@@ -251,6 +251,13 @@ def _polynomial_example(id, name, description, degree, *, text=None, coefficient
 # raíces, y cada ejemplo converge con el r₀ y s₀ indicados (−1 y −1 salvo
 # donde se aclara). Unos se cargan como texto y otros como coeficientes.
 POLYNOMIAL_EXAMPLES = [
+    # El de la exposición: el factor cumple la tolerancia en la iteración 2
+    # (se muestran las 6 del mínimo general).
+    _polynomial_example(
+        "bairstow-cubica-enteras", "x³ − 2x² − 5x + 6",
+        "Cúbica con raíces enteras: converge en 2 iteraciones", 3,
+        text="x^3 - 2x^2 - 5x + 6", tolerance=1,
+    ),
     _polynomial_example(
         "bairstow-chapra", "Clásico de Chapra y Canale",
         "Grado 5; raíces −1, 0.5, 2 y 1 ± 0.5i. Tolerancia 1 %, como en el libro.", 5,

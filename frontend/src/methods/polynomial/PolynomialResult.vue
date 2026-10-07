@@ -4,12 +4,12 @@
 // iteraciones y su gráfico, así que no encaja en la tabla única de
 // ResultsTable. Orden: estado y advertencias → polinomio y coeficientes →
 // paso previo (raíces nulas) → un bloque por factor → resumen de raíces y
-// factorización.
+// factorización → comprobación (cada raíz sustituida en el polinomio).
 import { computed, ref } from 'vue'
 import MathFormula from '../../components/MathFormula.vue'
 import { formatNumber } from '../../utils/iterationSteps'
 import FactorBlock from './FactorBlock.vue'
-import { checkLatex, formatComplex } from './formulas'
+import { checkLatex, complexCheckRows, complexLatex, formatComplex, realCheckParts } from './formulas'
 import { exportBairstowPdf } from './pdf'
 
 const props = defineProps({
@@ -45,6 +45,76 @@ const rootRows = computed(() =>
     kind: root.im === 0 ? 'real' : 'compleja',
     check: root.check,
   }))
+)
+
+// --- Comprobación ---------------------------------------------------------
+// Valor exacto de f(x) en letra pequeña cuando se muestra «≈ 0» o el residuo.
+function exactLatex(check) {
+  if (check.abs === 0) return null
+  if (check.value.im !== 0) return `|f| = ${checkLatex(check.abs)}`
+  return `${check.value.re < 0 ? '-' : ''}${checkLatex(check.abs)}`
+}
+
+// Raíces reales: una línea cada una. Las raíces nulas del paso previo son
+// todas iguales (f(0) = a₀ = 0), así que van en una sola línea.
+const realChecks = computed(() => {
+  const lines = []
+  props.result.roots.forEach((root, i) => {
+    if (root.im !== 0 || !root.verification) return
+    const zeroLine = root.re === 0 && lines.find((line) => line.zero)
+    if (zeroLine) {
+      zeroLine.multiplicity += 1
+      return
+    }
+    const parts = realCheckParts(root)
+    lines.push({
+      key: i,
+      zero: root.re === 0,
+      multiplicity: 1,
+      ...parts,
+      // Con residuo apreciable el valor ya se ve completo en `result`.
+      exact: parts.ok ? exactLatex(root.verification) : null,
+    })
+  })
+  return lines
+})
+
+// Líneas largas (grado alto o raíces con decimales): los términos calculados
+// y el resultado pasan a un segundo renglón, alineado bajo la sustitución.
+const CHECK_LINE_MAX_CHARS = 70
+const stackedChecks = computed(() =>
+  realChecks.value.some(
+    (line) => line.substitution.length + (line.evaluated?.length ?? 0) > CHECK_LINE_MAX_CHARS
+  )
+)
+
+// Pares complejos: se comprueba la raíz con parte imaginaria positiva; la
+// conjugada se marca con el mismo resultado.
+const complexChecks = computed(() =>
+  props.result.roots.flatMap((root, i) => {
+    if (!(root.im > 0) || !root.verification) return []
+    const conjugate = props.result.roots.findIndex(
+      (other, j) => j !== i && other.re === root.re && other.im === -root.im
+    )
+    const parts = complexCheckRows(root)
+    // La suma ya redondeada; si redondea a 0 pero no es 0 exacto, «≈ 0».
+    let sumDisplay = parts.sum
+    if (parts.ok && root.verification.abs !== 0) {
+      sumDisplay = parts.sum === '0' ? '\\approx 0' : `${parts.sum} \\approx 0`
+    }
+    return [{
+      key: i,
+      ...parts,
+      sumDisplay,
+      exact: exactLatex(root.verification),
+      names: [i, conjugate].filter((j) => j >= 0).map((j) => `x_{${j + 1}}`),
+      conjugate: complexLatex(root.re, -root.im),
+    }]
+  })
+)
+
+const hasResidue = computed(
+  () => realChecks.value.some((line) => !line.ok) || complexChecks.value.some((pair) => !pair.ok)
 )
 
 const reduced = computed(() => {
@@ -180,6 +250,91 @@ function handleExportPdf() {
         No se muestra la factorización completa porque el método no encontró todas las raíces.
       </p>
     </section>
+
+    <!-- 5. Comprobación -->
+    <section v-if="realChecks.length || complexChecks.length" class="result-section">
+      <h4>Comprobación</h4>
+      <p class="section-text">Cada raíz se reemplaza en el polinomio original; el resultado debe dar 0.</p>
+
+      <div v-if="realChecks.length" class="table-scroll">
+        <div class="check-grid" :class="{ 'is-stacked': stackedChecks }">
+          <template v-for="line in realChecks" :key="line.key">
+            <MathFormula :expression="line.lhs" />
+            <MathFormula :expression="`= ${line.substitution}`" />
+            <span v-if="stackedChecks"></span>
+            <MathFormula v-if="line.evaluated && !stackedChecks" :expression="`= ${line.evaluated}`" />
+            <span v-else-if="!stackedChecks"></span>
+            <span class="check-result">
+              <MathFormula v-if="line.evaluated && stackedChecks" :expression="`= ${line.evaluated}`" />
+              <MathFormula :expression="line.result" />
+              <span v-if="line.ok" class="mark mark-ok" aria-label="correcto">✔</span>
+              <span v-else class="mark mark-warn" aria-label="residuo apreciable">⚠</span>
+              <small v-if="line.exact" class="check-exact">(<MathFormula :expression="line.exact" />)</small>
+              <small v-if="line.multiplicity > 1" class="check-exact">
+                (raíz de multiplicidad {{ line.multiplicity }})
+              </small>
+            </span>
+          </template>
+        </div>
+      </div>
+
+      <div v-for="pair in complexChecks" :key="pair.key" class="complex-check">
+        <p class="complex-title"><MathFormula :expression="pair.lhs" /></p>
+        <div class="table-scroll">
+          <table class="check-table">
+            <thead>
+              <tr>
+                <th>Término</th>
+                <th>Potencia de x</th>
+                <th>Coeficiente · potencia</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(row, idx) in pair.rows" :key="idx">
+                <td><MathFormula :expression="row.term" /></td>
+                <td>
+                  <MathFormula v-if="row.power" :expression="row.power" />
+                  <span v-else>—</span>
+                </td>
+                <td><MathFormula :expression="row.value" /></td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr>
+                <th scope="row">Suma</th>
+                <td></td>
+                <td>
+                  <span class="check-result">
+                    <strong><MathFormula :expression="pair.sumDisplay" /></strong>
+                    <span v-if="pair.ok" class="mark mark-ok" aria-label="correcto">✔</span>
+                    <span v-else class="mark mark-warn" aria-label="residuo apreciable">⚠</span>
+                    <small v-if="pair.exact" class="check-exact">(<MathFormula :expression="pair.exact" />)</small>
+                  </span>
+                </td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+        <p v-if="pair.ok" class="section-text">
+          La raíz conjugada <MathFormula :expression="pair.conjugate" /> también cumple f = 0,
+          porque los coeficientes del polinomio son reales.
+        </p>
+        <p v-else class="section-text">
+          La raíz conjugada <MathFormula :expression="pair.conjugate" /> da el valor conjugado
+          (el mismo residuo), porque los coeficientes del polinomio son reales.
+        </p>
+        <p class="pair-marks">
+          <span v-for="name in pair.names" :key="name">
+            <MathFormula :expression="name" />
+            <span :class="pair.ok ? 'mark mark-ok' : 'mark mark-warn'">{{ pair.ok ? ' ✔' : ' ⚠' }}</span>
+          </span>
+        </p>
+      </div>
+
+      <p v-if="hasResidue" class="alert alert-warning check-note">
+        ⚠ La raíz es aproximada; el residuo depende de la tolerancia usada.
+      </p>
+    </section>
   </div>
 </template>
 
@@ -265,5 +420,85 @@ function handleExportPdf() {
 
 .alert {
   margin-top: var(--space-3);
+}
+
+/* Comprobación: las cuatro partes de cada línea quedan alineadas en columnas
+   (f(x) | sustitución | términos calculados | resultado). */
+.check-grid {
+  display: grid;
+  grid-template-columns: repeat(4, max-content);
+  column-gap: var(--space-3);
+  row-gap: var(--space-3);
+  align-items: baseline;
+  padding-bottom: var(--space-2);
+}
+
+/* Dos renglones por raíz: f(x) | sustitución, y debajo | términos = resultado. */
+.check-grid.is-stacked {
+  grid-template-columns: repeat(2, max-content);
+  row-gap: var(--space-1);
+}
+
+.check-grid.is-stacked > :nth-child(4n) {
+  margin-bottom: var(--space-3);
+}
+
+.check-result {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  white-space: nowrap;
+}
+
+.mark {
+  font-weight: var(--weight-semibold);
+}
+
+.mark-ok {
+  color: var(--color-success);
+}
+
+.mark-warn {
+  color: var(--color-warning);
+}
+
+.check-exact {
+  font-size: var(--text-small);
+  color: var(--color-ink-muted);
+}
+
+.complex-check {
+  margin-top: var(--space-5);
+}
+
+.complex-title {
+  margin: 0 0 var(--space-2);
+}
+
+.check-table {
+  width: auto;
+  min-width: min(100%, 360px);
+}
+
+.check-table th,
+.check-table td {
+  padding: var(--space-2) var(--space-3);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.check-table td:last-child {
+  text-align: right;
+}
+
+.pair-marks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  margin: 0;
+}
+
+.check-note {
+  margin-top: var(--space-4);
 }
 </style>

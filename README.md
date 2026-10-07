@@ -39,9 +39,17 @@ iterativos, y para estudiar la teoría de cada método.
 
 ### Vista «Resolver» (`/resolver/<método>`)
 
-- **Ejemplos precargados** por método (21 en total: 6 lineales compartidos por
-  Jacobi y Gauss-Seidel, 4 de Punto Fijo, 3 de Newton y 8 de Bairstow), que se
+- **Ejemplos precargados** por método (22 en total: 6 lineales compartidos por
+  Jacobi y Gauss-Seidel, 4 de Punto Fijo, 3 de Newton y 9 de Bairstow), que se
   cargan en el formulario con un clic.
+- **Botón «Limpiar»** al lado de «Resolver», en los cinco métodos: deja la
+  vista como al abrir el método (formulario con su tamaño y valores
+  iniciales, tolerancia, máximo de iteraciones y opciones por defecto del
+  método) y borra el resultado, los errores, las advertencias, las vistas
+  previas y la marca de ejemplo cargado, sin cambiar de método. Si hay datos
+  escritos o un resultado en pantalla, pide confirmación; si el formulario ya
+  está en su estado inicial, está deshabilitado. Una petición de resolver en
+  curso se descarta.
 - **Formulario propio de cada categoría:**
   - Sistemas lineales: matriz `A`, vector `b` y vector inicial `x0`; acepta
     decimales, negativos y **fracciones** (`6/7`), y el cálculo usa el valor
@@ -67,7 +75,8 @@ iterativos, y para estudiar la teoría de cada método.
 - En **Bairstow**, el resultado se organiza por **factor**: un bloque
   plegable por cada factor cuadrático, con su tabla de iteraciones, su gráfico
   de ε_r y ε_s y su cierre (discriminante, raíces y deflación); después, el
-  resumen de raíces con la comprobación `|f(x)|` y la factorización completa.
+  resumen de raíces con la comprobación `|f(x)|`, la factorización completa y
+  el apartado **«Comprobación»** (cada raíz sustituida en el polinomio).
 
 ### Vista «Teoría» (`/teoria/<método>`)
 
@@ -365,6 +374,21 @@ reglas propias de tolerancia y error (ver su sección).
   muestra las raíces encontradas hasta ese momento.
 - Cada raíz se comprueba evaluando `|f(raíz)|` (Horner con aritmética
   compleja).
+- **Apartado «Comprobación»** (al final del resultado y en el PDF): cada raíz
+  se reemplaza en el polinomio original.
+  - Raíces reales, término a término:
+    `f(−2) = (−2)³ − 2(−2)² − 5(−2) + 6 = −8 − 8 + 10 + 6 = 0 ✔`. Los
+    términos de coeficiente 0 se omiten y la raíz nula queda `f(0) = a₀ = 0`.
+  - Pares complejos: una tabla con `xᵏ = (a + bi)ᵏ` y `aₖ·xᵏ` de la raíz con
+    parte imaginaria positiva, y la suma; la conjugada da el valor conjugado
+    porque los coeficientes son reales.
+  - Criterio de «≈ 0»: `|f(x)| ≤ 10⁻⁶ · max(1, Σ|aₖ·xᵏ|)` (la suma de las
+    magnitudes de los términos es la escala del redondeo). Se muestra
+    «≈ 0 ✔» con el valor exacto en letra pequeña; si es mayor, el residuo con
+    ⚠ y una nota (pasa con tolerancias grandes, por ejemplo `εs = 10 %` en el
+    ejemplo de Chapra).
+  - Los valores (`xᵏ`, `aₖ·xᵏ`, `f(x)` y el criterio) los calcula el backend
+    en `roots[i].verification`; el frontend sólo les da formato.
 - Paso a paso de cada iteración (8 pasos): valores actuales, tabla de los
   `b`, tabla de los `c`, sistema 2×2, regla de Cramer con los determinantes
   desglosados, incrementos, actualización y errores relativos.
@@ -609,7 +633,7 @@ cd backend
 python manage.py test numeric_methods
 ```
 
-**257 tests**, todos en verde:
+**262 tests**, todos en verde:
 
 | Archivo | Tests | Qué cubre |
 | --- | --- | --- |
@@ -623,7 +647,7 @@ python manage.py test numeric_methods
 | `test_isolation_steps.py` | 20 | Despeje paso a paso de Punto Fijo |
 | `test_newton.py` | 31 | Newton y regla de Cramer: iteraciones calculadas a mano, Jacobiana singular, endpoint |
 | `test_newton_steps.py` | 16 | Derivadas parciales paso a paso y sustitución en F |
-| `test_bairstow.py` | 25 | Bairstow: divisiones sintéticas, primera iteración de Chapra calculada a mano, ejemplos, raíces nulas, raíz doble, cierres directos, fallos y endpoint |
+| `test_bairstow.py` | 30 | Bairstow: divisiones sintéticas, primera iteración de Chapra calculada a mano, ejemplos, raíces nulas, raíz doble, cierres directos, fallos, endpoint y comprobación de raíces (sustitución término a término, potencias faltantes, par complejo, raíz nula y residuo) |
 
 ---
 
