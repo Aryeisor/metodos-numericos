@@ -104,11 +104,11 @@ const detail = computed(() =>
 }
 
 .legend-prev {
-  color: #2563eb;
+  color: var(--color-value-old);
 }
 
 .legend-current {
-  color: #15803d;
+  color: var(--color-value-new);
 }
 
 /* Dos columnas en escritorio y una sola en pantallas angostas. El min() evita

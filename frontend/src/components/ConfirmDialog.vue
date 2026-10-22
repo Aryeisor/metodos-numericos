@@ -75,7 +75,7 @@ function onBackdropClick(event) {
 }
 
 .confirm-dialog::backdrop {
-  background: rgba(15, 23, 42, 0.45);
+  background: var(--color-backdrop);
 }
 
 .confirm-body {

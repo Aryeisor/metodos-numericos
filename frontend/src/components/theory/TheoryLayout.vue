@@ -3,7 +3,6 @@
 // los estilos compartidos (fórmulas en bloque, tarjetas del algoritmo,
 // ejemplos resueltos, tablas comparativas, referencias) para que todas las
 // páginas se vean como una misma colección.
-import { CURRENT_COLOR, PREVIOUS_COLOR } from '../../utils/latexFormulas'
 </script>
 
 <template>
@@ -139,12 +138,12 @@ import { CURRENT_COLOR, PREVIOUS_COLOR } from '../../utils/latexFormulas'
 }
 
 .theory .legend-prev {
-  color: v-bind(PREVIOUS_COLOR);
+  color: var(--color-value-old);
   font-weight: var(--weight-semibold);
 }
 
 .theory .legend-current {
-  color: v-bind(CURRENT_COLOR);
+  color: var(--color-value-new);
   font-weight: var(--weight-semibold);
 }
 

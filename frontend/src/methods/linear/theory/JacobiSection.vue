@@ -3,7 +3,7 @@
 import MathFormula from '../../../components/MathFormula.vue'
 import AlgorithmSteps from '../../../components/theory/AlgorithmSteps.vue'
 import WorkedIterations from '../../../components/theory/WorkedIterations.vue'
-import { ALGORITHM_STEPS, PREVIOUS_COLOR, jacobiSteps, tex, vectorLatex } from './content'
+import { ALGORITHM_STEPS, jacobiSteps, tex, vectorLatex } from './content'
 </script>
 
 <template>
@@ -20,7 +20,7 @@ import { ALGORITHM_STEPS, PREVIOUS_COLOR, jacobiSteps, tex, vectorLatex } from '
       <MathFormula :expression="tex.jacobi" display-mode />
     </div>
     <p class="formula-legend">
-      <span :style="{ color: PREVIOUS_COLOR }">■</span> valores de la iteración anterior
+      <span style="color: var(--color-value-old)">■</span> valores de la iteración anterior
     </p>
     <p>
       La característica distintiva de Jacobi es que <strong>todas</strong> las componentes de la

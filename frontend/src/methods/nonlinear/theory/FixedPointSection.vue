@@ -7,9 +7,7 @@ import AlgorithmSteps from '../../../components/theory/AlgorithmSteps.vue'
 import WorkedIterations from '../../../components/theory/WorkedIterations.vue'
 import {
   ALGORITHM_STEPS,
-  CURRENT_COLOR,
   ITERATIONS_TO_CONVERGE,
-  PREVIOUS_COLOR,
   comparisonRows,
   formatNumber,
   tex,
@@ -33,8 +31,8 @@ import {
       <MathFormula :expression="tex.sequential" display-mode />
     </div>
     <p class="formula-legend">
-      <span :style="{ color: CURRENT_COLOR }">■</span> valores ya recalculados en esta misma
-      iteración · <span :style="{ color: PREVIOUS_COLOR }">■</span> valores de la iteración
+      <span style="color: var(--color-value-new)">■</span> valores ya recalculados en esta misma
+      iteración · <span style="color: var(--color-value-old)">■</span> valores de la iteración
       anterior
     </p>
     <p>

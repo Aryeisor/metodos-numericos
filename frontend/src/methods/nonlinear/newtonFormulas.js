@@ -8,8 +8,6 @@
 import { CURRENT_COLOR, PREVIOUS_COLOR, colorize, latexNumber } from '../../utils/latexFormulas'
 import { fillTemplate } from './formulas'
 
-export { CURRENT_COLOR, PREVIOUS_COLOR }
-
 const bmatrix = (rows) => `\\begin{bmatrix} ${rows.map((r) => r.join(' & ')).join(' \\\\ ')} \\end{bmatrix}`
 const vmatrix = (rows) => `\\begin{vmatrix} ${rows.map((r) => r.join(' & ')).join(' \\\\ ')} \\end{vmatrix}`
 const column = (items) => bmatrix(items.map((item) => [item]))

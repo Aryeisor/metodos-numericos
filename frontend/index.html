@@ -5,6 +5,26 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>METODOS NUMERICOS</title>
+    <!-- Tema antes del primer pintado, para que no destelle en blanco. La
+         misma lógica (y la misma clave) que composables/useTheme.js. -->
+    <script>
+      (function () {
+        var theme = null
+        try {
+          theme = localStorage.getItem('theme')
+        } catch (e) {}
+        if (theme !== 'light' && theme !== 'dark') {
+          theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+        }
+        document.documentElement.setAttribute('data-theme', theme)
+      })()
+    </script>
+    <!-- En desarrollo el CSS llega con el JS: mientras tanto, fondo oscuro nativo. -->
+    <style>
+      :root[data-theme='dark'] {
+        color-scheme: dark;
+      }
+    </style>
   </head>
   <body>
     <div id="app"></div>

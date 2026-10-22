@@ -6,14 +6,13 @@
 // notación es idéntica en ambas vistas.
 import { formatNumber } from '../../../utils/iterationSteps'
 import {
-  CURRENT_COLOR,
   PREVIOUS_COLOR,
   colorize,
   errorFormulaLatex,
 } from '../../../utils/latexFormulas'
 import { generalFormulaLatex, substitutionLatex } from '../formulas'
 
-export { CURRENT_COLOR, PREVIOUS_COLOR, formatNumber }
+export { formatNumber }
 
 export const tex = {
   // Fundamento común

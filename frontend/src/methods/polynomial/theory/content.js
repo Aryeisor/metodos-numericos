@@ -6,7 +6,7 @@
 // de la iteración del ejemplo se generan con las mismas funciones que el
 // detalle de cada iteración en Resolver (../formulas.js).
 import { formatNumber } from '../../../utils/iterationSteps'
-import { CURRENT_COLOR, PREVIOUS_COLOR, latexNumber } from '../../../utils/latexFormulas'
+import { latexNumber } from '../../../utils/latexFormulas'
 import {
   B_FORMULA,
   C_FORMULA,
@@ -28,7 +28,7 @@ import {
 // valores de su tabla, y los factores, las raíces y la factorización.
 import EXAMPLE from './bairstowExample.json'
 
-export { CURRENT_COLOR, PREVIOUS_COLOR, EXAMPLE, formatNumber }
+export { EXAMPLE, formatNumber }
 
 const cases = (...rows) => `\\begin{cases} ${rows.join(' \\\\ ')} \\end{cases}`
 

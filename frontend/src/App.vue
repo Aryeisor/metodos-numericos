@@ -2,6 +2,7 @@
 import { computed } from 'vue'
 import { RouterView, useRoute } from 'vue-router'
 import NavMenu from './components/NavMenu.vue'
+import { useTheme } from './composables/useTheme'
 import {
   getMethod,
   hasTheory,
@@ -12,6 +13,12 @@ import {
 } from './methods/registry'
 
 const route = useRoute()
+const { theme, toggleTheme } = useTheme()
+
+// El botón dice lo que hace al pulsarlo: luna en claro, sol en oscuro.
+const themeToggleLabel = computed(() =>
+  theme.value === 'dark' ? 'Activar modo claro' : 'Activar modo oscuro'
+)
 
 const REGISTRY_ERROR = 'No fue posible cargar los métodos.'
 const DEFAULT_FOOTER = 'Métodos numéricos iterativos'
@@ -60,6 +67,21 @@ const footerText = computed(() => {
           :active="Boolean(theorySlug) || route.name === 'theory'"
           :empty-message="emptyMessage"
         />
+        <button
+          type="button"
+          class="theme-toggle"
+          :aria-label="themeToggleLabel"
+          :title="themeToggleLabel"
+          @click="toggleTheme"
+        >
+          <svg v-if="theme === 'dark'" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+            <circle cx="12" cy="12" r="4" />
+            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" />
+          </svg>
+          <svg v-else viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+          </svg>
+        </button>
       </nav>
     </div>
   </header>
@@ -102,6 +124,51 @@ const footerText = computed(() => {
 .nav {
   display: flex;
   gap: var(--space-5);
+}
+
+.theme-toggle {
+  align-self: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-control);
+  background: transparent;
+  color: var(--color-ink-muted);
+  cursor: pointer;
+  transition: background-color var(--transition-fast), color var(--transition-fast),
+    border-color var(--transition-fast);
+}
+
+.theme-toggle:hover {
+  background: var(--color-sunken);
+  color: var(--color-ink);
+  border-color: var(--color-line-strong);
+}
+
+.theme-toggle svg {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* En móvil el botón de tema quita espacio: se juntan los elementos para que
+   el nombre de la app no se parta en dos líneas. */
+@media (max-width: 480px) {
+  .header-inner,
+  .nav {
+    gap: var(--space-3);
+  }
+
+  .theme-toggle {
+    width: 32px;
+    height: 32px;
+  }
 }
 
 .app-footer {

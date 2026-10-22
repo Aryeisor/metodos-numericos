@@ -2,12 +2,12 @@
 // método: todos los valores (tablas b y c, D, D_r, D_s, Δr, Δs, errores)
 // vienen del backend en iteration.extra; aquí sólo se les da formato.
 import { formatNumber } from '../../utils/iterationSteps'
-import { CURRENT_COLOR, PREVIOUS_COLOR, colorize, latexNumber } from '../../utils/latexFormulas'
+import { PREVIOUS_COLOR, colorize, latexNumber } from '../../utils/latexFormulas'
 // El desglose de los determinantes (ad − bc con valores sustituidos) es el
 // mismo que en el detalle de Newton.
 import { determinantStepsLatex } from '../nonlinear/newtonFormulas'
 
-export { CURRENT_COLOR, PREVIOUS_COLOR, determinantStepsLatex }
+export { determinantStepsLatex }
 
 const paren = (latex) => `\\left(${latex}\\right)`
 // Un número negativo dentro de una operación va entre paréntesis.

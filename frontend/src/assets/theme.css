@@ -1,0 +1,145 @@
+/* ==========================================================================
+   Tema de color
+   --------------------------------------------------------------------------
+   Único lugar con colores de la interfaz. El tema activo lo decide el
+   atributo data-theme de <html> (ver composables/useTheme.js y el script en
+   línea de index.html). El tema claro también se aplica a cualquier elemento
+   con data-theme="light": así el gráfico puede leer la paleta clara para el
+   PDF aunque la pantalla esté en oscuro.
+   ========================================================================== */
+
+:root,
+[data-theme='light'] {
+  /* ---- Superficies -------------------------------------------------------
+     Menos brillo que el blanco puro: página gris azulada y tarjetas en
+     blanco roto. Los campos sí son blancos para destacar sobre la tarjeta. */
+  --color-page: #e6ebf1;          /* fondo de la página                     */
+  --color-surface: #f8fafc;       /* tarjetas, menús, cajas de fórmula      */
+  --color-input: #ffffff;         /* campos de entrada y selects            */
+  --color-sunken: #e8edf3;        /* cabeceras de tabla, zonas hundidas     */
+  --color-stripe: #f0f3f7;        /* filas alternas de las tablas           */
+
+  /* ---- Texto ------------------------------------------------------------- */
+  --color-ink: #1e293b;           /* texto principal (no negro puro)        */
+  --color-ink-muted: #475569;     /* descripciones, labels, ayudas          */
+  --color-on-accent: #ffffff;     /* texto sobre el color principal         */
+
+  /* ---- Bordes ------------------------------------------------------------ */
+  --color-line: #cbd5e1;          /* contenedores y divisores               */
+  --color-line-strong: #7b8696;   /* bordes de campos (≥ 3:1)               */
+  --color-focus-ring: rgba(14, 90, 109, 0.7);
+
+  /* ---- Marca: azul petróleo --------------------------------------------- */
+  --color-accent: #0e5a6d;
+  --color-accent-hover: #0a4655;
+  --color-accent-soft: #dceaee;   /* seleccionado / hover                   */
+  --color-info-line: #a3c6cf;
+
+  /* ---- Estados ----------------------------------------------------------- */
+  --color-success: #15803d;
+  --color-success-bg: #dcfce7;
+  --color-warning: #92400e;
+  --color-warning-bg: #fef3c7;
+  --color-warning-line: #f2c94c;
+  --color-danger: #b91c1c;
+  --color-danger-bg: #fee2e2;
+  --color-danger-line: #f5a3a3;
+
+  /* ---- Significado matemático --------------------------------------------
+     Valor de la iteración anterior (azul) y valor ya recalculado (verde).  */
+  --color-value-old: #2563eb;
+  --color-value-new: #15803d;
+  --color-series-1: #2563eb;      /* ε_r de Bairstow / error por iteración  */
+  --color-series-2: #9333ea;      /* ε_s de Bairstow                        */
+  --color-tolerance: #15803d;
+
+  /* ---- Gráfico ----------------------------------------------------------- */
+  --color-chart-grid: rgba(30, 41, 59, 0.1);
+  --color-chart-fill: rgba(37, 99, 235, 0.12);
+  --color-chart-fill-danger: rgba(185, 28, 28, 0.12);
+
+  /* ---- Elevación --------------------------------------------------------- */
+  --color-backdrop: rgba(15, 23, 42, 0.45);
+  --shadow-card: 0 1px 2px rgba(30, 41, 59, 0.05);
+  --shadow-interactive: 0 1px 2px rgba(30, 41, 59, 0.06), 0 1px 3px rgba(30, 41, 59, 0.08);
+  --shadow-interactive-hover: 0 2px 4px rgba(30, 41, 59, 0.06), 0 6px 16px rgba(30, 41, 59, 0.1);
+
+  color-scheme: light;
+}
+
+[data-theme='dark'] {
+  /* Carbón azulado, no negro: la tarjeta es un escalón más clara que la
+     página y los campos un escalón más oscuros que la tarjeta. */
+  --color-page: #0f172a;
+  --color-surface: #1c2638;
+  --color-input: #111a2b;
+  --color-sunken: #263247;
+  --color-stripe: #212c3f;
+
+  --color-ink: #e2e8f0;
+  --color-ink-muted: #a5b1c2;
+  --color-on-accent: #0b1a20;
+
+  --color-line: #334155;
+  --color-line-strong: #6b7a90;
+  --color-focus-ring: rgba(94, 196, 214, 0.75);
+
+  --color-accent: #5ec4d6;
+  --color-accent-hover: #86d5e2;
+  --color-accent-soft: #1d3d4a;
+  --color-info-line: #2f6474;
+
+  --color-success: #6ee09a;
+  --color-success-bg: #163626;
+  --color-warning: #f2c46b;
+  --color-warning-bg: #3a2c12;
+  --color-warning-line: #7a5a1e;
+  --color-danger: #f59a9a;
+  --color-danger-bg: #3d1d22;
+  --color-danger-line: #7f3a40;
+
+  /* Más claros que las series del gráfico: KaTeX dibuja los números con
+     trazo fino y sobre fondo oscuro se pierden (≥ 8:1 sobre surface y sunken). */
+  --color-value-old: #93d4ff;
+  --color-value-new: #8ef0b4;
+  --color-series-1: #82aaf8;
+  --color-series-2: #c8a2f6;
+  --color-tolerance: #6ee09a;
+
+  --color-chart-grid: rgba(226, 232, 240, 0.1);
+  --color-chart-fill: rgba(130, 170, 248, 0.15);
+  --color-chart-fill-danger: rgba(245, 154, 154, 0.15);
+
+  /* En oscuro la separación la dan los tonos; la sombra casi no se ve. */
+  --color-backdrop: rgba(2, 6, 23, 0.7);
+  --shadow-card: none;
+  --shadow-interactive: 0 1px 2px rgba(0, 0, 0, 0.2);
+  --shadow-interactive-hover: 0 4px 12px rgba(0, 0, 0, 0.35);
+
+  color-scheme: dark;
+}
+
+/* KaTeX sólo acepta colores literales en \textcolor (ver utils/latexFormulas.js):
+   aquí se cambian por los del tema. !important porque KaTeX los pone en línea. */
+.katex [style*='color:#2563eb'] {
+  color: var(--color-value-old) !important;
+}
+
+.katex [style*='color:#15803d'] {
+  color: var(--color-value-new) !important;
+}
+
+.katex [style*='color:#b91c1c'] {
+  color: var(--color-danger) !important;
+}
+
+/* Transición al cambiar de tema: la clase la pone useTheme sólo durante el
+   cambio, así la carga inicial no se anima. */
+@media (prefers-reduced-motion: no-preference) {
+  html.theme-transition,
+  html.theme-transition *,
+  html.theme-transition *::before,
+  html.theme-transition *::after {
+    transition: background-color 180ms ease, color 180ms ease, border-color 180ms ease !important;
+  }
+}

@@ -5,7 +5,9 @@
 import { formatNumber } from './iterationSteps'
 
 // Valores tomados de la iteración anterior vs. valores ya recalculados en la
-// iteración actual (sólo ocurre en Gauss-Seidel).
+// iteración actual (sólo ocurre en Gauss-Seidel). KaTeX sólo acepta colores
+// literales: assets/theme.css los cambia por --color-value-old/-new según el
+// tema, así que si cambian aquí hay que cambiarlos también allí.
 export const PREVIOUS_COLOR = '#2563eb'
 export const CURRENT_COLOR = '#15803d'
 

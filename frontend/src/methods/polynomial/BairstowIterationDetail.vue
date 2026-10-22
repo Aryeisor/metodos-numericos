@@ -11,8 +11,6 @@ import SyntheticTable from './SyntheticTable.vue'
 import {
   B_FORMULA,
   C_FORMULA,
-  CURRENT_COLOR,
-  PREVIOUS_COLOR,
   currentValuesLatex,
   determinantStepsLatex,
   errorsLatex,
@@ -183,11 +181,11 @@ const toleranceLatex = computed(() => `${latexNumber(props.tolerance)}\\,\\%`)
 }
 
 .legend-prev {
-  color: v-bind(PREVIOUS_COLOR);
+  color: var(--color-value-old);
 }
 
 .legend-current {
-  color: v-bind(CURRENT_COLOR);
+  color: var(--color-value-new);
 }
 
 .step-grid {

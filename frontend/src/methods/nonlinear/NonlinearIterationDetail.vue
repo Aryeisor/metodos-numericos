@@ -94,11 +94,11 @@ const detail = computed(() => errorDetail(props.result, props.index))
 }
 
 .legend-prev {
-  color: #2563eb;
+  color: var(--color-value-old);
 }
 
 .legend-current {
-  color: #15803d;
+  color: var(--color-value-new);
 }
 
 .substitution-grid {

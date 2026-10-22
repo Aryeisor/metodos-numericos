@@ -11,8 +11,6 @@
 import { computed } from 'vue'
 import MathFormula from '../../components/MathFormula.vue'
 import {
-  CURRENT_COLOR,
-  PREVIOUS_COLOR,
   determinantStepsLatex,
   errorLatex,
   evaluationLatex,
@@ -175,11 +173,11 @@ const singular = computed(() => props.result.failure?.reason === 'singular' && !
 }
 
 .legend-prev {
-  color: v-bind(PREVIOUS_COLOR);
+  color: var(--color-value-old);
 }
 
 .legend-current {
-  color: v-bind(CURRENT_COLOR);
+  color: var(--color-value-new);
 }
 
 /* El detalle vive dentro de una fila de la tabla de iteraciones, y una tabla

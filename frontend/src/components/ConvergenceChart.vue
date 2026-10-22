@@ -1,6 +1,7 @@
 <script setup>
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import Chart from 'chart.js/auto'
+import { useTheme } from '../composables/useTheme'
 
 const props = defineProps({
   iterations: { type: Array, required: true },
@@ -8,7 +9,8 @@ const props = defineProps({
   converged: { type: Boolean, default: false },
   // Opcionales (Bairstow). Sin ellos el gráfico es el de siempre: una serie
   // con el `error` de cada iteración.
-  //   series         [{ label, values, color }]: varias series en lugar del error
+  //   series         [{ label, values, color }]: varias series en lugar del error;
+  //                  `color` es una variable CSS del tema, ej. '--color-series-1'
   //   yLabel         título del eje del error
   //   toleranceLabel texto de la línea de tolerancia en la leyenda
   series: { type: Array, default: null },
@@ -18,6 +20,39 @@ const props = defineProps({
 
 const canvasRef = ref(null)
 let chart = null
+const { theme } = useTheme()
+
+// --- Colores del tema --------------------------------------------------------
+// El canvas no entiende var(--…): los colores se leen de theme.css. Con
+// `forcedTheme` se leen de un elemento con ese data-theme, para dibujar con la
+// paleta clara aunque la pantalla esté en oscuro (imagen del PDF).
+const PALETTE_TOKENS = [
+  '--color-ink',
+  '--color-ink-muted',
+  '--color-surface',
+  '--color-line',
+  '--color-chart-grid',
+  '--color-chart-fill',
+  '--color-chart-fill-danger',
+  '--color-series-1',
+  '--color-danger',
+  '--color-tolerance',
+]
+
+function readPalette(forcedTheme = null) {
+  let source = document.documentElement
+  if (forcedTheme) {
+    source = document.createElement('div')
+    source.dataset.theme = forcedTheme
+    source.hidden = true
+    document.body.append(source)
+  }
+  const style = getComputedStyle(source)
+  const tokens = [...PALETTE_TOKENS, ...(props.series ?? []).map((serie) => serie.color)]
+  const palette = Object.fromEntries(tokens.map((token) => [token, style.getPropertyValue(token).trim()]))
+  if (forcedTheme) source.remove()
+  return palette
+}
 
 // --- Formato numérico del gráfico ------------------------------------------
 // Chart.js formatea por defecto con 3 decimales según el idioma del navegador:
@@ -59,7 +94,7 @@ function logAxisLabel(value) {
 
 // La escala logarítmica no admite ceros: esos puntos se dejan como huecos y la
 // línea se continúa con spanGaps.
-function buildData() {
+function buildData(palette) {
   const labels = props.iterations.map((it) => it.iteration)
   const positive = (value) =>
     value !== null && value !== undefined && value > 0 && Number.isFinite(value) ? value : null
@@ -68,8 +103,8 @@ function buildData() {
     ? props.series.map((serie) => ({
         label: serie.label,
         data: serie.values.map(positive),
-        borderColor: serie.color,
-        backgroundColor: serie.color,
+        borderColor: palette[serie.color],
+        backgroundColor: palette[serie.color],
         borderWidth: 2,
         pointRadius: 2,
         pointHoverRadius: 5,
@@ -81,8 +116,9 @@ function buildData() {
         {
           label: 'Error por iteración',
           data: props.iterations.map((it) => positive(it.error)),
-          borderColor: props.converged ? '#2563eb' : '#b91c1c',
-          backgroundColor: props.converged ? 'rgba(37, 99, 235, 0.12)' : 'rgba(185, 28, 28, 0.12)',
+          borderColor: palette[props.converged ? '--color-series-1' : '--color-danger'],
+          backgroundColor:
+            palette[props.converged ? '--color-chart-fill' : '--color-chart-fill-danger'],
           borderWidth: 2,
           pointRadius: 2,
           pointHoverRadius: 5,
@@ -96,7 +132,7 @@ function buildData() {
     datasets.push({
       label: props.toleranceLabel ?? `Tolerancia (${formatChartNumber(props.tolerance)})`,
       data: labels.map(() => props.tolerance),
-      borderColor: '#15803d',
+      borderColor: palette['--color-tolerance'],
       borderWidth: 2,
       borderDash: [6, 4],
       pointRadius: 0,
@@ -107,27 +143,38 @@ function buildData() {
   return { labels, datasets }
 }
 
-function buildOptions() {
+function buildOptions(palette) {
+  const text = palette['--color-ink-muted']
+  const axis = {
+    grid: { color: palette['--color-chart-grid'] },
+    border: { color: palette['--color-line'] },
+    ticks: { color: text },
+  }
   return {
     responsive: true,
     maintainAspectRatio: false,
     animation: false,
+    color: text,
     interaction: { mode: 'index', intersect: false },
     scales: {
       x: {
-        title: { display: true, text: 'Iteración' },
-        grid: { color: 'rgba(0,0,0,0.05)' },
+        ...axis,
+        title: { display: true, text: 'Iteración', color: text },
       },
       y: {
+        ...axis,
         type: 'logarithmic',
-        title: { display: true, text: props.yLabel },
-        grid: { color: 'rgba(0,0,0,0.05)' },
-        ticks: { callback: logAxisLabel },
+        title: { display: true, text: props.yLabel, color: text },
+        ticks: { ...axis.ticks, callback: logAxisLabel },
       },
     },
     plugins: {
-      legend: { position: 'bottom', labels: { boxWidth: 14, font: { size: 11 } } },
+      legend: { position: 'bottom', labels: { boxWidth: 14, font: { size: 11 }, color: text } },
+      // Tooltip en colores invertidos respecto a la tarjeta, en ambos temas.
       tooltip: {
+        backgroundColor: palette['--color-ink'],
+        titleColor: palette['--color-surface'],
+        bodyColor: palette['--color-surface'],
         callbacks: {
           title: (items) => `Iteración ${items[0].label}`,
           label: (item) => `${item.dataset.label}: ${formatChartNumber(item.parsed.y)}`,
@@ -137,10 +184,21 @@ function buildOptions() {
   }
 }
 
-// Fondo blanco al exportar: el canvas es transparente por defecto y en el PDF
-// se vería sobre el color de la página.
+// Redibuja el gráfico con una paleta (animation: false, así que update()
+// pinta el canvas en el acto).
+function render(palette) {
+  chart.data = buildData(palette)
+  chart.options = buildOptions(palette)
+  chart.update()
+}
+
+// El PDF siempre es claro: si la pantalla está en oscuro, se redibuja un
+// momento con la paleta clara, se copia y se vuelve al tema actual. El fondo
+// blanco es del PDF (el canvas es transparente por defecto), no del tema.
 function toImage() {
   if (!chart) return null
+  const dark = theme.value === 'dark'
+  if (dark) render(readPalette('light'))
   const source = chart.canvas
   const target = document.createElement('canvas')
   target.width = source.width
@@ -149,6 +207,7 @@ function toImage() {
   ctx.fillStyle = '#ffffff'
   ctx.fillRect(0, 0, target.width, target.height)
   ctx.drawImage(source, 0, 0)
+  if (dark) render(readPalette())
   return {
     dataUrl: target.toDataURL('image/png'),
     width: target.width,
@@ -159,21 +218,17 @@ function toImage() {
 defineExpose({ toImage })
 
 onMounted(() => {
+  const palette = readPalette()
   chart = new Chart(canvasRef.value, {
     type: 'line',
-    data: buildData(),
-    options: buildOptions(),
+    data: buildData(palette),
+    options: buildOptions(palette),
   })
 })
 
-watch(
-  () => props.iterations,
-  () => {
-    if (!chart) return
-    chart.data = buildData()
-    chart.update()
-  }
-)
+watch([() => props.iterations, theme], () => {
+  if (chart) render(readPalette())
+})
 
 onBeforeUnmount(() => {
   if (chart) chart.destroy()

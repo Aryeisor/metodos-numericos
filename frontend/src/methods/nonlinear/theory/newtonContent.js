@@ -6,7 +6,6 @@
 // las mismas funciones que el detalle de Newton en Resolver
 // (../newtonFormulas.js), así que la notación es idéntica en ambas vistas.
 import { formatNumber } from '../../../utils/iterationSteps'
-import { CURRENT_COLOR, PREVIOUS_COLOR } from '../../../utils/latexFormulas'
 import {
   determinantStepsLatex,
   errorLatex,
@@ -27,7 +26,7 @@ import {
 // valores intermedios de cada iteración.
 import EXAMPLE from './newtonExample.json'
 
-export { CURRENT_COLOR, PREVIOUS_COLOR, formatNumber }
+export { formatNumber }
 
 export const tex = {
   // De dónde sale: forma escalar

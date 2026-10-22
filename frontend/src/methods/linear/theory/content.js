@@ -2,14 +2,12 @@
 // fórmulas en LaTeX, el ejemplo resuelto y los pasos del algoritmo.
 import { buildIterationDetail, formatNumber } from '../../../utils/iterationSteps'
 import {
-  CURRENT_COLOR,
-  PREVIOUS_COLOR,
   errorFormulaLatex,
   generalFormulaLatex,
   substitutionLatex,
 } from '../../../utils/latexFormulas'
 
-export { CURRENT_COLOR, PREVIOUS_COLOR, formatNumber }
+export { formatNumber }
 
 // Las fórmulas de iteración y de error vienen de las mismas funciones que usa
 // el paso a paso de Resolver, para que ambas vistas compartan la notación exacta.

@@ -6,8 +6,6 @@ import WorkedIterations from '../../../components/theory/WorkedIterations.vue'
 import { theoryRouteName } from '../../routeNames'
 import {
   ALGORITHM_STEPS,
-  CURRENT_COLOR,
-  PREVIOUS_COLOR,
   comparisonRows,
   formatNumber,
   gaussSeidelSteps,
@@ -29,8 +27,8 @@ import {
       <MathFormula :expression="tex.gaussSeidel" display-mode />
     </div>
     <p class="formula-legend">
-      <span :style="{ color: PREVIOUS_COLOR }">■</span> valores de la iteración anterior ·
-      <span :style="{ color: CURRENT_COLOR }">■</span> valores ya recalculados en esta misma
+      <span style="color: var(--color-value-old)">■</span> valores de la iteración anterior ·
+      <span style="color: var(--color-value-new)">■</span> valores ya recalculados en esta misma
       iteración
     </p>
     <p>

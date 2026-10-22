@@ -176,7 +176,7 @@ const degrees = Array.from({ length: MAX_DEGREE - MIN_DEGREE + 1 }, (_, i) => MI
 
 .mode-btn.is-active {
   background: var(--color-accent);
-  color: #ffffff;
+  color: var(--color-on-accent);
   font-weight: var(--weight-semibold);
 }
 

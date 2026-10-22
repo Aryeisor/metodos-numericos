@@ -1,5 +1,6 @@
 import { createApp } from 'vue'
 import 'katex/dist/katex.min.css'
+import './assets/theme.css'
 import './style.css'
 import App from './App.vue'
 import router, { addMethodRoutes } from './router'

@@ -14,6 +14,7 @@ import {
 } from '../../utils/latexFormulas'
 
 const PLACEHOLDER = /@@(\d+)@@(\^)?/g
+// Literal porque va a KaTeX; theme.css lo cambia por --color-danger.
 const FAILURE_COLOR = '#b91c1c'
 
 /** Variable j con superíndice de iteración, ej. x_{1}^{(3)}. */

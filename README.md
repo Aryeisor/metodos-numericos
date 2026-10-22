@@ -103,6 +103,17 @@ reales del solver, tabla comparativa y referencias bibliográficas (APA).
 Los menús «Resolver ▾» y «Teoría ▾» se generan automáticamente a partir del
 catálogo de métodos del backend, agrupados por categoría.
 
+### Modo claro y modo oscuro
+
+- **Botón de tema** en la barra superior, a la derecha de «Teoría ▾» (luna
+  para pasar a oscuro, sol para pasar a claro).
+- La primera vez sigue la **preferencia del sistema operativo**; al pulsar el
+  botón, la elección se **recuerda** en el navegador para las visitas
+  siguientes. Sin elección guardada, la app sigue los cambios del sistema.
+- El tema se aplica antes de pintar la página (sin destello blanco) y los
+  gráficos de convergencia se actualizan al cambiarlo, sin volver a resolver.
+- El **PDF siempre sale en tema claro**, gráfico incluido.
+
 ---
 
 ## Requisitos e instalación
@@ -549,6 +560,8 @@ metodos/
     ├── nginx.conf                   # Fallback a index.html, proxy /api/, gzip y caché
     └── src/
         ├── main.js                  # Carga el catálogo de métodos antes de montar la app
+        ├── style.css                # Tipografía, espaciado y estilos base (consume los colores del tema)
+        ├── assets/theme.css         # Paleta de colores del tema claro y del oscuro (variables CSS)
         ├── api/client.js            # Cliente Axios
         ├── router/index.js          # Rutas /resolver/<slug> y /teoria/<slug>, generadas desde el registro
         ├── views/                   # SolverView (genérica para todos los métodos) y TheoryView
@@ -562,7 +575,8 @@ metodos/
         │   │                        # MathSymbolToolbar, MathSyntaxHelp, NavMenu,
         │   │                        # NumericFieldsInput (x0, r0/s0, coeficientes), EquationPreview
         │   └── theory/              # Piezas comunes de las páginas de teoría
-        ├── composables/             # useExpressionPreviews (vista previa en vivo)
+        ├── composables/             # useExpressionPreviews (vista previa en vivo),
+        │                            # useTheme (tema claro/oscuro, preferencia del sistema y elección guardada)
         └── utils/                   # PDF, formato numérico, fórmulas LaTeX, entrada con fracciones
 ```
 

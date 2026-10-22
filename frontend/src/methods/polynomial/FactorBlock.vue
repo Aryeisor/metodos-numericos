@@ -68,8 +68,8 @@ const cell = (value) => (value === null || value === undefined ? '—' : formatN
 // --- Gráfico: ε_r y ε_s por separado ---------------------------------------
 const chartRef = ref(null)
 const series = computed(() => [
-  { label: 'ε_r (%)', values: props.iterations.map((row) => row.extra.eps_r ?? null), color: '#2563eb' },
-  { label: 'ε_s (%)', values: props.iterations.map((row) => row.extra.eps_s ?? null), color: '#9333ea' },
+  { label: 'ε_r (%)', values: props.iterations.map((row) => row.extra.eps_r ?? null), color: '--color-series-1' },
+  { label: 'ε_s (%)', values: props.iterations.map((row) => row.extra.eps_s ?? null), color: '--color-series-2' },
 ])
 const toleranceLabel = computed(() => `Tolerancia εs (${formatNumber(props.tolerance)} %)`)
 

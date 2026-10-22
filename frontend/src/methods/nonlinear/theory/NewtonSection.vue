@@ -10,8 +10,6 @@ import { theoryRouteName } from '../../routeNames'
 import {
   ALGEBRAIC_AFTER_4,
   ALGORITHM_STEPS,
-  CURRENT_COLOR,
-  PREVIOUS_COLOR,
   convergenceRows,
   exampleEntries,
   formatNumber,
@@ -109,7 +107,7 @@ import {
       <MathFormula :expression="tex.practicalForm" display-mode />
     </div>
     <p class="formula-legend">
-      <span :style="{ color: PREVIOUS_COLOR }">■</span> punto de la iteración anterior
+      <span style="color: var(--color-value-old)">■</span> punto de la iteración anterior
     </p>
 
     <h3>El sistema lineal de cada iteración: regla de Cramer</h3>
