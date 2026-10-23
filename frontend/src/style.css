@@ -283,6 +283,52 @@ select {
   border: 1px solid var(--color-info-line);
 }
 
+/* Comprobación de la solución (Bairstow y métodos lineales): las cuatro partes
+   de cada línea quedan alineadas en columnas
+   (etiqueta | sustitución | términos calculados | resultado). */
+.check-grid {
+  display: grid;
+  grid-template-columns: repeat(4, max-content);
+  column-gap: var(--space-3);
+  row-gap: var(--space-3);
+  align-items: baseline;
+  padding-bottom: var(--space-2);
+}
+
+/* Líneas largas: dos renglones, etiqueta | sustitución, y debajo | términos = resultado. */
+.check-grid.is-stacked {
+  grid-template-columns: repeat(2, max-content);
+  row-gap: var(--space-1);
+}
+
+.check-grid.is-stacked > :nth-child(4n) {
+  margin-bottom: var(--space-3);
+}
+
+.check-result {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  white-space: nowrap;
+}
+
+.mark {
+  font-weight: var(--weight-semibold);
+}
+
+.mark-ok {
+  color: var(--color-success);
+}
+
+.mark-warn {
+  color: var(--color-warning);
+}
+
+.check-exact {
+  font-size: var(--text-small);
+  color: var(--color-ink-muted);
+}
+
 /* Caja de fórmula en bloque, compartida por Teoría y el paso a paso de Resolver. */
 .formula-box {
   background: var(--color-surface);

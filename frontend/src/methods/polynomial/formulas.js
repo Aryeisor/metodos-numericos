@@ -34,7 +34,7 @@ export function checkLatex(value) {
 // Los valores (xᵏ, aₖ·xᵏ, f(x) y si se considera ≈ 0) vienen del backend en
 // root.verification; aquí sólo se escriben. Dos estilos: LaTeX para la vista
 // y texto ASCII para el PDF.
-const LATEX_STYLE = {
+export const LATEX_STYLE = {
   number: latexNumber,
   power: (base, k) => `${base}^{${k}}`,
   constant: 'a_0',
@@ -46,14 +46,14 @@ export const CHECK_TEXT_STYLE = {
 }
 
 /** Suma de partes con signo ya resuelto: "1 - 2 - 5 + 6". */
-function signedSum(parts) {
+export function signedSum(parts) {
   return parts
     .map(({ negative, body }, i) => (i === 0 ? `${negative ? '-' : ''}${body}` : `${negative ? '-' : '+'} ${body}`))
     .join(' ')
 }
 
 /** Valor real redondeado como parte de una suma: signo aparte y |valor|. */
-function signedValue(value, style) {
+export function signedValue(value, style) {
   const text = style.number(Math.abs(value))
   return { negative: value < 0 && text !== '0', body: text }
 }

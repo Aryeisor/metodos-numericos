@@ -10,6 +10,8 @@
 //                                   iteración a otra (ej. el Jacobiano de Newton)
 //   iteration-detail { index, row } detalle expandible de una iteración; si no
 //                                   se provee, la tabla no muestra el botón de expandir
+//   after-iterations                sección final, después de la tabla de iteraciones
+//                                   (ej. la comprobación de los métodos lineales)
 import { computed, ref, useSlots, watch } from 'vue'
 import ConvergenceChart from './ConvergenceChart.vue'
 import { formatNumber } from '../utils/iterationSteps'
@@ -227,6 +229,8 @@ function toggleRow(iteration) {
         Mostrando {{ pagedIterations.length }} de {{ result.iterations.length }} iteraciones
       </span>
     </div>
+
+    <slot name="after-iterations" />
   </div>
 </template>
 

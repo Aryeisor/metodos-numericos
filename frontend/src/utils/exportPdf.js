@@ -43,6 +43,8 @@ export function paragraph(doc, y, text) {
  *   writeInputSection(doc, y) -> y   sección con los datos de entrada
  *   statusExtras      textos adicionales para la línea de estado del resultado
  *   fileStem          nombre base del archivo (sin fecha ni extensión)
+ *   writeAfterIterations(doc, y) -> y   opcional: sección final, después de la
+ *                     tabla de iteraciones (ej. la comprobación de los lineales)
  */
 export function exportResultToPdf({ result, methodName, chartImage, report }) {
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' })
@@ -121,6 +123,8 @@ export function exportResultToPdf({ result, methodName, chartImage, report }) {
     headStyles: { fillColor: [37, 99, 235], halign: 'center' },
     columnStyles: { 0: { halign: 'center' } },
   })
+
+  report.writeAfterIterations?.(doc, doc.lastAutoTable.finalY + 6)
 
   const stem = report.fileStem ?? result.method
   doc.save(`${stem}-${new Date().toISOString().slice(0, 10)}.pdf`)

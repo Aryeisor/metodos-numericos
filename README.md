@@ -68,6 +68,9 @@ iterativos, y para estudiar la teoría de cada método.
 - **Resultado:** solución, estado (convergió o no), advertencias, **gráfico de
   convergencia** del error en escala logarítmica (con la línea de tolerancia y
   notación científica) y **tabla de iteraciones** paginada.
+- En **Jacobi y Gauss-Seidel**, al final del resultado, el apartado
+  **«Comprobación»**: la solución sustituida en cada ecuación del sistema
+  original, con su residuo.
 - **Paso a paso expandible** en cada iteración, con todas las fórmulas
   renderizadas con KaTeX (ver [Detalle de cada método](#detalle-de-cada-método)).
 - **Exportación a PDF** del resultado: datos del sistema, solución, gráfico y
@@ -322,6 +325,20 @@ reglas propias de tolerancia y error (ver su sección).
 - Paso a paso de cada iteración: fórmula general, sustitución numérica de cada
   variable (valores de la iteración anterior en azul y, en Gauss-Seidel, los ya
   recalculados en verde) y cálculo del error.
+- **Comprobación** (al final del resultado y en el PDF): la solución se
+  reemplaza en cada ecuación del sistema **tal como se escribió** (orden
+  original de las filas, aunque el método haya trabajado con las filas
+  reordenadas), término a término —por ejemplo
+  `4(−3) + 2(−2) = −12 − 4 = −16 (b₁ = −16) ✔`—. Se omiten los términos con
+  coeficiente 0. Por cada ecuación se calcula el residuo
+  `rᵢ = Σ aᵢⱼ·xⱼ − bᵢ` con los valores sin redondear; se marca ✔ («≈ bᵢ», con
+  el residuo en letra pequeña) si `|rᵢ| ≤ 10⁻⁶ · max(1, |bᵢ|, Σ|aᵢⱼ·xⱼ|)`
+  (el mismo criterio relativo que la comprobación de Bairstow) y ⚠ si no.
+  Si la solución se ve entera con 6 decimales (por ejemplo, 0.9999997 → 1), se
+  comprueba con esos enteros, sin aproximaciones: `4(1) + (1) + (1) = 4 + 1 + 1 = 6`.
+  Cuando la solución tiene decimales, las igualdades se escriben «≈». Al final
+  se muestra el residuo máximo (norma infinito). Si el método no convergió, la
+  comprobación usa la última aproximación, con un aviso.
 
 ### Punto Fijo (Iterativo Secuencial)
 
@@ -498,7 +515,12 @@ Campos comunes a todos los métodos:
 Campos propios de cada categoría:
 
 - **Lineales:** `A` y `b` tal como se usaron (ya reordenados, si hubo
-  reordenamiento), `is_diagonally_dominant`, `reordered`, `row_order`.
+  reordenamiento), `is_diagonally_dominant`, `reordered`, `row_order` y
+  `verification`: la comprobación en el orden original de las ecuaciones
+  (`solution`; `equations` con, por ecuación, `row` —índice original, desde
+  0—, `terms` —`{coefficient, variable, value, term}` de cada coeficiente no
+  nulo—, `lhs`, `b`, `residual` e `is_zero`; `max_residual`, `reordered` y
+  `rounded_to_integers`, si la solución se vio entera y se comprobó con enteros).
 - **Punto Fijo:** por ecuación, el despeje `g_i` (en LaTeX y en texto) y su
   paso a paso (`isolation`); `x0`; `failure`.
 - **Newton:** la función `f_i` de cada ecuación y sus términos, la Jacobiana
@@ -647,11 +669,11 @@ cd backend
 python manage.py test numeric_methods
 ```
 
-**262 tests**, todos en verde:
+**270 tests**, todos en verde:
 
 | Archivo | Tests | Qué cubre |
 | --- | --- | --- |
-| `test_solvers.py` | 15 | Jacobi y Gauss-Seidel |
+| `test_solvers.py` | 23 | Jacobi y Gauss-Seidel, y su comprobación (términos y residuos exactos, solución que se ve entera, coeficiente 0, solución decimal, orden original tras reordenar, no convergencia) |
 | `test_dominance.py` | 8 | Dominancia diagonal y reordenamiento de filas |
 | `test_api.py` | 13 | Endpoints de los métodos lineales y de ejemplos |
 | `test_registry.py` | 13 | Registro de métodos, catálogo y ejemplos por método |

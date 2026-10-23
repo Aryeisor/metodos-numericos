@@ -344,6 +344,10 @@ function handleExportPdf(chartImage) {
             :method-name="resultMethodName"
           />
         </template>
+        <!-- Opcional: sección final (ej. la comprobación de los métodos lineales). -->
+        <template v-if="ui.afterIterations" #after-iterations>
+          <component :is="ui.afterIterations" :result="result" />
+        </template>
       </ResultsTable>
     </div>
   </div>

@@ -21,6 +21,8 @@
 // Opcionales (si faltan, todo funciona como en esta categoría):
 //   methods[slug]                 lo que cambia para un método concreto (ej. Newton)
 //   beforeIterations              sección fija entre el gráfico y la tabla de iteraciones
+//   afterIterations               sección final, después de la tabla de iteraciones
+//                                 (recibe result; ej. la comprobación de esta categoría)
 //   resultView                    vista completa del resultado en lugar de ResultsTable
 //                                 (recibe result, system y methodName; exporta su PDF)
 //   toleranceLabel                texto del campo de tolerancia
@@ -31,6 +33,7 @@ import LinearConfigExtras from './LinearConfigExtras.vue'
 import LinearConfigFields from './LinearConfigFields.vue'
 import LinearIterationDetail from './LinearIterationDetail.vue'
 import LinearResultSummary from './LinearResultSummary.vue'
+import LinearVerification from './LinearVerification.vue'
 import { linearPdfReport } from './pdf'
 import { createLinearSystemStore } from './store'
 import LinearTheoryPage, { THEORY_SECTIONS } from './theory/LinearTheoryPage.vue'
@@ -63,6 +66,7 @@ export default {
 
   resultSummary: LinearResultSummary,
   iterationDetail: LinearIterationDetail,
+  afterIterations: LinearVerification,
   pdfReport: linearPdfReport,
 
   theoryPage: LinearTheoryPage,
