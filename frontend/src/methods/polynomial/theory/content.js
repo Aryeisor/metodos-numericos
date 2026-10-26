@@ -11,7 +11,6 @@ import {
   B_FORMULA,
   C_FORMULA,
   FACTOR_FORMULA,
-  checkLatex,
   currentValuesLatex,
   determinantStepsLatex,
   discriminantLatex,
@@ -190,7 +189,7 @@ export const rootRows = EXAMPLE.roots.map((root, i) => ({
   value: formatComplex(root.re, root.im),
   kind: root.im === 0 ? 'real' : 'compleja',
   factor: root.factor + 1,
-  check: checkLatex(root.check),
+  check: smallLatex(root.check),
 }))
 
 export const factorization = `f(x) = ${EXAMPLE.factorization}`

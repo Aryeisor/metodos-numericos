@@ -68,9 +68,14 @@ iterativos, y para estudiar la teoría de cada método.
 - **Resultado:** solución, estado (convergió o no), advertencias, **gráfico de
   convergencia** del error en escala logarítmica (con la línea de tolerancia y
   notación científica) y **tabla de iteraciones** paginada.
-- En **Jacobi y Gauss-Seidel**, al final del resultado, el apartado
-  **«Comprobación»**: la solución sustituida en cada ecuación del sistema
-  original, con su residuo.
+- En **Jacobi, Gauss-Seidel y Punto Fijo**, al final del resultado, el
+  apartado **«Comprobación»**: la solución sustituida en cada ecuación del
+  sistema original, con su residuo.
+- **Errores y residuos** (tablas, paso a paso, comprobaciones y PDF) se
+  muestran con **6 decimales como máximo**, igual que los valores de las
+  variables: los menores que 0.0000005 se muestran como `0`, coherentes con
+  los valores que se ven. Sólo los números muy grandes (desde 10⁷, por ejemplo
+  al diverger) se escriben en notación científica.
 - **Paso a paso expandible** en cada iteración, con todas las fórmulas
   renderizadas con KaTeX (ver [Detalle de cada método](#detalle-de-cada-método)).
 - **Exportación a PDF** del resultado: datos del sistema, solución, gráfico y
@@ -332,7 +337,7 @@ reglas propias de tolerancia y error (ver su sección).
   `4(−3) + 2(−2) = −12 − 4 = −16 (b₁ = −16) ✔`—. Se omiten los términos con
   coeficiente 0. Por cada ecuación se calcula el residuo
   `rᵢ = Σ aᵢⱼ·xⱼ − bᵢ` con los valores sin redondear; se marca ✔ («≈ bᵢ», con
-  el residuo en letra pequeña) si `|rᵢ| ≤ 10⁻⁶ · max(1, |bᵢ|, Σ|aᵢⱼ·xⱼ|)`
+  el residuo en letra pequeña si con 6 decimales no se ve 0) si `|rᵢ| ≤ 10⁻⁶ · max(1, |bᵢ|, Σ|aᵢⱼ·xⱼ|)`
   (el mismo criterio relativo que la comprobación de Bairstow) y ⚠ si no.
   Si la solución se ve entera con 6 decimales (por ejemplo, 0.9999997 → 1), se
   comprueba con esos enteros, sin aproximaciones: `4(1) + (1) + (1) = 4 + 1 + 1 = 6`.
@@ -354,6 +359,21 @@ reglas propias de tolerancia y error (ver su sección).
   numéricamente contra la función que realmente se itera.
 - Paso a paso de cada iteración: sustitución en cada `g_i`, indicando qué
   valores son nuevos y cuáles de la iteración anterior, y cálculo del error.
+- **Comprobación** (al final del resultado y en el PDF): la solución se
+  reemplaza en cada **ecuación original** —no en `g_i`—, escrita como
+  `f_i = 0` (una ecuación «lado = lado» pasa todo a la izquierda, como en
+  Newton y con los mismos términos), término a término:
+  `20(1) + (2)² − 24 = 20 + 4 − 24 = 0 ✔`. Las funciones se muestran con su
+  argumento sustituido y luego su valor (`sin(0.552354)` → `0.524693`).
+  Cada variable que se ve entera con 6 decimales (|xᵢ − redondeo(xᵢ)| < 5·10⁻⁷,
+  el mismo criterio que Jacobi y Gauss-Seidel) se escribe y se sustituye como
+  entero, así la línea da `= 0` sin aproximaciones; el residuo con los valores
+  sin redondear se indica en letra pequeña sólo si con 6 decimales no se ve 0. Con valores decimales las
+  igualdades se escriben «≈» y se marca ✔ («≈ 0», con el residuo si se ve con 6 decimales) si
+  `|rᵢ| ≤ 10⁻⁶ · max(1, Σ|términos|)` y ⚠ si no. Si hay funciones
+  trigonométricas se recuerda que se evalúan en radianes. Al final, el residuo
+  máximo; si el método no convergió, la comprobación usa la última
+  aproximación, con un aviso.
 
 ### Newton
 
@@ -412,7 +432,7 @@ reglas propias de tolerancia y error (ver su sección).
     porque los coeficientes son reales.
   - Criterio de «≈ 0»: `|f(x)| ≤ 10⁻⁶ · max(1, Σ|aₖ·xᵏ|)` (la suma de las
     magnitudes de los términos es la escala del redondeo). Se muestra
-    «≈ 0 ✔» con el valor exacto en letra pequeña; si es mayor, el residuo con
+    «≈ 0 ✔», con el valor en letra pequeña sólo si con 6 decimales no se ve 0; si es mayor, el residuo con
     ⚠ y una nota (pasa con tolerancias grandes, por ejemplo `εs = 10 %` en el
     ejemplo de Chapra).
   - Los valores (`xᵏ`, `aₖ·xᵏ`, `f(x)` y el criterio) los calcula el backend
@@ -522,7 +542,13 @@ Campos propios de cada categoría:
   nulo—, `lhs`, `b`, `residual` e `is_zero`; `max_residual`, `reordered` y
   `rounded_to_integers`, si la solución se vio entera y se comprobó con enteros).
 - **Punto Fijo:** por ecuación, el despeje `g_i` (en LaTeX y en texto) y su
-  paso a paso (`isolation`); `x0`; `failure`.
+  paso a paso (`isolation`); `x0`; `failure`; `verification`: la comprobación
+  (`solution` —con las variables enteras ya redondeadas—, `integers` —si cada
+  variable se trató como entera—, `equations` con, por ecuación,
+  `function_latex`, `function_text`, `terms` —`{sign, template, text, value}`
+  de cada término de `f_i`, con marcadores `@@j@@` en lugar de cada
+  variable—, `residual` e `is_zero`; `max_residual`, `raw_max_residual` —con
+  los valores sin redondear— y `uses_trigonometry`).
 - **Newton:** la función `f_i` de cada ecuación y sus términos, la Jacobiana
   simbólica con el desglose de cada derivada (`jacobian`), `x0`, `failure`. En
   cada iteración, `extra` incluye `F`, `J`, `D`, `D_i` con sus matrices y
@@ -669,7 +695,7 @@ cd backend
 python manage.py test numeric_methods
 ```
 
-**270 tests**, todos en verde:
+**275 tests**, todos en verde:
 
 | Archivo | Tests | Qué cubre |
 | --- | --- | --- |
@@ -679,7 +705,7 @@ python manage.py test numeric_methods
 | `test_registry.py` | 13 | Registro de métodos, catálogo y ejemplos por método |
 | `test_expressions.py` | 49 | Parser seguro, derivación y LaTeX |
 | `test_preview.py` | 31 | Endpoint de vista previa, logaritmos y límites de seguridad |
-| `test_fixed_point.py` | 36 | Punto Fijo: despeje automático, rechazos, actualización secuencial, endpoint |
+| `test_fixed_point.py` | 41 | Punto Fijo: despeje automático, rechazos, actualización secuencial, endpoint y comprobación (soluciones enteras, decimales con funciones, «lado = lado», no convergencia) |
 | `test_isolation_steps.py` | 20 | Despeje paso a paso de Punto Fijo |
 | `test_newton.py` | 31 | Newton y regla de Cramer: iteraciones calculadas a mano, Jacobiana singular, endpoint |
 | `test_newton_steps.py` | 16 | Derivadas parciales paso a paso y sustitución en F |

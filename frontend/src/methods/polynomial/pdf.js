@@ -174,7 +174,7 @@ export function exportBairstowPdf({ result, system, methodName, chartImages }) {
       formatNumber(root.re),
       formatNumber(root.im),
       root.im === 0 ? 'real' : 'compleja',
-      root.check === 0 ? '0' : root.check.toExponential(2),
+      formatNumber(root.check),
     ]),
     theme: 'grid',
     margin: { left: MARGIN, right: MARGIN },
@@ -210,7 +210,8 @@ export function exportBairstowPdf({ result, system, methodName, chartImages }) {
 
     for (const root of complexRoots) {
       const { lhs, rows, sum, result: final, ok } = complexCheckRows(root, CHECK_TEXT_STYLE)
-      const exact = root.verification.abs === 0 ? '' : ` (|f| = ${root.verification.abs.toExponential(1)})`
+      const abs = formatNumber(root.verification.abs)
+      const exact = abs === '0' ? '' : ` (|f| = ${abs})`
       y = paragraph(doc, y + 2, `${lhs}:`)
       autoTable(doc, {
         startY: y,

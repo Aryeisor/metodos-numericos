@@ -14,6 +14,7 @@ import NewtonSystemInput from './NewtonSystemInput.vue'
 import NonlinearIterationDetail from './NonlinearIterationDetail.vue'
 import NonlinearResultSummary from './NonlinearResultSummary.vue'
 import NonlinearSystemInput from './NonlinearSystemInput.vue'
+import NonlinearVerification from './NonlinearVerification.vue'
 import { newtonPdfReport } from './newtonPdf'
 import { createNewtonStore } from './newtonStore'
 import { nonlinearPdfReport } from './pdf'
@@ -40,6 +41,7 @@ export default {
 
   resultSummary: NonlinearResultSummary,
   iterationDetail: NonlinearIterationDetail,
+  afterIterations: NonlinearVerification,
   pdfReport: nonlinearPdfReport,
 
   theoryPage: NonlinearTheoryPage,
@@ -55,6 +57,7 @@ export default {
       resultSummary: null,
       beforeIterations: NewtonJacobianSection,
       iterationDetail: NewtonIterationDetail,
+      afterIterations: null,
       pdfReport: newtonPdfReport,
     },
   },

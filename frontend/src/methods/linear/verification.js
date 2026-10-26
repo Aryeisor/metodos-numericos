@@ -9,15 +9,17 @@ import { CHECK_TEXT_STYLE, LATEX_STYLE, signedSum, signedValue } from '../polyno
 const isLatex = (style) => style === LATEX_STYLE
 
 // El valor se ve tal cual es (sin redondeo) en la línea de la comprobación.
-const shownExactly = (value) => value !== null && Number(formatNumber(value)) === value
+export const shownExactly = (value) => value !== null && Number(formatNumber(value)) === value
 
-/** Residuo con signo: notación científica (1 decimal) para valores pequeños. */
+/** Residuo con signo, con los 6 decimales de siempre (menor que 0.0000005 → 0). */
 function residue(value, style) {
   if (value === null) return isLatex(style) ? '\\text{---}' : '-'
-  const magnitude = Math.abs(value)
-  if (magnitude === 0 || (magnitude >= 1e-3 && magnitude < 1e7)) return style.number(value)
-  const [mantissa, exponent] = value.toExponential(1).split('e')
-  return isLatex(style) ? `${mantissa} \\times 10^{${Number(exponent)}}` : `${mantissa}e${Number(exponent)}`
+  return style.number(value)
+}
+
+/** Residuo para la nota en letra pequeña: null si con 6 decimales se ve 0. */
+export function visibleResidue(value, style = LATEX_STYLE) {
+  return value === null || formatNumber(value) === '0' ? null : residue(value, style)
 }
 
 export const residueLatex = (value) => residue(value, LATEX_STYLE)
@@ -60,7 +62,7 @@ export function equationCheckParts(equation, style = LATEX_STYLE) {
     evaluated: `${relation} ${evaluated}`,
     result: `${relation} ${style.number(lhs)}`,
     comparison: `(${isLatex(style) ? `b_{${n}}` : `b${n}`} = ${style.number(b)})`,
-    residue: residual === 0 ? null : residue(residual, style),
+    residue: visibleResidue(residual, style),
     ok: equation.is_zero,
   }
 }

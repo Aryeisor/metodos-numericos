@@ -44,7 +44,7 @@ export function fillTemplate(template, render) {
     const { latex, color, parenthesize } = render(Number(j))
     const wrap = caret || (parenthesize && !isWholeGroup(template, offset, match.length))
     const body = wrap ? `\\left(${latex}\\right)` : latex
-    return colorize(body, color) + (caret ?? '')
+    return (color ? colorize(body, color) : body) + (caret ?? '')
   })
 }
 

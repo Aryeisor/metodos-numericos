@@ -1,11 +1,15 @@
 // Partes del PDF propias de un sistema no lineal: la sección "Datos del
-// sistema" (ecuaciones ingresadas, despejes obtenidos, x0 y parámetros).
+// sistema" (ecuaciones ingresadas, despejes obtenidos, x0 y parámetros) y la
+// comprobación al final.
 // jsPDF no dibuja LaTeX: se usan las ecuaciones tal como se escribieron y el
 // despeje en texto plano que entrega el backend (g_text).
 import autoTable from 'jspdf-autotable'
 
 import { formatNumber } from '../../utils/iterationSteps'
 import { MARGIN, paragraph, sectionTitle } from '../../utils/exportPdf'
+import { residueText } from '../linear/verification'
+import { CHECK_TEXT_STYLE } from '../polynomial/formulas'
+import { equationCheckText, rawResidualNote, solutionLine } from './verification'
 
 export function nonlinearPdfReport({ result, system }) {
   const n = result.variables.length
@@ -51,9 +55,37 @@ export function nonlinearPdfReport({ result, system }) {
     return y
   }
 
+  // Comprobación: la solución reemplazada en cada ecuación original, f_i = 0.
+  function writeAfterIterations(doc, startY) {
+    const check = result.verification
+    if (!check) return startY
+    let y = sectionTitle(doc, startY + 2, 'Comprobación')
+    if (!result.converged) {
+      y = paragraph(doc, y, '(!) El método no convergió; esta comprobación usa la última aproximación calculada.')
+    }
+    y = paragraph(
+      doc,
+      y,
+      'Se reemplaza la solución en cada ecuación original, escrita como f(x) = 0; el resultado debe dar 0.'
+    )
+    y = paragraph(doc, y, `Solución usada: ${solutionLine(result.variables, check.solution, CHECK_TEXT_STYLE)}`)
+    if (check.uses_trigonometry) y = paragraph(doc, y, 'Las funciones trigonométricas se evalúan en radianes.')
+    check.equations.forEach((_, i) => {
+      y = paragraph(doc, y, equationCheckText(check, i))
+    })
+    y = paragraph(doc, y, `Residuo máximo: ${residueText(check.max_residual)}`)
+    const raw = rawResidualNote(check, CHECK_TEXT_STYLE)
+    if (raw) y = paragraph(doc, y, `Con los valores sin redondear de la última iteración, el residuo máximo es ${raw}.`)
+    if (check.equations.some((equation) => !equation.is_zero)) {
+      y = paragraph(doc, y, '(!) La solución es aproximada; el residuo depende de la tolerancia usada.')
+    }
+    return y
+  }
+
   return {
     title: 'Sistemas de ecuaciones no lineales — Punto Fijo',
     writeInputSection,
+    writeAfterIterations,
     statusExtras: [],
     fileStem: `${result.method}-${n}x${n}`,
   }

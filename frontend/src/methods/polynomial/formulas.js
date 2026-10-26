@@ -21,14 +21,8 @@ export function formatComplex(re, im) {
   return `${formatNumber(re)} ${im < 0 ? '−' : '+'} ${imaginary}`
 }
 
-/** |f(x)| de la comprobación: notación científica para valores pequeños. */
-export function checkLatex(value) {
-  if (value === null || value === undefined) return '\\text{---}'
-  if (value === 0) return '0'
-  if (value >= 1e-3 && value < 1e7) return latexNumber(value)
-  const [mantissa, exponent] = value.toExponential(2).split('e')
-  return `${mantissa} \\times 10^{${Number(exponent)}}`
-}
+/** |f(x)| de la comprobación, con 6 decimales como máximo (menor que 0.0000005 → 0). */
+export const checkLatex = (value) => latexNumber(value)
 
 // --- Comprobación: sustitución de cada raíz en el polinomio original ------
 // Los valores (xᵏ, aₖ·xᵏ, f(x) y si se considera ≈ 0) vienen del backend en
@@ -140,7 +134,8 @@ export function complexCheckRows(root, style = LATEX_STYLE) {
 /** Línea de texto (PDF) de una raíz real: "f(-2) = (-2)^3 - ... = -8 - 8 + 10 + 6 = 0 OK". */
 export function realCheckText(root) {
   const { lhs, substitution, evaluated, result, ok } = realCheckParts(root, CHECK_TEXT_STYLE)
-  const exact = ok && root.verification.abs !== 0 ? ` (${root.verification.abs.toExponential(1)})` : ''
+  const abs = formatNumber(root.verification.abs)
+  const exact = ok && abs !== '0' ? ` (${root.verification.value.re < 0 ? '-' : ''}${abs})` : ''
   return [lhs, `= ${substitution}`, evaluated && `= ${evaluated}`, result].filter(Boolean).join(' ') + (ok ? ` OK${exact}` : ' (!)')
 }
 

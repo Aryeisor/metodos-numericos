@@ -271,6 +271,71 @@ class ResultContentTests(SimpleTestCase):
         self.assertAlmostEqual(x3, -math.pi / 6, places=6)
 
 
+def term_values(check):
+    return [sorted(t["value"] for t in equation["terms"]) for equation in check["equations"]]
+
+
+class VerificationTests(SimpleTestCase):
+    def test_integer_solution_is_checked_with_integers(self):
+        result = run(["20*x + y^2 - 24 = 0", "x^2 + 20*y - 41 = 0"], ["x", "y"],
+                     x0=[1, 1], tolerance=0.001)
+        check = result["verification"]
+        self.assertEqual(check["solution"], [1.0, 2.0])
+        self.assertEqual(check["integers"], [True, True])
+        self.assertEqual(term_values(check), [[-24, 4, 20], [-41, 1, 40]])
+        self.assertEqual([e["residual"] for e in check["equations"]], [0, 0])
+        self.assertTrue(all(e["is_zero"] for e in check["equations"]))
+        self.assertEqual(check["max_residual"], 0)
+        # El residuo con los valores sin redondear se conserva aparte.
+        self.assertGreater(check["raw_max_residual"], 0)
+        self.assertLess(check["raw_max_residual"], 1e-6)
+        self.assertFalse(check["uses_trigonometry"])
+        self.assertEqual(check["equations"][0]["function_latex"], "20 x + y^{2} - 24")
+
+    def test_second_integer_system(self):
+        result = run(["20*x - x*y - 38 = 0", "20*y - x^2 - 16 = 0"], ["x", "y"],
+                     x0=[0, 0], tolerance=0.001)
+        check = result["verification"]
+        self.assertEqual(check["solution"], [2.0, 1.0])
+        self.assertEqual(check["integers"], [True, True])
+        self.assertEqual(term_values(check), [[-38, -2, 40], [-16, -4, 20]])
+        self.assertEqual(check["max_residual"], 0)
+
+    def test_decimal_solution_with_functions(self):
+        result = run(
+            ["20*x - sin(y) - z - 5 = 0", "20*y - exp(-x) - z^2 - 10 = 0",
+             "20*z - x*y - cos(x) - 10 = 0"],
+            ["x", "y", "z"], x0=[0.5, 0.5, 0.5], tolerance=0.000001,
+        )
+        check = result["verification"]
+        for value, expected in zip(check["solution"], (0.304040, 0.552354, 0.556104)):
+            self.assertAlmostEqual(value, expected, places=6)
+        self.assertEqual(check["integers"], [False, False, False])
+        self.assertEqual(check["solution"], result["solution"])
+        self.assertTrue(all(e["is_zero"] for e in check["equations"]))
+        self.assertLess(check["max_residual"], 1e-6)
+        self.assertTrue(check["uses_trigonometry"])
+        sine = next(t for t in check["equations"][0]["terms"] if "sin" in t["text"])
+        self.assertEqual(sine["sign"], "-")
+        self.assertAlmostEqual(sine["value"], -math.sin(check["solution"][1]))
+
+    def test_side_equals_side_moves_everything_to_the_left(self):
+        result = run(["20*x - x*y - 38 = 0", "y = (x^2 + 16)/20"], ["x", "y"],
+                     x0=[0, 0], tolerance=0.001)
+        second = result["verification"]["equations"][1]
+        self.assertEqual(second["function_latex"], r"- \frac{x^{2}}{20} + y - \frac{4}{5}")
+        self.assertEqual(sorted(t["value"] for t in second["terms"]), [-0.8, -0.2, 1])
+        self.assertEqual(second["residual"], 0)
+
+    def test_not_converged_still_has_a_check(self):
+        result = run(["x = 2*y", "y = 2*x"], ["x", "y"], x0=[1, 1], max_iterations=10)
+        self.assertFalse(result["converged"])
+        check = result["verification"]
+        self.assertFalse(all(e["is_zero"] for e in check["equations"]))
+        self.assertGreater(check["max_residual"], 1)
+        json.dumps(result, allow_nan=False)
+
+
 class FixedPointEndpointTests(APITestCase):
     URL = "/api/solve/punto-fijo/"
 

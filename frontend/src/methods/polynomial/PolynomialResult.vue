@@ -50,7 +50,7 @@ const rootRows = computed(() =>
 // --- Comprobación ---------------------------------------------------------
 // Valor exacto de f(x) en letra pequeña cuando se muestra «≈ 0» o el residuo.
 function exactLatex(check) {
-  if (check.abs === 0) return null
+  if (checkLatex(check.abs) === '0') return null
   if (check.value.im !== 0) return `|f| = ${checkLatex(check.abs)}`
   return `${check.value.re < 0 ? '-' : ''}${checkLatex(check.abs)}`
 }
