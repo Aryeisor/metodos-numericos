@@ -312,3 +312,86 @@ class NewtonEndpointTests(APITestCase):
                                     {"equation": "y + 3*x*y^2 - 57 = 0", "variables": XY}, format="json")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()["latex"], "y + 3 x y^{2} - 57 = 0")
+
+
+def term_values(check):
+    return [sorted(t["value"] for t in equation["terms"]) for equation in check["equations"]]
+
+
+class VerificationTests(SimpleTestCase):
+    """Comprobación: la solución reemplazada en cada f_i = 0 (como en Punto Fijo).
+
+    Los casos 1, 2 y 3 son ejercicios resueltos a mano: además de la
+    comprobación se verifican sus iteraciones.
+    """
+
+    def _check_case(self, equations, x0, solution, terms, iterations):
+        result = run(equations, x0=x0, tolerance=0.000001)
+        self.assertTrue(result["converged"])
+        for row, (point, error) in zip(result["iterations"], iterations):
+            self.assertEqual(row["x"], point)
+            self.assertEqual(row["error"], error)
+        check = result["verification"]
+        self.assertEqual(check["solution"], solution)
+        self.assertEqual(check["integers"], [True, True])
+        self.assertEqual(term_values(check), [sorted(t) for t in terms])
+        self.assertEqual([e["residual"] for e in check["equations"]], [0, 0])
+        self.assertTrue(all(e["is_zero"] for e in check["equations"]))
+        self.assertEqual(check["max_residual"], 0)
+        self.assertFalse(check["uses_trigonometry"])
+        return check
+
+    def test_case_1_integer_solution(self):
+        self._check_case(
+            ["y^2 - x*y + 2*x + 2*y - 12 = 0", "y^2 + x*y - y - 15 = 0"], [2, 2], [3.0, 3.0],
+            [[9, -9, 6, 6, -12], [9, 9, -3, -15]],
+            [([4, 3], 2), ([3, 3], 1), ([3, 3], 0)],
+        )
+
+    def test_case_2_integer_solution(self):
+        self._check_case(
+            ["x^2 + x*y - 2*x - y + 1 = 0", "2*x^2 - 2*x + y + 1 = 0"], [0, 0], [1.0, -1.0],
+            [[1, -1, -2, 1, 1], [2, -2, -1, 1]],
+            [([0.5, 0], 0.5), ([1, -0.5], 0.5), ([1, -1], 0.5), ([1, -1], 0)],
+        )
+
+    def test_case_3_integer_solution(self):
+        check = self._check_case(
+            ["x^2 - x*y - 3*y + 7 = 0", "y^2 - x*y + 3*x - 2*y - 1 = 0"], [2, 1], [1.0, 2.0],
+            [[1, -2, -6, 7], [4, -2, 3, -4, -1]],
+            [([2.5, 2.5], 1.5), ([0.5, 1.5], 2), ([1, 2], 0.5), ([1, 2], 0)],
+        )
+        self.assertEqual(check["equations"][0]["function_text"], "x^2 - x*y - 3*y + 7")
+
+    def test_non_integer_example_is_approximately_zero(self):
+        example = next(e for e in EXAMPLES["newton"] if e["id"] == "newton-algebraico-2x2")
+        result = run(example["equations"], example["variables"], example["x0"],
+                     example["tolerance"], example["max_iterations"])
+        check = result["verification"]
+        self.assertEqual(check["integers"], [False, False])
+        self.assertEqual(check["solution"], result["solution"])
+        self.assertTrue(all(e["is_zero"] for e in check["equations"]))
+        self.assertLessEqual(check["max_residual"], 0.000001)
+
+    def test_trigonometric_example_is_flagged(self):
+        example = next(e for e in EXAMPLES["newton"] if e["id"] == "newton-burden-faires-3x3")
+        result = run(example["equations"], example["variables"], example["x0"])
+        self.assertTrue(result["verification"]["uses_trigonometry"])
+
+    def test_not_converged_uses_the_last_approximation(self):
+        # x² + 1 = 0 no tiene raíz real: se agotan las iteraciones.
+        result = run(["x^2 + 1 = 0", "y - 1 = 0"], x0=[0.5, 0], max_iterations=20)
+        self.assertFalse(result["converged"])
+        check = result["verification"]
+        for shown, last in zip(check["solution"], result["solution"]):
+            self.assertAlmostEqual(shown, last, places=6)
+        self.assertFalse(all(e["is_zero"] for e in check["equations"]))
+        self.assertGreater(check["max_residual"], 1)
+        json.dumps(result, allow_nan=False)
+
+    def test_singular_jacobian_still_has_verification(self):
+        result = run(["x^2 + y^2 - 4 = 0", "x - y = 0"], x0=[0, 0])
+        check = result["verification"]
+        self.assertEqual(check["solution"], [0.0, 0.0])
+        self.assertEqual(check["max_residual"], 4)
+        self.assertFalse(check["equations"][0]["is_zero"])

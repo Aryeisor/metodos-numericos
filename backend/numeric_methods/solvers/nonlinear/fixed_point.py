@@ -48,18 +48,12 @@ import math
 from dataclasses import dataclass
 
 import sympy as sp
-from sympy.functions.elementary.trigonometric import (
-    InverseTrigonometricFunction,
-    TrigonometricFunction,
-)
 
 from ...expressions.normalize import estimate_degree, evaluate_tree  # noqa: F401  (se reexporta)
 from ...expressions.parser import ExpressionError, make_symbols, parse_equation
 from ...expressions.to_latex import expression_to_latex, substitution_template_latex
 from ...expressions.to_text import expression_to_text
 from ..base import IterationStep, SolverResult
-# Mismo criterio de «se ve entero» y de «≈ 0» que la comprobación lineal.
-from ..linear.runner import CHECK_RELATIVE, DISPLAY_DECIMALS
 from ..validation import DEFAULT_MAX_ITERATIONS, DEFAULT_TOLERANCE, MIN_ITERATIONS
 from .common import (  # noqa: F401  (MIN/MAX_EQUATIONS se reexportan)
     CATEGORY,
@@ -68,20 +62,14 @@ from .common import (  # noqa: F401  (MIN/MAX_EQUATIONS se reexportan)
     NonlinearValidationError,
     to_real,
 )
-from .derivative_steps import signed_sum_latex
 from .isolation_steps import isolation_steps
-# La sustitución término a término de f_i es la misma que muestra Newton.
-from .newton import _evaluate, _term_template
+from .verification import PLACEHOLDER, verification
 
 METHOD = "punto-fijo"
 
 # Grado máximo de una ecuación en la variable que se despeja. Hasta cuártica
 # sympy despeja en menos de un segundo aun con coeficientes simbólicos.
 MAX_SOLVE_DEGREE = 4
-
-# Marcador de cada variable en la plantilla de sustitución que se envía al
-# frontend (ver `substitution_template_latex`).
-PLACEHOLDER = "@@{}@@"
 
 
 @dataclass
@@ -260,76 +248,6 @@ def iterate(functions, x0, tolerance=DEFAULT_TOLERANCE, max_iterations=DEFAULT_M
     }
 
 
-def _is_integer(value):
-    """True si el valor se ve entero con DISPLAY_DECIMALS decimales (0.9999997 → 1)."""
-    return math.isfinite(value) and round(value, DISPLAY_DECIMALS) == round(value)
-
-
-def _residuals(term_values):
-    return [None if values is None or None in values else sum(values) + 0.0 for values in term_values]
-
-
-def _max_abs(values):
-    return None if not values or None in values else max(abs(v) for v in values)
-
-
-def _verification(functions, symbols, placeholders, solution):
-    """Sustitución de la solución en cada ecuación original, escrita f_i = 0.
-
-    Sólo es una verificación (no forma parte del método). f_i = lhs − rhs se
-    separa en términos como en Newton (mismo orden y mismas plantillas). Cada
-    variable que se ve entera se sustituye como entero, así una solución exacta
-    da 0 sin aproximaciones; `raw_max_residual` es el residuo con los valores
-    sin redondear de la última iteración.
-
-    Criterio de «≈ 0» (el de la comprobación lineal):
-    |rᵢ| ≤ CHECK_RELATIVE · max(1, Σ|términos|).
-    """
-    integers = [_is_integer(v) for v in solution]
-    x = [float(round(v)) if is_int else v for v, is_int in zip(solution, integers)]
-
-    fs = [evaluate_tree(f.equation) for f in functions]
-    terms = [f.as_ordered_terms() for f in fs]
-    evaluate_terms = sp.lambdify(symbols, terms, modules=["math", "mpmath"])
-    term_values = _evaluate(evaluate_terms, x) or [None] * len(fs)
-    raw_values = _evaluate(evaluate_terms, solution) or [None] * len(fs)
-    residuals = _residuals(term_values)
-
-    # Texto plano (PDF) con los mismos marcadores @@j@@ que las plantillas LaTeX.
-    text_symbols = {s: sp.Symbol(PLACEHOLDER.format(j)) for j, s in enumerate(symbols)}
-    equations = []
-    for f, f_terms, values, residual in zip(fs, terms, term_values, residuals):
-        scale = max(1.0, sum(abs(v) for v in values)) if residual is not None else None
-        equations.append({
-            "function_latex": signed_sum_latex(f_terms),
-            "function_text": expression_to_text(f),
-            "terms": [
-                {
-                    **_term_template(t, placeholders),
-                    "text": expression_to_text(
-                        (-t if t.could_extract_minus_sign() else t).xreplace(text_symbols)
-                    ),
-                    "value": None if values is None else values[k],
-                }
-                for k, t in enumerate(f_terms)
-            ],
-            "residual": residual,
-            "is_zero": residual is not None and abs(residual) <= CHECK_RELATIVE * scale,
-        })
-
-    trig = (TrigonometricFunction, InverseTrigonometricFunction)
-    return {
-        "solution": x,
-        "integers": integers,
-        "equations": equations,
-        "max_residual": _max_abs(residuals),
-        "raw_max_residual": _max_abs(_residuals(raw_values)),
-        "uses_trigonometry": any(
-            isinstance(a, trig) for f in fs for a in f.atoms(sp.Function)
-        ),
-    }
-
-
 def solve_fixed_point(data):
     """Punto de entrada del registro: datos ya validados -> SolverResult."""
     equations = data["equations"]
@@ -399,6 +317,8 @@ def solve_fixed_point(data):
                 for f in functions
             ],
             "failure": failure,
-            "verification": _verification(functions, symbols, placeholders, raw["solution"]),
+            "verification": verification(
+                [evaluate_tree(f.equation) for f in functions], symbols, raw["solution"]
+            ),
         },
     )

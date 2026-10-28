@@ -1,11 +1,13 @@
 // Partes del PDF propias de Newton: la sección "Datos del sistema"
-// (ecuaciones, variables en orden, Jacobiano simbólico, x0 y parámetros).
+// (ecuaciones, variables en orden, Jacobiano simbólico, x0 y parámetros) y la
+// comprobación al final (la misma de Punto Fijo).
 // jsPDF no dibuja LaTeX: se usan las ecuaciones tal como se escribieron y las
 // versiones en texto plano que entrega el backend.
 import autoTable from 'jspdf-autotable'
 
 import { formatNumber } from '../../utils/iterationSteps'
 import { MARGIN, paragraph, sectionTitle } from '../../utils/exportPdf'
+import { writeVerification } from './pdf'
 
 const TABLE_HEAD = { fillColor: [37, 99, 235], halign: 'center', font: 'helvetica' }
 
@@ -71,6 +73,7 @@ export function newtonPdfReport({ result, system }) {
   return {
     title: 'Sistemas de ecuaciones no lineales — Newton',
     writeInputSection,
+    writeAfterIterations: (doc, startY) => writeVerification(doc, startY, result),
     statusExtras: [],
     fileStem: `${result.method}-${n}x${n}`,
   }

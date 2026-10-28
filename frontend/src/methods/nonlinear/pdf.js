@@ -55,38 +55,39 @@ export function nonlinearPdfReport({ result, system }) {
     return y
   }
 
-  // Comprobación: la solución reemplazada en cada ecuación original, f_i = 0.
-  function writeAfterIterations(doc, startY) {
-    const check = result.verification
-    if (!check) return startY
-    let y = sectionTitle(doc, startY + 2, 'Comprobación')
-    if (!result.converged) {
-      y = paragraph(doc, y, '(!) El método no convergió; esta comprobación usa la última aproximación calculada.')
-    }
-    y = paragraph(
-      doc,
-      y,
-      'Se reemplaza la solución en cada ecuación original, escrita como f(x) = 0; el resultado debe dar 0.'
-    )
-    y = paragraph(doc, y, `Solución usada: ${solutionLine(result.variables, check.solution, CHECK_TEXT_STYLE)}`)
-    if (check.uses_trigonometry) y = paragraph(doc, y, 'Las funciones trigonométricas se evalúan en radianes.')
-    check.equations.forEach((_, i) => {
-      y = paragraph(doc, y, equationCheckText(check, i))
-    })
-    y = paragraph(doc, y, `Residuo máximo: ${residueText(check.max_residual)}`)
-    const raw = rawResidualNote(check, CHECK_TEXT_STYLE)
-    if (raw) y = paragraph(doc, y, `Con los valores sin redondear de la última iteración, el residuo máximo es ${raw}.`)
-    if (check.equations.some((equation) => !equation.is_zero)) {
-      y = paragraph(doc, y, '(!) La solución es aproximada; el residuo depende de la tolerancia usada.')
-    }
-    return y
-  }
-
   return {
     title: 'Sistemas de ecuaciones no lineales — Punto Fijo',
     writeInputSection,
-    writeAfterIterations,
+    writeAfterIterations: (doc, startY) => writeVerification(doc, startY, result),
     statusExtras: [],
     fileStem: `${result.method}-${n}x${n}`,
   }
+}
+
+// Comprobación: la solución reemplazada en cada ecuación original, f_i = 0.
+// La comparten Punto Fijo y Newton (result.verification).
+export function writeVerification(doc, startY, result) {
+  const check = result.verification
+  if (!check) return startY
+  let y = sectionTitle(doc, startY + 2, 'Comprobación')
+  if (!result.converged) {
+    y = paragraph(doc, y, '(!) El método no convergió; esta comprobación usa la última aproximación calculada.')
+  }
+  y = paragraph(
+    doc,
+    y,
+    'Se reemplaza la solución en cada ecuación original, escrita como f(x) = 0; el resultado debe dar 0.'
+  )
+  y = paragraph(doc, y, `Solución usada: ${solutionLine(result.variables, check.solution, CHECK_TEXT_STYLE)}`)
+  if (check.uses_trigonometry) y = paragraph(doc, y, 'Las funciones trigonométricas se evalúan en radianes.')
+  check.equations.forEach((_, i) => {
+    y = paragraph(doc, y, equationCheckText(check, i))
+  })
+  y = paragraph(doc, y, `Residuo máximo: ${residueText(check.max_residual)}`)
+  const raw = rawResidualNote(check, CHECK_TEXT_STYLE)
+  if (raw) y = paragraph(doc, y, `Con los valores sin redondear de la última iteración, el residuo máximo es ${raw}.`)
+  if (check.equations.some((equation) => !equation.is_zero)) {
+    y = paragraph(doc, y, '(!) La solución es aproximada; el residuo depende de la tolerancia usada.')
+  }
+  return y
 }

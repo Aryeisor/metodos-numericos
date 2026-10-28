@@ -37,17 +37,18 @@ import sympy as sp
 from ...expressions.differentiate import jacobian
 from ...expressions.normalize import evaluate_tree
 from ...expressions.parser import ExpressionError, make_symbols, parse_equation
-from ...expressions.to_latex import expression_to_latex, substitution_template_latex
+from ...expressions.to_latex import expression_to_latex
 from ...expressions.to_text import expression_to_text
 from ...linalg.cramer import SingularMatrixError, cramer
 from ..base import IterationStep, SolverResult
 from ..validation import DEFAULT_MAX_ITERATIONS, DEFAULT_TOLERANCE, MIN_ITERATIONS
 from .common import CATEGORY, NonlinearValidationError, to_real
 from .derivative_steps import entry_steps
+from .verification import PLACEHOLDER, verification
+from .verification import evaluate as _evaluate
+from .verification import term_template as _term_template
 
 METHOD = "newton"
-# Marcador de la variable j en las plantillas de sustitución (como en Punto Fijo).
-PLACEHOLDER = "@@{}@@"
 _MODULES = ["math", "mpmath"]
 
 
@@ -140,19 +141,6 @@ def build_newton_system(equations, variables):
     )
 
 
-def _evaluate(function, x):
-    """Evalúa y convierte a floats; None en cada valor no real o no finito
-    (o en todos, si la evaluación misma falla: raíz de negativo con math,
-    log(0), desbordamiento...)."""
-    try:
-        values = function(*x)
-    except (ArithmeticError, ValueError, TypeError):
-        return None
-    if values and isinstance(values[0], list):
-        return [[to_real(v) for v in row] for row in values]
-    return [to_real(v) for v in values]
-
-
 def _has_none(values):
     if values is None:
         return True
@@ -227,14 +215,6 @@ def iterate(system, x0, tolerance=DEFAULT_TOLERANCE, max_iterations=DEFAULT_MAX_
         "converged": converged,
         "iterations_used": len(iterations),
         "failure": failure,
-    }
-
-
-def _term_template(term, placeholders):
-    negative = term.could_extract_minus_sign()
-    return {
-        "sign": "-" if negative else "+",
-        "template": substitution_template_latex(-term if negative else term, placeholders),
     }
 
 
@@ -316,5 +296,7 @@ def solve_newton(data):
                 ],
             },
             "failure": raw["failure"],
+            # La solución (o la última aproximación) reemplazada en cada f_i = 0.
+            "verification": verification(system.functions, system.symbols, raw["solution"]),
         },
     )

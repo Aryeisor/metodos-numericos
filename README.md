@@ -68,7 +68,7 @@ iterativos, y para estudiar la teoría de cada método.
 - **Resultado:** solución, estado (convergió o no), advertencias, **gráfico de
   convergencia** del error en escala logarítmica (con la línea de tolerancia y
   notación científica) y **tabla de iteraciones** paginada.
-- En **Jacobi, Gauss-Seidel y Punto Fijo**, al final del resultado, el
+- En **Jacobi, Gauss-Seidel, Punto Fijo y Newton**, al final del resultado, el
   apartado **«Comprobación»**: la solución sustituida en cada ecuación del
   sistema original, con su residuo.
 - **Errores y residuos** (tablas, paso a paso, comprobaciones y PDF) se
@@ -393,6 +393,13 @@ reglas propias de tolerancia y error (ver su sección).
   evaluación de `F` (sustitución término a término) y de `J` en el punto
   actual, sistema lineal planteado, determinantes (`ad − bc` en 2×2,
   expansión por cofactores en 3×3 o más), incrementos, actualización y error.
+- **Comprobación** (al final del resultado y en el PDF): la misma de Punto
+  Fijo (mismo código, `solvers/nonlinear/verification.py`). La solución se
+  reemplaza en cada `f_i = 0`, término a término, con las variables que se ven
+  enteras sustituidas como enteros:
+  `(1)² − (1)(2) − 3(2) + 7 = 1 − 2 − 6 + 7 = 0 ✔`. Con decimales, «≈ 0 ✔» o
+  ⚠ con el mismo criterio; nota de radianes, residuo máximo y, si no convergió
+  (iteraciones agotadas o Jacobiana singular), la última aproximación con un aviso.
 
 ### Bairstow (raíces de polinomios)
 
@@ -550,7 +557,8 @@ Campos propios de cada categoría:
   variable—, `residual` e `is_zero`; `max_residual`, `raw_max_residual` —con
   los valores sin redondear— y `uses_trigonometry`).
 - **Newton:** la función `f_i` de cada ecuación y sus términos, la Jacobiana
-  simbólica con el desglose de cada derivada (`jacobian`), `x0`, `failure`. En
+  simbólica con el desglose de cada derivada (`jacobian`), `x0`, `failure` y
+  `verification` (la misma estructura que en Punto Fijo). En
   cada iteración, `extra` incluye `F`, `J`, `D`, `D_i` con sus matrices y
   `Δx`.
 - **Bairstow:** `polynomial` (grado, coeficientes, LaTeX, texto y modo de
@@ -695,7 +703,7 @@ cd backend
 python manage.py test numeric_methods
 ```
 
-**275 tests**, todos en verde:
+**282 tests**, todos en verde:
 
 | Archivo | Tests | Qué cubre |
 | --- | --- | --- |
@@ -707,7 +715,7 @@ python manage.py test numeric_methods
 | `test_preview.py` | 31 | Endpoint de vista previa, logaritmos y límites de seguridad |
 | `test_fixed_point.py` | 41 | Punto Fijo: despeje automático, rechazos, actualización secuencial, endpoint y comprobación (soluciones enteras, decimales con funciones, «lado = lado», no convergencia) |
 | `test_isolation_steps.py` | 20 | Despeje paso a paso de Punto Fijo |
-| `test_newton.py` | 31 | Newton y regla de Cramer: iteraciones calculadas a mano, Jacobiana singular, endpoint |
+| `test_newton.py` | 38 | Newton y regla de Cramer: iteraciones calculadas a mano, Jacobiana singular, endpoint y comprobación (tres ejercicios con solución entera, ejemplo decimal, funciones trigonométricas, no convergencia) |
 | `test_newton_steps.py` | 16 | Derivadas parciales paso a paso y sustitución en F |
 | `test_bairstow.py` | 30 | Bairstow: divisiones sintéticas, primera iteración de Chapra calculada a mano, ejemplos, raíces nulas, raíz doble, cierres directos, fallos, endpoint y comprobación de raíces (sustitución término a término, potencias faltantes, par complejo, raíz nula y residuo) |
 

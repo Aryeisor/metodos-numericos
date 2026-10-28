@@ -1,5 +1,5 @@
 <script setup>
-// Comprobación al final del resultado de Punto Fijo: la solución reemplazada
+// Comprobación al final del resultado de Punto Fijo y de Newton: la solución reemplazada
 // en cada ecuación original, escrita f_i = 0 (result.verification). Mismas
 // marcas ✔ / ⚠ y textos que la comprobación de los métodos lineales.
 import { computed } from 'vue'

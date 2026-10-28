@@ -1,4 +1,4 @@
-// Comprobación de Punto Fijo: la solución reemplazada en cada ecuación
+// Comprobación de Punto Fijo y Newton: la solución reemplazada en cada ecuación
 // original, escrita f_i = 0. Los términos de f_i, su valor y el residuo vienen
 // del backend en result.verification (con la misma descomposición en términos
 // que Newton); aquí sólo se escriben, con las convenciones de la comprobación

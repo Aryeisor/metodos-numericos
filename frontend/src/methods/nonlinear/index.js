@@ -57,7 +57,6 @@ export default {
       resultSummary: null,
       beforeIterations: NewtonJacobianSection,
       iterationDetail: NewtonIterationDetail,
-      afterIterations: null,
       pdfReport: newtonPdfReport,
     },
   },
