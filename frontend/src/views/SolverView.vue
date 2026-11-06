@@ -30,10 +30,12 @@ const DEFAULT_TOLERANCE = 0.000001
 const DEFAULT_MAX_ITERATIONS = 100
 const tolerance = ref(DEFAULT_TOLERANCE)
 const maxIterations = ref(DEFAULT_MAX_ITERATIONS)
-let previousDefaultTolerance
+let previousDefaults = {}
 
-// Tolerancia por defecto del método activo (Bairstow tiene la suya, en %).
+// Valores por defecto del método activo (Bairstow tiene su tolerancia en %;
+// diferencias finitas, su máximo de refinamientos de h).
 const defaultTolerance = () => ui.value?.defaultTolerance ?? DEFAULT_TOLERANCE
+const defaultMaxIterations = () => ui.value?.defaultMaxIterations ?? DEFAULT_MAX_ITERATIONS
 
 const examples = ref([])
 const selectedExampleId = ref('')
@@ -55,14 +57,16 @@ const store = shallowRef(null)
 watch(
   () => ui.value?.createStore,
   (_, previousCreateStore) => {
-    // Una categoría puede tener su propia tolerancia por defecto (Bairstow
-    // usa %). Al entrar en ella se aplica; al salir, se vuelve a la general.
-    // Entre categorías sin tolerancia propia se conserva lo que haya escrito.
-    const own = ui.value?.defaultTolerance
-    const leavingOwn = previousCreateStore && previousDefaultTolerance !== undefined
-    if (own !== undefined) tolerance.value = own
-    else if (leavingOwn) tolerance.value = DEFAULT_TOLERANCE
-    previousDefaultTolerance = own
+    // Una categoría puede tener su propia tolerancia o máximo por defecto
+    // (Bairstow usa %). Al entrar en ella se aplican; al salir, se vuelve a
+    // los generales. Entre categorías sin valores propios se conserva lo que
+    // haya escrito.
+    const own = { tolerance: ui.value?.defaultTolerance, max: ui.value?.defaultMaxIterations }
+    if (own.tolerance !== undefined) tolerance.value = own.tolerance
+    else if (previousCreateStore && previousDefaults.tolerance !== undefined) tolerance.value = DEFAULT_TOLERANCE
+    if (own.max !== undefined) maxIterations.value = own.max
+    else if (previousCreateStore && previousDefaults.max !== undefined) maxIterations.value = DEFAULT_MAX_ITERATIONS
+    previousDefaults = own
 
     store.value = ui.value ? ui.value.createStore() : null
     result.value = null
@@ -160,6 +164,10 @@ const formCardRef = ref(null)
 const confirmOpen = ref(false)
 
 const snapshot = (s) => JSON.stringify(s.state)
+
+// Una categoría puede ocultar la tolerancia y el máximo según su formulario
+// (diferencias finitas en modo «Tabla de datos» no itera).
+const showIterationFields = computed(() => !ui.value?.hidesIterationFields?.(store.value))
 // Estado inicial del formulario del método activo, para compararlo.
 const initialSnapshot = computed(() => (ui.value ? snapshot(ui.value.createStore()) : null))
 
@@ -168,7 +176,7 @@ const formIsInitial = computed(
     !store.value ||
     (snapshot(store.value) === initialSnapshot.value &&
       tolerance.value === defaultTolerance() &&
-      maxIterations.value === DEFAULT_MAX_ITERATIONS)
+      maxIterations.value === defaultMaxIterations())
 )
 // Con datos escritos o un resultado en pantalla se pide confirmación; sólo
 // con errores o una marca de ejemplo se limpia directamente.
@@ -195,7 +203,7 @@ async function clearExercise() {
   loading.value = false
   store.value = ui.value.createStore()
   tolerance.value = defaultTolerance()
-  maxIterations.value = DEFAULT_MAX_ITERATIONS
+  maxIterations.value = defaultMaxIterations()
   result.value = null
   solvedSystem.value = null
   formErrors.value = []
@@ -264,11 +272,11 @@ function handleExportPdf(chartImage) {
             <option v-for="m in siblings" :key="m.slug" :value="m.slug">{{ m.name }}</option>
           </select>
         </div>
-        <div class="field">
+        <div v-if="showIterationFields" class="field">
           <label>{{ ui.toleranceLabel ?? 'Tolerancia (criterio de parada)' }}</label>
           <input type="number" step="any" v-model.number="tolerance" />
         </div>
-        <div class="field">
+        <div v-if="showIterationFields" class="field">
           <label>{{ ui.maxIterationsLabel ?? 'Máximo de iteraciones (mínimo real: 6)' }}</label>
           <input type="number" min="1" v-model.number="maxIterations" />
         </div>

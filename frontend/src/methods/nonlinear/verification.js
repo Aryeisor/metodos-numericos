@@ -18,7 +18,7 @@ const productTemplate = (template) =>
     .replace(/\s*\\cdot\s*(?=\\left\(|@@\d+@@\^)/g, '')
 
 /** Término con la solución sustituida, en LaTeX. */
-function termLatex(template, x) {
+export function termLatex(template, x) {
   const filled = fillTemplate(productTemplate(template), (j) => ({
     latex: LATEX_STYLE.number(x[j]),
     parenthesize: x[j] < 0,
@@ -28,7 +28,7 @@ function termLatex(template, x) {
 }
 
 /** Lo mismo en texto: "20*@@0@@" → "20(1)", "@@1@@^2" → "(2)^2", "sin(@@1@@)" → "sin(0.55)". */
-function termText(text, x) {
+export function termText(text, x) {
   return text
     .replace(/@@(\d+)@@/g, (match, j, offset) => {
       const value = CHECK_TEXT_STYLE.number(x[j])

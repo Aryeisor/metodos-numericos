@@ -28,6 +28,9 @@
 //   toleranceLabel                texto del campo de tolerancia
 //   defaultTolerance              tolerancia por defecto al entrar en la categoría
 //   maxIterationsLabel            texto del campo de máximo de iteraciones
+//   defaultMaxIterations          máximo de iteraciones por defecto al entrar en la categoría
+//   hidesIterationFields(store)   true para ocultar la tolerancia y el máximo (ej. un
+//                                 modo de entrada que no itera)
 import MatrixInput from '../../components/MatrixInput.vue'
 import LinearConfigExtras from './LinearConfigExtras.vue'
 import LinearConfigFields from './LinearConfigFields.vue'

@@ -8,6 +8,7 @@
 import { markRaw, reactive, readonly } from 'vue'
 import { fetchMethods } from '../api/client'
 import linearSystem from './linear'
+import differentiation from './differentiation'
 import nonlinearSystem from './nonlinear'
 import polynomial from './polynomial'
 
@@ -16,6 +17,7 @@ const CATEGORY_UI = {
   linear_system: markRaw(linearSystem),
   nonlinear_system: markRaw(nonlinearSystem),
   polynomial: markRaw(polynomial),
+  differentiation: markRaw(differentiation),
 }
 
 /**

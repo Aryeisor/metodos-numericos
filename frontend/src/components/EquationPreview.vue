@@ -12,11 +12,15 @@ const props = defineProps({
   // Texto de la ecuación: sin '=' se interpreta como "expresión = 0", y así
   // se muestra para que se vea exactamente lo que se va a resolver.
   text: { type: String, required: true },
+  // Opcional: lado izquierdo fijo para una función (ej. 'f(x)' → "f(x) = …"
+  // en lugar de "… = 0"). Con '=' en el texto se muestra lo escrito.
+  lhs: { type: String, default: null },
 })
 
-const latex = computed(() =>
-  props.text.includes('=') ? props.preview.latex : `${props.preview.latex} = 0`
-)
+const latex = computed(() => {
+  if (props.text.includes('=')) return props.preview.latex
+  return props.lhs ? `${props.lhs} = ${props.preview.latex}` : `${props.preview.latex} = 0`
+})
 </script>
 
 <template>

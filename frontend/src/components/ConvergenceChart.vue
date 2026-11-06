@@ -13,9 +13,16 @@ const props = defineProps({
   //                  `color` es una variable CSS del tema, ej. '--color-series-1'
   //   yLabel         título del eje del error
   //   toleranceLabel texto de la línea de tolerancia en la leyenda
+  //   title / xLabel títulos del gráfico y del eje horizontal
+  //   labels         rótulos del eje horizontal (por defecto, cada `iteration`)
+  //   logarithmic    false: eje vertical lineal (ej. aproximaciones de f'(x))
   series: { type: Array, default: null },
   yLabel: { type: String, default: 'Error (escala log)' },
   toleranceLabel: { type: String, default: null },
+  title: { type: String, default: 'Convergencia del error' },
+  xLabel: { type: String, default: 'Iteración' },
+  labels: { type: Array, default: null },
+  logarithmic: { type: Boolean, default: true },
 })
 
 const canvasRef = ref(null)
@@ -95,9 +102,9 @@ function logAxisLabel(value) {
 // La escala logarítmica no admite ceros: esos puntos se dejan como huecos y la
 // línea se continúa con spanGaps.
 function buildData(palette) {
-  const labels = props.iterations.map((it) => it.iteration)
-  const positive = (value) =>
-    value !== null && value !== undefined && value > 0 && Number.isFinite(value) ? value : null
+  const labels = props.labels ?? props.iterations.map((it) => it.iteration)
+  const finite = (value) => (value !== null && value !== undefined && Number.isFinite(value) ? value : null)
+  const positive = (value) => (props.logarithmic && !(value > 0) ? null : finite(value))
 
   const datasets = props.series
     ? props.series.map((serie) => ({
@@ -159,14 +166,21 @@ function buildOptions(palette) {
     scales: {
       x: {
         ...axis,
-        title: { display: true, text: 'Iteración', color: text },
+        title: { display: true, text: props.xLabel, color: text },
       },
-      y: {
-        ...axis,
-        type: 'logarithmic',
-        title: { display: true, text: props.yLabel, color: text },
-        ticks: { ...axis.ticks, callback: logAxisLabel },
-      },
+      y: props.logarithmic
+        ? {
+            ...axis,
+            type: 'logarithmic',
+            title: { display: true, text: props.yLabel, color: text },
+            ticks: { ...axis.ticks, callback: logAxisLabel },
+          }
+        : {
+            ...axis,
+            type: 'linear',
+            title: { display: true, text: props.yLabel, color: text },
+            ticks: { ...axis.ticks, callback: (value) => formatChartNumber(value) },
+          },
     },
     plugins: {
       legend: { position: 'bottom', labels: { boxWidth: 14, font: { size: 11 }, color: text } },
@@ -176,7 +190,7 @@ function buildOptions(palette) {
         titleColor: palette['--color-surface'],
         bodyColor: palette['--color-surface'],
         callbacks: {
-          title: (items) => `Iteración ${items[0].label}`,
+          title: (items) => `${props.xLabel} ${items[0].label}`,
           label: (item) => `${item.dataset.label}: ${formatChartNumber(item.parsed.y)}`,
         },
       },
@@ -226,7 +240,7 @@ onMounted(() => {
   })
 })
 
-watch([() => props.iterations, theme], () => {
+watch([() => props.iterations, () => props.series, theme], () => {
   if (chart) render(readPalette())
 })
 
@@ -238,7 +252,7 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="chart-block">
-    <h4 class="chart-title">Convergencia del error</h4>
+    <h4 class="chart-title">{{ title }}</h4>
     <div class="chart-canvas-wrapper">
       <canvas ref="canvasRef"></canvas>
     </div>

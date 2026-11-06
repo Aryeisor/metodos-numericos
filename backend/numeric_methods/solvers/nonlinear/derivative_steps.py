@@ -68,8 +68,10 @@ def signed_sum_latex(exprs):
     return " ".join(parts)
 
 
-def _partial(symbol):
-    return rf"\frac{{\partial}}{{\partial {sp.latex(symbol)}}}"
+def _partial(symbol, ordinary=False):
+    """∂/∂x en el Jacobiano; d/dx (`ordinary`) para una función de una variable."""
+    d = "d" if ordinary else r"\partial"
+    return rf"\frac{{{d}}}{{{d} {sp.latex(symbol)}}}"
 
 
 def _with_coefficient(coefficient, inner):
@@ -92,9 +94,9 @@ def _function_name(func):
     return _FUNCTION_NAMES.get(func.__name__, func.__name__)
 
 
-def term_step(term, symbol):
+def term_step(term, symbol, ordinary=False):
     """Derivada de un término: {"latex": "∂/∂x(t) = intermedio = resultado", "rule": texto}."""
-    head = rf"{_partial(symbol)}\left({_latex(term)}\right)"
+    head = rf"{_partial(symbol, ordinary)}\left({_latex(term)}\right)"
     result = sp.diff(term, symbol)
 
     if not term.has(symbol):
@@ -160,20 +162,21 @@ def term_step(term, symbol):
     return {"latex": f"{head} = {result_latex}", "rule": rule}
 
 
-def entry_steps(function, symbol, function_latex_name):
+def entry_steps(function, symbol, function_latex_name, ordinary=False):
     """Desglose de ∂f/∂x: un renglón por término y la suma.
 
     `function_latex_name` es el nombre de la función en LaTeX (ej. "f_{1}").
+    Con `ordinary` (función de una sola variable) se escribe d/dx y f'(x).
     Devuelve {"terms": [{"latex", "rule"}], "sum_latex": str | None}.
     """
     terms = function.as_ordered_terms()
     constants = [t for t in terms if not t.has(symbol)]
     grouped = len(constants) > MAX_SEPARATE_CONSTANTS
 
-    rows = [term_step(t, symbol) for t in terms if t.has(symbol) or not grouped]
+    rows = [term_step(t, symbol, ordinary) for t in terms if t.has(symbol) or not grouped]
     if grouped:
         rows.append({
-            "latex": rf"{_partial(symbol)}\left({signed_sum_latex(constants)}\right) = 0",
+            "latex": rf"{_partial(symbol, ordinary)}\left({signed_sum_latex(constants)}\right) = 0",
             "rule": f"ninguno de estos términos depende de {symbol.name}: todos se tratan como constantes",
         })
 
@@ -183,6 +186,10 @@ def entry_steps(function, symbol, function_latex_name):
         derivatives = [sp.diff(t, symbol) for t in terms if t.has(symbol) or not grouped]
         if grouped:
             derivatives.append(sp.Integer(0))
-        head = rf"\frac{{\partial {function_latex_name}}}{{\partial {sp.latex(symbol)}}}"
+        head = (
+            f"{function_latex_name}'({sp.latex(symbol)})"
+            if ordinary
+            else rf"\frac{{\partial {function_latex_name}}}{{\partial {sp.latex(symbol)}}}"
+        )
         sum_latex = f"{head} = {signed_sum_latex(derivatives)} = {_latex(total)}"
     return {"terms": rows, "sum_latex": sum_latex}

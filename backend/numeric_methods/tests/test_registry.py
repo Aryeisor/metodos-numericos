@@ -68,6 +68,7 @@ class MethodsEndpointTests(APITestCase):
                 ("punto-fijo", "Ecuaciones no lineales"),
                 ("newton", "Ecuaciones no lineales"),
                 ("bairstow", "Polinomios"),
+                ("diferencias-finitas", "Diferenciación numérica"),
             ],
         )
 

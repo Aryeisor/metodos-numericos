@@ -11,9 +11,11 @@ examples_data.py); el resto del sistema no se toca.
 from dataclasses import dataclass
 from typing import Callable
 
+from .serializers.differentiation import DifferentiationSerializer
 from .serializers.linear import LinearSystemSerializer
 from .serializers.nonlinear import NewtonSystemSerializer, NonlinearSystemSerializer
 from .serializers.polynomial import PolynomialSerializer
+from .solvers.differentiation.finite_differences import solve_finite_differences
 from .solvers.linear.runner import solve_gauss_seidel, solve_jacobi
 from .solvers.nonlinear.fixed_point import solve_fixed_point
 from .solvers.nonlinear.newton import solve_newton
@@ -24,6 +26,7 @@ CATEGORIES = {
     "linear_system": "Sistemas lineales",
     "nonlinear_system": "Ecuaciones no lineales",
     "polynomial": "Polinomios",
+    "differentiation": "Diferenciación numérica",
 }
 
 
@@ -78,6 +81,13 @@ METHODS = {
             category="polynomial",
             serializer=PolynomialSerializer,
             solver=solve_bairstow,
+        ),
+        MethodSpec(
+            slug="diferencias-finitas",
+            name="Diferencias progresiva y regresiva",
+            category="differentiation",
+            serializer=DifferentiationSerializer,
+            solver=solve_finite_differences,
         ),
     )
 }

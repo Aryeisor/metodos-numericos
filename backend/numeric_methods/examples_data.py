@@ -301,12 +301,80 @@ POLYNOMIAL_EXAMPLES = [
 ]
 
 
+def _difference_example(example_id, name, description, formula, **data):
+    """Ejemplo de diferencias finitas: modo función (function, x0, h0) o modo
+    tabla (points y, opcional, compare_function)."""
+    mode = "table" if "points" in data else "function"
+    return {
+        "id": example_id,
+        "name": name,
+        "description": description,
+        "mode": mode,
+        "formula": formula,
+        "function": data.get("function", ""),
+        "x0": data.get("x0"),
+        "h0": data.get("h0", 0.1),
+        "points": data.get("points"),
+        "compare_function": data.get("compare_function", ""),
+        "tolerance": 0.0001,
+        "max_iterations": 25,
+    }
+
+
+# Diferencias progresiva y regresiva. Los valores esperados (README y
+# tests/test_differentiation.py) se verificaron con un script independiente.
+DIFFERENCE_EXAMPLES = [
+    _difference_example(
+        "dif-burden-ln", "ln(x) en x₀ = 1.8 (Burden y Faires)",
+        "Ambas fórmulas con h₀ = 0.1; exacta f'(1.8) = 1/1.8 ≈ 0.555556.", "both",
+        function="ln(x)", x0=1.8, h0=0.1,
+    ),
+    _difference_example(
+        "dif-exp", "eˣ en x₀ = 0, progresiva",
+        "La derivada exacta es 1; el error se reduce a la mitad con cada h.", "forward",
+        function="exp(x)", x0=0, h0=0.1,
+    ),
+    _difference_example(
+        "dif-seno", "sin(x) en x₀ = 1, regresiva",
+        "Exacta cos(1) ≈ 0.540302 (en radianes).", "backward",
+        function="sin(x)", x0=1, h0=0.1,
+    ),
+    _difference_example(
+        "dif-cubica", "Cúbica x³ − 2x² + x en x₀ = 2",
+        "Exacta f'(2) = 5; con h = 0.1, D⁺ = 5.41 y D⁻ = 4.61.", "both",
+        function="x^3 - 2x^2 + x", x0=2, h0=0.1,
+    ),
+    _difference_example(
+        "dif-lineal", "Función lineal 3x + 2",
+        "f'' = 0: las dos fórmulas son exactas (error y cota 0). Para en la fila 6, el mínimo.", "both",
+        function="3x + 2", x0=1, h0=0.5,
+    ),
+    _difference_example(
+        "dif-xexp", "x·eˣ en x₀ = 2",
+        "Crece rápido: exacta 3e² ≈ 22.167168; hacen falta 15 filas.", "both",
+        function="x*exp(x)", x0=2, h0=0.1,
+    ),
+    _difference_example(
+        "dif-carro", "Posición de un carro (tabla + función)",
+        "x es el tiempo en segundos y f(x) la posición en metros; se compara con f(x) = 2x².", "both",
+        points=[[0, 0], [1, 2], [2, 8], [3, 18], [4, 32], [5, 50]], compare_function="2x^2",
+    ),
+    _difference_example(
+        "dif-tabla", "Tabla de datos sin función",
+        "Seis datos medidos con h = 0.1: progresiva y regresiva comparten cada secante.", "both",
+        points=[[1.1, 9.025013], [1.2, 11.023176], [1.3, 13.463738], [1.4, 16.444647],
+                [1.5, 20.085537], [1.6, 24.53253]],
+    ),
+]
+
+
 EXAMPLES = {
     "jacobi": LINEAR_SYSTEM_EXAMPLES,
     "gauss-seidel": LINEAR_SYSTEM_EXAMPLES,
     "punto-fijo": NONLINEAR_SYSTEM_EXAMPLES,
     "newton": NEWTON_EXAMPLES,
     "bairstow": POLYNOMIAL_EXAMPLES,
+    "diferencias-finitas": DIFFERENCE_EXAMPLES,
 }
 
 

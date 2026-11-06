@@ -51,6 +51,8 @@
   --color-value-new: #15803d;
   --color-series-1: #2563eb;      /* ε_r de Bairstow / error por iteración  */
   --color-series-2: #9333ea;      /* ε_s de Bairstow                        */
+  --color-series-3: #c2410c;      /* 3.ª y 4.ª serie (diferencias finitas)  */
+  --color-series-4: #0e7490;
   --color-tolerance: #15803d;
 
   /* ---- Gráfico ----------------------------------------------------------- */
@@ -104,6 +106,8 @@
   --color-value-new: #8ef0b4;
   --color-series-1: #82aaf8;
   --color-series-2: #c8a2f6;
+  --color-series-3: #fdba74;
+  --color-series-4: #67e8f9;
   --color-tolerance: #6ee09a;
 
   --color-chart-grid: rgba(226, 232, 240, 0.1);

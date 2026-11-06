@@ -144,6 +144,13 @@ class ExamplesEndpointTests(APITestCase):
                     self.assertGreaterEqual(example["n"], 3)
                     self.assertEqual(len(example["A"]), example["n"])
                     self.assertEqual(len(example["b"]), example["n"])
+                elif "h0" in example:
+                    # Diferencias finitas: f(x) con x₀, o una tabla de puntos.
+                    if example["mode"] == "function":
+                        self.assertTrue(example["function"])
+                        self.assertIsNotNone(example["x0"])
+                    else:
+                        self.assertGreaterEqual(len(example["points"]), 2)
                 elif "equations" in example:
                     self.assertGreaterEqual(example["n"], 2)
                     self.assertEqual(len(example["equations"]), example["n"])
