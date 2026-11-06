@@ -227,6 +227,12 @@ class VerificationTests(SimpleTestCase):
         self.assertTrue(steps["sum_latex"].startswith("f'(x) ="))
         self.assertTrue(steps["sum_latex"].endswith("3 x^{2} - 4 x + 1"))
 
+    def test_second_derivative_term_by_term(self):
+        steps = example("dif-cubica")["function"]["higher_derivatives"]["2"]["steps"]
+        self.assertEqual(len(steps["terms"]), 3)
+        self.assertTrue(steps["sum_latex"].startswith("f''(x) ="))
+        self.assertTrue(steps["sum_latex"].endswith("= 6 x - 4"))
+
     def test_absolute_value_not_differentiable(self):
         result = solve(function="abs(x)", x0=0, h0=0.1)
         self.assertFalse(result["differentiable"])

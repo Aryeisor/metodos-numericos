@@ -234,4 +234,4 @@ def _table(data):
 def solve_three_point(data):
     """Punto de entrada del registro: datos ya validados -> SolverResult."""
     mode = _table if data["mode"] == "table" else _function
-    return build_result(METHOD, data, mode(data), higher_steps=True)
+    return build_result(METHOD, data, mode(data))

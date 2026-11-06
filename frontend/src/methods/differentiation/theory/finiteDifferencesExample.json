@@ -1805,7 +1805,16 @@
       "higher_derivatives": {
         "2": {
           "latex": "- \\frac{1}{x^{2}}",
-          "text": "-1/x^2"
+          "text": "-1/x^2",
+          "steps": {
+            "terms": [
+              {
+                "latex": "\\frac{d}{d x}\\left(\\frac{1}{x}\\right) = \\left(-1\\right) \\cdot \\frac{1}{x^{2}} = - \\frac{1}{x^{2}}",
+                "rule": "regla de la potencia"
+              }
+            ],
+            "sum_latex": null
+          }
         }
       }
     },
@@ -3033,7 +3042,16 @@
       "higher_derivatives": {
         "2": {
           "latex": "4",
-          "text": "4"
+          "text": "4",
+          "steps": {
+            "terms": [
+              {
+                "latex": "\\frac{d}{d x}\\left(4 x\\right) = 4",
+                "rule": "la derivada de x respecto a x es 1"
+              }
+            ],
+            "sum_latex": null
+          }
         }
       }
     },

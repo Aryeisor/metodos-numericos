@@ -173,9 +173,9 @@ class _Function:
             for n in self.derivatives if n > 1 and n - 1 in self.derivatives
         }
 
-    def info(self, higher_steps=False):
+    def info(self):
         x = self.symbol
-        higher = self.higher_steps() if higher_steps else {}
+        higher = self.higher_steps()
         return {
             "latex": expression_to_latex(self.typed),
             "text": expression_to_text(self.expr),
@@ -608,11 +608,8 @@ def _table_mode(data):
 
 # --- Punto de entrada ----------------------------------------------------------
 
-def build_result(method, data, output, higher_steps=False):
-    """SolverResult a partir de lo que devuelve un modo (función o tabla).
-
-    `higher_steps`: incluir el desglose de f'', f''' (no en diferencias, para
-    no cambiar su respuesta)."""
+def build_result(method, data, output):
+    """SolverResult a partir de lo que devuelve un modo (función o tabla)."""
     function, formulas, converged, iterations, warnings, meta = output
     return SolverResult(
         method=method,
@@ -626,7 +623,7 @@ def build_result(method, data, output, higher_steps=False):
             **meta,
             "formula": data["formula"],
             "formulas": [public_formula(f) for f in formulas],
-            "function": function.info(higher_steps) if function else None,
+            "function": function.info() if function else None,
             "sampling_points": SAMPLES,
         },
     )
