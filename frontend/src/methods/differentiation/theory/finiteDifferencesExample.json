@@ -1,0 +1,3042 @@
+{
+  "function": {
+    "request": {
+      "mode": "function",
+      "formula": "both",
+      "function": "ln(x)",
+      "x0": 1.8,
+      "h0": 0.1,
+      "tolerance": 0.0001,
+      "max_iterations": 25
+    },
+    "method": "diferencias-finitas",
+    "category": "differentiation",
+    "converged": true,
+    "iterations": [
+      {
+        "iteration": 1,
+        "x": [
+          0.5406722127027574,
+          0.5715841383994869
+        ],
+        "error": null,
+        "extra": {
+          "h": {
+            "value": 0.1,
+            "exact": true,
+            "text": "0.1",
+            "latex": "0.1",
+            "approx": null
+          },
+          "forward": {
+            "D": 0.5406722127027574,
+            "previous_D": null,
+            "estimated_error": null,
+            "real_error": 0.014883342852798132,
+            "bound": 0.015432098765432098,
+            "M": 0.30864197530864196,
+            "M_substitution": {
+              "x": 1.8,
+              "x_display": {
+                "exact": true,
+                "text": "1.8",
+                "latex": "1.8",
+                "approx": null
+              },
+              "function_latex": "- \\frac{1}{x^{2}}",
+              "function_text": "-1/x^2",
+              "terms": [
+                {
+                  "sign": "-",
+                  "template": "\\frac{1}{@@0@@^{2}}",
+                  "text": "@@0@@^(-2)",
+                  "value": -0.30864197530864196
+                }
+              ],
+              "value": -0.30864197530864196
+            },
+            "x_M": 1.8,
+            "interval": [
+              1.8,
+              1.9000000000000001
+            ],
+            "interval_display": [
+              {
+                "exact": true,
+                "text": "1.8",
+                "latex": "1.8",
+                "approx": null
+              },
+              {
+                "exact": true,
+                "text": "1.9",
+                "latex": "1.9",
+                "approx": null
+              }
+            ],
+            "ratio": null,
+            "rounding": 5.700807702989817e-15,
+            "within_bound": true,
+            "by_rounding": false,
+            "points": [
+              {
+                "offset": 1,
+                "weight": 1,
+                "role": "x_0 + h",
+                "x": 1.9000000000000001,
+                "display": {
+                  "exact": true,
+                  "text": "1.9",
+                  "latex": "1.9",
+                  "approx": null
+                },
+                "f": 0.6418538861723948,
+                "f_display": "0.6418539"
+              },
+              {
+                "offset": 0,
+                "weight": -1,
+                "role": "x_0",
+                "x": 1.8,
+                "display": {
+                  "exact": true,
+                  "text": "1.8",
+                  "latex": "1.8",
+                  "approx": null
+                },
+                "f": 0.5877866649021191,
+                "f_display": "0.5877867"
+              }
+            ],
+            "decimals": 7,
+            "numerator_display": "0.0540672"
+          },
+          "backward": {
+            "D": 0.5715841383994869,
+            "previous_D": null,
+            "estimated_error": null,
+            "real_error": 0.01602858284393127,
+            "bound": 0.01730103806228374,
+            "M": 0.34602076124567477,
+            "M_substitution": {
+              "x": 1.7,
+              "x_display": {
+                "exact": true,
+                "text": "1.7",
+                "latex": "1.7",
+                "approx": null
+              },
+              "function_latex": "- \\frac{1}{x^{2}}",
+              "function_text": "-1/x^2",
+              "terms": [
+                {
+                  "sign": "-",
+                  "template": "\\frac{1}{@@0@@^{2}}",
+                  "text": "@@0@@^(-2)",
+                  "value": -0.34602076124567477
+                }
+              ],
+              "value": -0.34602076124567477
+            },
+            "x_M": 1.7,
+            "interval": [
+              1.7,
+              1.8
+            ],
+            "interval_display": [
+              {
+                "exact": true,
+                "text": "1.7",
+                "latex": "1.7",
+                "approx": null
+              },
+              {
+                "exact": true,
+                "text": "1.8",
+                "latex": "1.8",
+                "approx": null
+              }
+            ],
+            "ratio": null,
+            "rounding": 5.220594311535712e-15,
+            "within_bound": true,
+            "by_rounding": false,
+            "points": [
+              {
+                "offset": 0,
+                "weight": 1,
+                "role": "x_0",
+                "x": 1.8,
+                "display": {
+                  "exact": true,
+                  "text": "1.8",
+                  "latex": "1.8",
+                  "approx": null
+                },
+                "f": 0.5877866649021191,
+                "f_display": "0.5877867"
+              },
+              {
+                "offset": -1,
+                "weight": -1,
+                "role": "x_0 - h",
+                "x": 1.7,
+                "display": {
+                  "exact": true,
+                  "text": "1.7",
+                  "latex": "1.7",
+                  "approx": null
+                },
+                "f": 0.5306282510621704,
+                "f_display": "0.5306283"
+              }
+            ],
+            "decimals": 7,
+            "numerator_display": "0.0571584"
+          }
+        }
+      },
+      {
+        "iteration": 2,
+        "x": [
+          0.5479794837622887,
+          0.563417539333928
+        ],
+        "error": 0.008166599065558833,
+        "extra": {
+          "h": {
+            "value": 0.05,
+            "exact": true,
+            "text": "0.05",
+            "latex": "0.05",
+            "approx": null
+          },
+          "forward": {
+            "D": 0.5479794837622887,
+            "previous_D": 0.5406722127027574,
+            "estimated_error": 0.007307271059531217,
+            "real_error": 0.007576071793266914,
+            "bound": 0.007716049382716049,
+            "M": 0.30864197530864196,
+            "M_substitution": {
+              "x": 1.8,
+              "x_display": {
+                "exact": true,
+                "text": "1.8",
+                "latex": "1.8",
+                "approx": null
+              },
+              "function_latex": "- \\frac{1}{x^{2}}",
+              "function_text": "-1/x^2",
+              "terms": [
+                {
+                  "sign": "-",
+                  "template": "\\frac{1}{@@0@@^{2}}",
+                  "text": "@@0@@^(-2)",
+                  "value": -0.30864197530864196
+                }
+              ],
+              "value": -0.30864197530864196
+            },
+            "x_M": 1.8,
+            "interval": [
+              1.8,
+              1.85
+            ],
+            "interval_display": [
+              {
+                "exact": true,
+                "text": "1.8",
+                "latex": "1.8",
+                "approx": null
+              },
+              {
+                "exact": true,
+                "text": "1.85",
+                "latex": "1.85",
+                "approx": null
+              }
+            ],
+            "ratio": 0.5090302540361475,
+            "rounding": 1.0927892174987503e-14,
+            "within_bound": true,
+            "by_rounding": false,
+            "points": [
+              {
+                "offset": 1,
+                "weight": 1,
+                "role": "x_0 + h",
+                "x": 1.85,
+                "display": {
+                  "exact": true,
+                  "text": "1.85",
+                  "latex": "1.85",
+                  "approx": null
+                },
+                "f": 0.6151856390902335,
+                "f_display": "0.615185639"
+              },
+              {
+                "offset": 0,
+                "weight": -1,
+                "role": "x_0",
+                "x": 1.8,
+                "display": {
+                  "exact": true,
+                  "text": "1.8",
+                  "latex": "1.8",
+                  "approx": null
+                },
+                "f": 0.5877866649021191,
+                "f_display": "0.587786665"
+              }
+            ],
+            "decimals": 9,
+            "numerator_display": "0.027398974"
+          },
+          "backward": {
+            "D": 0.563417539333928,
+            "previous_D": 0.5715841383994869,
+            "estimated_error": 0.008166599065558833,
+            "real_error": 0.007861983778372439,
+            "bound": 0.008163265306122448,
+            "M": 0.32653061224489793,
+            "M_substitution": {
+              "x": 1.75,
+              "x_display": {
+                "exact": true,
+                "text": "1.75",
+                "latex": "1.75",
+                "approx": null
+              },
+              "function_latex": "- \\frac{1}{x^{2}}",
+              "function_text": "-1/x^2",
+              "terms": [
+                {
+                  "sign": "-",
+                  "template": "\\frac{1}{@@0@@^{2}}",
+                  "text": "@@0@@^(-2)",
+                  "value": -0.32653061224489793
+                }
+              ],
+              "value": -0.32653061224489793
+            },
+            "x_M": 1.75,
+            "interval": [
+              1.75,
+              1.8
+            ],
+            "interval_display": [
+              {
+                "exact": true,
+                "text": "1.75",
+                "latex": "1.75",
+                "approx": null
+              },
+              {
+                "exact": true,
+                "text": "1.8",
+                "latex": "1.8",
+                "approx": null
+              }
+            ],
+            "ratio": 0.4904977473631823,
+            "rounding": 1.0441188623071423e-14,
+            "within_bound": true,
+            "by_rounding": false,
+            "points": [
+              {
+                "offset": 0,
+                "weight": 1,
+                "role": "x_0",
+                "x": 1.8,
+                "display": {
+                  "exact": true,
+                  "text": "1.8",
+                  "latex": "1.8",
+                  "approx": null
+                },
+                "f": 0.5877866649021191,
+                "f_display": "0.587786665"
+              },
+              {
+                "offset": -1,
+                "weight": -1,
+                "role": "x_0 - h",
+                "x": 1.75,
+                "display": {
+                  "exact": true,
+                  "text": "1.75",
+                  "latex": "1.75",
+                  "approx": null
+                },
+                "f": 0.5596157879354227,
+                "f_display": "0.559615788"
+              }
+            ],
+            "decimals": 9,
+            "numerator_display": "0.028170877"
+          }
+        }
+      },
+      {
+        "iteration": 3,
+        "x": [
+          0.55173288529343,
+          0.5594496789895942
+        ],
+        "error": 0.003967860344333829,
+        "extra": {
+          "h": {
+            "value": 0.025,
+            "exact": true,
+            "text": "0.025",
+            "latex": "0.025",
+            "approx": null
+          },
+          "forward": {
+            "D": 0.55173288529343,
+            "previous_D": 0.5479794837622887,
+            "estimated_error": 0.0037534015311413427,
+            "real_error": 0.0038226702621255715,
+            "bound": 0.0038580246913580245,
+            "M": 0.30864197530864196,
+            "M_substitution": {
+              "x": 1.8,
+              "x_display": {
+                "exact": true,
+                "text": "1.8",
+                "latex": "1.8",
+                "approx": null
+              },
+              "function_latex": "- \\frac{1}{x^{2}}",
+              "function_text": "-1/x^2",
+              "terms": [
+                {
+                  "sign": "-",
+                  "template": "\\frac{1}{@@0@@^{2}}",
+                  "text": "@@0@@^(-2)",
+                  "value": -0.30864197530864196
+                }
+              ],
+              "value": -0.30864197530864196
+            },
+            "x_M": 1.8,
+            "interval": [
+              1.8,
+              1.825
+            ],
+            "interval_display": [
+              {
+                "exact": true,
+                "text": "1.8",
+                "latex": "1.8",
+                "approx": null
+              },
+              {
+                "exact": true,
+                "text": "1.825",
+                "latex": "1.825",
+                "approx": null
+              }
+            ],
+            "ratio": 0.5045715466322396,
+            "rounding": 2.1372414488299355e-14,
+            "within_bound": true,
+            "by_rounding": false,
+            "points": [
+              {
+                "offset": 1,
+                "weight": 1,
+                "role": "x_0 + h",
+                "x": 1.825,
+                "display": {
+                  "exact": true,
+                  "text": "1.825",
+                  "latex": "1.825",
+                  "approx": null
+                },
+                "f": 0.6015799870344548,
+                "f_display": "0.60157999"
+              },
+              {
+                "offset": 0,
+                "weight": -1,
+                "role": "x_0",
+                "x": 1.8,
+                "display": {
+                  "exact": true,
+                  "text": "1.8",
+                  "latex": "1.8",
+                  "approx": null
+                },
+                "f": 0.5877866649021191,
+                "f_display": "0.58778666"
+              }
+            ],
+            "decimals": 8,
+            "numerator_display": "0.01379333"
+          },
+          "backward": {
+            "D": 0.5594496789895942,
+            "previous_D": 0.563417539333928,
+            "estimated_error": 0.003967860344333829,
+            "real_error": 0.00389412343403861,
+            "bound": 0.00396746677246578,
+            "M": 0.31739734179726237,
+            "M_substitution": {
+              "x": 1.7750000000000001,
+              "x_display": {
+                "exact": false,
+                "text": "1.775",
+                "latex": "1.775",
+                "approx": "1.775"
+              },
+              "function_latex": "- \\frac{1}{x^{2}}",
+              "function_text": "-1/x^2",
+              "terms": [
+                {
+                  "sign": "-",
+                  "template": "\\frac{1}{@@0@@^{2}}",
+                  "text": "@@0@@^(-2)",
+                  "value": -0.31739734179726237
+                }
+              ],
+              "value": -0.31739734179726237
+            },
+            "x_M": 1.7750000000000001,
+            "interval": [
+              1.7750000000000001,
+              1.8
+            ],
+            "interval_display": [
+              {
+                "exact": true,
+                "text": "1.775",
+                "latex": "1.775",
+                "approx": null
+              },
+              {
+                "exact": true,
+                "text": "1.8",
+                "latex": "1.8",
+                "approx": null
+              }
+            ],
+            "ratio": 0.49531054041995976,
+            "rounding": 2.0882377246142847e-14,
+            "within_bound": true,
+            "by_rounding": false,
+            "points": [
+              {
+                "offset": 0,
+                "weight": 1,
+                "role": "x_0",
+                "x": 1.8,
+                "display": {
+                  "exact": true,
+                  "text": "1.8",
+                  "latex": "1.8",
+                  "approx": null
+                },
+                "f": 0.5877866649021191,
+                "f_display": "0.58778666"
+              },
+              {
+                "offset": -1,
+                "weight": -1,
+                "role": "x_0 - h",
+                "x": 1.7750000000000001,
+                "display": {
+                  "exact": true,
+                  "text": "1.775",
+                  "latex": "1.775",
+                  "approx": null
+                },
+                "f": 0.5738004229273792,
+                "f_display": "0.57380042"
+              }
+            ],
+            "decimals": 8,
+            "numerator_display": "0.01398624"
+          }
+        }
+      },
+      {
+        "iteration": 4,
+        "x": [
+          0.5536354275658972,
+          0.5574935452874641
+        ],
+        "error": 0.001956133702130103,
+        "extra": {
+          "h": {
+            "value": 0.0125,
+            "exact": true,
+            "text": "0.0125",
+            "latex": "0.0125",
+            "approx": null
+          },
+          "forward": {
+            "D": 0.5536354275658972,
+            "previous_D": 0.55173288529343,
+            "estimated_error": 0.0019025422724672225,
+            "real_error": 0.001920127989658349,
+            "bound": 0.0019290123456790122,
+            "M": 0.30864197530864196,
+            "M_substitution": {
+              "x": 1.8,
+              "x_display": {
+                "exact": true,
+                "text": "1.8",
+                "latex": "1.8",
+                "approx": null
+              },
+              "function_latex": "- \\frac{1}{x^{2}}",
+              "function_text": "-1/x^2",
+              "terms": [
+                {
+                  "sign": "-",
+                  "template": "\\frac{1}{@@0@@^{2}}",
+                  "text": "@@0@@^(-2)",
+                  "value": -0.30864197530864196
+                }
+              ],
+              "value": -0.30864197530864196
+            },
+            "x_M": 1.8,
+            "interval": [
+              1.8,
+              1.8125
+            ],
+            "interval_display": [
+              {
+                "exact": true,
+                "text": "1.8",
+                "latex": "1.8",
+                "approx": null
+              },
+              {
+                "exact": true,
+                "text": "1.8125",
+                "latex": "1.8125",
+                "approx": null
+              }
+            ],
+            "ratio": 0.5023001875633066,
+            "rounding": 4.225648153143117e-14,
+            "within_bound": true,
+            "by_rounding": false,
+            "points": [
+              {
+                "offset": 1,
+                "weight": 1,
+                "role": "x_0 + h",
+                "x": 1.8125,
+                "display": {
+                  "exact": true,
+                  "text": "1.8125",
+                  "latex": "1.8125",
+                  "approx": null
+                },
+                "f": 0.5947071077466928,
+                "f_display": "0.594707108"
+              },
+              {
+                "offset": 0,
+                "weight": -1,
+                "role": "x_0",
+                "x": 1.8,
+                "display": {
+                  "exact": true,
+                  "text": "1.8",
+                  "latex": "1.8",
+                  "approx": null
+                },
+                "f": 0.5877866649021191,
+                "f_display": "0.587786665"
+              }
+            ],
+            "decimals": 9,
+            "numerator_display": "0.006920443"
+          },
+          "backward": {
+            "D": 0.5574935452874641,
+            "previous_D": 0.5594496789895942,
+            "estimated_error": 0.001956133702130103,
+            "real_error": 0.001937989731908507,
+            "bound": 0.0019560858721697884,
+            "M": 0.3129737395471661,
+            "M_substitution": {
+              "x": 1.7875,
+              "x_display": {
+                "exact": true,
+                "text": "1.7875",
+                "latex": "1.7875",
+                "approx": null
+              },
+              "function_latex": "- \\frac{1}{x^{2}}",
+              "function_text": "-1/x^2",
+              "terms": [
+                {
+                  "sign": "-",
+                  "template": "\\frac{1}{@@0@@^{2}}",
+                  "text": "@@0@@^(-2)",
+                  "value": -0.3129737395471661
+                }
+              ],
+              "value": -0.3129737395471661
+            },
+            "x_M": 1.7875,
+            "interval": [
+              1.7875,
+              1.8
+            ],
+            "interval_display": [
+              {
+                "exact": true,
+                "text": "1.7875",
+                "latex": "1.7875",
+                "approx": null
+              },
+              {
+                "exact": true,
+                "text": "1.8",
+                "latex": "1.8",
+                "approx": null
+              }
+            ],
+            "ratio": 0.49767033961186247,
+            "rounding": 4.1764754492285694e-14,
+            "within_bound": true,
+            "by_rounding": false,
+            "points": [
+              {
+                "offset": 0,
+                "weight": 1,
+                "role": "x_0",
+                "x": 1.8,
+                "display": {
+                  "exact": true,
+                  "text": "1.8",
+                  "latex": "1.8",
+                  "approx": null
+                },
+                "f": 0.5877866649021191,
+                "f_display": "0.587786665"
+              },
+              {
+                "offset": -1,
+                "weight": -1,
+                "role": "x_0 - h",
+                "x": 1.7875,
+                "display": {
+                  "exact": true,
+                  "text": "1.7875",
+                  "latex": "1.7875",
+                  "approx": null
+                },
+                "f": 0.5808179955860258,
+                "f_display": "0.580817996"
+              }
+            ],
+            "decimals": 9,
+            "numerator_display": "0.006968669"
+          }
+        }
+      },
+      {
+        "iteration": 5,
+        "x": [
+          0.5545932762377959,
+          0.5565223002119879
+        ],
+        "error": 0.0009712450754761903,
+        "extra": {
+          "h": {
+            "value": 0.00625,
+            "exact": true,
+            "text": "0.00625",
+            "latex": "0.00625",
+            "approx": null
+          },
+          "forward": {
+            "D": 0.5545932762377959,
+            "previous_D": 0.5536354275658972,
+            "estimated_error": 0.0009578486718986312,
+            "real_error": 0.0009622793177597178,
+            "bound": 0.0009645061728395061,
+            "M": 0.30864197530864196,
+            "M_substitution": {
+              "x": 1.8,
+              "x_display": {
+                "exact": true,
+                "text": "1.8",
+                "latex": "1.8",
+                "approx": null
+              },
+              "function_latex": "- \\frac{1}{x^{2}}",
+              "function_text": "-1/x^2",
+              "terms": [
+                {
+                  "sign": "-",
+                  "template": "\\frac{1}{@@0@@^{2}}",
+                  "text": "@@0@@^(-2)",
+                  "value": -0.30864197530864196
+                }
+              ],
+              "value": -0.30864197530864196
+            },
+            "x_M": 1.8,
+            "interval": [
+              1.8,
+              1.8062500000000001
+            ],
+            "interval_display": [
+              {
+                "exact": true,
+                "text": "1.8",
+                "latex": "1.8",
+                "approx": null
+              },
+              {
+                "exact": true,
+                "text": "1.80625",
+                "latex": "1.80625",
+                "approx": null
+              }
+            ],
+            "ratio": 0.5011537371167312,
+            "rounding": 8.402208676423659e-14,
+            "within_bound": true,
+            "by_rounding": false,
+            "points": [
+              {
+                "offset": 1,
+                "weight": 1,
+                "role": "x_0 + h",
+                "x": 1.8062500000000001,
+                "display": {
+                  "exact": true,
+                  "text": "1.80625",
+                  "latex": "1.80625",
+                  "approx": null
+                },
+                "f": 0.5912528728786053,
+                "f_display": "0.591252873"
+              },
+              {
+                "offset": 0,
+                "weight": -1,
+                "role": "x_0",
+                "x": 1.8,
+                "display": {
+                  "exact": true,
+                  "text": "1.8",
+                  "latex": "1.8",
+                  "approx": null
+                },
+                "f": 0.5877866649021191,
+                "f_display": "0.587786665"
+              }
+            ],
+            "decimals": 9,
+            "numerator_display": "0.003466208"
+          },
+          "backward": {
+            "D": 0.5565223002119879,
+            "previous_D": 0.5574935452874641,
+            "estimated_error": 0.0009712450754761903,
+            "real_error": 0.0009667446564323168,
+            "bound": 0.0009712391797885127,
+            "M": 0.31079653753232406,
+            "M_substitution": {
+              "x": 1.79375,
+              "x_display": {
+                "exact": true,
+                "text": "1.79375",
+                "latex": "1.79375",
+                "approx": null
+              },
+              "function_latex": "- \\frac{1}{x^{2}}",
+              "function_text": "-1/x^2",
+              "terms": [
+                {
+                  "sign": "-",
+                  "template": "\\frac{1}{@@0@@^{2}}",
+                  "text": "@@0@@^(-2)",
+                  "value": -0.31079653753232406
+                }
+              ],
+              "value": -0.31079653753232406
+            },
+            "x_M": 1.79375,
+            "interval": [
+              1.79375,
+              1.8
+            ],
+            "interval_display": [
+              {
+                "exact": true,
+                "text": "1.79375",
+                "latex": "1.79375",
+                "approx": null
+              },
+              {
+                "exact": true,
+                "text": "1.8",
+                "latex": "1.8",
+                "approx": null
+              }
+            ],
+            "ratio": 0.4988388950235971,
+            "rounding": 8.352950898457139e-14,
+            "within_bound": true,
+            "by_rounding": false,
+            "points": [
+              {
+                "offset": 0,
+                "weight": 1,
+                "role": "x_0",
+                "x": 1.8,
+                "display": {
+                  "exact": true,
+                  "text": "1.8",
+                  "latex": "1.8",
+                  "approx": null
+                },
+                "f": 0.5877866649021191,
+                "f_display": "0.587786665"
+              },
+              {
+                "offset": -1,
+                "weight": -1,
+                "role": "x_0 - h",
+                "x": 1.79375,
+                "display": {
+                  "exact": true,
+                  "text": "1.79375",
+                  "latex": "1.79375",
+                  "approx": null
+                },
+                "f": 0.5843084005257941,
+                "f_display": "0.584308401"
+              }
+            ],
+            "decimals": 9,
+            "numerator_display": "0.003478264"
+          }
+        }
+      },
+      {
+        "iteration": 6,
+        "x": [
+          0.5550738599066563,
+          0.5560383675330627
+        ],
+        "error": 0.0004839326789252141,
+        "extra": {
+          "h": {
+            "value": 0.003125,
+            "exact": true,
+            "text": "0.003125",
+            "latex": "0.003125",
+            "approx": null
+          },
+          "forward": {
+            "D": 0.5550738599066563,
+            "previous_D": 0.5545932762377959,
+            "estimated_error": 0.0004805836688603904,
+            "real_error": 0.00048169564889932737,
+            "bound": 0.00048225308641975306,
+            "M": 0.30864197530864196,
+            "M_substitution": {
+              "x": 1.8,
+              "x_display": {
+                "exact": true,
+                "text": "1.8",
+                "latex": "1.8",
+                "approx": null
+              },
+              "function_latex": "- \\frac{1}{x^{2}}",
+              "function_text": "-1/x^2",
+              "terms": [
+                {
+                  "sign": "-",
+                  "template": "\\frac{1}{@@0@@^{2}}",
+                  "text": "@@0@@^(-2)",
+                  "value": -0.30864197530864196
+                }
+              ],
+              "value": -0.30864197530864196
+            },
+            "x_M": 1.8,
+            "interval": [
+              1.8,
+              1.803125
+            ],
+            "interval_display": [
+              {
+                "exact": true,
+                "text": "1.8",
+                "latex": "1.8",
+                "approx": null
+              },
+              {
+                "exact": true,
+                "text": "1.803125",
+                "latex": "1.803125",
+                "approx": null
+              }
+            ],
+            "ratio": 0.5005777844428403,
+            "rounding": 1.6755202259285152e-13,
+            "within_bound": true,
+            "by_rounding": false,
+            "points": [
+              {
+                "offset": 1,
+                "weight": 1,
+                "role": "x_0 + h",
+                "x": 1.803125,
+                "display": {
+                  "exact": true,
+                  "text": "1.803125",
+                  "latex": "1.803125",
+                  "approx": null
+                },
+                "f": 0.5895212707143274,
+                "f_display": "0.589521271"
+              },
+              {
+                "offset": 0,
+                "weight": -1,
+                "role": "x_0",
+                "x": 1.8,
+                "display": {
+                  "exact": true,
+                  "text": "1.8",
+                  "latex": "1.8",
+                  "approx": null
+                },
+                "f": 0.5877866649021191,
+                "f_display": "0.587786665"
+              }
+            ],
+            "decimals": 9,
+            "numerator_display": "0.001734606"
+          },
+          "backward": {
+            "D": 0.5560383675330627,
+            "previous_D": 0.5565223002119879,
+            "estimated_error": 0.0004839326789252141,
+            "real_error": 0.0004828119775071027,
+            "bound": 0.00048393194706994325,
+            "M": 0.3097164461247637,
+            "M_substitution": {
+              "x": 1.796875,
+              "x_display": {
+                "exact": true,
+                "text": "1.796875",
+                "latex": "1.796875",
+                "approx": null
+              },
+              "function_latex": "- \\frac{1}{x^{2}}",
+              "function_text": "-1/x^2",
+              "terms": [
+                {
+                  "sign": "-",
+                  "template": "\\frac{1}{@@0@@^{2}}",
+                  "text": "@@0@@^(-2)",
+                  "value": -0.3097164461247637
+                }
+              ],
+              "value": -0.3097164461247637
+            },
+            "x_M": 1.796875,
+            "interval": [
+              1.796875,
+              1.8
+            ],
+            "interval_display": [
+              {
+                "exact": true,
+                "text": "1.796875",
+                "latex": "1.796875",
+                "approx": null
+              },
+              {
+                "exact": true,
+                "text": "1.8",
+                "latex": "1.8",
+                "approx": null
+              }
+            ],
+            "ratio": 0.4994203736164174,
+            "rounding": 1.6705901796914278e-13,
+            "within_bound": true,
+            "by_rounding": false,
+            "points": [
+              {
+                "offset": 0,
+                "weight": 1,
+                "role": "x_0",
+                "x": 1.8,
+                "display": {
+                  "exact": true,
+                  "text": "1.8",
+                  "latex": "1.8",
+                  "approx": null
+                },
+                "f": 0.5877866649021191,
+                "f_display": "0.587786665"
+              },
+              {
+                "offset": -1,
+                "weight": -1,
+                "role": "x_0 - h",
+                "x": 1.796875,
+                "display": {
+                  "exact": true,
+                  "text": "1.796875",
+                  "latex": "1.796875",
+                  "approx": null
+                },
+                "f": 0.5860490450035782,
+                "f_display": "0.586049045"
+              }
+            ],
+            "decimals": 9,
+            "numerator_display": "0.00173762"
+          }
+        }
+      },
+      {
+        "iteration": 7,
+        "x": [
+          0.5553145684623217,
+          0.5557968217304676
+        ],
+        "error": 0.00024154580259505565,
+        "extra": {
+          "h": {
+            "value": 0.0015625,
+            "exact": true,
+            "text": "0.0015625",
+            "latex": "0.0015625",
+            "approx": null
+          },
+          "forward": {
+            "D": 0.5553145684623217,
+            "previous_D": 0.5550738599066563,
+            "estimated_error": 0.00024070855566549199,
+            "real_error": 0.00024098709323383538,
+            "bound": 0.00024112654320987653,
+            "M": 0.30864197530864196,
+            "M_substitution": {
+              "x": 1.8,
+              "x_display": {
+                "exact": true,
+                "text": "1.8",
+                "latex": "1.8",
+                "approx": null
+              },
+              "function_latex": "- \\frac{1}{x^{2}}",
+              "function_text": "-1/x^2",
+              "terms": [
+                {
+                  "sign": "-",
+                  "template": "\\frac{1}{@@0@@^{2}}",
+                  "text": "@@0@@^(-2)",
+                  "value": -0.30864197530864196
+                }
+              ],
+              "value": -0.30864197530864196
+            },
+            "x_M": 1.8,
+            "interval": [
+              1.8,
+              1.8015625
+            ],
+            "interval_display": [
+              {
+                "exact": true,
+                "text": "1.8",
+                "latex": "1.8",
+                "approx": null
+              },
+              {
+                "exact": true,
+                "text": "1.8015625",
+                "latex": "1.8015625",
+                "approx": null
+              }
+            ],
+            "ratio": 0.5002891219476239,
+            "rounding": 3.3461125435413883e-13,
+            "within_bound": true,
+            "by_rounding": false,
+            "points": [
+              {
+                "offset": 1,
+                "weight": 1,
+                "role": "x_0 + h",
+                "x": 1.8015625,
+                "display": {
+                  "exact": true,
+                  "text": "1.8015625",
+                  "latex": "1.8015625",
+                  "approx": null
+                },
+                "f": 0.5886543439153414,
+                "f_display": "0.588654344"
+              },
+              {
+                "offset": 0,
+                "weight": -1,
+                "role": "x_0",
+                "x": 1.8,
+                "display": {
+                  "exact": true,
+                  "text": "1.8",
+                  "latex": "1.8",
+                  "approx": null
+                },
+                "f": 0.5877866649021191,
+                "f_display": "0.587786665"
+              }
+            ],
+            "decimals": 9,
+            "numerator_display": "0.000867679"
+          },
+          "backward": {
+            "D": 0.5557968217304676,
+            "previous_D": 0.5560383675330627,
+            "estimated_error": 0.00024154580259505565,
+            "real_error": 0.00024126617491204705,
+            "bound": 0.00024154571139363572,
+            "M": 0.3091785105838537,
+            "M_substitution": {
+              "x": 1.7984375000000001,
+              "x_display": {
+                "exact": false,
+                "text": "1.798438",
+                "latex": "1.798438",
+                "approx": "1.798438"
+              },
+              "function_latex": "- \\frac{1}{x^{2}}",
+              "function_text": "-1/x^2",
+              "terms": [
+                {
+                  "sign": "-",
+                  "template": "\\frac{1}{@@0@@^{2}}",
+                  "text": "@@0@@^(-2)",
+                  "value": -0.3091785105838537
+                }
+              ],
+              "value": -0.3091785105838537
+            },
+            "x_M": 1.7984375000000001,
+            "interval": [
+              1.7984375000000001,
+              1.8
+            ],
+            "interval_display": [
+              {
+                "exact": true,
+                "text": "1.7984375",
+                "latex": "1.7984375",
+                "approx": null
+              },
+              {
+                "exact": true,
+                "text": "1.8",
+                "latex": "1.8",
+                "approx": null
+              }
+            ],
+            "ratio": 0.4997104176200719,
+            "rounding": 3.3411803593828555e-13,
+            "within_bound": true,
+            "by_rounding": false,
+            "points": [
+              {
+                "offset": 0,
+                "weight": 1,
+                "role": "x_0",
+                "x": 1.8,
+                "display": {
+                  "exact": true,
+                  "text": "1.8",
+                  "latex": "1.8",
+                  "approx": null
+                },
+                "f": 0.5877866649021191,
+                "f_display": "0.587786665"
+              },
+              {
+                "offset": -1,
+                "weight": -1,
+                "role": "x_0 - h",
+                "x": 1.7984375000000001,
+                "display": {
+                  "exact": true,
+                  "text": "1.7984375",
+                  "latex": "1.7984375",
+                  "approx": null
+                },
+                "f": 0.5869182323681652,
+                "f_display": "0.586918232"
+              }
+            ],
+            "decimals": 9,
+            "numerator_display": "0.000868433"
+          }
+        }
+      },
+      {
+        "iteration": 8,
+        "x": [
+          0.5554350271577846,
+          0.555676153723681
+        ],
+        "error": 0.00012066800678667278,
+        "extra": {
+          "h": {
+            "value": 0.00078125,
+            "exact": true,
+            "text": "0.00078125",
+            "latex": "0.00078125",
+            "approx": null
+          },
+          "forward": {
+            "D": 0.5554350271577846,
+            "previous_D": 0.5553145684623217,
+            "estimated_error": 0.00012045869546284393,
+            "real_error": 0.00012052839777099145,
+            "bound": 0.00012056327160493826,
+            "M": 0.30864197530864196,
+            "M_substitution": {
+              "x": 1.8,
+              "x_display": {
+                "exact": true,
+                "text": "1.8",
+                "latex": "1.8",
+                "approx": null
+              },
+              "function_latex": "- \\frac{1}{x^{2}}",
+              "function_text": "-1/x^2",
+              "terms": [
+                {
+                  "sign": "-",
+                  "template": "\\frac{1}{@@0@@^{2}}",
+                  "text": "@@0@@^(-2)",
+                  "value": -0.30864197530864196
+                }
+              ],
+              "value": -0.30864197530864196
+            },
+            "x_M": 1.8,
+            "interval": [
+              1.8,
+              1.80078125
+            ],
+            "interval_display": [
+              {
+                "exact": true,
+                "text": "1.8",
+                "latex": "1.8",
+                "approx": null
+              },
+              {
+                "exact": true,
+                "text": "1.80078125",
+                "latex": "1.80078125",
+                "approx": null
+              }
+            ],
+            "ratio": 0.5001446183428585,
+            "rounding": 6.687293972812381e-13,
+            "within_bound": true,
+            "by_rounding": false,
+            "points": [
+              {
+                "offset": 1,
+                "weight": 1,
+                "role": "x_0 + h",
+                "x": 1.80078125,
+                "display": {
+                  "exact": true,
+                  "text": "1.80078125",
+                  "latex": "1.80078125",
+                  "approx": null
+                },
+                "f": 0.5882205985170861,
+                "f_display": "0.5882205985"
+              },
+              {
+                "offset": 0,
+                "weight": -1,
+                "role": "x_0",
+                "x": 1.8,
+                "display": {
+                  "exact": true,
+                  "text": "1.8",
+                  "latex": "1.8",
+                  "approx": null
+                },
+                "f": 0.5877866649021191,
+                "f_display": "0.5877866649"
+              }
+            ],
+            "decimals": 10,
+            "numerator_display": "0.0004339336"
+          },
+          "backward": {
+            "D": 0.555676153723681,
+            "previous_D": 0.5557968217304676,
+            "estimated_error": 0.00012066800678667278,
+            "real_error": 0.00012059816812537427,
+            "bound": 0.00012066799539727015,
+            "M": 0.30891006821701156,
+            "M_substitution": {
+              "x": 1.79921875,
+              "x_display": {
+                "exact": true,
+                "text": "1.79921875",
+                "latex": "1.79921875",
+                "approx": null
+              },
+              "function_latex": "- \\frac{1}{x^{2}}",
+              "function_text": "-1/x^2",
+              "terms": [
+                {
+                  "sign": "-",
+                  "template": "\\frac{1}{@@0@@^{2}}",
+                  "text": "@@0@@^(-2)",
+                  "value": -0.30891006821701156
+                }
+              ],
+              "value": -0.30891006821701156
+            },
+            "x_M": 1.79921875,
+            "interval": [
+              1.79921875,
+              1.8
+            ],
+            "interval_display": [
+              {
+                "exact": true,
+                "text": "1.79921875",
+                "latex": "1.79921875",
+                "approx": null
+              },
+              {
+                "exact": true,
+                "text": "1.8",
+                "latex": "1.8",
+                "approx": null
+              }
+            ],
+            "ratio": 0.4998552663643713,
+            "rounding": 6.682360718765711e-13,
+            "within_bound": true,
+            "by_rounding": false,
+            "points": [
+              {
+                "offset": 0,
+                "weight": 1,
+                "role": "x_0",
+                "x": 1.8,
+                "display": {
+                  "exact": true,
+                  "text": "1.8",
+                  "latex": "1.8",
+                  "approx": null
+                },
+                "f": 0.5877866649021191,
+                "f_display": "0.5877866649"
+              },
+              {
+                "offset": -1,
+                "weight": -1,
+                "role": "x_0 - h",
+                "x": 1.79921875,
+                "display": {
+                  "exact": true,
+                  "text": "1.79921875",
+                  "latex": "1.79921875",
+                  "approx": null
+                },
+                "f": 0.5873525429070224,
+                "f_display": "0.5873525429"
+              }
+            ],
+            "decimals": 10,
+            "numerator_display": "0.000434122"
+          }
+        }
+      },
+      {
+        "iteration": 9,
+        "x": [
+          0.5554952826398107,
+          0.5556158459143035
+        ],
+        "error": 6.030780937749114e-05,
+        "extra": {
+          "h": {
+            "value": 0.000390625,
+            "exact": true,
+            "text": "0.000390625",
+            "latex": "0.000390625",
+            "approx": null
+          },
+          "forward": {
+            "D": 0.5554952826398107,
+            "previous_D": 0.5554350271577846,
+            "estimated_error": 6.0255482026150275e-05,
+            "real_error": 6.027291574484117e-05,
+            "bound": 6.028163580246913e-05,
+            "M": 0.30864197530864196,
+            "M_substitution": {
+              "x": 1.8,
+              "x_display": {
+                "exact": true,
+                "text": "1.8",
+                "latex": "1.8",
+                "approx": null
+              },
+              "function_latex": "- \\frac{1}{x^{2}}",
+              "function_text": "-1/x^2",
+              "terms": [
+                {
+                  "sign": "-",
+                  "template": "\\frac{1}{@@0@@^{2}}",
+                  "text": "@@0@@^(-2)",
+                  "value": -0.30864197530864196
+                }
+              ],
+              "value": -0.30864197530864196
+            },
+            "x_M": 1.8,
+            "interval": [
+              1.8,
+              1.8003906250000001
+            ],
+            "interval_display": [
+              {
+                "exact": true,
+                "text": "1.8",
+                "latex": "1.8",
+                "approx": null
+              },
+              {
+                "exact": true,
+                "text": "1.800390625",
+                "latex": "1.800390625",
+                "approx": null
+              }
+            ],
+            "ratio": 0.5000723220378488,
+            "rounding": 1.336965522675428e-12,
+            "within_bound": true,
+            "by_rounding": false,
+            "points": [
+              {
+                "offset": 1,
+                "weight": 1,
+                "role": "x_0 + h",
+                "x": 1.8003906250000001,
+                "display": {
+                  "exact": true,
+                  "text": "1.800390625",
+                  "latex": "1.800390625",
+                  "approx": null
+                },
+                "f": 0.5880036552469002,
+                "f_display": "0.5880036552"
+              },
+              {
+                "offset": 0,
+                "weight": -1,
+                "role": "x_0",
+                "x": 1.8,
+                "display": {
+                  "exact": true,
+                  "text": "1.8",
+                  "latex": "1.8",
+                  "approx": null
+                },
+                "f": 0.5877866649021191,
+                "f_display": "0.5877866649"
+              }
+            ],
+            "decimals": 10,
+            "numerator_display": "0.0002169903"
+          },
+          "backward": {
+            "D": 0.5556158459143035,
+            "previous_D": 0.555676153723681,
+            "estimated_error": 6.030780937749114e-05,
+            "real_error": 6.029035874788313e-05,
+            "bound": 6.0307808226258324e-05,
+            "M": 0.3087759781184426,
+            "M_substitution": {
+              "x": 1.799609375,
+              "x_display": {
+                "exact": true,
+                "text": "1.799609375",
+                "latex": "1.799609375",
+                "approx": null
+              },
+              "function_latex": "- \\frac{1}{x^{2}}",
+              "function_text": "-1/x^2",
+              "terms": [
+                {
+                  "sign": "-",
+                  "template": "\\frac{1}{@@0@@^{2}}",
+                  "text": "@@0@@^(-2)",
+                  "value": -0.3087759781184426
+                }
+              ],
+              "value": -0.3087759781184426
+            },
+            "x_M": 1.799609375,
+            "interval": [
+              1.799609375,
+              1.8
+            ],
+            "interval_display": [
+              {
+                "exact": true,
+                "text": "1.799609375",
+                "latex": "1.799609375",
+                "approx": null
+              },
+              {
+                "exact": true,
+                "text": "1.8",
+                "latex": "1.8",
+                "approx": null
+              }
+            ],
+            "ratio": 0.4999276496903756,
+            "rounding": 1.3364721437531422e-12,
+            "within_bound": true,
+            "by_rounding": false,
+            "points": [
+              {
+                "offset": 0,
+                "weight": 1,
+                "role": "x_0",
+                "x": 1.8,
+                "display": {
+                  "exact": true,
+                  "text": "1.8",
+                  "latex": "1.8",
+                  "approx": null
+                },
+                "f": 0.5877866649021191,
+                "f_display": "0.5877866649"
+              },
+              {
+                "offset": -1,
+                "weight": -1,
+                "role": "x_0 - h",
+                "x": 1.799609375,
+                "display": {
+                  "exact": true,
+                  "text": "1.799609375",
+                  "latex": "1.799609375",
+                  "approx": null
+                },
+                "f": 0.5875696274623088,
+                "f_display": "0.5875696275"
+              }
+            ],
+            "decimals": 10,
+            "numerator_display": "0.0002170374"
+          }
+        }
+      }
+    ],
+    "iterations_used": 9,
+    "solution": [
+      0.5554952826398107,
+      0.5556158459143035
+    ],
+    "variables": [
+      "forward",
+      "backward"
+    ],
+    "warnings": [],
+    "mode": "function",
+    "x0": 1.8,
+    "x0_display": {
+      "exact": true,
+      "text": "1.8",
+      "latex": "1.8",
+      "approx": null
+    },
+    "h0": 0.1,
+    "tolerance": 0.0001,
+    "max_iterations": 25,
+    "exact": 0.5555555555555556,
+    "differentiable": true,
+    "verification": {
+      "substitution": {
+        "x": 1.8,
+        "x_display": {
+          "exact": true,
+          "text": "1.8",
+          "latex": "1.8",
+          "approx": null
+        },
+        "function_latex": "\\frac{1}{x}",
+        "function_text": "1/x",
+        "terms": [
+          {
+            "sign": "+",
+            "template": "\\frac{1}{@@0@@}",
+            "text": "1/@@0@@",
+            "value": 0.5555555555555556
+          }
+        ],
+        "value": 0.5555555555555556
+      },
+      "final": {
+        "forward": {
+          "D": 0.5554952826398107,
+          "real_error": 6.027291574484117e-05,
+          "bound": 6.028163580246913e-05,
+          "rounding": 1.336965522675428e-12,
+          "within_bound": true,
+          "by_rounding": false
+        },
+        "backward": {
+          "D": 0.5556158459143035,
+          "real_error": 6.029035874788313e-05,
+          "bound": 6.0307808226258324e-05,
+          "rounding": 1.3364721437531422e-12,
+          "within_bound": true,
+          "by_rounding": false
+        }
+      },
+      "failed_rows": {
+        "forward": [],
+        "backward": []
+      },
+      "all_within": true
+    },
+    "formula": "both",
+    "formulas": [
+      {
+        "key": "forward",
+        "name": "Progresiva",
+        "symbol_latex": "D^{+}",
+        "formula_latex": "D^{+}(h) = \\frac{f(x_0 + h) - f(x_0)}{h}",
+        "formula_text": "D+(h) = [f(x0 + h) - f(x0)] / h",
+        "bound_latex": "|E| \\le \\frac{h}{2} \\max_{\\xi \\in [x_0,\\, x_0 + h]} \\left|f''(\\xi)\\right|",
+        "order": 1,
+        "expected_ratio": 0.5,
+        "bound_derivative": 2,
+        "bound_coefficient": [
+          1,
+          2
+        ],
+        "nodes": [
+          [
+            1,
+            1
+          ],
+          [
+            0,
+            -1
+          ]
+        ],
+        "divisor": 1
+      },
+      {
+        "key": "backward",
+        "name": "Regresiva",
+        "symbol_latex": "D^{-}",
+        "formula_latex": "D^{-}(h) = \\frac{f(x_0) - f(x_0 - h)}{h}",
+        "formula_text": "D-(h) = [f(x0) - f(x0 - h)] / h",
+        "bound_latex": "|E| \\le \\frac{h}{2} \\max_{\\xi \\in [x_0 - h,\\, x_0]} \\left|f''(\\xi)\\right|",
+        "order": 1,
+        "expected_ratio": 0.5,
+        "bound_derivative": 2,
+        "bound_coefficient": [
+          1,
+          2
+        ],
+        "nodes": [
+          [
+            0,
+            1
+          ],
+          [
+            -1,
+            -1
+          ]
+        ],
+        "divisor": 1
+      }
+    ],
+    "function": {
+      "latex": "\\ln{\\left(x \\right)}",
+      "text": "ln(x)",
+      "template": "\\ln{\\left(@@0@@ \\right)}",
+      "uses_trigonometry": false,
+      "derivative": {
+        "latex": "\\frac{1}{x}",
+        "text": "1/x",
+        "steps": {
+          "terms": [
+            {
+              "latex": "\\frac{d}{d x}\\left(\\ln{\\left(x \\right)}\\right) = \\frac{1}{x}",
+              "rule": "derivada de la función logaritmo natural"
+            }
+          ],
+          "sum_latex": null
+        }
+      },
+      "higher_derivatives": {
+        "2": {
+          "latex": "- \\frac{1}{x^{2}}",
+          "text": "-1/x^2"
+        }
+      }
+    },
+    "sampling_points": 401
+  },
+  "table": {
+    "request": {
+      "mode": "table",
+      "formula": "both",
+      "h0": 0.1,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          2,
+          8
+        ],
+        [
+          3,
+          18
+        ],
+        [
+          4,
+          32
+        ],
+        [
+          5,
+          50
+        ]
+      ],
+      "compare_function": "2x^2",
+      "tolerance": 0.0001,
+      "max_iterations": 25
+    },
+    "method": "diferencias-finitas",
+    "category": "differentiation",
+    "converged": true,
+    "iterations": [
+      {
+        "iteration": 1,
+        "x": [
+          2.0,
+          null
+        ],
+        "error": null,
+        "extra": {
+          "x": 0.0,
+          "y": 0.0,
+          "x_display": {
+            "exact": true,
+            "text": "0",
+            "latex": "0",
+            "approx": null
+          },
+          "exact": 0.0,
+          "forward": {
+            "D": 2.0,
+            "h": {
+              "value": 1.0,
+              "exact": true,
+              "text": "1",
+              "latex": "1",
+              "approx": null
+            },
+            "points": [
+              {
+                "offset": 1,
+                "weight": 1,
+                "role": "x_0 + h",
+                "index": 1,
+                "x": 1.0,
+                "display": {
+                  "exact": true,
+                  "text": "1",
+                  "latex": "1",
+                  "approx": null
+                },
+                "f": 2.0,
+                "f_display": "2"
+              },
+              {
+                "offset": 0,
+                "weight": -1,
+                "role": "x_0",
+                "index": 0,
+                "x": 0.0,
+                "display": {
+                  "exact": true,
+                  "text": "0",
+                  "latex": "0",
+                  "approx": null
+                },
+                "f": 0.0,
+                "f_display": "0"
+              }
+            ],
+            "decimals": 6,
+            "numerator_display": "2",
+            "real_error": 2.0,
+            "bound": 2.0,
+            "M": 4.0,
+            "x_M": 0.0,
+            "rounding": 1.7763568394002505e-15,
+            "within_bound": true,
+            "by_rounding": false,
+            "interval": [
+              0.0,
+              1.0
+            ],
+            "M_substitution": {
+              "x": 0.0,
+              "x_display": {
+                "exact": true,
+                "text": "0",
+                "latex": "0",
+                "approx": null
+              },
+              "function_latex": "4",
+              "function_text": "4",
+              "terms": [
+                {
+                  "sign": "+",
+                  "template": "4",
+                  "text": "4",
+                  "value": 4.0
+                }
+              ],
+              "value": 4.0
+            }
+          },
+          "backward": null
+        }
+      },
+      {
+        "iteration": 2,
+        "x": [
+          6.0,
+          2.0
+        ],
+        "error": null,
+        "extra": {
+          "x": 1.0,
+          "y": 2.0,
+          "x_display": {
+            "exact": true,
+            "text": "1",
+            "latex": "1",
+            "approx": null
+          },
+          "exact": 4.0,
+          "forward": {
+            "D": 6.0,
+            "h": {
+              "value": 1.0,
+              "exact": true,
+              "text": "1",
+              "latex": "1",
+              "approx": null
+            },
+            "points": [
+              {
+                "offset": 1,
+                "weight": 1,
+                "role": "x_0 + h",
+                "index": 2,
+                "x": 2.0,
+                "display": {
+                  "exact": true,
+                  "text": "2",
+                  "latex": "2",
+                  "approx": null
+                },
+                "f": 8.0,
+                "f_display": "8"
+              },
+              {
+                "offset": 0,
+                "weight": -1,
+                "role": "x_0",
+                "index": 1,
+                "x": 1.0,
+                "display": {
+                  "exact": true,
+                  "text": "1",
+                  "latex": "1",
+                  "approx": null
+                },
+                "f": 2.0,
+                "f_display": "2"
+              }
+            ],
+            "decimals": 6,
+            "numerator_display": "6",
+            "real_error": 2.0,
+            "bound": 2.0,
+            "M": 4.0,
+            "x_M": 1.0,
+            "rounding": 7.105427357601002e-15,
+            "within_bound": true,
+            "by_rounding": false,
+            "interval": [
+              1.0,
+              2.0
+            ],
+            "M_substitution": {
+              "x": 1.0,
+              "x_display": {
+                "exact": true,
+                "text": "1",
+                "latex": "1",
+                "approx": null
+              },
+              "function_latex": "4",
+              "function_text": "4",
+              "terms": [
+                {
+                  "sign": "+",
+                  "template": "4",
+                  "text": "4",
+                  "value": 4.0
+                }
+              ],
+              "value": 4.0
+            }
+          },
+          "backward": {
+            "D": 2.0,
+            "h": {
+              "value": 1.0,
+              "exact": true,
+              "text": "1",
+              "latex": "1",
+              "approx": null
+            },
+            "points": [
+              {
+                "offset": 0,
+                "weight": 1,
+                "role": "x_0",
+                "index": 1,
+                "x": 1.0,
+                "display": {
+                  "exact": true,
+                  "text": "1",
+                  "latex": "1",
+                  "approx": null
+                },
+                "f": 2.0,
+                "f_display": "2"
+              },
+              {
+                "offset": -1,
+                "weight": -1,
+                "role": "x_0 - h",
+                "index": 0,
+                "x": 0.0,
+                "display": {
+                  "exact": true,
+                  "text": "0",
+                  "latex": "0",
+                  "approx": null
+                },
+                "f": 0.0,
+                "f_display": "0"
+              }
+            ],
+            "decimals": 6,
+            "numerator_display": "2",
+            "real_error": 2.0,
+            "bound": 2.0,
+            "M": 4.0,
+            "x_M": 0.0,
+            "rounding": 1.7763568394002505e-15,
+            "within_bound": true,
+            "by_rounding": false,
+            "interval": [
+              0.0,
+              1.0
+            ],
+            "M_substitution": {
+              "x": 0.0,
+              "x_display": {
+                "exact": true,
+                "text": "0",
+                "latex": "0",
+                "approx": null
+              },
+              "function_latex": "4",
+              "function_text": "4",
+              "terms": [
+                {
+                  "sign": "+",
+                  "template": "4",
+                  "text": "4",
+                  "value": 4.0
+                }
+              ],
+              "value": 4.0
+            }
+          }
+        }
+      },
+      {
+        "iteration": 3,
+        "x": [
+          10.0,
+          6.0
+        ],
+        "error": null,
+        "extra": {
+          "x": 2.0,
+          "y": 8.0,
+          "x_display": {
+            "exact": true,
+            "text": "2",
+            "latex": "2",
+            "approx": null
+          },
+          "exact": 8.0,
+          "forward": {
+            "D": 10.0,
+            "h": {
+              "value": 1.0,
+              "exact": true,
+              "text": "1",
+              "latex": "1",
+              "approx": null
+            },
+            "points": [
+              {
+                "offset": 1,
+                "weight": 1,
+                "role": "x_0 + h",
+                "index": 3,
+                "x": 3.0,
+                "display": {
+                  "exact": true,
+                  "text": "3",
+                  "latex": "3",
+                  "approx": null
+                },
+                "f": 18.0,
+                "f_display": "18"
+              },
+              {
+                "offset": 0,
+                "weight": -1,
+                "role": "x_0",
+                "index": 2,
+                "x": 2.0,
+                "display": {
+                  "exact": true,
+                  "text": "2",
+                  "latex": "2",
+                  "approx": null
+                },
+                "f": 8.0,
+                "f_display": "8"
+              }
+            ],
+            "decimals": 6,
+            "numerator_display": "10",
+            "real_error": 2.0,
+            "bound": 2.0,
+            "M": 4.0,
+            "x_M": 2.0,
+            "rounding": 1.5987211554602254e-14,
+            "within_bound": true,
+            "by_rounding": false,
+            "interval": [
+              2.0,
+              3.0
+            ],
+            "M_substitution": {
+              "x": 2.0,
+              "x_display": {
+                "exact": true,
+                "text": "2",
+                "latex": "2",
+                "approx": null
+              },
+              "function_latex": "4",
+              "function_text": "4",
+              "terms": [
+                {
+                  "sign": "+",
+                  "template": "4",
+                  "text": "4",
+                  "value": 4.0
+                }
+              ],
+              "value": 4.0
+            }
+          },
+          "backward": {
+            "D": 6.0,
+            "h": {
+              "value": 1.0,
+              "exact": true,
+              "text": "1",
+              "latex": "1",
+              "approx": null
+            },
+            "points": [
+              {
+                "offset": 0,
+                "weight": 1,
+                "role": "x_0",
+                "index": 2,
+                "x": 2.0,
+                "display": {
+                  "exact": true,
+                  "text": "2",
+                  "latex": "2",
+                  "approx": null
+                },
+                "f": 8.0,
+                "f_display": "8"
+              },
+              {
+                "offset": -1,
+                "weight": -1,
+                "role": "x_0 - h",
+                "index": 1,
+                "x": 1.0,
+                "display": {
+                  "exact": true,
+                  "text": "1",
+                  "latex": "1",
+                  "approx": null
+                },
+                "f": 2.0,
+                "f_display": "2"
+              }
+            ],
+            "decimals": 6,
+            "numerator_display": "6",
+            "real_error": 2.0,
+            "bound": 2.0,
+            "M": 4.0,
+            "x_M": 1.0,
+            "rounding": 7.105427357601002e-15,
+            "within_bound": true,
+            "by_rounding": false,
+            "interval": [
+              1.0,
+              2.0
+            ],
+            "M_substitution": {
+              "x": 1.0,
+              "x_display": {
+                "exact": true,
+                "text": "1",
+                "latex": "1",
+                "approx": null
+              },
+              "function_latex": "4",
+              "function_text": "4",
+              "terms": [
+                {
+                  "sign": "+",
+                  "template": "4",
+                  "text": "4",
+                  "value": 4.0
+                }
+              ],
+              "value": 4.0
+            }
+          }
+        }
+      },
+      {
+        "iteration": 4,
+        "x": [
+          14.0,
+          10.0
+        ],
+        "error": null,
+        "extra": {
+          "x": 3.0,
+          "y": 18.0,
+          "x_display": {
+            "exact": true,
+            "text": "3",
+            "latex": "3",
+            "approx": null
+          },
+          "exact": 12.0,
+          "forward": {
+            "D": 14.0,
+            "h": {
+              "value": 1.0,
+              "exact": true,
+              "text": "1",
+              "latex": "1",
+              "approx": null
+            },
+            "points": [
+              {
+                "offset": 1,
+                "weight": 1,
+                "role": "x_0 + h",
+                "index": 4,
+                "x": 4.0,
+                "display": {
+                  "exact": true,
+                  "text": "4",
+                  "latex": "4",
+                  "approx": null
+                },
+                "f": 32.0,
+                "f_display": "32"
+              },
+              {
+                "offset": 0,
+                "weight": -1,
+                "role": "x_0",
+                "index": 3,
+                "x": 3.0,
+                "display": {
+                  "exact": true,
+                  "text": "3",
+                  "latex": "3",
+                  "approx": null
+                },
+                "f": 18.0,
+                "f_display": "18"
+              }
+            ],
+            "decimals": 6,
+            "numerator_display": "14",
+            "real_error": 2.0,
+            "bound": 2.0,
+            "M": 4.0,
+            "x_M": 3.0,
+            "rounding": 2.842170943040401e-14,
+            "within_bound": true,
+            "by_rounding": false,
+            "interval": [
+              3.0,
+              4.0
+            ],
+            "M_substitution": {
+              "x": 3.0,
+              "x_display": {
+                "exact": true,
+                "text": "3",
+                "latex": "3",
+                "approx": null
+              },
+              "function_latex": "4",
+              "function_text": "4",
+              "terms": [
+                {
+                  "sign": "+",
+                  "template": "4",
+                  "text": "4",
+                  "value": 4.0
+                }
+              ],
+              "value": 4.0
+            }
+          },
+          "backward": {
+            "D": 10.0,
+            "h": {
+              "value": 1.0,
+              "exact": true,
+              "text": "1",
+              "latex": "1",
+              "approx": null
+            },
+            "points": [
+              {
+                "offset": 0,
+                "weight": 1,
+                "role": "x_0",
+                "index": 3,
+                "x": 3.0,
+                "display": {
+                  "exact": true,
+                  "text": "3",
+                  "latex": "3",
+                  "approx": null
+                },
+                "f": 18.0,
+                "f_display": "18"
+              },
+              {
+                "offset": -1,
+                "weight": -1,
+                "role": "x_0 - h",
+                "index": 2,
+                "x": 2.0,
+                "display": {
+                  "exact": true,
+                  "text": "2",
+                  "latex": "2",
+                  "approx": null
+                },
+                "f": 8.0,
+                "f_display": "8"
+              }
+            ],
+            "decimals": 6,
+            "numerator_display": "10",
+            "real_error": 2.0,
+            "bound": 2.0,
+            "M": 4.0,
+            "x_M": 2.0,
+            "rounding": 1.5987211554602254e-14,
+            "within_bound": true,
+            "by_rounding": false,
+            "interval": [
+              2.0,
+              3.0
+            ],
+            "M_substitution": {
+              "x": 2.0,
+              "x_display": {
+                "exact": true,
+                "text": "2",
+                "latex": "2",
+                "approx": null
+              },
+              "function_latex": "4",
+              "function_text": "4",
+              "terms": [
+                {
+                  "sign": "+",
+                  "template": "4",
+                  "text": "4",
+                  "value": 4.0
+                }
+              ],
+              "value": 4.0
+            }
+          }
+        }
+      },
+      {
+        "iteration": 5,
+        "x": [
+          18.0,
+          14.0
+        ],
+        "error": null,
+        "extra": {
+          "x": 4.0,
+          "y": 32.0,
+          "x_display": {
+            "exact": true,
+            "text": "4",
+            "latex": "4",
+            "approx": null
+          },
+          "exact": 16.0,
+          "forward": {
+            "D": 18.0,
+            "h": {
+              "value": 1.0,
+              "exact": true,
+              "text": "1",
+              "latex": "1",
+              "approx": null
+            },
+            "points": [
+              {
+                "offset": 1,
+                "weight": 1,
+                "role": "x_0 + h",
+                "index": 5,
+                "x": 5.0,
+                "display": {
+                  "exact": true,
+                  "text": "5",
+                  "latex": "5",
+                  "approx": null
+                },
+                "f": 50.0,
+                "f_display": "50"
+              },
+              {
+                "offset": 0,
+                "weight": -1,
+                "role": "x_0",
+                "index": 4,
+                "x": 4.0,
+                "display": {
+                  "exact": true,
+                  "text": "4",
+                  "latex": "4",
+                  "approx": null
+                },
+                "f": 32.0,
+                "f_display": "32"
+              }
+            ],
+            "decimals": 6,
+            "numerator_display": "18",
+            "real_error": 2.0,
+            "bound": 2.0,
+            "M": 4.0,
+            "x_M": 4.0,
+            "rounding": 4.440892098500626e-14,
+            "within_bound": true,
+            "by_rounding": false,
+            "interval": [
+              4.0,
+              5.0
+            ],
+            "M_substitution": {
+              "x": 4.0,
+              "x_display": {
+                "exact": true,
+                "text": "4",
+                "latex": "4",
+                "approx": null
+              },
+              "function_latex": "4",
+              "function_text": "4",
+              "terms": [
+                {
+                  "sign": "+",
+                  "template": "4",
+                  "text": "4",
+                  "value": 4.0
+                }
+              ],
+              "value": 4.0
+            }
+          },
+          "backward": {
+            "D": 14.0,
+            "h": {
+              "value": 1.0,
+              "exact": true,
+              "text": "1",
+              "latex": "1",
+              "approx": null
+            },
+            "points": [
+              {
+                "offset": 0,
+                "weight": 1,
+                "role": "x_0",
+                "index": 4,
+                "x": 4.0,
+                "display": {
+                  "exact": true,
+                  "text": "4",
+                  "latex": "4",
+                  "approx": null
+                },
+                "f": 32.0,
+                "f_display": "32"
+              },
+              {
+                "offset": -1,
+                "weight": -1,
+                "role": "x_0 - h",
+                "index": 3,
+                "x": 3.0,
+                "display": {
+                  "exact": true,
+                  "text": "3",
+                  "latex": "3",
+                  "approx": null
+                },
+                "f": 18.0,
+                "f_display": "18"
+              }
+            ],
+            "decimals": 6,
+            "numerator_display": "14",
+            "real_error": 2.0,
+            "bound": 2.0,
+            "M": 4.0,
+            "x_M": 3.0,
+            "rounding": 2.842170943040401e-14,
+            "within_bound": true,
+            "by_rounding": false,
+            "interval": [
+              3.0,
+              4.0
+            ],
+            "M_substitution": {
+              "x": 3.0,
+              "x_display": {
+                "exact": true,
+                "text": "3",
+                "latex": "3",
+                "approx": null
+              },
+              "function_latex": "4",
+              "function_text": "4",
+              "terms": [
+                {
+                  "sign": "+",
+                  "template": "4",
+                  "text": "4",
+                  "value": 4.0
+                }
+              ],
+              "value": 4.0
+            }
+          }
+        }
+      },
+      {
+        "iteration": 6,
+        "x": [
+          null,
+          18.0
+        ],
+        "error": null,
+        "extra": {
+          "x": 5.0,
+          "y": 50.0,
+          "x_display": {
+            "exact": true,
+            "text": "5",
+            "latex": "5",
+            "approx": null
+          },
+          "exact": 20.0,
+          "forward": null,
+          "backward": {
+            "D": 18.0,
+            "h": {
+              "value": 1.0,
+              "exact": true,
+              "text": "1",
+              "latex": "1",
+              "approx": null
+            },
+            "points": [
+              {
+                "offset": 0,
+                "weight": 1,
+                "role": "x_0",
+                "index": 5,
+                "x": 5.0,
+                "display": {
+                  "exact": true,
+                  "text": "5",
+                  "latex": "5",
+                  "approx": null
+                },
+                "f": 50.0,
+                "f_display": "50"
+              },
+              {
+                "offset": -1,
+                "weight": -1,
+                "role": "x_0 - h",
+                "index": 4,
+                "x": 4.0,
+                "display": {
+                  "exact": true,
+                  "text": "4",
+                  "latex": "4",
+                  "approx": null
+                },
+                "f": 32.0,
+                "f_display": "32"
+              }
+            ],
+            "decimals": 6,
+            "numerator_display": "18",
+            "real_error": 2.0,
+            "bound": 2.0,
+            "M": 4.0,
+            "x_M": 4.0,
+            "rounding": 4.440892098500626e-14,
+            "within_bound": true,
+            "by_rounding": false,
+            "interval": [
+              4.0,
+              5.0
+            ],
+            "M_substitution": {
+              "x": 4.0,
+              "x_display": {
+                "exact": true,
+                "text": "4",
+                "latex": "4",
+                "approx": null
+              },
+              "function_latex": "4",
+              "function_text": "4",
+              "terms": [
+                {
+                  "sign": "+",
+                  "template": "4",
+                  "text": "4",
+                  "value": 4.0
+                }
+              ],
+              "value": 4.0
+            }
+          }
+        }
+      }
+    ],
+    "iterations_used": 6,
+    "solution": [],
+    "variables": [
+      "forward",
+      "backward"
+    ],
+    "warnings": [],
+    "mode": "table",
+    "points": [
+      [
+        0.0,
+        0.0
+      ],
+      [
+        1.0,
+        2.0
+      ],
+      [
+        2.0,
+        8.0
+      ],
+      [
+        3.0,
+        18.0
+      ],
+      [
+        4.0,
+        32.0
+      ],
+      [
+        5.0,
+        50.0
+      ]
+    ],
+    "uniform": true,
+    "verification": {
+      "secant": [
+        {
+          "i": 1,
+          "forward": 2.0,
+          "backward": 2.0,
+          "equal": true
+        },
+        {
+          "i": 2,
+          "forward": 6.0,
+          "backward": 6.0,
+          "equal": true
+        },
+        {
+          "i": 3,
+          "forward": 10.0,
+          "backward": 10.0,
+          "equal": true
+        },
+        {
+          "i": 4,
+          "forward": 14.0,
+          "backward": 14.0,
+          "equal": true
+        },
+        {
+          "i": 5,
+          "forward": 18.0,
+          "backward": 18.0,
+          "equal": true
+        }
+      ],
+      "data": [
+        {
+          "i": 1,
+          "y": 0.0,
+          "f": 0.0,
+          "difference": 0.0,
+          "ok": true
+        },
+        {
+          "i": 2,
+          "y": 2.0,
+          "f": 2.0,
+          "difference": 0.0,
+          "ok": true
+        },
+        {
+          "i": 3,
+          "y": 8.0,
+          "f": 8.0,
+          "difference": 0.0,
+          "ok": true
+        },
+        {
+          "i": 4,
+          "y": 18.0,
+          "f": 18.0,
+          "difference": 0.0,
+          "ok": true
+        },
+        {
+          "i": 5,
+          "y": 32.0,
+          "f": 32.0,
+          "difference": 0.0,
+          "ok": true
+        },
+        {
+          "i": 6,
+          "y": 50.0,
+          "f": 50.0,
+          "difference": 0.0,
+          "ok": true
+        }
+      ],
+      "substitutions": [
+        {
+          "x": 0.0,
+          "x_display": {
+            "exact": true,
+            "text": "0",
+            "latex": "0",
+            "approx": null
+          },
+          "function_latex": "4 x",
+          "function_text": "4*x",
+          "terms": [
+            {
+              "sign": "+",
+              "template": "4 \\cdot @@0@@",
+              "text": "4*@@0@@",
+              "value": 0.0
+            }
+          ],
+          "value": 0.0
+        },
+        {
+          "x": 1.0,
+          "x_display": {
+            "exact": true,
+            "text": "1",
+            "latex": "1",
+            "approx": null
+          },
+          "function_latex": "4 x",
+          "function_text": "4*x",
+          "terms": [
+            {
+              "sign": "+",
+              "template": "4 \\cdot @@0@@",
+              "text": "4*@@0@@",
+              "value": 4.0
+            }
+          ],
+          "value": 4.0
+        },
+        {
+          "x": 2.0,
+          "x_display": {
+            "exact": true,
+            "text": "2",
+            "latex": "2",
+            "approx": null
+          },
+          "function_latex": "4 x",
+          "function_text": "4*x",
+          "terms": [
+            {
+              "sign": "+",
+              "template": "4 \\cdot @@0@@",
+              "text": "4*@@0@@",
+              "value": 8.0
+            }
+          ],
+          "value": 8.0
+        },
+        {
+          "x": 3.0,
+          "x_display": {
+            "exact": true,
+            "text": "3",
+            "latex": "3",
+            "approx": null
+          },
+          "function_latex": "4 x",
+          "function_text": "4*x",
+          "terms": [
+            {
+              "sign": "+",
+              "template": "4 \\cdot @@0@@",
+              "text": "4*@@0@@",
+              "value": 12.0
+            }
+          ],
+          "value": 12.0
+        },
+        {
+          "x": 4.0,
+          "x_display": {
+            "exact": true,
+            "text": "4",
+            "latex": "4",
+            "approx": null
+          },
+          "function_latex": "4 x",
+          "function_text": "4*x",
+          "terms": [
+            {
+              "sign": "+",
+              "template": "4 \\cdot @@0@@",
+              "text": "4*@@0@@",
+              "value": 16.0
+            }
+          ],
+          "value": 16.0
+        },
+        {
+          "x": 5.0,
+          "x_display": {
+            "exact": true,
+            "text": "5",
+            "latex": "5",
+            "approx": null
+          },
+          "function_latex": "4 x",
+          "function_text": "4*x",
+          "terms": [
+            {
+              "sign": "+",
+              "template": "4 \\cdot @@0@@",
+              "text": "4*@@0@@",
+              "value": 20.0
+            }
+          ],
+          "value": 20.0
+        }
+      ],
+      "failed_rows": {
+        "forward": [],
+        "backward": []
+      },
+      "all_within": true
+    },
+    "formula": "both",
+    "formulas": [
+      {
+        "key": "forward",
+        "name": "Progresiva",
+        "symbol_latex": "D^{+}",
+        "formula_latex": "D^{+}(h) = \\frac{f(x_0 + h) - f(x_0)}{h}",
+        "formula_text": "D+(h) = [f(x0 + h) - f(x0)] / h",
+        "bound_latex": "|E| \\le \\frac{h}{2} \\max_{\\xi \\in [x_0,\\, x_0 + h]} \\left|f''(\\xi)\\right|",
+        "order": 1,
+        "expected_ratio": 0.5,
+        "bound_derivative": 2,
+        "bound_coefficient": [
+          1,
+          2
+        ],
+        "nodes": [
+          [
+            1,
+            1
+          ],
+          [
+            0,
+            -1
+          ]
+        ],
+        "divisor": 1
+      },
+      {
+        "key": "backward",
+        "name": "Regresiva",
+        "symbol_latex": "D^{-}",
+        "formula_latex": "D^{-}(h) = \\frac{f(x_0) - f(x_0 - h)}{h}",
+        "formula_text": "D-(h) = [f(x0) - f(x0 - h)] / h",
+        "bound_latex": "|E| \\le \\frac{h}{2} \\max_{\\xi \\in [x_0 - h,\\, x_0]} \\left|f''(\\xi)\\right|",
+        "order": 1,
+        "expected_ratio": 0.5,
+        "bound_derivative": 2,
+        "bound_coefficient": [
+          1,
+          2
+        ],
+        "nodes": [
+          [
+            0,
+            1
+          ],
+          [
+            -1,
+            -1
+          ]
+        ],
+        "divisor": 1
+      }
+    ],
+    "function": {
+      "latex": "2 x^{2}",
+      "text": "2*x^2",
+      "template": "2 \\cdot @@0@@^{2}",
+      "uses_trigonometry": false,
+      "derivative": {
+        "latex": "4 x",
+        "text": "4*x",
+        "steps": {
+          "terms": [
+            {
+              "latex": "\\frac{d}{d x}\\left(2 x^{2}\\right) = 2 \\cdot 2 \\cdot x = 4 x",
+              "rule": "regla de la potencia"
+            }
+          ],
+          "sum_latex": null
+        }
+      },
+      "higher_derivatives": {
+        "2": {
+          "latex": "4",
+          "text": "4"
+        }
+      }
+    },
+    "sampling_points": 401
+  }
+}

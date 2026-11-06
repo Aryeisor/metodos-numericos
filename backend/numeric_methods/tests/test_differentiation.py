@@ -1,4 +1,7 @@
+import json
 from decimal import Decimal
+from pathlib import Path
+from unittest import skipUnless
 
 from django.test import SimpleTestCase
 from rest_framework.test import APITestCase
@@ -20,6 +23,11 @@ def solve(**data):
 
 def example(example_id, **changes):
     return solve(**{**EXAMPLE[example_id], **changes})
+
+
+# Respuestas del solver guardadas para la página de teoría (frontend).
+THEORY_EXAMPLE = (Path(__file__).resolve().parents[3] / "frontend" / "src" / "methods"
+                  / "differentiation" / "theory" / "finiteDifferencesExample.json")
 
 
 def row(result, k, key):
@@ -150,6 +158,41 @@ class RefinementTests(SimpleTestCase):
                         continue
                     quotient = Decimal(item["numerator_display"]) / h
                     self.assertEqual(display.fixed(quotient), display.fixed(item["D"]), (example_id, step["iteration"]))
+
+
+class TheoryExampleTests(SimpleTestCase):
+    """El ejemplo resuelto de la teoría usa respuestas guardadas del solver:
+    deben seguir siendo las que el solver devuelve hoy."""
+
+    def test_rows_one_and_two(self):
+        result = example("dif-burden-ln")
+        expected = {
+            1: {"forward": ("0.540672", None, "0.014883", "0.015432"),
+                "backward": ("0.571584", None, "0.016029", "0.017301")},
+            2: {"forward": ("0.547979", "0.007307", "0.007576", "0.007716"),
+                "backward": ("0.563418", "0.008167", "0.007862", "0.008163")},
+        }
+        for k, formulas in expected.items():
+            for key, (D, estimated, real, bound) in formulas.items():
+                with self.subTest(k=k, formula=key):
+                    item = row(result, k, key)
+                    self.assertEqual(display.fixed(item["D"]), D)
+                    if estimated is None:
+                        self.assertIsNone(item["estimated_error"])
+                    else:
+                        self.assertEqual(display.fixed(item["estimated_error"]), estimated)
+                    self.assertEqual(display.fixed(item["real_error"]), real)
+                    self.assertEqual(display.fixed(item["bound"]), bound)
+                    self.assertTrue(item["within_bound"])
+
+    @skipUnless(THEORY_EXAMPLE.exists(), "sin el frontend (p. ej. en la imagen Docker del backend)")
+    def test_saved_responses_match_solver(self):
+        saved = json.loads(THEORY_EXAMPLE.read_text(encoding="utf-8"))
+        for key, example_id in (("function", "dif-burden-ln"), ("table", "dif-carro")):
+            with self.subTest(example=example_id):
+                stored = saved[key]
+                self.assertEqual(json.loads(json.dumps(example(example_id))),
+                                 {k: v for k, v in stored.items() if k != "request"})
 
 
 class DisplayTests(SimpleTestCase):

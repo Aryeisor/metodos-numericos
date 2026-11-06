@@ -96,13 +96,13 @@ para estudiar la teoría de cada método.
 - En **diferencias finitas**, el resultado tiene su propia vista: resumen,
   derivada exacta con su desglose, una tabla de refinamiento por fórmula (o
   la tabla de puntos), gráfico y «Comprobación» (ver el
-  [detalle](#diferencias-progresiva-y-regresiva)). Este método todavía no
-  tiene página de teoría: no aparece en «Teoría ▾».
+  [detalle](#diferencias-progresiva-y-regresiva)).
 
 ### Vista «Teoría» (`/teoria/<método>`)
 
-Una página por método, con el mismo formato en los cinco (Jacobi,
-Gauss-Seidel, Punto Fijo, Newton y Bairstow): fundamento común
+Una página por método, con el mismo formato en las seis (Jacobi,
+Gauss-Seidel, Punto Fijo, Newton, Bairstow y diferencias progresiva y
+regresiva): fundamento común
 de la categoría, definición formal en LaTeX, condición de convergencia,
 restricciones, algoritmo en tarjetas, ejemplo resuelto paso a paso con datos
 reales del solver, tabla comparativa y referencias bibliográficas (APA).
@@ -120,6 +120,15 @@ reales del solver, tabla comparativa y referencias bibliográficas (APA).
   sistema es la Jacobiana de Newton; el ejemplo de Chapra y Canale resuelto
   con datos reales del solver; Bairstow frente a Newton-Raphson y frente a
   Newton para sistemas.
+- **Diferenciación numérica:** la derivada como límite con `h` finito, serie
+  de Taylor con residuo, truncamiento frente a redondeo y orden `O(hⁿ)`
+  (fundamento común, pensado también para las fórmulas de 3 y 5 puntos);
+  figura de la tangente y las secantes de `ln x` con un deslizador de `h`;
+  derivación desde Taylor, signos opuestos del error y el promedio que lleva
+  a la fórmula de 3 puntos; tabla de razones ≈ 0.5 y la «V» del error total
+  (tabla y gráfico log-log); el ejemplo de Burden y Faires y el del carro con
+  datos reales del solver, dibujados con los mismos componentes del paso a
+  paso de Resolver; progresiva frente a regresiva y a la derivada analítica.
 
 Los menús «Resolver ▾» y «Teoría ▾» se generan automáticamente a partir del
 catálogo de métodos del backend, agrupados por categoría.
@@ -751,7 +760,8 @@ metodos/
         │   ├── polynomial/          # Bairstow: formulario (texto o coeficientes), vista de resultado
         │   │                        # por factores, tablas sintéticas, paso a paso, PDF y teoría
         │   └── differentiation/     # Diferencias finitas: formulario (función o tabla), vista de
-        │                            # resultado, tablas de refinamiento, paso a paso, comprobación y PDF
+        │                            # resultado, tablas de refinamiento, paso a paso, comprobación, PDF
+        │                            # y teoría (theory/, con las respuestas del solver en JSON)
         ├── components/              # ResultsTable, ConvergenceChart, MathFormula, MatrixInput,
         │   │                        # MathSymbolToolbar, MathSyntaxHelp, NavMenu,
         │   │                        # NumericFieldsInput (x0, r0/s0, coeficientes), EquationPreview
@@ -828,7 +838,7 @@ cd backend
 python manage.py test numeric_methods
 ```
 
-**309 tests**, todos en verde:
+**311 tests**, todos en verde:
 
 | Archivo | Tests | Qué cubre |
 | --- | --- | --- |
@@ -842,7 +852,7 @@ python manage.py test numeric_methods
 | `test_isolation_steps.py` | 20 | Despeje paso a paso de Punto Fijo |
 | `test_newton.py` | 38 | Newton y regla de Cramer: iteraciones calculadas a mano, Jacobiana singular, endpoint y comprobación (tres ejercicios con solución entera, ejemplo decimal, funciones trigonométricas, no convergencia) |
 | `test_newton_steps.py` | 16 | Derivadas parciales paso a paso y sustitución en F |
-| `test_differentiation.py` | 27 | Diferencias progresiva y regresiva: fórmulas exactas con `x²`, cúbica, Burden y Faires (filas 1, 2 y parada), filas de parada de los ejemplos, mínimo de 6 filas, no convergencia, razón ≈ 0.5, error real ≤ cota, h exacto, errores 400, modo tabla (secante común, datos, espaciado no uniforme), comprobación término a término, `abs(x)` y endpoint |
+| `test_differentiation.py` | 29 | Diferencias progresiva y regresiva: fórmulas exactas con `x²`, cúbica, Burden y Faires (filas 1, 2 y parada), respuestas guardadas para la teoría iguales a las del solver, filas de parada de los ejemplos, mínimo de 6 filas, no convergencia, razón ≈ 0.5, error real ≤ cota, h exacto, errores 400, modo tabla (secante común, datos, espaciado no uniforme), comprobación término a término, `abs(x)` y endpoint |
 | `test_bairstow.py` | 30 | Bairstow: divisiones sintéticas, primera iteración de Chapra calculada a mano, ejemplos, raíces nulas, raíz doble, cierres directos, fallos, endpoint y comprobación de raíces (sustitución término a término, potencias faltantes, par complejo, raíz nula y residuo) |
 
 ---
@@ -857,5 +867,4 @@ python manage.py test numeric_methods
   20 puntos.
 - En diferencias finitas, `M = máx |f''|` se estima por muestreo (401
   puntos), no se calcula exactamente: entre dos muestras podría haber un
-  máximo algo mayor. Las fórmulas de 3 y 5 puntos y la teoría del método
-  quedan para otra tarea.
+  máximo algo mayor. Las fórmulas de 3 y 5 puntos quedan para otra tarea.

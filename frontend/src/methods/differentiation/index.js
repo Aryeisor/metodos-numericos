@@ -9,12 +9,12 @@
 // La fórmula es un dato del resultado (result.formulas): la misma vista sirve
 // para cualquier fórmula de derivación que el backend agregue.
 //
-// Sin teoría todavía: `theorySections` vacío, así que el método no aparece en
-// «Teoría ▾» ni tiene ruta /teoria/<slug>.
+// Los métodos con entrada en THEORY_SECTIONS aparecen en "Teoría ▾".
 import DifferentiationConfigFields from './DifferentiationConfigFields.vue'
 import DifferentiationInput from './DifferentiationInput.vue'
 import DifferentiationResult from './DifferentiationResult.vue'
 import { MODES, createDifferentiationStore } from './store'
+import DifferentiationTheoryPage, { THEORY_SECTIONS } from './theory/DifferentiationTheoryPage.vue'
 
 export default {
   createStore: createDifferentiationStore,
@@ -42,6 +42,6 @@ export default {
   iterationDetail: null,
   pdfReport: null,
 
-  theoryPage: null,
-  theorySections: {},
+  theoryPage: DifferentiationTheoryPage,
+  theorySections: THEORY_SECTIONS,
 }
