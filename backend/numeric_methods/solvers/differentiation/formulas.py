@@ -2,8 +2,8 @@
 
 Cada fórmula es un dato: los nodos x₀ + o·h con su peso w, el divisor q de
 h, el orden del error y su cota. El solver no conoce ninguna fórmula en
-particular, así que agregar la de 3 o la de 5 puntos es agregar una entrada
-aquí (y a `CHOICES`).
+particular, así que agregar la de 5 puntos es agregar sus entradas aquí (y
+un dict de opciones del selector como `THREE_POINT_CHOICES`).
 
   D(h) = Σ wᵢ · f(x₀ + oᵢ·h) / (q·h)
   |error| ≤ c · h^p · máx |f⁽ⁿ⁾(ξ)|,  ξ en [x₀ + mín(o)·h, x₀ + máx(o)·h]
@@ -63,13 +63,66 @@ BACKWARD = Formula(
     bound_latex=r"|E| \le \frac{h}{2} \max_{\xi \in [x_0 - h,\, x_0]} \left|f''(\xi)\right|",
 )
 
-FORMULAS = {formula.key: formula for formula in (FORWARD, BACKWARD)}
+MIDPOINT = Formula(
+    key="punto_medio",
+    name="Punto medio",
+    symbol_latex=r"D^{\text{med}}",
+    nodes=((1, 1), (-1, -1)),
+    order=2,
+    bound_derivative=3,
+    bound_coefficient=Fraction(1, 6),
+    formula_latex=r"D^{\text{med}}(h) = \frac{f(x_0 + h) - f(x_0 - h)}{2h}",
+    formula_text="Dmed(h) = [f(x0 + h) - f(x0 - h)] / (2h)",
+    bound_latex=r"|E| \le \frac{h^{2}}{6} \max_{\xi \in [x_0 - h,\, x_0 + h]} \left|f'''(\xi)\right|",
+    divisor=2,
+)
 
-# Opción del selector «Fórmula» -> fórmulas que se calculan.
+FORWARD_ENDPOINT = Formula(
+    key="extremo_adelante",
+    name="Extremo hacia adelante",
+    symbol_latex=r"D^{\text{ad}}",
+    nodes=((0, -3), (1, 4), (2, -1)),
+    order=2,
+    bound_derivative=3,
+    bound_coefficient=Fraction(1, 3),
+    formula_latex=r"D^{\text{ad}}(h) = \frac{-3f(x_0) + 4f(x_0 + h) - f(x_0 + 2h)}{2h}",
+    formula_text="Dad(h) = [-3f(x0) + 4f(x0 + h) - f(x0 + 2h)] / (2h)",
+    bound_latex=r"|E| \le \frac{h^{2}}{3} \max_{\xi \in [x_0,\, x_0 + 2h]} \left|f'''(\xi)\right|",
+    divisor=2,
+)
+
+BACKWARD_ENDPOINT = Formula(
+    key="extremo_atras",
+    name="Extremo hacia atrás",
+    symbol_latex=r"D^{\text{at}}",
+    nodes=((0, 3), (-1, -4), (-2, 1)),
+    order=2,
+    bound_derivative=3,
+    bound_coefficient=Fraction(1, 3),
+    formula_latex=r"D^{\text{at}}(h) = \frac{3f(x_0) - 4f(x_0 - h) + f(x_0 - 2h)}{2h}",
+    formula_text="Dat(h) = [3f(x0) - 4f(x0 - h) + f(x0 - 2h)] / (2h)",
+    bound_latex=r"|E| \le \frac{h^{2}}{3} \max_{\xi \in [x_0 - 2h,\, x_0]} \left|f'''(\xi)\right|",
+    divisor=2,
+)
+
+FORMULAS = {
+    formula.key: formula
+    for formula in (FORWARD, BACKWARD, MIDPOINT, FORWARD_ENDPOINT, BACKWARD_ENDPOINT)
+}
+
+# Opción del selector «Fórmula» -> fórmulas que se calculan (un dict por método).
 CHOICES = {
     "forward": (FORWARD,),
     "backward": (BACKWARD,),
     "both": (FORWARD, BACKWARD),
+}
+
+THREE_POINT = (MIDPOINT, FORWARD_ENDPOINT, BACKWARD_ENDPOINT)
+THREE_POINT_CHOICES = {
+    "punto_medio": (MIDPOINT,),
+    "extremo_adelante": (FORWARD_ENDPOINT,),
+    "extremo_atras": (BACKWARD_ENDPOINT,),
+    "all": THREE_POINT,
 }
 
 

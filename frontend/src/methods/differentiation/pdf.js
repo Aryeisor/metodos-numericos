@@ -9,7 +9,7 @@ import autoTable from 'jspdf-autotable'
 
 import { CONTENT_WIDTH, MARGIN, ensureSpace, paragraph, sectionTitle } from '../../utils/exportPdf'
 import { formatNumber } from '../../utils/iterationSteps'
-import { derivativeName, stepText, substitutionText } from './formulas'
+import { derivativeName, identityText, listNames, stepText, substitutionText } from './formulas'
 
 const HEAD = { fillColor: [37, 99, 235], halign: 'center' }
 const TABLE = {
@@ -25,10 +25,22 @@ const PDF_REPLACEMENTS = {
   'ᵢ': 'i', '⁺': '+', '⁻': '-', 'ᵏ': '^k', ε: 'e', Δ: 'D', ξ: 'x', '×': 'x', '≈': '~', '−': '-',
   '≥': '>=', '≤': '<=', '′': "'", '″': "''", '✔': 'OK', '⚠': '(!)', '…': '...',
 }
-const pdfSafe = (text) => String(text).replace(/[₀-₉ᵢ⁺⁻ᵏεΔξ×≈−≥≤′″✔⚠…]/g, (c) => PDF_REPLACEMENTS[c] ?? c)
+const SUPERSCRIPT_DIGITS = { '⁻': '-', '⁰': '0', '¹': '1', '²': '2', '³': '3', '⁴': '4', '⁵': '5', '⁶': '6', '⁷': '7', '⁸': '8', '⁹': '9' }
+const pdfSafe = (text) =>
+  String(text)
+    // 5.9×10⁻⁸ (comparación con diferencias) -> 5.9e-8
+    .replace(/×10([⁻⁰¹²³⁴⁵⁶⁷⁸⁹]+)/g, (_, power) => `e${[...power].map((c) => SUPERSCRIPT_DIGITS[c]).join('')}`)
+    .replace(/Σ/g, 'Suma')
+    .replace(/[₀-₉ᵢ⁺⁻ᵏεΔξ×≈−≥≤′″✔⚠…]/g, (c) => PDF_REPLACEMENTS[c] ?? c)
 const num = (value) => (value === null || value === undefined ? '-' : formatNumber(value))
 const mark = (item) => (!item || item.within_bound === null ? '-' : item.within_bound ? (item.by_rounding ? 'OK (R)' : 'OK') : '(!)')
-const formulaNames = (result) => result.formulas.map((f) => f.name).join(' y ')
+const formulaNames = (result) => listNames(result.formulas.map((f) => f.name))
+// Encabezados cortos de la tabla del modo datos (las de 3 puntos no caben).
+const SHORT_NAMES = { punto_medio: 'Medio', extremo_adelante: 'Adelante', extremo_atras: 'Atrás' }
+const short = (formula) => SHORT_NAMES[formula.key] ?? formula.name
+// Título de cada método (el de diferencias se conserva tal cual).
+const TITLES = { 'diferencias-finitas': 'Diferencias finitas' }
+const STEMS = { 'diferencias-finitas': 'diferencias' }
 
 export function exportDifferentiationPdf({ result, methodName, chartImage }) {
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' })
@@ -39,7 +51,7 @@ export function exportDifferentiationPdf({ result, methodName, chartImage }) {
   doc.setFont('helvetica', 'bold')
   doc.setFontSize(16)
   doc.setTextColor(31, 41, 55)
-  doc.text('Diferenciación numérica — Diferencias finitas', MARGIN, MARGIN + 4)
+  doc.text(`Diferenciación numérica — ${TITLES[result.method] ?? methodName}`, MARGIN, MARGIN + 4)
   doc.setFont('helvetica', 'normal')
   doc.setFontSize(10)
   doc.setTextColor(107, 114, 128)
@@ -94,6 +106,7 @@ export function exportDifferentiationPdf({ result, methodName, chartImage }) {
     for (const f of result.formulas) y = write(y, `${f.name}: f'(x0) ~ ${num(lastRow[f.key].D)}`)
     y = write(y, result.differentiable ? `Valor exacto: f'(x0) = ${num(result.exact)}` : 'f no es derivable en x0.')
   }
+  for (const line of result.comparison ?? []) y = write(y, line.text)
   for (const warning of result.warnings ?? []) y = write(y, `Advertencia: ${warning}`)
 
   // --- Gráfico ----------------------------------------------------------------
@@ -108,19 +121,24 @@ export function exportDifferentiationPdf({ result, methodName, chartImage }) {
   // --- Tablas completas ----------------------------------------------------------
   if (isTable) {
     y = sectionTitle(doc, y + 2, 'Derivada en cada punto')
-    const head = ['i', 'xi', 'f(xi)', ...result.formulas.map((f) => f.name)]
+    const recommended = Boolean(result.iterations[0]?.extra.recommended)
+    const head = ['i', 'xi', 'f(xi)', ...result.formulas.map((f) => short(f))]
+    if (recommended) head.push('Recomendada')
     if (fn) {
-      head.push("f'(xi)", ...result.formulas.map((f) => `Error ${f.name.toLowerCase()}`),
-        ...result.formulas.map((f) => `Cota ${f.name.toLowerCase()}`), '<= cota')
+      head.push("f'(xi)", ...result.formulas.map((f) => `Error ${short(f).toLowerCase()}`),
+        ...result.formulas.map((f) => `Cota ${short(f).toLowerCase()}`), '<= cota')
     }
     autoTable(doc, {
       ...TABLE,
+      // Con 3 fórmulas y función para comparar hay 14 columnas en vertical.
+      styles: { ...TABLE.styles, fontSize: head.length > 11 ? 6.5 : TABLE.styles.fontSize },
       startY: y,
       head: [head],
       body: result.iterations.map((step) => {
         const e = step.extra
         const items = result.formulas.map((f) => e[f.key])
         const row = [step.iteration, e.x_display.text, num(e.y), ...items.map((item) => num(item?.D))]
+        if (recommended) row.push(`${num(e.recommended.D)} (${short(e.recommended).toLowerCase()})`)
         if (fn) {
           row.push(num(e.exact), ...items.map((item) => num(item?.real_error)),
             ...items.map((item) => (item && item.bound === null ? 'no disp.' : num(item?.bound))),
@@ -154,19 +172,36 @@ export function exportDifferentiationPdf({ result, methodName, chartImage }) {
     }
     y = write(
       y,
-      `La cota usa M = máx |f''(x)| en el intervalo de cada fila, estimado por muestreo con ` +
-        `${result.sampling_points} puntos. "OK (R)": el error real supera la cota sólo por el redondeo R = 4e·máx|f|/h.`
+      `La cota usa M = máx |${derivativeName(result.formulas[0].bound_derivative, null)}(x)| en el intervalo de cada fila, estimado por muestreo con ` +
+        `${result.sampling_points} puntos. "OK (R)": el error real supera la cota sólo por el redondeo ` +
+        `${result.rounding_text ?? 'R = 4e·máx|f|/h'}.`
     )
   }
 
   // --- Comprobación --------------------------------------------------------------
   const check = result.verification
   y = sectionTitle(doc, y + 2, 'Comprobación')
-  if (isTable) {
+  if (check.identities) {
+    y = write(
+      y,
+      `${isTable ? 'En cada punto, con los datos' : 'En la fila 1, con los valores sin redondear'}: el punto medio ` +
+        'es el promedio de la progresiva y la regresiva, y cada extremo es una extrapolación de Richardson, 2D(h) - D(2h).'
+    )
+    const groups = isTable ? check.identities : [{ i: null, items: check.identities }]
+    for (const group of groups) {
+      for (const item of group.items) {
+        y = write(y, `${group.i === null ? '' : `x${group.i} = ${group.x_display.text}: `}${item.name}: ${identityText(item)}`)
+      }
+    }
+    y += 2
+  }
+  if (isTable && check.secant) {
     y = write(y, 'Secante común: la progresiva en xi y la regresiva en xi+1 deben ser iguales.')
     for (const pair of check.secant) {
       y = write(y, `D+(x${pair.i}) = D-(x${pair.i + 1}) = ${num(pair.forward)} ${pair.equal ? 'OK' : `(!) (${num(pair.backward)})`}`)
     }
+  }
+  if (isTable) {
     if (check.data) {
       y = write(y + 2, 'Datos contra la función: |yi - f(xi)| <= 10^-6 · máx(1, |f(xi)|).')
       autoTable(doc, {
@@ -210,6 +245,6 @@ export function exportDifferentiationPdf({ result, methodName, chartImage }) {
     }
   }
 
-  const stem = isTable ? 'diferencias-tabla' : 'diferencias-funcion'
+  const stem = `${STEMS[result.method] ?? result.method}-${isTable ? 'tabla' : 'funcion'}`
   doc.save(`${stem}-${new Date().toISOString().slice(0, 10)}.pdf`)
 }

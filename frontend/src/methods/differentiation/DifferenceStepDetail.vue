@@ -49,6 +49,8 @@ const props = defineProps({
   previous: { type: Object, default: null },
   hasFunction: { type: Boolean, default: true },
   samples: { type: Number, default: 401 },
+  // Regla del redondeo R (cada método tiene la suya).
+  roundingText: { type: String, default: 'R = 4ε·máx|f|/h' },
 })
 
 const evaluations = computed(() =>
@@ -134,7 +136,7 @@ const fnText = computed(() => fn.value.replace(/'/g, '′'))
           <span v-else class="mark mark-warn" aria-label="no cumple">⚠</span>
         </div>
         <small v-if="item.by_rounding" class="step-note">
-          El error real supera la cota sólo por el redondeo de la computadora, R = 4ε·máx|f|/h.
+          El error real supera la cota sólo por el redondeo de la computadora, {{ roundingText }}.
         </small>
       </template>
       <small v-else class="step-note">

@@ -164,8 +164,18 @@ class _Function:
                 best, where = abs(value), x
         return best, where
 
-    def info(self):
+    def higher_steps(self):
+        """Desglose de f⁽ⁿ⁾ derivando f⁽ⁿ⁻¹⁾ término a término (f'' desde f',
+        f''' desde f''), para cada orden calculado cuyo anterior también lo esté."""
         x = self.symbol
+        return {
+            str(n): entry_steps(self.derivatives[n - 1], x, "f" + "'" * (n - 1), ordinary=True)
+            for n in self.derivatives if n > 1 and n - 1 in self.derivatives
+        }
+
+    def info(self, higher_steps=False):
+        x = self.symbol
+        higher = self.higher_steps() if higher_steps else {}
         return {
             "latex": expression_to_latex(self.typed),
             "text": expression_to_text(self.expr),
@@ -178,14 +188,20 @@ class _Function:
                 "steps": entry_steps(self.expr, x, "f", ordinary=True),
             },
             "higher_derivatives": {
-                str(n): {"latex": expression_to_latex(d, order=None), "text": expression_to_text(d)}
+                str(n): {"latex": expression_to_latex(d, order=None), "text": expression_to_text(d),
+                         **({"steps": higher[str(n)]} if str(n) in higher else {})}
                 for n, d in self.derivatives.items() if n > 1
             },
         }
 
 
-def _bound_orders(formulas):
-    return {formula.bound_derivative for formula in formulas}
+def _bound_orders(formulas, extra=()):
+    return {formula.bound_derivative for formula in formulas} | set(extra)
+
+
+def _derivative_text(n):
+    """Nombre de f⁽ⁿ⁾ en los mensajes: f'', f''' o f^(n)."""
+    return "f" + "'" * n if n <= 3 else f"f^({n})"
 
 
 def _interval(formula, x0, h):
@@ -193,7 +209,7 @@ def _interval(formula, x0, h):
     return x0 + min(offsets) * h, x0 + max(offsets) * h
 
 
-def _rounding(formula, values, h):
+def _rounding(formula, values, h, function=None, xs=None):
     """R = 2ε·Σ|wᵢ|·máx|f(·)| / (q·h): 4ε·máx(|f(a)|, |f(b)|)/h en las de dos puntos."""
     weights = sum(abs(w) for _, w in formula.nodes)
     return 2 * MACHINE_EPSILON * weights * max(abs(v) for v in values) / (formula.divisor * h)
@@ -254,7 +270,7 @@ def _check_domain(function, formulas, x0, h0):
         raise DifferentiationValidationError(errors)
 
 
-def _refinement_row(function, formula, x0, h, h_number, h_shown, k, exact, previous):
+def _refinement_row(function, formula, x0, h, h_number, h_shown, k, exact, previous, rounding_rule=_rounding):
     points = []
     for offset, weight in formula.nodes:
         x = x0 + offset * h
@@ -276,7 +292,7 @@ def _refinement_row(function, formula, x0, h, h_number, h_shown, k, exact, previ
     M, x_M = function.max_abs(formula.bound_derivative, a, b)
     bound = None if M is None else float(formula.bound_coefficient) * h ** formula.order * M
     real = None if exact is None else abs(D - exact)
-    rounding = _rounding(formula, values, h)
+    rounding = rounding_rule(formula, values, h, function, [p["x"] for p in points])
     within, by_rounding = _bound_check(real, bound, rounding)
 
     previous_D = previous["D"] if previous else None
@@ -310,11 +326,16 @@ def _refinement_row(function, formula, x0, h, h_number, h_shown, k, exact, previ
     }, None
 
 
-def _function_mode(data):
-    formulas = CHOICES[data["formula"]]
+def _function_mode(data, choices=CHOICES, rounding_rule=_rounding, derivative_orders=()):
+    """Tabla de refinamiento de las fórmulas `choices[data["formula"]]`.
+
+    `rounding_rule(formula, values, h, function, xs)` da el redondeo R de cada fila y
+    `derivative_orders`, derivadas que se calculan además de las de la cota.
+    """
+    formulas = choices[data["formula"]]
     x0, h0 = data["x0"], data["h0"]
     tolerance, max_rows = data["tolerance"], data["max_iterations"]
-    function = _Function(parse_function_of_x(data["function"]), _bound_orders(formulas))
+    function = _Function(parse_function_of_x(data["function"]), _bound_orders(formulas, derivative_orders))
     _check_domain(function, formulas, x0, h0)
 
     exact = function.exact_derivative(x0)
@@ -328,7 +349,8 @@ def _function_mode(data):
         h_number, h_shown = display.step_size(h0, k)
         rows, stop = {}, None
         for formula in formulas:
-            row, stop = _refinement_row(function, formula, x0, h, h_number, h_shown, k, exact, previous[formula.key])
+            row, stop = _refinement_row(function, formula, x0, h, h_number, h_shown, k, exact,
+                                        previous[formula.key], rounding_rule)
             if stop:
                 break
             rows[formula.key] = row
@@ -349,7 +371,7 @@ def _function_mode(data):
             if row["bound"] is None and formula.key not in undefined_second:
                 a, b = row["interval_display"]
                 undefined_second[formula.key] = (
-                    f"f''(x) no está definida en todo el intervalo [{a['approx'] or a['text']}, "
+                    f"{_derivative_text(formula.bound_derivative)}(x) no está definida en todo el intervalo [{a['approx'] or a['text']}, "
                     f"{b['approx'] or b['text']}]; la fórmula {formula.name.lower()} puede no ser válida allí."
                 )
         estimates = [rows[f.key]["estimated_error"] for f in formulas]
@@ -438,32 +460,40 @@ def _substitution(function, x, n=1):
 
 # --- Modo tabla ----------------------------------------------------------------
 
-def _neighbor_estimate(function, formula, xs, ys, i, exact):
-    """Fórmula en xᵢ con su vecino: None si el vecino no existe."""
-    (offset_far, _), = [(o, w) for o, w in formula.nodes if o != 0]
-    j = i + offset_far
-    if not 0 <= j < len(xs):
+def _table_step(formula):
+    """Nodo con el que se mide h en una tabla: el +1 (o el −1 si no hay)."""
+    offsets = [o for o, _ in formula.nodes if o != 0]
+    positive = [o for o in offsets if o > 0]
+    return min(positive) if positive else max(offsets)
+
+
+def _table_estimate(function, formula, xs, ys, i, exact, rounding_rule=_rounding):
+    """Fórmula en xᵢ con sus vecinos: None si falta alguno."""
+    indices = [i + o for o, _ in formula.nodes]
+    if not all(0 <= j < len(xs) for j in indices):
         return None
-    h = abs(xs[j] - xs[i])
-    h_number = abs(display.exact(xs[j]) - display.exact(xs[i]))
-    values = [ys[i + o] for o, _ in formula.nodes]
-    D, step = _approximation(formula, values, h_number, h)
+    step = _table_step(formula)
+    h = (xs[i + step] - xs[i]) / step
+    h_number = (display.exact(xs[i + step]) - display.exact(xs[i])) / step
+    values = [ys[j] for j in indices]
+    D, shown_step = _approximation(formula, values, h_number, h)
     points = [
         {"offset": o, "weight": w, "role": _point_role(o), "index": i + o, "x": xs[i + o],
          "display": display.data_value(xs[i + o]), "f": ys[i + o], "f_display": shown}
-        for (o, w), shown in zip(formula.nodes, step["values"])
+        for (o, w), shown in zip(formula.nodes, shown_step["values"])
     ]
     row = {
         "D": D,
         "h": {"value": h, **display.decimal(h_number)},
         "points": points,
-        "decimals": step["decimals"],
-        "numerator_display": step["numerator"],
-        "real_error": None, "bound": None, "M": None, "x_M": None, "rounding": _rounding(formula, values, h),
+        "decimals": shown_step["decimals"],
+        "numerator_display": shown_step["numerator"],
+        "real_error": None, "bound": None, "M": None, "x_M": None,
+        "rounding": rounding_rule(formula, values, h),
         "within_bound": None, "by_rounding": False,
     }
     if function is not None:
-        a, b = sorted((xs[i], xs[j]))
+        a, b = min(xs[j] for j in indices), max(xs[j] for j in indices)
         M, x_M = function.max_abs(formula.bound_derivative, a, b)
         bound = None if M is None else float(formula.bound_coefficient) * h ** formula.order * M
         real = None if exact is None else abs(D - exact)
@@ -474,27 +504,25 @@ def _neighbor_estimate(function, formula, xs, ys, i, exact):
     return row
 
 
-def _table_mode(data):
-    formulas = CHOICES[data["formula"]]
+def _table_points(data, choices, computed, rounding_rule=_rounding, derivative_orders=()):
+    """Lo común del modo tabla: en cada xᵢ, las fórmulas `computed` (todas
+    las que la comprobación necesita, aunque no se hayan pedido), los datos
+    contra la función para comparar y error real ≤ cota.
+
+    Devuelve (function, formulas pedidas, xs, iterations, warnings, verification).
+    """
+    formulas = choices[data["formula"]]
     xs = [float(x) for x, _ in data["points"]]
     ys = [float(y) for _, y in data["points"]]
     text = data.get("compare_function") or ""
-    function = _Function(parse_function_of_x(text), _bound_orders(formulas)) if text else None
+    function = _Function(parse_function_of_x(text), _bound_orders(formulas, derivative_orders)) if text else None
 
-    warnings = []
-    steps = [xs[i + 1] - xs[i] for i in range(len(xs) - 1)]
-    uniform = all(abs(h - steps[0]) <= UNIFORM_RELATIVE * abs(steps[0]) for h in steps)
-    if not uniform:
-        warnings.append("El espaciado de los datos no es uniforme: cada fórmula usa su propio h.")
-
-    # La secante entre xᵢ y xᵢ₊₁ es a la vez la progresiva en xᵢ y la regresiva
-    # en xᵢ₊₁: se calculan las dos siempre, para la comprobación.
-    iterations, data_checks, undefined, not_differentiable = [], [], set(), []
+    warnings, iterations, data_checks, undefined, not_differentiable = [], [], [], set(), []
     for i, (x, y) in enumerate(zip(xs, ys)):
         exact = function.exact_derivative(x) if function else None
         if function and exact is None:
             not_differentiable.append(i + 1)
-        rows = {f.key: _neighbor_estimate(function, f, xs, ys, i, exact) for f in (FORWARD, BACKWARD)}
+        rows = {f.key: _table_estimate(function, f, xs, ys, i, exact, rounding_rule) for f in computed}
         for formula in formulas:
             row = rows[formula.key]
             if function and row and row["bound"] is None:
@@ -518,9 +546,10 @@ def _table_mode(data):
         ))
 
     for key in sorted(undefined):
+        formula = next(f for f in formulas if f.key == key)
         warnings.append(
-            "f''(x) no está definida en todo el intervalo entre algunos puntos; la fórmula "
-            f"{next(f.name.lower() for f in formulas if f.key == key)} puede no ser válida allí."
+            f"{_derivative_text(formula.bound_derivative)}(x) no está definida en todo el intervalo entre "
+            f"algunos puntos; la fórmula {formula.name.lower()} puede no ser válida allí."
         )
     if not_differentiable:
         warnings.append(
@@ -528,6 +557,34 @@ def _table_mode(data):
             + ", ".join(display.fixed(xs[i - 1]) for i in not_differentiable)
             + ": no se muestra el error real allí."
         )
+
+    failed = {
+        f.key: [step.iteration for step in iterations
+                if step.extra[f.key] and step.extra[f.key]["within_bound"] is False]
+        for f in formulas
+    }
+    verification = {
+        "data": data_checks if function else None,
+        "substitutions": [
+            None if step.extra["exact"] is None else _substitution(function, step.extra["x"])
+            for step in iterations
+        ] if function else None,
+        "failed_rows": failed if function else None,
+        "all_within": bool(function) and not not_differentiable and all(not r for r in failed.values()),
+    }
+    return function, formulas, xs, iterations, warnings, verification
+
+
+def _table_mode(data):
+    xs = [float(x) for x, _ in data["points"]]
+    steps = [xs[i + 1] - xs[i] for i in range(len(xs) - 1)]
+    uniform = all(abs(h - steps[0]) <= UNIFORM_RELATIVE * abs(steps[0]) for h in steps)
+
+    # La secante entre xᵢ y xᵢ₊₁ es a la vez la progresiva en xᵢ y la regresiva
+    # en xᵢ₊₁: se calculan las dos siempre, para la comprobación.
+    function, formulas, xs, iterations, warnings, verification = _table_points(data, CHOICES, (FORWARD, BACKWARD))
+    if not uniform:
+        warnings.insert(0, "El espaciado de los datos no es uniforme: cada fórmula usa su propio h.")
 
     secant = []
     for i in range(len(xs) - 1):
@@ -540,37 +597,25 @@ def _table_mode(data):
             "equal": abs(forward - backward) <= 1e-12 * max(1.0, abs(forward)),
         })
 
-    failed = {
-        f.key: [step.iteration for step in iterations
-                if step.extra[f.key] and step.extra[f.key]["within_bound"] is False]
-        for f in formulas
-    }
     meta = {
         "mode": "table",
-        "points": [[x, y] for x, y in zip(xs, ys)],
+        "points": [[x, float(y)] for x, (_, y) in zip(xs, data["points"])],
         "uniform": uniform,
-        "verification": {
-            "secant": secant,
-            "data": data_checks if function else None,
-            "substitutions": [
-                None if step.extra["exact"] is None else _substitution(function, step.extra["x"])
-                for step in iterations
-            ] if function else None,
-            "failed_rows": failed if function else None,
-            "all_within": bool(function) and not not_differentiable and all(not r for r in failed.values()),
-        },
+        "verification": {"secant": secant, **verification},
     }
     return function, formulas, True, iterations, warnings, meta
 
 
 # --- Punto de entrada ----------------------------------------------------------
 
-def solve_finite_differences(data):
-    """Punto de entrada del registro: datos ya validados -> SolverResult."""
-    mode = _table_mode if data["mode"] == "table" else _function_mode
-    function, formulas, converged, iterations, warnings, meta = mode(data)
+def build_result(method, data, output, higher_steps=False):
+    """SolverResult a partir de lo que devuelve un modo (función o tabla).
+
+    `higher_steps`: incluir el desglose de f'', f''' (no en diferencias, para
+    no cambiar su respuesta)."""
+    function, formulas, converged, iterations, warnings, meta = output
     return SolverResult(
-        method=METHOD,
+        method=method,
         category=CATEGORY,
         converged=converged,
         iterations=iterations,
@@ -581,8 +626,13 @@ def solve_finite_differences(data):
             **meta,
             "formula": data["formula"],
             "formulas": [public_formula(f) for f in formulas],
-            "function": function.info() if function else None,
+            "function": function.info(higher_steps) if function else None,
             "sampling_points": SAMPLES,
         },
     )
 
+
+def solve_finite_differences(data):
+    """Punto de entrada del registro: datos ya validados -> SolverResult."""
+    mode = _table_mode if data["mode"] == "table" else _function_mode
+    return build_result(METHOD, data, mode(data))

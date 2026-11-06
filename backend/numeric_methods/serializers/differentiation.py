@@ -14,7 +14,10 @@ from ..solvers.differentiation.finite_differences import (
     DifferentiationValidationError,
     parse_function_of_x,
 )
-from ..solvers.differentiation.formulas import CHOICES
+from ..solvers.differentiation import display
+from ..solvers.differentiation.formulas import CHOICES, THREE_POINT_CHOICES
+from ..solvers.differentiation.three_point import DEFAULT_TOLERANCE as THREE_POINT_TOLERANCE
+from ..solvers.differentiation.three_point import MIN_POINTS as THREE_POINT_MIN_POINTS
 
 
 def _finite(value):
@@ -50,6 +53,8 @@ class DifferentiationSerializer(serializers.Serializer):
     points = serializers.JSONField(required=False, allow_null=True, default=None)
     compare_function = serializers.CharField(required=False, allow_blank=True, default="", trim_whitespace=True)
 
+    min_points = MIN_POINTS
+
     def validate(self, data):
         if data["mode"] == "table":
             return self._validate_table(data)
@@ -84,9 +89,9 @@ class DifferentiationSerializer(serializers.Serializer):
         points = data["points"]
         if not isinstance(points, list):
             raise serializers.ValidationError({"points": ["Faltan los puntos (xᵢ, yᵢ) de la tabla."]})
-        if not MIN_POINTS <= len(points) <= MAX_POINTS:
+        if not self.min_points <= len(points) <= MAX_POINTS:
             raise serializers.ValidationError({
-                "points": [f"La tabla debe tener entre {MIN_POINTS} y {MAX_POINTS} puntos (tiene {len(points)})."]
+                "points": [f"La tabla debe tener entre {self.min_points} y {MAX_POINTS} puntos (tiene {len(points)})."]
             })
 
         errors = []
@@ -116,4 +121,40 @@ class DifferentiationSerializer(serializers.Serializer):
                 raise serializers.ValidationError(
                     {"compare_function": [f"Función para comparar: {m}" for m in exc.errors]}
                 ) from exc
+        return data
+
+
+# Espaciado uniforme: |hᵢ − h₁| ≤ UNIFORM_RELATIVE · máx(1, |h₁|).
+UNIFORM_RELATIVE = 1e-9
+
+
+class ThreePointSerializer(DifferentiationSerializer):
+    """Entrada de la fórmula de 3 puntos: la misma que la de diferencias, con
+    `formula` = "punto_medio", "extremo_adelante", "extremo_atras" o "all",
+    tolerancia por defecto 10⁻⁶ y, en modo tabla, de 3 a 20 puntos igualmente
+    espaciados."""
+
+    formula = serializers.ChoiceField(
+        choices=list(THREE_POINT_CHOICES), default="all",
+        error_messages={
+            "invalid_choice": "La fórmula debe ser «punto_medio», «extremo_adelante», «extremo_atras» o «all»."
+        },
+    )
+    tolerance = serializers.FloatField(default=THREE_POINT_TOLERANCE)
+
+    min_points = THREE_POINT_MIN_POINTS
+
+    def _validate_table(self, data):
+        data = super()._validate_table(data)
+        xs = [x for x, _ in data["points"]]
+        first = xs[1] - xs[0]
+        for i in range(1, len(xs) - 1):
+            step = xs[i + 1] - xs[i]
+            if abs(step - first) > UNIFORM_RELATIVE * max(1.0, abs(first)):
+                shown = [display.decimal(display.exact(b) - display.exact(a))["text"]
+                         for a, b in ((xs[i], xs[i + 1]), (xs[0], xs[1]))]
+                raise serializers.ValidationError({"points": [
+                    "La fórmula de 3 puntos necesita datos igualmente espaciados: entre la fila "
+                    f"{i + 1} y la {i + 2} el espaciado es {shown[0]} y el de la primera pareja es {shown[1]}."
+                ]})
         return data

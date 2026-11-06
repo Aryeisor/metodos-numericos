@@ -53,6 +53,8 @@
   --color-series-2: #9333ea;      /* ε_s de Bairstow                        */
   --color-series-3: #c2410c;      /* 3.ª y 4.ª serie (diferencias finitas)  */
   --color-series-4: #0e7490;
+  --color-series-5: #be185d;      /* 5.ª y 6.ª serie (fórmula de 3 puntos)  */
+  --color-series-6: #4d7c0f;
   --color-tolerance: #15803d;
 
   /* ---- Gráfico ----------------------------------------------------------- */
@@ -108,6 +110,8 @@
   --color-series-2: #c8a2f6;
   --color-series-3: #fdba74;
   --color-series-4: #67e8f9;
+  --color-series-5: #f9a8d4;
+  --color-series-6: #bef264;
   --color-tolerance: #6ee09a;
 
   --color-chart-grid: rgba(226, 232, 240, 0.1);

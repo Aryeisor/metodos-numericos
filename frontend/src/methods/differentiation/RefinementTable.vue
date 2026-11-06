@@ -109,6 +109,7 @@ function toggle(k) {
                   :bound-derivative-latex="result.function.higher_derivatives[formula.bound_derivative]?.latex ?? null"
                   :previous="row.previous"
                   :samples="result.sampling_points"
+                  :rounding-text="result.rounding_text ?? undefined"
                 />
               </td>
             </tr>

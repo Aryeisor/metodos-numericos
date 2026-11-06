@@ -75,19 +75,32 @@ export function evaluationLatex(point, template, name = point.role) {
 
 function numeratorParts(points, color) {
   return points.map((p) => {
-    const value = paren(p.f_display)
     const weight = Math.abs(p.weight)
-    const body = weight === 1 ? value : `${weight} \\cdot ${value}`
+    // −3(14.778112): el coeficiente multiplica al valor entre paréntesis.
+    const body = weight === 1 ? paren(p.f_display) : `${weight}\\left(${p.f_display}\\right)`
     return { negative: p.weight < 0, body: color ? colorize(body, nodeColor(p.offset)) : body }
   })
 }
 
-/** D = (f(a) − f(b)) / h = numerador / h = D, con los colores de los nodos. */
+/** Productos cᵢ·f(xᵢ) ya calculados por el backend: «−44.334336 + 68.595828». */
+const productParts = (item) =>
+  item.products_display.map((text, i) => ({
+    negative: text.startsWith('-'),
+    body: colorize(text.replace(/^-/, ''), nodeColor(item.points[i].offset)),
+  }))
+
+/**
+ * D = (f(a) − f(b)) / h = numerador / h = D, con los colores de los nodos.
+ * Si el backend manda los productos (fórmulas con coeficientes ≠ ±1), se
+ * muestran como paso intermedio y el denominador ya multiplicado (0.2).
+ */
 export function quotientLatex(formula, item, h, k) {
-  const denominator = formula.divisor === 1 ? stepInline(h) : `${formula.divisor} \\cdot ${stepInline(h)}`
+  const denominator =
+    item.denominator_display ?? (formula.divisor === 1 ? stepInline(h) : `${formula.divisor} \\cdot ${stepInline(h)}`)
   const numerator = signedSum(numeratorParts(item.points, true))
+  const products = item.products_display ? `\\dfrac{${signedSum(productParts(item))}}{${denominator}} = ` : ''
   return (
-    `${symbolAt(formula, k)} = \\dfrac{${numerator}}{${denominator}} = ` +
+    `${symbolAt(formula, k)} = \\dfrac{${numerator}}{${denominator}} = ${products}` +
     `\\dfrac{${item.numerator_display}}{${denominator}} = \\mathbf{${latexNumber(item.D)}}`
   )
 }
@@ -196,6 +209,41 @@ export function substitutionText(substitution) {
   const { lhs, replaced, evaluated, relation, value } = substitutionParts(substitution, CHECK_TEXT_STYLE)
   return [`${lhs} = ${replaced}`, evaluated, value].filter(Boolean).join(` ${relation} `)
 }
+
+/**
+ * Identidad de la fórmula de 3 puntos (valores del backend, a 6 decimales):
+ *   (D⁺ + D⁻)/2 = (23.70845 + 20.74913)/2 = 22.22879 = D^med
+ *   2D⁺(h) − D⁺(2h) = 2(23.70845) − 25.38459 = 22.03231 = D^ad
+ */
+export function identityLatex(item, formula) {
+  const n = (value) => latexNumber(value)
+  let lhs
+  if (item.kind === 'average') {
+    lhs =
+      `\\frac{D^{+} + D^{-}}{2} = \\frac{${n(item.forward)} + ${paren(n(item.backward))}}{2}`
+  } else {
+    const d = `D^{${item.direction}}`
+    lhs = `2${d}(h) - ${d}(2h) = 2\\left(${n(item.base)}\\right) - ${paren(n(item.double))}`
+  }
+  const symbol = formula?.symbol_latex ?? 'D'
+  const rhs = item.ok ? `= ${symbol}` : `\\ne ${symbol} = ${n(item.D)}`
+  return `${lhs} = ${n(item.value)} ${rhs}`
+}
+
+/** Identidad en texto plano (PDF). */
+export function identityText(item) {
+  const n = (value) => formatNumber(value)
+  const p = (value) => (value < 0 ? `(${n(value)})` : n(value))
+  const lhs =
+    item.kind === 'average'
+      ? `(D+ + D-)/2 = (${n(item.forward)} + ${p(item.backward)})/2`
+      : `2D${item.direction}(h) - D${item.direction}(2h) = 2(${n(item.base)}) - ${p(item.double)}`
+  return `${lhs} = ${n(item.value)} ${item.ok ? 'OK' : `!= ${n(item.D)} (!)`}`
+}
+
+/** «A y B», «A, B y C». */
+export const listNames = (names) =>
+  names.length <= 2 ? names.join(' y ') : `${names.slice(0, -1).join(', ')} y ${names.at(-1)}`
 
 /** Número de 6 decimales o «—» (tablas y PDF). */
 export const cell = (value) => (value === null || value === undefined ? '—' : formatNumber(value))

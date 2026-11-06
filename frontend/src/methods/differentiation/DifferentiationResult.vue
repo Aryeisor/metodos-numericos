@@ -12,7 +12,7 @@ import { latexNumber } from '../../utils/latexFormulas'
 import DataPointsTable from './DataPointsTable.vue'
 import DifferentiationVerification from './DifferentiationVerification.vue'
 import RefinementTable from './RefinementTable.vue'
-import { derivativeName } from './formulas'
+import { derivativeName, listNames } from './formulas'
 import { exportDifferentiationPdf } from './pdf'
 
 const props = defineProps({
@@ -37,14 +37,28 @@ const higher = computed(() =>
   Object.entries(fn.value?.higher_derivatives ?? {}).map(([n, d]) => ({
     n,
     latex: `${derivativeName(Number(n))}(x) = ${d.latex}`,
+    // Fórmula de 3 puntos: f'' se obtiene derivando f', y f''' derivando f''.
+    steps: d.steps ?? null,
+    from: derivativeName(Number(n) - 1).replace(/'/g, '′'),
+    name: derivativeName(Number(n)).replace(/'/g, '′'),
   }))
 )
+const higherSteps = computed(() => higher.value.filter((d) => d.steps))
 
 // --- Gráfico -------------------------------------------------------------------
 // Modo función: error estimado y error real de cada fórmula (hasta 4 series),
 // escala log; los valores null o 0 quedan como huecos (ConvergenceChart).
 // Modo tabla: aproximaciones frente a xᵢ, escala lineal.
-const COLORS = ['--color-series-1', '--color-series-2', '--color-series-3', '--color-series-4']
+// Con n fórmulas: error estimado con los colores 1..n y error real con n+1..2n
+// (hasta 6 series con la fórmula de 3 puntos).
+const COLORS = [
+  '--color-series-1',
+  '--color-series-2',
+  '--color-series-3',
+  '--color-series-4',
+  '--color-series-5',
+  '--color-series-6',
+]
 const series = computed(() => {
   const rows = props.result.iterations
   if (isTable.value) {
@@ -54,7 +68,11 @@ const series = computed(() => {
       color: COLORS[i],
     }))
     if (fn.value) {
-      list.push({ label: "f′(x) exacta", values: rows.map((step) => step.extra.exact), color: COLORS[2] })
+      list.push({
+        label: "f′(x) exacta",
+        values: rows.map((step) => step.extra.exact),
+        color: COLORS[Math.max(2, formulas.value.length)],
+      })
     }
     return list
   }
@@ -68,7 +86,7 @@ const series = computed(() => {
       ? [{
           label: `Error real (${f.name.toLowerCase()})`,
           values: rows.map((step) => step.extra[f.key].real_error),
-          color: COLORS[i + 2],
+          color: COLORS[i + formulas.value.length],
         }]
       : []),
   ])
@@ -76,6 +94,11 @@ const series = computed(() => {
 const chartLabels = computed(() =>
   isTable.value ? props.result.iterations.map((step) => step.extra.x_display.text) : null
 )
+// Notas que dependen de la fórmula (orden del error) y del método (regla de R).
+const order = computed(() => formulas.value[0].order)
+const roundingText = computed(() => props.result.rounding_text ?? 'R = 4ε·máx|f|/h')
+const hasRecommended = computed(() => Boolean(props.result.iterations[0]?.extra.recommended))
+
 const toleranceLabel = computed(() => `Tolerancia (${formatNumber(props.result.tolerance)})`)
 
 const chartRef = ref(null)
@@ -116,7 +139,7 @@ function handleExportPdf() {
     <p class="meta">
       <template v-if="isTable">
         Puntos: <strong>{{ result.iterations_used }}</strong>
-        · Fórmula: <strong>{{ formulas.map((f) => f.name).join(' y ') }}</strong>
+        · Fórmula: <strong>{{ listNames(formulas.map((f) => f.name)) }}</strong>
         · Espaciado: <strong>{{ result.uniform ? 'uniforme' : 'no uniforme' }}</strong>
       </template>
       <template v-else>
@@ -128,6 +151,10 @@ function handleExportPdf() {
         · h₀ = <strong>{{ result.iterations[0]?.extra.h.text }}</strong>
       </template>
     </p>
+    <div v-if="result.comparison?.length" class="comparison">
+      <p class="comparison-title">Comparación con las diferencias progresiva y regresiva</p>
+      <p v-for="line in result.comparison" :key="line.k" class="comparison-line">{{ line.text }}</p>
+    </div>
     <div v-for="(w, idx) in result.warnings" :key="'w' + idx" class="alert alert-warning">⚠ {{ w }}</div>
 
     <!-- 2. Derivada exacta -->
@@ -146,6 +173,25 @@ function handleExportPdf() {
           <MathFormula :expression="fn.derivative.steps.sum_latex" />
         </div>
       </div>
+      <template v-for="d in higherSteps" :key="`steps-${d.n}`">
+        <p class="section-text">
+          Se deriva {{ d.from }} término a término para obtener {{ d.name }}:
+        </p>
+        <div class="partial-card">
+          <ul class="partial-terms">
+            <li v-for="(term, t) in d.steps.terms" :key="t">
+              <div class="partial-formula"><MathFormula :expression="term.latex" /></div>
+              <span class="partial-rule">{{ term.rule }}</span>
+            </li>
+          </ul>
+          <div v-if="d.steps.sum_latex" class="partial-sum">
+            <MathFormula :expression="d.steps.sum_latex" />
+          </div>
+          <div v-else class="partial-sum">
+            <MathFormula :expression="d.latex" />
+          </div>
+        </div>
+      </template>
       <div class="formula-box">
         <MathFormula :expression="`f'(x) = ${fn.derivative.latex}`" display-mode />
         <MathFormula v-for="d in higher" :key="d.n" :expression="d.latex" display-mode />
@@ -159,7 +205,12 @@ function handleExportPdf() {
     <section class="result-section">
       <h4>{{ isTable ? 'Derivada en cada punto' : 'Tabla de refinamiento' }}</h4>
       <p class="section-text">
-        <template v-if="isTable">
+        <template v-if="isTable && hasRecommended">
+          En cada xᵢ, cada fórmula usa los datos vecinos que necesita; donde faltan se muestra «—».
+          La columna «Recomendada» toma el punto medio donde existe (es la más precisa) y, en los
+          extremos de la tabla, la fórmula de extremo. Despliega una fila para ver el cálculo.
+        </template>
+        <template v-else-if="isTable">
           En cada xᵢ, cada fórmula usa su punto vecino con su propio h. Despliega una fila para ver
           el cálculo.
         </template>
@@ -180,16 +231,22 @@ function handleExportPdf() {
         <RefinementTable v-for="f in formulas" :key="f.key" :result="result" :formula="f" />
       </template>
 
-      <p v-if="!isTable && result.differentiable" class="section-text">
+      <p v-if="!isTable && result.differentiable && order === 1" class="section-text">
         La razón entre errores reales consecutivos se acerca a
         {{ formatNumber(formulas[0].expected_ratio) }}: al reducir h a la mitad, el error también se
         reduce a la mitad, que es lo que significa que la fórmula sea de orden O(h).
+      </p>
+      <p v-else-if="!isTable && result.differentiable" class="section-text">
+        La razón entre errores reales consecutivos se acerca a
+        {{ formatNumber(formulas[0].expected_ratio) }}: el error es
+        <MathFormula :expression="`O(h^{${order}})`" />, así que dividir h entre 2 divide el error entre
+        {{ 2 ** order }}.
       </p>
       <p v-if="fn" class="section-text">
         La cota usa M, el máximo de |{{ derivativeName(formulas[0].bound_derivative).replace(/'/g, '′') }}(x)|
         en el intervalo de cada {{ isTable ? 'fórmula' : 'fila' }}, estimado por muestreo con
         {{ result.sampling_points }} puntos equiespaciados. La marca <sup>R</sup> indica que el error
-        real supera la cota sólo por el redondeo de la computadora (R = 4ε·máx|f|/h).
+        real supera la cota sólo por el redondeo de la computadora ({{ roundingText }}).
       </p>
     </section>
 
@@ -262,6 +319,26 @@ function handleExportPdf() {
 
 .alert {
   margin-top: var(--space-3);
+}
+
+.comparison {
+  margin-top: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-nested);
+  font-size: var(--text-small);
+}
+
+.comparison-title {
+  margin: 0 0 var(--space-1);
+  font-weight: var(--weight-semibold);
+  color: var(--color-ink);
+}
+
+.comparison-line {
+  margin: var(--space-1) 0 0;
+  color: var(--color-ink-muted);
 }
 
 .result-section {

@@ -1,4 +1,5 @@
-// Interfaz de la categoría "differentiation" (diferencias finitas).
+// Interfaz de la categoría "differentiation" (diferencias finitas y fórmula
+// de 3 puntos).
 // Cumple el contrato documentado en methods/linear/index.js, con los campos
 // opcionales:
 //   resultView            vista completa del resultado (tablas por fórmula,
@@ -13,7 +14,7 @@
 import DifferentiationConfigFields from './DifferentiationConfigFields.vue'
 import DifferentiationInput from './DifferentiationInput.vue'
 import DifferentiationResult from './DifferentiationResult.vue'
-import { MODES, createDifferentiationStore } from './store'
+import { MODES, createDifferentiationStore, createThreePointStore } from './store'
 import DifferentiationTheoryPage, { THEORY_SECTIONS } from './theory/DifferentiationTheoryPage.vue'
 
 export default {
@@ -44,4 +45,14 @@ export default {
 
   theoryPage: DifferentiationTheoryPage,
   theorySections: THEORY_SECTIONS,
+
+  // Lo que cambia por método (sobrescribe la base). La fórmula de 3 puntos
+  // usa la misma vista; sólo cambian el selector, el mínimo de puntos y la
+  // tolerancia por defecto (converge rápido).
+  methods: {
+    'tres-puntos': {
+      createStore: createThreePointStore,
+      defaultTolerance: 0.000001,
+    },
+  },
 }

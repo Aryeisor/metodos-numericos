@@ -103,6 +103,16 @@ def data_value(value):
     return decimal(exact(value))
 
 
+def product(weight, shown):
+    """wᵢ·f(xᵢ) exacto con el valor visible del paso a paso: «-44.334336»."""
+    return _plain(weight * Decimal(shown))
+
+
+def scaled_step(h_shown, factor):
+    """factor·h exacto (el denominador «0.2»); None si h no se muestra exacto."""
+    return _plain(factor * Decimal(h_shown["text"])) if h_shown["exact"] else None
+
+
 def step_decimals(h_number):
     """d = mín(15, 6 + ⌈−log₁₀ h⌉) si h < 1; 6 si h ≥ 1."""
     if h_number >= 1:

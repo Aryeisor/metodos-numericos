@@ -301,7 +301,7 @@ POLYNOMIAL_EXAMPLES = [
 ]
 
 
-def _difference_example(example_id, name, description, formula, **data):
+def _difference_example(example_id, name, description, formula, tolerance=0.0001, **data):
     """Ejemplo de diferencias finitas: modo función (function, x0, h0) o modo
     tabla (points y, opcional, compare_function)."""
     mode = "table" if "points" in data else "function"
@@ -316,7 +316,7 @@ def _difference_example(example_id, name, description, formula, **data):
         "h0": data.get("h0", 0.1),
         "points": data.get("points"),
         "compare_function": data.get("compare_function", ""),
-        "tolerance": 0.0001,
+        "tolerance": tolerance,
         "max_iterations": 25,
     }
 
@@ -368,6 +368,58 @@ DIFFERENCE_EXAMPLES = [
 ]
 
 
+def _three_point_example(example_id, name, description, formula, **data):
+    """Ejemplo de la fórmula de 3 puntos (tolerancia 10⁻⁶, máximo 25)."""
+    return _difference_example(example_id, name, description, formula, tolerance=0.000001, **data)
+
+
+# Fórmula de 3 puntos. Los valores esperados (README y tests/test_three_point.py)
+# se verificaron con un script independiente.
+THREE_POINT_EXAMPLES = [
+    _three_point_example(
+        "tp-burden-xexp", "x·eˣ en x₀ = 2 (Burden y Faires)",
+        "Las tres fórmulas con h₀ = 0.1; exacta 3e² ≈ 22.167168. Para en la fila 11.", "all",
+        function="x*exp(x)", x0=2, h0=0.1,
+    ),
+    _three_point_example(
+        "tp-ln", "ln(x) en x₀ = 1.8",
+        "El mismo ejemplo de diferencias, para comparar: exacta 1/1.8 ≈ 0.555556.", "all",
+        function="ln(x)", x0=1.8, h0=0.1,
+    ),
+    _three_point_example(
+        "tp-seno", "sin(x) en x₀ = 1, punto medio",
+        "Exacta cos(1) ≈ 0.540302 (en radianes).", "punto_medio",
+        function="sin(x)", x0=1, h0=0.1,
+    ),
+    _three_point_example(
+        "tp-cubica", "Cúbica x³ − 2x² + x en x₀ = 2",
+        "f‴ = 6 es constante: el error real es igual a la cota en cada fila.", "all",
+        function="x^3 - 2x^2 + x", x0=2, h0=0.1,
+    ),
+    _three_point_example(
+        "tp-cuadratica", "Cuadrática x² − 3x + 1 en x₀ = 2",
+        "f‴ = 0: las tres fórmulas son exactas para polinomios de grado ≤ 2. Para en la fila 6.", "all",
+        function="x^2 - 3x + 1", x0=2, h0=0.5,
+    ),
+    _three_point_example(
+        "tp-gauss", "e^(−x²) en x₀ = 0.5, extremo hacia atrás",
+        "Exacta −e^(−0.25) ≈ −0.778801.", "extremo_atras",
+        function="exp(-x^2)", x0=0.5, h0=0.1,
+    ),
+    _three_point_example(
+        "tp-tabla-burden", "Tabla de x·eˣ (Burden y Faires, tabla + función)",
+        "Cinco datos con h = 0.1; se compara con f(x) = x·eˣ.", "all",
+        points=[[1.8, 10.889365], [1.9, 12.703199], [2.0, 14.778112], [2.1, 17.148957], [2.2, 19.85503]],
+        compare_function="x*exp(x)",
+    ),
+    _three_point_example(
+        "tp-tabla-cubos", "Tabla de datos sin función",
+        "Datos de x³ en x = 0, 1, …, 5: punto medio en el interior y extremos en los bordes.", "all",
+        points=[[0, 0], [1, 1], [2, 8], [3, 27], [4, 64], [5, 125]],
+    ),
+]
+
+
 EXAMPLES = {
     "jacobi": LINEAR_SYSTEM_EXAMPLES,
     "gauss-seidel": LINEAR_SYSTEM_EXAMPLES,
@@ -375,6 +427,7 @@ EXAMPLES = {
     "newton": NEWTON_EXAMPLES,
     "bairstow": POLYNOMIAL_EXAMPLES,
     "diferencias-finitas": DIFFERENCE_EXAMPLES,
+    "tres-puntos": THREE_POINT_EXAMPLES,
 }
 
 

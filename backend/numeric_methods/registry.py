@@ -11,11 +11,12 @@ examples_data.py); el resto del sistema no se toca.
 from dataclasses import dataclass
 from typing import Callable
 
-from .serializers.differentiation import DifferentiationSerializer
+from .serializers.differentiation import DifferentiationSerializer, ThreePointSerializer
 from .serializers.linear import LinearSystemSerializer
 from .serializers.nonlinear import NewtonSystemSerializer, NonlinearSystemSerializer
 from .serializers.polynomial import PolynomialSerializer
 from .solvers.differentiation.finite_differences import solve_finite_differences
+from .solvers.differentiation.three_point import solve_three_point
 from .solvers.linear.runner import solve_gauss_seidel, solve_jacobi
 from .solvers.nonlinear.fixed_point import solve_fixed_point
 from .solvers.nonlinear.newton import solve_newton
@@ -88,6 +89,13 @@ METHODS = {
             category="differentiation",
             serializer=DifferentiationSerializer,
             solver=solve_finite_differences,
+        ),
+        MethodSpec(
+            slug="tres-puntos",
+            name="Fórmula de 3 puntos",
+            category="differentiation",
+            serializer=ThreePointSerializer,
+            solver=solve_three_point,
         ),
     )
 }

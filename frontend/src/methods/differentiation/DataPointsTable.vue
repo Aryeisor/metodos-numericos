@@ -12,8 +12,14 @@ const props = defineProps({
 
 const formulas = computed(() => props.result.formulas)
 const hasFunction = computed(() => Boolean(props.result.function))
+// Fórmula de 3 puntos: columna «Recomendada» (la elige el backend).
+const hasRecommended = computed(() => Boolean(props.result.iterations[0]?.extra.recommended))
 const columns = computed(
-  () => 4 + formulas.value.length + (hasFunction.value ? 1 + formulas.value.length * 2 + 1 : 0)
+  () =>
+    4 +
+    formulas.value.length +
+    (hasRecommended.value ? 1 : 0) +
+    (hasFunction.value ? 1 + formulas.value.length * 2 + 1 : 0)
 )
 
 const expanded = ref(new Set())
@@ -35,10 +41,13 @@ const marks = (extra) =>
     .filter((item) => item && item.within_bound !== null)
     .map((item) => ({ mark: boundMark(item), ok: item.within_bound, rounding: item.by_rounding }))
 
-function stepLine(item, i) {
-  const far = item.points.find((p) => p.offset !== 0)
-  const near = item.points.find((p) => p.offset === 0)
-  const [right, left] = far.offset > 0 ? [far, near] : [near, far]
+// h se mide con el nodo +1 (o el −1 si la fórmula no lo tiene), como en el backend.
+function stepLine(item, extra, i) {
+  const offsets = item.points.map((p) => p.offset).filter((o) => o !== 0)
+  const step = offsets.some((o) => o > 0) ? Math.min(...offsets.filter((o) => o > 0)) : Math.max(...offsets)
+  const node = item.points.find((p) => p.offset === step)
+  const here = { index: i - 1, display: extra.x_display }
+  const [right, left] = step > 0 ? [node, here] : [here, node]
   return (
     `h = x_{${right.index + 1}} - x_{${left.index + 1}} = ${right.display.latex} - ${left.display.latex.startsWith('-') ? `(${left.display.latex})` : left.display.latex} = ` +
     (item.h.exact ? item.h.latex : `${item.h.approx}`)
@@ -56,6 +65,7 @@ function stepLine(item, i) {
           <th>xᵢ</th>
           <th>f(xᵢ)</th>
           <th v-for="f in formulas" :key="f.key">{{ f.name }}</th>
+          <th v-if="hasRecommended">Recomendada</th>
           <template v-if="hasFunction">
             <th>f′(xᵢ) exacta</th>
             <th v-for="f in formulas" :key="`e-${f.key}`">Error real {{ f.name.toLowerCase() }}</th>
@@ -82,6 +92,10 @@ function stepLine(item, i) {
             <td>{{ step.extra.x_display.text }}</td>
             <td>{{ cell(step.extra.y) }}</td>
             <td v-for="f in formulas" :key="f.key">{{ cell(step.extra[f.key]?.D) }}</td>
+            <td v-if="hasRecommended" class="recommended-cell">
+              <strong>{{ cell(step.extra.recommended.D) }}</strong>
+              <small class="recommended-name">{{ step.extra.recommended.name.toLowerCase() }}</small>
+            </td>
             <template v-if="hasFunction">
               <td>{{ cell(step.extra.exact) }}</td>
               <td v-for="f in formulas" :key="`e-${f.key}`">{{ cell(step.extra[f.key]?.real_error) }}</td>
@@ -104,7 +118,7 @@ function stepLine(item, i) {
                     :formula="f"
                     :item="step.extra[f.key]"
                     :label="step.iteration"
-                    :step-line="stepLine(step.extra[f.key], step.iteration)"
+                    :step-line="stepLine(step.extra[f.key], step.extra, step.iteration)"
                     :h="step.extra[f.key].h"
                     :exact="step.extra.exact"
                     :exact-source="result.verification.substitutions?.[step.iteration - 1] ?? null"
@@ -114,6 +128,7 @@ function stepLine(item, i) {
                     :point-name="pointName"
                     :has-function="hasFunction"
                     :samples="result.sampling_points"
+                    :rounding-text="result.rounding_text ?? undefined"
                   />
                 </div>
                 <p v-else class="detail-title muted">
@@ -143,6 +158,12 @@ function stepLine(item, i) {
 
 .mark-cell {
   text-align: center !important;
+}
+
+.recommended-name {
+  display: block;
+  font-size: var(--text-small);
+  color: var(--color-ink-muted);
 }
 
 .mark-cell .mark + .mark {

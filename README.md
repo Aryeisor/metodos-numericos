@@ -13,6 +13,7 @@ para estudiar la teoría de cada método.
 | Ecuaciones no lineales | **Newton** | `F(x) = 0`, de 2 a 6 ecuaciones, con la matriz Jacobiana y la regla de Cramer |
 | Polinomios | **Bairstow** | Todas las raíces (reales y complejas) de un polinomio de grado 3 a 10, extrayendo factores cuadráticos `x² − r·x − s` |
 | Diferenciación numérica | **Diferencias progresiva y regresiva** | `f'(x₀)` a partir de `f(x)` (con refinamiento de h) o de una tabla de datos `(xᵢ, yᵢ)` |
+| Diferenciación numérica | **Fórmula de 3 puntos** | `f'(x₀)` con el punto medio y los extremos hacia adelante y hacia atrás, de orden `O(h²)`; desde `f(x)` o desde una tabla igualmente espaciada |
 
 - **Backend:** Django + Django REST Framework (API REST) y sympy para el
   manejo simbólico de las ecuaciones.
@@ -41,10 +42,11 @@ para estudiar la teoría de cada método.
 
 ### Vista «Resolver» (`/resolver/<método>`)
 
-- **Ejemplos precargados** por método (30 en total: 6 lineales compartidos por
-  Jacobi y Gauss-Seidel, 4 de Punto Fijo, 3 de Newton, 9 de Bairstow y 8 de
-  diferencias finitas), que se cargan en el formulario con un clic.
-- **Botón «Limpiar»** al lado de «Resolver», en los seis métodos: deja la
+- **Ejemplos precargados** por método (38 en total: 6 lineales compartidos por
+  Jacobi y Gauss-Seidel, 4 de Punto Fijo, 3 de Newton, 9 de Bairstow, 8 de
+  diferencias finitas y 8 de la fórmula de 3 puntos), que se cargan en el
+  formulario con un clic.
+- **Botón «Limpiar»** al lado de «Resolver», en los siete métodos: deja la
   vista como al abrir el método (formulario con su tamaño y valores
   iniciales, tolerancia, máximo de iteraciones y opciones por defecto del
   método) y borra el resultado, los errores, las advertencias, las vistas
@@ -67,6 +69,10 @@ para estudiar la teoría de cada método.
     agregar y quitar, y una función opcional para comparar). En ambos, el
     selector **Fórmula** (progresiva, regresiva o ambas). En modo tabla se
     ocultan la tolerancia y el máximo de refinamientos.
+  - Fórmula de 3 puntos: el mismo formulario, con el selector **Fórmula**
+    (punto medio, extremo hacia adelante, extremo hacia atrás o **todas**, por
+    defecto), tolerancia del error estimado `0.000001` por defecto y de 3 a
+    20 puntos igualmente espaciados en modo tabla.
 - **Barra de símbolos matemáticos** (√, xⁿ, log, ln, exp, sin, cos, tan, π, e,
   |x|, paréntesis y un desplegable «Más funciones» con trigonométricas
   inversas e hiperbólicas). Inserta en la posición del cursor del campo activo
@@ -96,7 +102,11 @@ para estudiar la teoría de cada método.
 - En **diferencias finitas**, el resultado tiene su propia vista: resumen,
   derivada exacta con su desglose, una tabla de refinamiento por fórmula (o
   la tabla de puntos), gráfico y «Comprobación» (ver el
-  [detalle](#diferencias-progresiva-y-regresiva)).
+  [detalle](#diferencias-progresiva-y-regresiva)). La **fórmula de 3 puntos**
+  usa la misma vista, con tres tablas apiladas, un gráfico de hasta 6 series,
+  la comparación con las diferencias y las identidades de la comprobación
+  (ver su [detalle](#fórmula-de-3-puntos)). Su página de teoría aún no
+  existe: el método aparece en «Resolver ▾» pero no en «Teoría ▾».
 
 ### Vista «Teoría» (`/teoria/<método>`)
 
@@ -534,6 +544,51 @@ secciones).
      decimales, se agregan decimales (hasta 15) hasta que coincida. Las
      tablas, el resumen y el cociente `D` siguen con 6 decimales.
 
+### Fórmula de 3 puntos
+
+- Fórmulas, para un paso `h > 0` (todas de orden `O(h²)`):
+  - punto medio `[f(x₀ + h) − f(x₀ − h)] / (2h)`, con
+    `|error| ≤ (h²/6)·máx |f'''(ξ)|`, ξ en `[x₀ − h, x₀ + h]`;
+  - extremo hacia adelante `[−3f(x₀) + 4f(x₀ + h) − f(x₀ + 2h)] / (2h)`, con
+    `|error| ≤ (h²/3)·máx |f'''(ξ)|`, ξ en `[x₀, x₀ + 2h]`;
+  - extremo hacia atrás `[3f(x₀) − 4f(x₀ − h) + f(x₀ − 2h)] / (2h)`, con la
+    misma cota en `[x₀ − 2h, x₀]`.
+- Usa el **mismo motor** que las diferencias (refinamiento de `h`, mínimo de
+  6 filas, parada con todas las fórmulas pedidas en la misma fila, h exacto,
+  decimales del paso a paso, muestreo de 401 puntos, advertencias). Cambia:
+  la cota usa `f'''` (se calculan `f'`, `f''` y `f'''` una sola vez), la
+  **razón** entre errores reales se acerca a **0.25** (dividir `h` entre 2
+  divide el error entre 4), la tolerancia por defecto es `0.000001` y el
+  paso a paso muestra cada producto `cᵢ·f(xᵢ)` antes de la suma:
+  `(−3(14.778112) + 4(17.148957) − 19.85503) / 0.2 = (−44.334336 + 68.595828
+  − 19.85503) / 0.2 = 4.406462 / 0.2 = 22.03231`.
+- **Redondeo** `R_k`: en modo tabla, `2ε·Σ|cᵢ·f(xᵢ)| / (factor·h_k)`; en modo
+  función se suma el error de representar cada punto `xᵢ = x₀ + dᵢh` en
+  binario: `2ε·Σ|cᵢ|·(|f(xᵢ)| + |xᵢ·f'(xᵢ)|) / (factor·h_k)`. Sin ese término,
+  en la cúbica (error real = cota, porque `f''' = 6` es constante) el error
+  real superaba `cota + R_k` en ~10⁻¹³ en algunas filas.
+- **Comparación con diferencias** (calculada en el backend, debajo del
+  resumen): qué darían la progresiva y la regresiva con el `h₀` de la fila 1
+  y con el `h` de la última fila, con su error real, y cuántas veces menor es
+  el error de cada fórmula de 3 puntos. Con `x·eˣ`, `x₀ = 2`, `h₀ = 0.1`: la
+  progresiva daría 23.708446 (error 1.541278), la regresiva 20.749128 (error
+  1.418041) y el punto medio 22.228787 (error 0.061619, 25 veces menor).
+- **Modo tabla:** de 3 a 20 puntos con **espaciado uniforme** obligatorio
+  (`|hᵢ − h₁| ≤ 10⁻⁹·máx(1, |h₁|)`; si no, 400: «La fórmula de 3 puntos
+  necesita datos igualmente espaciados: entre la fila 3 y la 4 el espaciado
+  es 0.5 y el de la primera pareja es 0.25»). Cada fórmula se calcula donde
+  tiene datos (extremo hacia adelante donde existe `x_(i+2)`, punto medio en
+  los interiores, extremo hacia atrás donde existe `x_(i−2)`; «—» donde no).
+  La columna **«Recomendada»** toma el punto medio donde existe y, en el
+  primer y el último punto, el extremo hacia adelante y hacia atrás.
+- **Comprobación:** además de la sustitución de `f'` y error ≤ cota, las
+  **identidades** (con los valores sin redondear, ✔ si la diferencia es
+  `≤ 10⁻⁹·máx(1, |valor|)`): punto medio `= (D⁺ + D⁻)/2` (el promedio de la
+  progresiva y la regresiva) y extremo `= 2·D(h) − D(2h)`, con
+  `D⁺(2h) = [f(x₀ + 2h) − f(x₀)]/(2h)` (extrapolación de Richardson, que
+  cancela el término de orden `h`). En modo función, en la fila 1; en modo
+  tabla, en cada punto, con los datos.
+
 ---
 
 ## API
@@ -550,6 +605,7 @@ Todas las rutas cuelgan de `/api/`.
 | POST | `/api/solve/newton/` | Resuelve un sistema no lineal con Newton |
 | POST | `/api/solve/bairstow/` | Halla todas las raíces de un polinomio con Bairstow |
 | POST | `/api/solve/diferencias-finitas/` | Aproxima `f'(x)` con las diferencias progresiva y regresiva |
+| POST | `/api/solve/tres-puntos/` | Aproxima `f'(x)` con la fórmula de 3 puntos (punto medio y extremos) |
 | POST | `/api/expressions/preview` | Valida una ecuación y devuelve su LaTeX (no resuelve nada) |
 
 ### Cuerpo de la petición
@@ -631,6 +687,10 @@ Modo tabla (`points` con x estrictamente creciente, de 2 a 20 puntos;
 }
 ```
 
+Fórmula de 3 puntos: el mismo cuerpo, con `formula` = `punto_medio`,
+`extremo_adelante`, `extremo_atras` o `all` (por defecto), `tolerance` por
+defecto `0.000001` y, en modo tabla, de 3 a 20 puntos igualmente espaciados.
+
 Vista previa de una ecuación:
 
 ```json
@@ -700,6 +760,12 @@ Campos propios de cada categoría:
   `rounding` (`R_k`), `within_bound`, `by_rounding`, `points` (nodos con su
   valor y su texto con `decimals` decimales) y `numerator_display`.
   `solution` es el último `D` de cada fórmula y `variables` sus claves.
+- **Fórmula de 3 puntos:** lo mismo, y además `rounding_text` (la regla de
+  `R_k`); en cada fórmula, `products_display` (cada `cᵢ·f(xᵢ)`) y
+  `denominator_display` (`factor·h`); en modo función, `comparison` (por fila
+  comparada: `k`, `h`, `forward` y `backward` con `D` y `real_error`, y
+  `text`) y `verification.identities`; en modo tabla, `recommended`
+  (`key`, `name`, `D`) en cada punto y `verification.identities` por punto.
 
 Los errores de validación de la entrada responden **400** con listas planas de
 mensajes por campo. Un despeje imposible en Punto Fijo responde **400** con el
@@ -739,9 +805,12 @@ metodos/
 │       │   ├── polynomial/          #   Bairstow: bairstow.py (iteración, deflación y cierres),
 │       │                            #   synthetic.py (divisiones sintéticas b y c), validation.py
 │       │                            #   (grado, coeficientes, texto → coeficientes), latex.py
-│       │   └── differentiation/     #   Diferencias finitas: formulas.py (fórmulas como datos),
-│       │                            #   finite_differences.py (modos función y tabla, cota,
-│       │                            #   comprobación), display.py (h exacto y decimales del paso a paso)
+│       │   └── differentiation/     #   Motor de fórmulas: formulas.py (cada fórmula como datos:
+│       │                            #   nodos, coeficientes, factor, orden y cota),
+│       │                            #   finite_differences.py (motor común: modos función y tabla,
+│       │                            #   cota, comprobación; y las diferencias), three_point.py
+│       │                            #   (fórmula de 3 puntos sobre el mismo motor), display.py
+│       │                            #   (h exacto y decimales del paso a paso)
 │       └── tests/                   # Tests unitarios y de API
 └── frontend/
     ├── Dockerfile                   # Compila con Node y sirve dist/ con nginx
@@ -759,7 +828,7 @@ metodos/
         │   ├── nonlinear/           # Formularios, detalles, PDF y teoría de Punto Fijo y Newton
         │   ├── polynomial/          # Bairstow: formulario (texto o coeficientes), vista de resultado
         │   │                        # por factores, tablas sintéticas, paso a paso, PDF y teoría
-        │   └── differentiation/     # Diferencias finitas: formulario (función o tabla), vista de
+        │   └── differentiation/     # Diferencias y 3 puntos: formulario (función o tabla), vista de
         │                            # resultado, tablas de refinamiento, paso a paso, comprobación, PDF
         │                            # y teoría (theory/, con las respuestas del solver en JSON)
         ├── components/              # ResultsTable, ConvergenceChart, MathFormula, MatrixInput,
@@ -808,6 +877,32 @@ sin tocar `views.py` ni `urls.py`.
 
 No hace falta tocar `App.vue`, el router ni `NavMenu.vue`.
 
+### Agregar una fórmula de derivación (por ejemplo, la de 5 puntos)
+
+1. **Fórmulas** en `solvers/differentiation/formulas.py`: una `Formula` por
+   variante con `key`, `name`, `symbol_latex` (con superíndice, para que
+   `D^{…}_{k}` sea LaTeX válido), `nodes` (`(dᵢ, cᵢ)` en el orden en que se
+   escriben), `divisor` (el factor de `factor·h`), `order` (`p` de `O(hᵖ)`),
+   `bound_derivative` y `bound_coefficient` (la cota `c·hᵖ·máx|f⁽ⁿ⁾|` en el
+   intervalo del menor al mayor desplazamiento), y los textos de la fórmula y
+   la cota. Luego, su dict de opciones del selector (como
+   `THREE_POINT_CHOICES`).
+2. **Solver**, como `three_point.py`: llama a `_function_mode` y
+   `_table_points` de `finite_differences.py` con sus opciones, su regla de
+   redondeo y las derivadas extra, y agrega lo propio (comprobación,
+   columna recomendada…). `build_result` arma el `SolverResult`.
+3. **Serializer**: una subclase de `DifferentiationSerializer` con su campo
+   `formula`, su tolerancia y su `min_points` (y validaciones extra de la
+   tabla, como el espaciado uniforme).
+4. **Registro y ejemplos**: `registry.py` y `examples_data.py`.
+5. **Frontend**: en `methods/differentiation/index.js`, una entrada en
+   `methods[slug]` con su `createStore` (opciones del selector, fórmula por
+   defecto y mínimo de puntos, ver `store.js`) y su `defaultTolerance`. La
+   vista, las tablas, el paso a paso, el gráfico y el PDF ya dependen sólo de
+   `result.formulas` y de los campos opcionales de la respuesta
+   (`products_display`, `comparison`, `identities`, `recommended`,
+   `rounding_text`).
+
 ---
 
 ## Seguridad del parser de expresiones
@@ -838,7 +933,7 @@ cd backend
 python manage.py test numeric_methods
 ```
 
-**311 tests**, todos en verde:
+**335 tests**, todos en verde:
 
 | Archivo | Tests | Qué cubre |
 | --- | --- | --- |
@@ -853,6 +948,7 @@ python manage.py test numeric_methods
 | `test_newton.py` | 38 | Newton y regla de Cramer: iteraciones calculadas a mano, Jacobiana singular, endpoint y comprobación (tres ejercicios con solución entera, ejemplo decimal, funciones trigonométricas, no convergencia) |
 | `test_newton_steps.py` | 16 | Derivadas parciales paso a paso y sustitución en F |
 | `test_differentiation.py` | 29 | Diferencias progresiva y regresiva: fórmulas exactas con `x²`, cúbica, Burden y Faires (filas 1, 2 y parada), respuestas guardadas para la teoría iguales a las del solver, filas de parada de los ejemplos, mínimo de 6 filas, no convergencia, razón ≈ 0.5, error real ≤ cota, h exacto, errores 400, modo tabla (secante común, datos, espaciado no uniforme), comprobación término a término, `abs(x)` y endpoint |
+| `test_three_point.py` | 24 | Fórmula de 3 puntos: fracciones exactas (cúbica y `x²`), Burden y Faires (filas 1, 2, parada 11 y comparación con diferencias), filas de parada y primeras filas de los ejemplos, cuadrática exacta, razón ≈ 0.25, error real ≤ cota + R, identidades, productos del paso a paso, modo tabla (valores, «—», recomendada, identidades por punto, `x³` con errores iguales a la cota, dato alterado), errores 400 (tabla no uniforme, 2 puntos, dominio en «x₀ − 2h», tolerancia, máximo) y endpoint |
 | `test_bairstow.py` | 30 | Bairstow: divisiones sintéticas, primera iteración de Chapra calculada a mano, ejemplos, raíces nulas, raíz doble, cierres directos, fallos, endpoint y comprobación de raíces (sustitución término a término, potencias faltantes, par complejo, raíz nula y residuo) |
 
 ---
@@ -864,7 +960,10 @@ python manage.py test numeric_methods
 - Los métodos para sistemas no lineales admiten de 2 a 6 ecuaciones; los
   lineales, de 3 a 12 variables en el formulario; Bairstow, polinomios de
   grado 3 a 10; diferencias finitas, de 6 a 30 refinamientos de h o de 2 a
-  20 puntos.
-- En diferencias finitas, `M = máx |f''|` se estima por muestreo (401
-  puntos), no se calcula exactamente: entre dos muestras podría haber un
-  máximo algo mayor. Las fórmulas de 3 y 5 puntos quedan para otra tarea.
+  20 puntos; la fórmula de 3 puntos, de 6 a 30 refinamientos o de 3 a 20
+  puntos igualmente espaciados.
+- En diferencias finitas y en la fórmula de 3 puntos, `M = máx |f''|` (o
+  `|f'''|`) se estima por muestreo (401 puntos), no se calcula exactamente:
+  entre dos muestras podría haber un máximo algo mayor.
+- La teoría de la fórmula de 3 puntos y la fórmula de 5 puntos quedan para
+  otra tarea.

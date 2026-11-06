@@ -4,12 +4,14 @@
 //  - modo función: x₀ sustituido en f'(x) término a término (como en Newton
 //    y Punto Fijo) y la comparación final aproximación / exacta / error / cota;
 //  - modo tabla: la secante común (D⁺ en xᵢ = D⁻ en xᵢ₊₁) y, con función para
-//    comparar, los datos contra f, f'(xᵢ) sustituida y error ≤ cota.
+//    comparar, los datos contra f, f'(xᵢ) sustituida y error ≤ cota;
+//  - fórmula de 3 puntos: en lugar de la secante, las identidades punto medio
+//    = (D⁺ + D⁻)/2 y extremo = 2·D(h) − D(2h) (fila 1 o cada punto).
 import { computed } from 'vue'
 import MathFormula from '../../components/MathFormula.vue'
 import { formatNumber } from '../../utils/iterationSteps'
 import { latexNumber } from '../../utils/latexFormulas'
-import { boundMark, cell, substitutionLatex } from './formulas'
+import { boundMark, cell, identityLatex, substitutionLatex } from './formulas'
 
 const props = defineProps({
   result: { type: Object, required: true },
@@ -26,8 +28,28 @@ const failedLines = computed(() =>
     .filter((line) => line.rows.length)
 )
 
+// Identidades (fórmula de 3 puntos): en modo función, una lista; en modo
+// tabla, una por punto con las fórmulas que aplican allí.
+const identityGroups = computed(() => {
+  const ids = check.value.identities
+  if (!ids) return []
+  const groups = isTable.value ? ids : [{ i: null, items: ids }]
+  return groups
+    .filter((group) => group.items.length)
+    .map((group) => ({
+      key: group.i ?? 0,
+      label: group.i === null ? null : `x_{${group.i}} = ${group.x_display.latex}`,
+      lines: group.items.map((item) => ({
+        key: item.key,
+        latex: identityLatex(item, formulas.value.find((f) => f.key === item.key)),
+        ok: item.ok,
+        name: item.name,
+      })),
+    }))
+})
+
 const secantLines = computed(() =>
-  check.value.secant.map((pair) => ({
+  (check.value.secant ?? []).map((pair) => ({
     key: pair.i,
     latex:
       `D^{+}(x_{${pair.i}}) = D^{-}(x_{${pair.i + 1}}) = ${latexNumber(pair.forward)}` +
@@ -49,14 +71,35 @@ const substitutions = computed(() =>
   <section class="verification">
     <h4>Comprobación</h4>
 
-    <!-- Modo tabla: secante común (siempre) -->
-    <template v-if="isTable">
+    <!-- Fórmula de 3 puntos: identidades -->
+    <template v-if="identityGroups.length">
       <p class="section-text">
+        {{ isTable ? 'En cada punto, con los datos' : 'En la fila 1, con los valores sin redondear' }}:
+        el punto medio es el promedio de la progresiva y la regresiva,
+        <MathFormula expression="\frac{D^{+}(h) + D^{-}(h)}{2}" />, y cada extremo es una extrapolación de
+        Richardson de la diferencia de su lado, <MathFormula expression="2D(h) - D(2h)" />, que cancela el
+        término de orden h del error.
+      </p>
+      <div class="check-list">
+        <div v-for="group in identityGroups" :key="group.key" class="identity-group">
+          <MathFormula v-if="group.label" :expression="group.label" class="identity-point" />
+          <div v-for="line in group.lines" :key="line.key" class="check-line">
+            <span class="identity-name">{{ line.name }}:</span>
+            <MathFormula :expression="line.latex" />
+            <span :class="line.ok ? 'mark mark-ok' : 'mark mark-warn'">{{ line.ok ? '✔' : '⚠' }}</span>
+          </div>
+        </div>
+      </div>
+    </template>
+
+    <!-- Modo tabla: secante común (diferencias) -->
+    <template v-if="isTable">
+      <p v-if="secantLines.length" class="section-text">
         La progresiva en <MathFormula expression="x_i" /> y la regresiva en
         <MathFormula expression="x_{i+1}" /> usan la misma recta secante entre los dos puntos, así
         que deben ser iguales:
       </p>
-      <div class="check-list">
+      <div v-if="secantLines.length" class="check-list">
         <div v-for="line in secantLines" :key="line.key" class="check-line">
           <MathFormula :expression="line.latex" />
           <span :class="line.ok ? 'mark mark-ok' : 'mark mark-warn'">{{ line.ok ? '✔' : '⚠' }}</span>
@@ -160,7 +203,8 @@ const substitutions = computed(() =>
       </div>
     </template>
     <p v-if="!result.function && isTable" class="section-text note">
-      Sin función para comparar no hay derivada exacta: sólo se comprueba la secante común.
+      Sin función para comparar no hay derivada exacta: sólo se comprueba
+      {{ identityGroups.length ? 'cada identidad' : 'la secante común' }}.
     </p>
   </section>
 </template>
@@ -217,6 +261,26 @@ const substitutions = computed(() =>
 .check-table td:first-child,
 .check-table th:first-child {
   text-align: left;
+}
+
+.identity-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.identity-group + .identity-group {
+  margin-top: var(--space-2);
+}
+
+.identity-point {
+  font-weight: var(--weight-semibold);
+  color: var(--color-ink);
+}
+
+.identity-name {
+  font-size: var(--text-small);
+  color: var(--color-ink-muted);
 }
 
 .final-line {

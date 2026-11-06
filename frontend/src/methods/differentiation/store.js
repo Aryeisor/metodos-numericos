@@ -2,7 +2,7 @@
 // conservan cada uno lo escrito:
 //  - «Función»: f(x), x₀ y h₀;
 //  - «Tabla de datos»: puntos (xᵢ, yᵢ) y, opcional, una función para comparar.
-// En ambos, la fórmula ("forward", "backward" o "both"). La tolerancia y el
+// En ambos, la fórmula (las opciones dependen del método: ver abajo). La tolerancia y el
 // máximo de refinamientos los maneja SolverView (ver index.js).
 import { reactive } from 'vue'
 
@@ -20,15 +20,31 @@ export const FORMULA_OPTIONS = [
   { value: 'both', label: 'Ambas' },
 ]
 
+// Fórmula de 3 puntos (mismos valores que THREE_POINT_CHOICES del backend).
+export const THREE_POINT_OPTIONS = [
+  { value: 'punto_medio', label: 'Punto medio' },
+  { value: 'extremo_adelante', label: 'Extremo hacia adelante' },
+  { value: 'extremo_atras', label: 'Extremo hacia atrás' },
+  { value: 'all', label: 'Todas' },
+]
+
 const emptyRows = (n) => Array.from({ length: n }, () => [null, null])
 
-export function createDifferentiationStore() {
+/**
+ * Cada método de la categoría pasa sus opciones del selector, la fórmula por
+ * defecto y el mínimo de puntos del modo tabla.
+ */
+export function createDifferentiationStore({
+  formulaOptions = FORMULA_OPTIONS,
+  defaultFormula = 'both',
+  minPoints = MIN_POINTS,
+} = {}) {
   const state = reactive({
     mode: MODES.FUNCTION,
     function: '',
     // [x₀, h₀]; null = campo vacío.
     start: [null, DEFAULT_H0],
-    formula: 'both',
+    formula: defaultFormula,
     points: emptyRows(DEFAULT_ROWS),
     compare: '',
   })
@@ -42,7 +58,7 @@ export function createDifferentiationStore() {
   }
 
   function removeRow(index) {
-    if (state.points.length > MIN_POINTS) state.points = state.points.filter((_, i) => i !== index)
+    if (state.points.length > minPoints) state.points = state.points.filter((_, i) => i !== index)
   }
 
   function loadExample(example) {
@@ -77,5 +93,18 @@ export function createDifferentiationStore() {
     return { mode: MODES.FUNCTION, formula: state.formula, function: state.function.trim(), x0, h0 }
   }
 
-  return { state, setMode, addRow, removeRow, loadExample, hasInvalidValues, buildPayload }
+  return {
+    state,
+    formulaOptions,
+    minPoints,
+    setMode,
+    addRow,
+    removeRow,
+    loadExample,
+    hasInvalidValues,
+    buildPayload,
+  }
 }
+
+export const createThreePointStore = () =>
+  createDifferentiationStore({ formulaOptions: THREE_POINT_OPTIONS, defaultFormula: 'all', minPoints: 3 })

@@ -13,7 +13,7 @@ import NumericFieldsInput from '../../components/NumericFieldsInput.vue'
 import { useExpressionPreviews } from '../../composables/useExpressionPreviews'
 import { formatNumber } from '../../utils/iterationSteps'
 import { INPUT_ERROR_MESSAGES, parseNumericInput } from '../../utils/numberInput'
-import { MAX_POINTS, MIN_POINTS, MODES } from './store'
+import { MAX_POINTS, MODES } from './store'
 
 const props = defineProps({
   store: { type: Object, required: true },
@@ -21,6 +21,7 @@ const props = defineProps({
 
 const state = computed(() => props.store.state)
 const isTable = computed(() => state.value.mode === MODES.TABLE)
+const MIN_POINTS = computed(() => props.store.minPoints)
 
 // --- f(x) o la función para comparar: un solo campo de texto visible ------
 const functionText = computed({
