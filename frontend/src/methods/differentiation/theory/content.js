@@ -72,22 +72,29 @@ export const example = {
   last: rows.at(-1).extra,
 }
 
-/** Props de DifferenceStepDetail para la fila k y una fórmula, como en RefinementTable. */
-export function stepDetail(k, formula) {
-  const step = rows[k - 1]
+/**
+ * Props de DifferenceStepDetail para la fila k y una fórmula, como en
+ * RefinementTable. `result`: la respuesta del solver (por defecto, la de esta
+ * página; la fórmula de 3 puntos pasa la suya).
+ */
+export function stepDetail(k, formula, result = FUNCTION_EXAMPLE) {
+  const steps = result.iterations
+  const step = steps[k - 1]
+  const f = result.function
   return {
     formula,
     item: step.extra[formula.key],
     label: k,
-    stepLine: stepSizeLatex(k, step.extra.h, h0),
+    stepLine: stepSizeLatex(k, step.extra.h, steps[0].extra.h),
     h: step.extra.h,
-    template: fn.template,
-    exact: FUNCTION_EXAMPLE.exact,
-    exactSource: FUNCTION_EXAMPLE.verification.substitution,
-    derivativeLatex: fn.derivative.latex,
-    boundDerivativeLatex: fn.higher_derivatives[formula.bound_derivative]?.latex ?? null,
-    previous: k > 1 ? rows[k - 2].extra[formula.key] : null,
-    samples: FUNCTION_EXAMPLE.sampling_points,
+    template: f.template,
+    exact: result.exact,
+    exactSource: result.verification.substitution,
+    derivativeLatex: f.derivative.latex,
+    boundDerivativeLatex: f.higher_derivatives[formula.bound_derivative]?.latex ?? null,
+    previous: k > 1 ? steps[k - 2].extra[formula.key] : null,
+    samples: result.sampling_points,
+    roundingText: result.rounding_text ?? undefined,
   }
 }
 

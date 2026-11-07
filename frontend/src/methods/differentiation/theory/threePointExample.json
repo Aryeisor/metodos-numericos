@@ -1,0 +1,5499 @@
+{
+  "function": {
+    "request": {
+      "mode": "function",
+      "formula": "all",
+      "function": "x*exp(x)",
+      "x0": 2,
+      "h0": 0.1,
+      "tolerance": 1e-06,
+      "max_iterations": 25
+    },
+    "method": "tres-puntos",
+    "category": "differentiation",
+    "converged": true,
+    "iterations": [
+      {
+        "iteration": 1,
+        "x": [
+          22.22878688030728,
+          22.03230486614645,
+          22.054521341023836
+        ],
+        "error": null,
+        "extra": {
+          "h": {
+            "value": 0.1,
+            "exact": true,
+            "text": "0.1",
+            "latex": "0.1",
+            "approx": null
+          },
+          "punto_medio": {
+            "D": 22.22878688030728,
+            "previous_D": null,
+            "estimated_error": null,
+            "real_error": 0.06161858351532956,
+            "bound": 0.06941244425682505,
+            "M": 41.64746655409502,
+            "M_substitution": {
+              "x": 2.1,
+              "x_display": {
+                "exact": true,
+                "text": "2.1",
+                "latex": "2.1",
+                "approx": null
+              },
+              "function_latex": "x e^{x} + 3 e^{x}",
+              "function_text": "x*exp(x) + 3*exp(x)",
+              "terms": [
+                {
+                  "sign": "+",
+                  "template": "@@0@@ \\cdot e^{@@0@@}",
+                  "text": "@@0@@*exp(@@0@@)",
+                  "value": 17.148956816392065
+                },
+                {
+                  "sign": "+",
+                  "template": "3 \\cdot e^{@@0@@}",
+                  "text": "3*exp(@@0@@)",
+                  "value": 24.49850973770295
+                }
+              ],
+              "value": 41.64746655409502
+            },
+            "x_M": 2.1,
+            "interval": [
+              1.9,
+              2.1
+            ],
+            "interval_display": [
+              {
+                "exact": true,
+                "text": "1.9",
+                "latex": "1.9",
+                "approx": null
+              },
+              {
+                "exact": true,
+                "text": "2.1",
+                "latex": "2.1",
+                "approx": null
+              }
+            ],
+            "ratio": null,
+            "rounding": 2.661275661275316e-13,
+            "within_bound": true,
+            "by_rounding": false,
+            "points": [
+              {
+                "offset": 1,
+                "weight": 1,
+                "role": "x_0 + h",
+                "x": 2.1,
+                "display": {
+                  "exact": true,
+                  "text": "2.1",
+                  "latex": "2.1",
+                  "approx": null
+                },
+                "f": 17.148956816392065,
+                "f_display": "17.1489568"
+              },
+              {
+                "offset": -1,
+                "weight": -1,
+                "role": "x_0 - h",
+                "x": 1.9,
+                "display": {
+                  "exact": true,
+                  "text": "1.9",
+                  "latex": "1.9",
+                  "approx": null
+                },
+                "f": 12.703199440330609,
+                "f_display": "12.7031994"
+              }
+            ],
+            "decimals": 7,
+            "numerator_display": "4.4457574",
+            "products_display": [
+              "17.1489568",
+              "-12.7031994"
+            ],
+            "denominator_display": "0.2"
+          },
+          "extremo_adelante": {
+            "D": 22.03230486614645,
+            "previous_D": null,
+            "estimated_error": null,
+            "real_error": 0.134863430645499,
+            "bound": 0.1564335673235248,
+            "M": 46.93007019705743,
+            "M_substitution": {
+              "x": 2.2,
+              "x_display": {
+                "exact": true,
+                "text": "2.2",
+                "latex": "2.2",
+                "approx": null
+              },
+              "function_latex": "x e^{x} + 3 e^{x}",
+              "function_text": "x*exp(x) + 3*exp(x)",
+              "terms": [
+                {
+                  "sign": "+",
+                  "template": "@@0@@ \\cdot e^{@@0@@}",
+                  "text": "@@0@@*exp(@@0@@)",
+                  "value": 19.85502969875507
+                },
+                {
+                  "sign": "+",
+                  "template": "3 \\cdot e^{@@0@@}",
+                  "text": "3*exp(@@0@@)",
+                  "value": 27.075040498302364
+                }
+              ],
+              "value": 46.93007019705743
+            },
+            "x_M": 2.2,
+            "interval": [
+              2.0,
+              2.2
+            ],
+            "interval_display": [
+              {
+                "exact": true,
+                "text": "2",
+                "latex": "2",
+                "approx": null
+              },
+              {
+                "exact": true,
+                "text": "2.2",
+                "latex": "2.2",
+                "approx": null
+              }
+            ],
+            "ratio": null,
+            "rounding": 1.2034181715535315e-12,
+            "within_bound": true,
+            "by_rounding": false,
+            "points": [
+              {
+                "offset": 0,
+                "weight": -3,
+                "role": "x_0",
+                "x": 2.0,
+                "display": {
+                  "exact": true,
+                  "text": "2",
+                  "latex": "2",
+                  "approx": null
+                },
+                "f": 14.7781121978613,
+                "f_display": "14.7781122"
+              },
+              {
+                "offset": 1,
+                "weight": 4,
+                "role": "x_0 + h",
+                "x": 2.1,
+                "display": {
+                  "exact": true,
+                  "text": "2.1",
+                  "latex": "2.1",
+                  "approx": null
+                },
+                "f": 17.148956816392065,
+                "f_display": "17.14895682"
+              },
+              {
+                "offset": 2,
+                "weight": -1,
+                "role": "x_0 + 2h",
+                "x": 2.2,
+                "display": {
+                  "exact": true,
+                  "text": "2.2",
+                  "latex": "2.2",
+                  "approx": null
+                },
+                "f": 19.85502969875507,
+                "f_display": "19.8550297"
+              }
+            ],
+            "decimals": 8,
+            "numerator_display": "4.40646098",
+            "products_display": [
+              "-44.3343366",
+              "68.59582728",
+              "-19.8550297"
+            ],
+            "denominator_display": "0.2"
+          },
+          "extremo_atras": {
+            "D": 22.054521341023836,
+            "previous_D": null,
+            "estimated_error": null,
+            "real_error": 0.11264695576811334,
+            "bound": 0.12315093498217751,
+            "M": 36.94528049465325,
+            "M_substitution": {
+              "x": 2.0,
+              "x_display": {
+                "exact": true,
+                "text": "2",
+                "latex": "2",
+                "approx": null
+              },
+              "function_latex": "x e^{x} + 3 e^{x}",
+              "function_text": "x*exp(x) + 3*exp(x)",
+              "terms": [
+                {
+                  "sign": "+",
+                  "template": "@@0@@ \\cdot e^{@@0@@}",
+                  "text": "@@0@@*exp(@@0@@)",
+                  "value": 14.7781121978613
+                },
+                {
+                  "sign": "+",
+                  "template": "3 \\cdot e^{@@0@@}",
+                  "text": "3*exp(@@0@@)",
+                  "value": 22.16716829679195
+                }
+              ],
+              "value": 36.94528049465325
+            },
+            "x_M": 2.0,
+            "interval": [
+              1.8,
+              2.0
+            ],
+            "interval_display": [
+              {
+                "exact": true,
+                "text": "1.8",
+                "latex": "1.8",
+                "approx": null
+              },
+              {
+                "exact": true,
+                "text": "2",
+                "latex": "2",
+                "approx": null
+              }
+            ],
+            "ratio": null,
+            "rounding": 9.2567475085143e-13,
+            "within_bound": true,
+            "by_rounding": false,
+            "points": [
+              {
+                "offset": 0,
+                "weight": 3,
+                "role": "x_0",
+                "x": 2.0,
+                "display": {
+                  "exact": true,
+                  "text": "2",
+                  "latex": "2",
+                  "approx": null
+                },
+                "f": 14.7781121978613,
+                "f_display": "14.7781122"
+              },
+              {
+                "offset": -1,
+                "weight": -4,
+                "role": "x_0 - h",
+                "x": 1.9,
+                "display": {
+                  "exact": true,
+                  "text": "1.9",
+                  "latex": "1.9",
+                  "approx": null
+                },
+                "f": 12.703199440330609,
+                "f_display": "12.70319944"
+              },
+              {
+                "offset": -2,
+                "weight": 1,
+                "role": "x_0 - 2h",
+                "x": 1.8,
+                "display": {
+                  "exact": true,
+                  "text": "1.8",
+                  "latex": "1.8",
+                  "approx": null
+                },
+                "f": 10.889365435943304,
+                "f_display": "10.88936544"
+              }
+            ],
+            "decimals": 8,
+            "numerator_display": "4.41090428",
+            "products_display": [
+              "44.3343366",
+              "-50.81279776",
+              "10.88936544"
+            ],
+            "denominator_display": "0.2"
+          }
+        }
+      },
+      {
+        "iteration": 2,
+        "x": [
+          22.18256485779758,
+          22.134956617395503,
+          22.137729053180255
+        ],
+        "error": 0.10265175124905213,
+        "extra": {
+          "h": {
+            "value": 0.05,
+            "exact": true,
+            "text": "0.05",
+            "latex": "0.05",
+            "approx": null
+          },
+          "punto_medio": {
+            "D": 22.18256485779758,
+            "previous_D": 22.22878688030728,
+            "estimated_error": 0.0462220225096992,
+            "real_error": 0.01539656100563036,
+            "bound": 0.01634495857785383,
+            "M": 39.22790058684919,
+            "M_substitution": {
+              "x": 2.05,
+              "x_display": {
+                "exact": true,
+                "text": "2.05",
+                "latex": "2.05",
+                "approx": null
+              },
+              "function_latex": "x e^{x} + 3 e^{x}",
+              "function_text": "x*exp(x) + 3*exp(x)",
+              "terms": [
+                {
+                  "sign": "+",
+                  "template": "@@0@@ \\cdot e^{@@0@@}",
+                  "text": "@@0@@*exp(@@0@@)",
+                  "value": 15.924197267928879
+                },
+                {
+                  "sign": "+",
+                  "template": "3 \\cdot e^{@@0@@}",
+                  "text": "3*exp(@@0@@)",
+                  "value": 23.303703318920313
+                }
+              ],
+              "value": 39.22790058684919
+            },
+            "x_M": 2.05,
+            "interval": [
+              1.95,
+              2.05
+            ],
+            "interval_display": [
+              {
+                "exact": true,
+                "text": "1.95",
+                "latex": "1.95",
+                "approx": null
+              },
+              {
+                "exact": true,
+                "text": "2.05",
+                "latex": "2.05",
+                "approx": null
+              }
+            ],
+            "ratio": 0.24986879164140444,
+            "rounding": 5.268295356613038e-13,
+            "within_bound": true,
+            "by_rounding": false,
+            "points": [
+              {
+                "offset": 1,
+                "weight": 1,
+                "role": "x_0 + h",
+                "x": 2.05,
+                "display": {
+                  "exact": true,
+                  "text": "2.05",
+                  "latex": "2.05",
+                  "approx": null
+                },
+                "f": 15.924197267928879,
+                "f_display": "15.9241973"
+              },
+              {
+                "offset": -1,
+                "weight": -1,
+                "role": "x_0 - h",
+                "x": 1.95,
+                "display": {
+                  "exact": true,
+                  "text": "1.95",
+                  "latex": "1.95",
+                  "approx": null
+                },
+                "f": 13.70594078214912,
+                "f_display": "13.7059408"
+              }
+            ],
+            "decimals": 7,
+            "numerator_display": "2.2182565",
+            "products_display": [
+              "15.9241973",
+              "-13.7059408"
+            ],
+            "denominator_display": "0.1"
+          },
+          "extremo_adelante": {
+            "D": 22.134956617395503,
+            "previous_D": 22.03230486614645,
+            "estimated_error": 0.10265175124905213,
+            "real_error": 0.03221167939644687,
+            "bound": 0.034706222128412526,
+            "M": 41.64746655409502,
+            "M_substitution": {
+              "x": 2.1,
+              "x_display": {
+                "exact": true,
+                "text": "2.1",
+                "latex": "2.1",
+                "approx": null
+              },
+              "function_latex": "x e^{x} + 3 e^{x}",
+              "function_text": "x*exp(x) + 3*exp(x)",
+              "terms": [
+                {
+                  "sign": "+",
+                  "template": "@@0@@ \\cdot e^{@@0@@}",
+                  "text": "@@0@@*exp(@@0@@)",
+                  "value": 17.148956816392065
+                },
+                {
+                  "sign": "+",
+                  "template": "3 \\cdot e^{@@0@@}",
+                  "text": "3*exp(@@0@@)",
+                  "value": 24.49850973770295
+                }
+              ],
+              "value": 41.64746655409502
+            },
+            "x_M": 2.1,
+            "interval": [
+              2.0,
+              2.1
+            ],
+            "interval_display": [
+              {
+                "exact": true,
+                "text": "2",
+                "latex": "2",
+                "approx": null
+              },
+              {
+                "exact": true,
+                "text": "2.1",
+                "latex": "2.1",
+                "approx": null
+              }
+            ],
+            "ratio": 0.23884665577815714,
+            "rounding": 2.2454041517771677e-12,
+            "within_bound": true,
+            "by_rounding": false,
+            "points": [
+              {
+                "offset": 0,
+                "weight": -3,
+                "role": "x_0",
+                "x": 2.0,
+                "display": {
+                  "exact": true,
+                  "text": "2",
+                  "latex": "2",
+                  "approx": null
+                },
+                "f": 14.7781121978613,
+                "f_display": "14.7781122"
+              },
+              {
+                "offset": 1,
+                "weight": 4,
+                "role": "x_0 + h",
+                "x": 2.05,
+                "display": {
+                  "exact": true,
+                  "text": "2.05",
+                  "latex": "2.05",
+                  "approx": null
+                },
+                "f": 15.924197267928879,
+                "f_display": "15.92419727"
+              },
+              {
+                "offset": 2,
+                "weight": -1,
+                "role": "x_0 + 2h",
+                "x": 2.1,
+                "display": {
+                  "exact": true,
+                  "text": "2.1",
+                  "latex": "2.1",
+                  "approx": null
+                },
+                "f": 17.148956816392065,
+                "f_display": "17.14895682"
+              }
+            ],
+            "decimals": 8,
+            "numerator_display": "2.21349566",
+            "products_display": [
+              "-44.3343366",
+              "63.69678908",
+              "-17.14895682"
+            ],
+            "denominator_display": "0.1"
+          },
+          "extremo_atras": {
+            "D": 22.137729053180255,
+            "previous_D": 22.054521341023836,
+            "estimated_error": 0.08320771215641898,
+            "real_error": 0.029439243611694366,
+            "bound": 0.030787733745544377,
+            "M": 36.94528049465325,
+            "M_substitution": {
+              "x": 2.0,
+              "x_display": {
+                "exact": true,
+                "text": "2",
+                "latex": "2",
+                "approx": null
+              },
+              "function_latex": "x e^{x} + 3 e^{x}",
+              "function_text": "x*exp(x) + 3*exp(x)",
+              "terms": [
+                {
+                  "sign": "+",
+                  "template": "@@0@@ \\cdot e^{@@0@@}",
+                  "text": "@@0@@*exp(@@0@@)",
+                  "value": 14.7781121978613
+                },
+                {
+                  "sign": "+",
+                  "template": "3 \\cdot e^{@@0@@}",
+                  "text": "3*exp(@@0@@)",
+                  "value": 22.16716829679195
+                }
+              ],
+              "value": 36.94528049465325
+            },
+            "x_M": 2.0,
+            "interval": [
+              1.9,
+              2.0
+            ],
+            "interval_display": [
+              {
+                "exact": true,
+                "text": "1.9",
+                "latex": "1.9",
+                "approx": null
+              },
+              {
+                "exact": true,
+                "text": "2",
+                "latex": "2",
+                "approx": null
+              }
+            ],
+            "ratio": 0.26134078289959123,
+            "rounding": 1.969241163688822e-12,
+            "within_bound": true,
+            "by_rounding": false,
+            "points": [
+              {
+                "offset": 0,
+                "weight": 3,
+                "role": "x_0",
+                "x": 2.0,
+                "display": {
+                  "exact": true,
+                  "text": "2",
+                  "latex": "2",
+                  "approx": null
+                },
+                "f": 14.7781121978613,
+                "f_display": "14.7781122"
+              },
+              {
+                "offset": -1,
+                "weight": -4,
+                "role": "x_0 - h",
+                "x": 1.95,
+                "display": {
+                  "exact": true,
+                  "text": "1.95",
+                  "latex": "1.95",
+                  "approx": null
+                },
+                "f": 13.70594078214912,
+                "f_display": "13.70594078"
+              },
+              {
+                "offset": -2,
+                "weight": 1,
+                "role": "x_0 - 2h",
+                "x": 1.9,
+                "display": {
+                  "exact": true,
+                  "text": "1.9",
+                  "latex": "1.9",
+                  "approx": null
+                },
+                "f": 12.703199440330609,
+                "f_display": "12.70319944"
+              }
+            ],
+            "decimals": 8,
+            "numerator_display": "2.21377292",
+            "products_display": [
+              "44.3343366",
+              "-54.82376312",
+              "12.70319944"
+            ],
+            "denominator_display": "0.1"
+          }
+        }
+      },
+      {
+        "iteration": 3,
+        "x": [
+          22.17101693188372,
+          22.15929580091334,
+          22.15964221102638
+        ],
+        "error": 0.024339183517838592,
+        "extra": {
+          "h": {
+            "value": 0.025,
+            "exact": true,
+            "text": "0.025",
+            "latex": "0.025",
+            "approx": null
+          },
+          "punto_medio": {
+            "D": 22.17101693188372,
+            "previous_D": 22.18256485779758,
+            "estimated_error": 0.011547925913859558,
+            "real_error": 0.0038486350917708023,
+            "bound": 0.003965620572583349,
+            "M": 38.06995749680014,
+            "M_substitution": {
+              "x": 2.025,
+              "x_display": {
+                "exact": true,
+                "text": "2.025",
+                "latex": "2.025",
+                "approx": null
+              },
+              "function_latex": "x e^{x} + 3 e^{x}",
+              "function_text": "x*exp(x) + 3*exp(x)",
+              "terms": [
+                {
+                  "sign": "+",
+                  "template": "@@0@@ \\cdot e^{@@0@@}",
+                  "text": "@@0@@*exp(@@0@@)",
+                  "value": 15.341624662889611
+                },
+                {
+                  "sign": "+",
+                  "template": "3 \\cdot e^{@@0@@}",
+                  "text": "3*exp(@@0@@)",
+                  "value": 22.728332833910535
+                }
+              ],
+              "value": 38.06995749680014
+            },
+            "x_M": 2.025,
+            "interval": [
+              1.975,
+              2.025
+            ],
+            "interval_display": [
+              {
+                "exact": true,
+                "text": "1.975",
+                "latex": "1.975",
+                "approx": null
+              },
+              {
+                "exact": true,
+                "text": "2.025",
+                "latex": "2.025",
+                "approx": null
+              }
+            ],
+            "ratio": 0.2499671900993603,
+            "rounding": 1.0509505060687818e-12,
+            "within_bound": true,
+            "by_rounding": false,
+            "points": [
+              {
+                "offset": 1,
+                "weight": 1,
+                "role": "x_0 + h",
+                "x": 2.025,
+                "display": {
+                  "exact": true,
+                  "text": "2.025",
+                  "latex": "2.025",
+                  "approx": null
+                },
+                "f": 15.341624662889611,
+                "f_display": "15.34162466"
+              },
+              {
+                "offset": -1,
+                "weight": -1,
+                "role": "x_0 - h",
+                "x": 1.975,
+                "display": {
+                  "exact": true,
+                  "text": "1.975",
+                  "latex": "1.975",
+                  "approx": null
+                },
+                "f": 14.233073816295425,
+                "f_display": "14.23307382"
+              }
+            ],
+            "decimals": 8,
+            "numerator_display": "1.10855084",
+            "products_display": [
+              "15.34162466",
+              "-14.23307382"
+            ],
+            "denominator_display": "0.05"
+          },
+          "extremo_adelante": {
+            "D": 22.15929580091334,
+            "previous_D": 22.134956617395503,
+            "estimated_error": 0.024339183517838592,
+            "real_error": 0.007872495878608277,
+            "bound": 0.008172479288926915,
+            "M": 39.22790058684919,
+            "M_substitution": {
+              "x": 2.05,
+              "x_display": {
+                "exact": true,
+                "text": "2.05",
+                "latex": "2.05",
+                "approx": null
+              },
+              "function_latex": "x e^{x} + 3 e^{x}",
+              "function_text": "x*exp(x) + 3*exp(x)",
+              "terms": [
+                {
+                  "sign": "+",
+                  "template": "@@0@@ \\cdot e^{@@0@@}",
+                  "text": "@@0@@*exp(@@0@@)",
+                  "value": 15.924197267928879
+                },
+                {
+                  "sign": "+",
+                  "template": "3 \\cdot e^{@@0@@}",
+                  "text": "3*exp(@@0@@)",
+                  "value": 23.303703318920313
+                }
+              ],
+              "value": 39.22790058684919
+            },
+            "x_M": 2.05,
+            "interval": [
+              2.0,
+              2.05
+            ],
+            "interval_display": [
+              {
+                "exact": true,
+                "text": "2",
+                "latex": "2",
+                "approx": null
+              },
+              {
+                "exact": true,
+                "text": "2.05",
+                "latex": "2.05",
+                "approx": null
+              }
+            ],
+            "ratio": 0.2443988027360243,
+            "rounding": 4.341687031068367e-12,
+            "within_bound": true,
+            "by_rounding": false,
+            "points": [
+              {
+                "offset": 0,
+                "weight": -3,
+                "role": "x_0",
+                "x": 2.0,
+                "display": {
+                  "exact": true,
+                  "text": "2",
+                  "latex": "2",
+                  "approx": null
+                },
+                "f": 14.7781121978613,
+                "f_display": "14.778112198"
+              },
+              {
+                "offset": 1,
+                "weight": 4,
+                "role": "x_0 + h",
+                "x": 2.025,
+                "display": {
+                  "exact": true,
+                  "text": "2.025",
+                  "latex": "2.025",
+                  "approx": null
+                },
+                "f": 15.341624662889611,
+                "f_display": "15.341624663"
+              },
+              {
+                "offset": 2,
+                "weight": -1,
+                "role": "x_0 + 2h",
+                "x": 2.05,
+                "display": {
+                  "exact": true,
+                  "text": "2.05",
+                  "latex": "2.05",
+                  "approx": null
+                },
+                "f": 15.924197267928879,
+                "f_display": "15.924197268"
+              }
+            ],
+            "decimals": 9,
+            "numerator_display": "1.10796479",
+            "products_display": [
+              "-44.334336594",
+              "61.366498652",
+              "-15.924197268"
+            ],
+            "denominator_display": "0.05"
+          },
+          "extremo_atras": {
+            "D": 22.15964221102638,
+            "previous_D": 22.137729053180255,
+            "estimated_error": 0.02191315784612513,
+            "real_error": 0.007526085765569235,
+            "bound": 0.007696933436386094,
+            "M": 36.94528049465325,
+            "M_substitution": {
+              "x": 2.0,
+              "x_display": {
+                "exact": true,
+                "text": "2",
+                "latex": "2",
+                "approx": null
+              },
+              "function_latex": "x e^{x} + 3 e^{x}",
+              "function_text": "x*exp(x) + 3*exp(x)",
+              "terms": [
+                {
+                  "sign": "+",
+                  "template": "@@0@@ \\cdot e^{@@0@@}",
+                  "text": "@@0@@*exp(@@0@@)",
+                  "value": 14.7781121978613
+                },
+                {
+                  "sign": "+",
+                  "template": "3 \\cdot e^{@@0@@}",
+                  "text": "3*exp(@@0@@)",
+                  "value": 22.16716829679195
+                }
+              ],
+              "value": 36.94528049465325
+            },
+            "x_M": 2.0,
+            "interval": [
+              1.95,
+              2.0
+            ],
+            "interval_display": [
+              {
+                "exact": true,
+                "text": "1.95",
+                "latex": "1.95",
+                "approx": null
+              },
+              {
+                "exact": true,
+                "text": "2",
+                "latex": "2",
+                "approx": null
+              }
+            ],
+            "ratio": 0.2556480684367717,
+            "rounding": 4.065918145660791e-12,
+            "within_bound": true,
+            "by_rounding": false,
+            "points": [
+              {
+                "offset": 0,
+                "weight": 3,
+                "role": "x_0",
+                "x": 2.0,
+                "display": {
+                  "exact": true,
+                  "text": "2",
+                  "latex": "2",
+                  "approx": null
+                },
+                "f": 14.7781121978613,
+                "f_display": "14.7781122"
+              },
+              {
+                "offset": -1,
+                "weight": -4,
+                "role": "x_0 - h",
+                "x": 1.975,
+                "display": {
+                  "exact": true,
+                  "text": "1.975",
+                  "latex": "1.975",
+                  "approx": null
+                },
+                "f": 14.233073816295425,
+                "f_display": "14.23307382"
+              },
+              {
+                "offset": -2,
+                "weight": 1,
+                "role": "x_0 - 2h",
+                "x": 1.95,
+                "display": {
+                  "exact": true,
+                  "text": "1.95",
+                  "latex": "1.95",
+                  "approx": null
+                },
+                "f": 13.70594078214912,
+                "f_display": "13.70594078"
+              }
+            ],
+            "decimals": 8,
+            "numerator_display": "1.1079821",
+            "products_display": [
+              "44.3343366",
+              "-56.93229528",
+              "13.70594078"
+            ],
+            "denominator_display": "0.05"
+          }
+        }
+      },
+      {
+        "iteration": 4,
+        "x": [
+          22.168130423994867,
+          22.165222267729376,
+          22.165265564482652
+        ],
+        "error": 0.0059264668160352585,
+        "extra": {
+          "h": {
+            "value": 0.0125,
+            "exact": true,
+            "text": "0.0125",
+            "latex": "0.0125",
+            "approx": null
+          },
+          "punto_medio": {
+            "D": 22.168130423994867,
+            "previous_D": 22.17101693188372,
+            "estimated_error": 0.0028865078888529183,
+            "real_error": 0.000962127202917884,
+            "bound": 0.000976654164122342,
+            "M": 37.503519902297924,
+            "M_substitution": {
+              "x": 2.0125,
+              "x_display": {
+                "exact": true,
+                "text": "2.0125",
+                "latex": "2.0125",
+                "approx": null
+              },
+              "function_latex": "x e^{x} + 3 e^{x}",
+              "function_text": "x*exp(x) + 3*exp(x)",
+              "terms": [
+                {
+                  "sign": "+",
+                  "template": "@@0@@ \\cdot e^{@@0@@}",
+                  "text": "@@0@@*exp(@@0@@)",
+                  "value": 15.057522953291686
+                },
+                {
+                  "sign": "+",
+                  "template": "3 \\cdot e^{@@0@@}",
+                  "text": "3*exp(@@0@@)",
+                  "value": 22.44599694900624
+                }
+              ],
+              "value": 37.503519902297924
+            },
+            "x_M": 2.0125,
+            "interval": [
+              1.9875,
+              2.0125
+            ],
+            "interval_display": [
+              {
+                "exact": true,
+                "text": "1.9875",
+                "latex": "1.9875",
+                "approx": null
+              },
+              {
+                "exact": true,
+                "text": "2.0125",
+                "latex": "2.0125",
+                "approx": null
+              }
+            ],
+            "ratio": 0.24999179708544358,
+            "rounding": 2.1005472583491435e-12,
+            "within_bound": true,
+            "by_rounding": false,
+            "points": [
+              {
+                "offset": 1,
+                "weight": 1,
+                "role": "x_0 + h",
+                "x": 2.0125,
+                "display": {
+                  "exact": true,
+                  "text": "2.0125",
+                  "latex": "2.0125",
+                  "approx": null
+                },
+                "f": 15.057522953291686,
+                "f_display": "15.05752295"
+              },
+              {
+                "offset": -1,
+                "weight": -1,
+                "role": "x_0 - h",
+                "x": 1.9875,
+                "display": {
+                  "exact": true,
+                  "text": "1.9875",
+                  "latex": "1.9875",
+                  "approx": null
+                },
+                "f": 14.503319692691814,
+                "f_display": "14.50331969"
+              }
+            ],
+            "decimals": 8,
+            "numerator_display": "0.55420326",
+            "products_display": [
+              "15.05752295",
+              "-14.50331969"
+            ],
+            "denominator_display": "0.025"
+          },
+          "extremo_adelante": {
+            "D": 22.165222267729376,
+            "previous_D": 22.15929580091334,
+            "estimated_error": 0.0059264668160352585,
+            "real_error": 0.0019460290625730181,
+            "bound": 0.0019828102862916746,
+            "M": 38.06995749680014,
+            "M_substitution": {
+              "x": 2.025,
+              "x_display": {
+                "exact": true,
+                "text": "2.025",
+                "latex": "2.025",
+                "approx": null
+              },
+              "function_latex": "x e^{x} + 3 e^{x}",
+              "function_text": "x*exp(x) + 3*exp(x)",
+              "terms": [
+                {
+                  "sign": "+",
+                  "template": "@@0@@ \\cdot e^{@@0@@}",
+                  "text": "@@0@@*exp(@@0@@)",
+                  "value": 15.341624662889611
+                },
+                {
+                  "sign": "+",
+                  "template": "3 \\cdot e^{@@0@@}",
+                  "text": "3*exp(@@0@@)",
+                  "value": 22.728332833910535
+                }
+              ],
+              "value": 38.06995749680014
+            },
+            "x_M": 2.025,
+            "interval": [
+              2.0,
+              2.025
+            ],
+            "interval_display": [
+              {
+                "exact": true,
+                "text": "2",
+                "latex": "2",
+                "approx": null
+              },
+              {
+                "exact": true,
+                "text": "2.025",
+                "latex": "2.025",
+                "approx": null
+              }
+            ],
+            "ratio": 0.24719340506241624,
+            "rounding": 8.540024315145405e-12,
+            "within_bound": true,
+            "by_rounding": false,
+            "points": [
+              {
+                "offset": 0,
+                "weight": -3,
+                "role": "x_0",
+                "x": 2.0,
+                "display": {
+                  "exact": true,
+                  "text": "2",
+                  "latex": "2",
+                  "approx": null
+                },
+                "f": 14.7781121978613,
+                "f_display": "14.7781122"
+              },
+              {
+                "offset": 1,
+                "weight": 4,
+                "role": "x_0 + h",
+                "x": 2.0125,
+                "display": {
+                  "exact": true,
+                  "text": "2.0125",
+                  "latex": "2.0125",
+                  "approx": null
+                },
+                "f": 15.057522953291686,
+                "f_display": "15.05752295"
+              },
+              {
+                "offset": 2,
+                "weight": -1,
+                "role": "x_0 + 2h",
+                "x": 2.025,
+                "display": {
+                  "exact": true,
+                  "text": "2.025",
+                  "latex": "2.025",
+                  "approx": null
+                },
+                "f": 15.341624662889611,
+                "f_display": "15.34162466"
+              }
+            ],
+            "decimals": 8,
+            "numerator_display": "0.55413054",
+            "products_display": [
+              "-44.3343366",
+              "60.2300918",
+              "-15.34162466"
+            ],
+            "denominator_display": "0.025"
+          },
+          "extremo_atras": {
+            "D": 22.165265564482652,
+            "previous_D": 22.15964221102638,
+            "estimated_error": 0.005623353456272184,
+            "real_error": 0.0019027323092970505,
+            "bound": 0.0019242333590965236,
+            "M": 36.94528049465325,
+            "M_substitution": {
+              "x": 2.0,
+              "x_display": {
+                "exact": true,
+                "text": "2",
+                "latex": "2",
+                "approx": null
+              },
+              "function_latex": "x e^{x} + 3 e^{x}",
+              "function_text": "x*exp(x) + 3*exp(x)",
+              "terms": [
+                {
+                  "sign": "+",
+                  "template": "@@0@@ \\cdot e^{@@0@@}",
+                  "text": "@@0@@*exp(@@0@@)",
+                  "value": 14.7781121978613
+                },
+                {
+                  "sign": "+",
+                  "template": "3 \\cdot e^{@@0@@}",
+                  "text": "3*exp(@@0@@)",
+                  "value": 22.16716829679195
+                }
+              ],
+              "value": 36.94528049465325
+            },
+            "x_M": 2.0,
+            "interval": [
+              1.975,
+              2.0
+            ],
+            "interval_display": [
+              {
+                "exact": true,
+                "text": "1.975",
+                "latex": "1.975",
+                "approx": null
+              },
+              {
+                "exact": true,
+                "text": "2",
+                "latex": "2",
+                "approx": null
+              }
+            ],
+            "ratio": 0.2528183133391568,
+            "rounding": 8.264353892651576e-12,
+            "within_bound": true,
+            "by_rounding": false,
+            "points": [
+              {
+                "offset": 0,
+                "weight": 3,
+                "role": "x_0",
+                "x": 2.0,
+                "display": {
+                  "exact": true,
+                  "text": "2",
+                  "latex": "2",
+                  "approx": null
+                },
+                "f": 14.7781121978613,
+                "f_display": "14.7781122"
+              },
+              {
+                "offset": -1,
+                "weight": -4,
+                "role": "x_0 - h",
+                "x": 1.9875,
+                "display": {
+                  "exact": true,
+                  "text": "1.9875",
+                  "latex": "1.9875",
+                  "approx": null
+                },
+                "f": 14.503319692691814,
+                "f_display": "14.50331969"
+              },
+              {
+                "offset": -2,
+                "weight": 1,
+                "role": "x_0 - 2h",
+                "x": 1.975,
+                "display": {
+                  "exact": true,
+                  "text": "1.975",
+                  "latex": "1.975",
+                  "approx": null
+                },
+                "f": 14.233073816295425,
+                "f_display": "14.23307382"
+              }
+            ],
+            "decimals": 8,
+            "numerator_display": "0.55413166",
+            "products_display": [
+              "44.3343366",
+              "-58.01327876",
+              "14.23307382"
+            ],
+            "denominator_display": "0.025"
+          }
+        }
+      },
+      {
+        "iteration": 5,
+        "x": [
+          22.167408826619805,
+          22.166684523268287,
+          22.1666899352212
+        ],
+        "error": 0.0014622555389109948,
+        "extra": {
+          "h": {
+            "value": 0.00625,
+            "exact": true,
+            "text": "0.00625",
+            "latex": "0.00625",
+            "approx": null
+          },
+          "punto_medio": {
+            "D": 22.167408826619805,
+            "previous_D": 22.168130423994867,
+            "estimated_error": 0.0007215973750618332,
+            "real_error": 0.00024052982785605082,
+            "bound": 0.0002423397313177234,
+            "M": 37.22338273040231,
+            "M_substitution": {
+              "x": 2.00625,
+              "x_display": {
+                "exact": true,
+                "text": "2.00625",
+                "latex": "2.00625",
+                "approx": null
+              },
+              "function_latex": "x e^{x} + 3 e^{x}",
+              "function_text": "x*exp(x) + 3*exp(x)",
+              "terms": [
+                {
+                  "sign": "+",
+                  "template": "@@0@@ \\cdot e^{@@0@@}",
+                  "text": "@@0@@*exp(@@0@@)",
+                  "value": 14.91723577585411
+                },
+                {
+                  "sign": "+",
+                  "template": "3 \\cdot e^{@@0@@}",
+                  "text": "3*exp(@@0@@)",
+                  "value": 22.3061469545482
+                }
+              ],
+              "value": 37.22338273040231
+            },
+            "x_M": 2.00625,
+            "interval": [
+              1.99375,
+              2.00625
+            ],
+            "interval_display": [
+              {
+                "exact": true,
+                "text": "1.99375",
+                "latex": "1.99375",
+                "approx": null
+              },
+              {
+                "exact": true,
+                "text": "2.00625",
+                "latex": "2.00625",
+                "approx": null
+              }
+            ],
+            "ratio": 0.2499979494671659,
+            "rounding": 4.200417705899769e-12,
+            "within_bound": true,
+            "by_rounding": false,
+            "points": [
+              {
+                "offset": 1,
+                "weight": 1,
+                "role": "x_0 + h",
+                "x": 2.00625,
+                "display": {
+                  "exact": true,
+                  "text": "2.00625",
+                  "latex": "2.00625",
+                  "approx": null
+                },
+                "f": 14.91723577585411,
+                "f_display": "14.91723578"
+              },
+              {
+                "offset": -1,
+                "weight": -1,
+                "role": "x_0 - h",
+                "x": 1.99375,
+                "display": {
+                  "exact": true,
+                  "text": "1.99375",
+                  "latex": "1.99375",
+                  "approx": null
+                },
+                "f": 14.640143165521362,
+                "f_display": "14.64014317"
+              }
+            ],
+            "decimals": 8,
+            "numerator_display": "0.27709261",
+            "products_display": [
+              "14.91723578",
+              "-14.64014317"
+            ],
+            "denominator_display": "0.0125"
+          },
+          "extremo_adelante": {
+            "D": 22.166684523268287,
+            "previous_D": 22.165222267729376,
+            "estimated_error": 0.0014622555389109948,
+            "real_error": 0.0004837735236620233,
+            "bound": 0.000488327082061171,
+            "M": 37.503519902297924,
+            "M_substitution": {
+              "x": 2.0125,
+              "x_display": {
+                "exact": true,
+                "text": "2.0125",
+                "latex": "2.0125",
+                "approx": null
+              },
+              "function_latex": "x e^{x} + 3 e^{x}",
+              "function_text": "x*exp(x) + 3*exp(x)",
+              "terms": [
+                {
+                  "sign": "+",
+                  "template": "@@0@@ \\cdot e^{@@0@@}",
+                  "text": "@@0@@*exp(@@0@@)",
+                  "value": 15.057522953291686
+                },
+                {
+                  "sign": "+",
+                  "template": "3 \\cdot e^{@@0@@}",
+                  "text": "3*exp(@@0@@)",
+                  "value": 22.44599694900624
+                }
+              ],
+              "value": 37.503519902297924
+            },
+            "x_M": 2.0125,
+            "interval": [
+              2.0,
+              2.0125
+            ],
+            "interval_display": [
+              {
+                "exact": true,
+                "text": "2",
+                "latex": "2",
+                "approx": null
+              },
+              {
+                "exact": true,
+                "text": "2.0125",
+                "latex": "2.0125",
+                "approx": null
+              }
+            ],
+            "ratio": 0.2485952203727026,
+            "rounding": 1.6939493737754695e-11,
+            "within_bound": true,
+            "by_rounding": false,
+            "points": [
+              {
+                "offset": 0,
+                "weight": -3,
+                "role": "x_0",
+                "x": 2.0,
+                "display": {
+                  "exact": true,
+                  "text": "2",
+                  "latex": "2",
+                  "approx": null
+                },
+                "f": 14.7781121978613,
+                "f_display": "14.778112198"
+              },
+              {
+                "offset": 1,
+                "weight": 4,
+                "role": "x_0 + h",
+                "x": 2.00625,
+                "display": {
+                  "exact": true,
+                  "text": "2.00625",
+                  "latex": "2.00625",
+                  "approx": null
+                },
+                "f": 14.91723577585411,
+                "f_display": "14.917235776"
+              },
+              {
+                "offset": 2,
+                "weight": -1,
+                "role": "x_0 + 2h",
+                "x": 2.0125,
+                "display": {
+                  "exact": true,
+                  "text": "2.0125",
+                  "latex": "2.0125",
+                  "approx": null
+                },
+                "f": 15.057522953291686,
+                "f_display": "15.057522953"
+              }
+            ],
+            "decimals": 9,
+            "numerator_display": "0.277083557",
+            "products_display": [
+              "-44.334336594",
+              "59.668943104",
+              "-15.057522953"
+            ],
+            "denominator_display": "0.0125"
+          },
+          "extremo_atras": {
+            "D": 22.1666899352212,
+            "previous_D": 22.165265564482652,
+            "estimated_error": 0.001424370738547509,
+            "real_error": 0.00047836157074954144,
+            "bound": 0.0004810583397741309,
+            "M": 36.94528049465325,
+            "M_substitution": {
+              "x": 2.0,
+              "x_display": {
+                "exact": true,
+                "text": "2",
+                "latex": "2",
+                "approx": null
+              },
+              "function_latex": "x e^{x} + 3 e^{x}",
+              "function_text": "x*exp(x) + 3*exp(x)",
+              "terms": [
+                {
+                  "sign": "+",
+                  "template": "@@0@@ \\cdot e^{@@0@@}",
+                  "text": "@@0@@*exp(@@0@@)",
+                  "value": 14.7781121978613
+                },
+                {
+                  "sign": "+",
+                  "template": "3 \\cdot e^{@@0@@}",
+                  "text": "3*exp(@@0@@)",
+                  "value": 22.16716829679195
+                }
+              ],
+              "value": 36.94528049465325
+            },
+            "x_M": 2.0,
+            "interval": [
+              1.9875,
+              2.0
+            ],
+            "interval_display": [
+              {
+                "exact": true,
+                "text": "1.9875",
+                "latex": "1.9875",
+                "approx": null
+              },
+              {
+                "exact": true,
+                "text": "2",
+                "latex": "2",
+                "approx": null
+              }
+            ],
+            "ratio": 0.2514077090151837,
+            "rounding": 1.666384792706836e-11,
+            "within_bound": true,
+            "by_rounding": false,
+            "points": [
+              {
+                "offset": 0,
+                "weight": 3,
+                "role": "x_0",
+                "x": 2.0,
+                "display": {
+                  "exact": true,
+                  "text": "2",
+                  "latex": "2",
+                  "approx": null
+                },
+                "f": 14.7781121978613,
+                "f_display": "14.778112198"
+              },
+              {
+                "offset": -1,
+                "weight": -4,
+                "role": "x_0 - h",
+                "x": 1.99375,
+                "display": {
+                  "exact": true,
+                  "text": "1.99375",
+                  "latex": "1.99375",
+                  "approx": null
+                },
+                "f": 14.640143165521362,
+                "f_display": "14.640143166"
+              },
+              {
+                "offset": -2,
+                "weight": 1,
+                "role": "x_0 - 2h",
+                "x": 1.9875,
+                "display": {
+                  "exact": true,
+                  "text": "1.9875",
+                  "latex": "1.9875",
+                  "approx": null
+                },
+                "f": 14.503319692691814,
+                "f_display": "14.503319693"
+              }
+            ],
+            "decimals": 9,
+            "numerator_display": "0.277083623",
+            "products_display": [
+              "44.334336594",
+              "-58.560572664",
+              "14.503319693"
+            ],
+            "denominator_display": "0.0125"
+          }
+        }
+      },
+      {
+        "iteration": 6,
+        "x": [
+          22.167228429124748,
+          22.16704769338321,
+          22.16704836987617
+        ],
+        "error": 0.0003631701149231503,
+        "extra": {
+          "h": {
+            "value": 0.003125,
+            "exact": true,
+            "text": "0.003125",
+            "latex": "0.003125",
+            "approx": null
+          },
+          "punto_medio": {
+            "D": 22.167228429124748,
+            "previous_D": 22.167408826619805,
+            "estimated_error": 0.00018039749505760483,
+            "real_error": 6.0132332798445987e-05,
+            "bound": 6.035820011891679e-05,
+            "M": 37.08407815306247,
+            "M_substitution": {
+              "x": 2.003125,
+              "x_display": {
+                "exact": true,
+                "text": "2.003125",
+                "latex": "2.003125",
+                "approx": null
+              },
+              "function_latex": "x e^{x} + 3 e^{x}",
+              "function_text": "x*exp(x) + 3*exp(x)",
+              "terms": [
+                {
+                  "sign": "+",
+                  "template": "@@0@@ \\cdot e^{@@0@@}",
+                  "text": "@@0@@*exp(@@0@@)",
+                  "value": 14.847529104380413
+                },
+                {
+                  "sign": "+",
+                  "template": "3 \\cdot e^{@@0@@}",
+                  "text": "3*exp(@@0@@)",
+                  "value": 22.236549048682058
+                }
+              ],
+              "value": 37.08407815306247
+            },
+            "x_M": 2.003125,
+            "interval": [
+              1.996875,
+              2.003125
+            ],
+            "interval_display": [
+              {
+                "exact": true,
+                "text": "1.996875",
+                "latex": "1.996875",
+                "approx": null
+              },
+              {
+                "exact": true,
+                "text": "2.003125",
+                "latex": "2.003125",
+                "approx": null
+              }
+            ],
+            "ratio": 0.2499994837830808,
+            "rounding": 8.400497014661955e-12,
+            "within_bound": true,
+            "by_rounding": false,
+            "points": [
+              {
+                "offset": 1,
+                "weight": 1,
+                "role": "x_0 + h",
+                "x": 2.003125,
+                "display": {
+                  "exact": true,
+                  "text": "2.003125",
+                  "latex": "2.003125",
+                  "approx": null
+                },
+                "f": 14.847529104380413,
+                "f_display": "14.847529104"
+              },
+              {
+                "offset": -1,
+                "weight": -1,
+                "role": "x_0 - h",
+                "x": 1.996875,
+                "display": {
+                  "exact": true,
+                  "text": "1.996875",
+                  "latex": "1.996875",
+                  "approx": null
+                },
+                "f": 14.708983926698384,
+                "f_display": "14.708983927"
+              }
+            ],
+            "decimals": 9,
+            "numerator_display": "0.138545177",
+            "products_display": [
+              "14.847529104",
+              "-14.708983927"
+            ],
+            "denominator_display": "0.00625"
+          },
+          "extremo_adelante": {
+            "D": 22.16704769338321,
+            "previous_D": 22.166684523268287,
+            "estimated_error": 0.0003631701149231503,
+            "real_error": 0.00012060340873887299,
+            "bound": 0.0001211698656588617,
+            "M": 37.22338273040231,
+            "M_substitution": {
+              "x": 2.00625,
+              "x_display": {
+                "exact": true,
+                "text": "2.00625",
+                "latex": "2.00625",
+                "approx": null
+              },
+              "function_latex": "x e^{x} + 3 e^{x}",
+              "function_text": "x*exp(x) + 3*exp(x)",
+              "terms": [
+                {
+                  "sign": "+",
+                  "template": "@@0@@ \\cdot e^{@@0@@}",
+                  "text": "@@0@@*exp(@@0@@)",
+                  "value": 14.91723577585411
+                },
+                {
+                  "sign": "+",
+                  "template": "3 \\cdot e^{@@0@@}",
+                  "text": "3*exp(@@0@@)",
+                  "value": 22.3061469545482
+                }
+              ],
+              "value": 37.22338273040231
+            },
+            "x_M": 2.00625,
+            "interval": [
+              2.0,
+              2.00625
+            ],
+            "interval_display": [
+              {
+                "exact": true,
+                "text": "2",
+                "latex": "2",
+                "approx": null
+              },
+              {
+                "exact": true,
+                "text": "2.00625",
+                "latex": "2.00625",
+                "approx": null
+              }
+            ],
+            "ratio": 0.24929724931191077,
+            "rounding": 3.373980788873911e-11,
+            "within_bound": true,
+            "by_rounding": false,
+            "points": [
+              {
+                "offset": 0,
+                "weight": -3,
+                "role": "x_0",
+                "x": 2.0,
+                "display": {
+                  "exact": true,
+                  "text": "2",
+                  "latex": "2",
+                  "approx": null
+                },
+                "f": 14.7781121978613,
+                "f_display": "14.7781121979"
+              },
+              {
+                "offset": 1,
+                "weight": 4,
+                "role": "x_0 + h",
+                "x": 2.003125,
+                "display": {
+                  "exact": true,
+                  "text": "2.003125",
+                  "latex": "2.003125",
+                  "approx": null
+                },
+                "f": 14.847529104380413,
+                "f_display": "14.8475291044"
+              },
+              {
+                "offset": 2,
+                "weight": -1,
+                "role": "x_0 + 2h",
+                "x": 2.00625,
+                "display": {
+                  "exact": true,
+                  "text": "2.00625",
+                  "latex": "2.00625",
+                  "approx": null
+                },
+                "f": 14.91723577585411,
+                "f_display": "14.9172357759"
+              }
+            ],
+            "decimals": 10,
+            "numerator_display": "0.138544048",
+            "products_display": [
+              "-44.3343365937",
+              "59.3901164176",
+              "-14.9172357759"
+            ],
+            "denominator_display": "0.00625"
+          },
+          "extremo_atras": {
+            "D": 22.16704836987617,
+            "previous_D": 22.1666899352212,
+            "estimated_error": 0.00035843465497009674,
+            "real_error": 0.0001199269157794447,
+            "bound": 0.00012026458494353272,
+            "M": 36.94528049465325,
+            "M_substitution": {
+              "x": 2.0,
+              "x_display": {
+                "exact": true,
+                "text": "2",
+                "latex": "2",
+                "approx": null
+              },
+              "function_latex": "x e^{x} + 3 e^{x}",
+              "function_text": "x*exp(x) + 3*exp(x)",
+              "terms": [
+                {
+                  "sign": "+",
+                  "template": "@@0@@ \\cdot e^{@@0@@}",
+                  "text": "@@0@@*exp(@@0@@)",
+                  "value": 14.7781121978613
+                },
+                {
+                  "sign": "+",
+                  "template": "3 \\cdot e^{@@0@@}",
+                  "text": "3*exp(@@0@@)",
+                  "value": 22.16716829679195
+                }
+              ],
+              "value": 36.94528049465325
+            },
+            "x_M": 2.0,
+            "interval": [
+              1.99375,
+              2.0
+            ],
+            "interval_display": [
+              {
+                "exact": true,
+                "text": "1.99375",
+                "latex": "1.99375",
+                "approx": null
+              },
+              {
+                "exact": true,
+                "text": "2",
+                "latex": "2",
+                "approx": null
+              }
+            ],
+            "ratio": 0.25070349106750367,
+            "rounding": 3.346416823075962e-11,
+            "within_bound": true,
+            "by_rounding": false,
+            "points": [
+              {
+                "offset": 0,
+                "weight": 3,
+                "role": "x_0",
+                "x": 2.0,
+                "display": {
+                  "exact": true,
+                  "text": "2",
+                  "latex": "2",
+                  "approx": null
+                },
+                "f": 14.7781121978613,
+                "f_display": "14.778112198"
+              },
+              {
+                "offset": -1,
+                "weight": -4,
+                "role": "x_0 - h",
+                "x": 1.996875,
+                "display": {
+                  "exact": true,
+                  "text": "1.996875",
+                  "latex": "1.996875",
+                  "approx": null
+                },
+                "f": 14.708983926698384,
+                "f_display": "14.708983927"
+              },
+              {
+                "offset": -2,
+                "weight": 1,
+                "role": "x_0 - 2h",
+                "x": 1.99375,
+                "display": {
+                  "exact": true,
+                  "text": "1.99375",
+                  "latex": "1.99375",
+                  "approx": null
+                },
+                "f": 14.640143165521362,
+                "f_display": "14.640143166"
+              }
+            ],
+            "decimals": 9,
+            "numerator_display": "0.138544052",
+            "products_display": [
+              "44.334336594",
+              "-58.835935708",
+              "14.640143166"
+            ],
+            "denominator_display": "0.00625"
+          }
+        }
+      },
+      {
+        "iteration": 7,
+        "x": [
+          22.16718332986659,
+          22.167138188331137,
+          22.167138272885722
+        ],
+        "error": 9.049494792634505e-05,
+        "extra": {
+          "h": {
+            "value": 0.0015625,
+            "exact": true,
+            "text": "0.0015625",
+            "latex": "0.0015625",
+            "approx": null
+          },
+          "punto_medio": {
+            "D": 22.16718332986659,
+            "previous_D": 22.167228429124748,
+            "estimated_error": 4.50992581590981e-05,
+            "real_error": 1.5033074639347888e-05,
+            "bound": 1.5061285836623954e-05,
+            "M": 37.01461607208702,
+            "M_substitution": {
+              "x": 2.0015625,
+              "x_display": {
+                "exact": true,
+                "text": "2.0015625",
+                "latex": "2.0015625",
+                "approx": null
+              },
+              "function_latex": "x e^{x} + 3 e^{x}",
+              "function_text": "x*exp(x) + 3*exp(x)",
+              "terms": [
+                {
+                  "sign": "+",
+                  "template": "@@0@@ \\cdot e^{@@0@@}",
+                  "text": "@@0@@*exp(@@0@@)",
+                  "value": 14.812784501200712
+                },
+                {
+                  "sign": "+",
+                  "template": "3 \\cdot e^{@@0@@}",
+                  "text": "3*exp(@@0@@)",
+                  "value": 22.201831570886313
+                }
+              ],
+              "value": 37.01461607208702
+            },
+            "x_M": 2.0015625,
+            "interval": [
+              1.9984375,
+              2.0015625
+            ],
+            "interval_display": [
+              {
+                "exact": true,
+                "text": "1.9984375",
+                "latex": "1.9984375",
+                "approx": null
+              },
+              {
+                "exact": true,
+                "text": "2.0015625",
+                "latex": "2.0015625",
+                "approx": null
+              }
+            ],
+            "ratio": 0.24999985764291505,
+            "rounding": 1.680082483178782e-11,
+            "within_bound": true,
+            "by_rounding": false,
+            "points": [
+              {
+                "offset": 1,
+                "weight": 1,
+                "role": "x_0 + h",
+                "x": 2.0015625,
+                "display": {
+                  "exact": true,
+                  "text": "2.0015625",
+                  "latex": "2.0015625",
+                  "approx": null
+                },
+                "f": 14.812784501200712,
+                "f_display": "14.812784501"
+              },
+              {
+                "offset": -1,
+                "weight": -1,
+                "role": "x_0 - h",
+                "x": 1.9984375,
+                "display": {
+                  "exact": true,
+                  "text": "1.9984375",
+                  "latex": "1.9984375",
+                  "approx": null
+                },
+                "f": 14.743512053294879,
+                "f_display": "14.743512053"
+              }
+            ],
+            "decimals": 9,
+            "numerator_display": "0.069272448",
+            "products_display": [
+              "14.812784501",
+              "-14.743512053"
+            ],
+            "denominator_display": "0.003125"
+          },
+          "extremo_adelante": {
+            "D": 22.167138188331137,
+            "previous_D": 22.16704769338321,
+            "estimated_error": 9.049494792634505e-05,
+            "real_error": 3.0108460812527937e-05,
+            "bound": 3.0179100059458396e-05,
+            "M": 37.08407815306247,
+            "M_substitution": {
+              "x": 2.003125,
+              "x_display": {
+                "exact": true,
+                "text": "2.003125",
+                "latex": "2.003125",
+                "approx": null
+              },
+              "function_latex": "x e^{x} + 3 e^{x}",
+              "function_text": "x*exp(x) + 3*exp(x)",
+              "terms": [
+                {
+                  "sign": "+",
+                  "template": "@@0@@ \\cdot e^{@@0@@}",
+                  "text": "@@0@@*exp(@@0@@)",
+                  "value": 14.847529104380413
+                },
+                {
+                  "sign": "+",
+                  "template": "3 \\cdot e^{@@0@@}",
+                  "text": "3*exp(@@0@@)",
+                  "value": 22.236549048682058
+                }
+              ],
+              "value": 37.08407815306247
+            },
+            "x_M": 2.003125,
+            "interval": [
+              2.0,
+              2.003125
+            ],
+            "interval_display": [
+              {
+                "exact": true,
+                "text": "2",
+                "latex": "2",
+                "approx": null
+              },
+              {
+                "exact": true,
+                "text": "2.003125",
+                "latex": "2.003125",
+                "approx": null
+              }
+            ],
+            "ratio": 0.24964850601957617,
+            "rounding": 6.734111838719802e-11,
+            "within_bound": true,
+            "by_rounding": false,
+            "points": [
+              {
+                "offset": 0,
+                "weight": -3,
+                "role": "x_0",
+                "x": 2.0,
+                "display": {
+                  "exact": true,
+                  "text": "2",
+                  "latex": "2",
+                  "approx": null
+                },
+                "f": 14.7781121978613,
+                "f_display": "14.778112198"
+              },
+              {
+                "offset": 1,
+                "weight": 4,
+                "role": "x_0 + h",
+                "x": 2.0015625,
+                "display": {
+                  "exact": true,
+                  "text": "2.0015625",
+                  "latex": "2.0015625",
+                  "approx": null
+                },
+                "f": 14.812784501200712,
+                "f_display": "14.812784501"
+              },
+              {
+                "offset": 2,
+                "weight": -1,
+                "role": "x_0 + 2h",
+                "x": 2.003125,
+                "display": {
+                  "exact": true,
+                  "text": "2.003125",
+                  "latex": "2.003125",
+                  "approx": null
+                },
+                "f": 14.847529104380413,
+                "f_display": "14.847529104"
+              }
+            ],
+            "decimals": 9,
+            "numerator_display": "0.069272306",
+            "products_display": [
+              "-44.334336594",
+              "59.251138004",
+              "-14.847529104"
+            ],
+            "denominator_display": "0.003125"
+          },
+          "extremo_atras": {
+            "D": 22.167138272885722,
+            "previous_D": 22.16704836987617,
+            "estimated_error": 8.990300955247221e-05,
+            "real_error": 3.0023906226972485e-05,
+            "bound": 3.006614623588318e-05,
+            "M": 36.94528049465325,
+            "M_substitution": {
+              "x": 2.0,
+              "x_display": {
+                "exact": true,
+                "text": "2",
+                "latex": "2",
+                "approx": null
+              },
+              "function_latex": "x e^{x} + 3 e^{x}",
+              "function_text": "x*exp(x) + 3*exp(x)",
+              "terms": [
+                {
+                  "sign": "+",
+                  "template": "@@0@@ \\cdot e^{@@0@@}",
+                  "text": "@@0@@*exp(@@0@@)",
+                  "value": 14.7781121978613
+                },
+                {
+                  "sign": "+",
+                  "template": "3 \\cdot e^{@@0@@}",
+                  "text": "3*exp(@@0@@)",
+                  "value": 22.16716829679195
+                }
+              ],
+              "value": 36.94528049465325
+            },
+            "x_M": 2.0,
+            "interval": [
+              1.996875,
+              2.0
+            ],
+            "interval_display": [
+              {
+                "exact": true,
+                "text": "1.996875",
+                "latex": "1.996875",
+                "approx": null
+              },
+              {
+                "exact": true,
+                "text": "2",
+                "latex": "2",
+                "approx": null
+              }
+            ],
+            "ratio": 0.250351691543447,
+            "rounding": 6.706548026737993e-11,
+            "within_bound": true,
+            "by_rounding": false,
+            "points": [
+              {
+                "offset": 0,
+                "weight": 3,
+                "role": "x_0",
+                "x": 2.0,
+                "display": {
+                  "exact": true,
+                  "text": "2",
+                  "latex": "2",
+                  "approx": null
+                },
+                "f": 14.7781121978613,
+                "f_display": "14.7781121979"
+              },
+              {
+                "offset": -1,
+                "weight": -4,
+                "role": "x_0 - h",
+                "x": 1.9984375,
+                "display": {
+                  "exact": true,
+                  "text": "1.9984375",
+                  "latex": "1.9984375",
+                  "approx": null
+                },
+                "f": 14.743512053294879,
+                "f_display": "14.7435120533"
+              },
+              {
+                "offset": -2,
+                "weight": 1,
+                "role": "x_0 - 2h",
+                "x": 1.996875,
+                "display": {
+                  "exact": true,
+                  "text": "1.996875",
+                  "latex": "1.996875",
+                  "approx": null
+                },
+                "f": 14.708983926698384,
+                "f_display": "14.7089839267"
+              }
+            ],
+            "decimals": 10,
+            "numerator_display": "0.0692723072",
+            "products_display": [
+              "44.3343365937",
+              "-58.9740482132",
+              "14.7089839267"
+            ],
+            "denominator_display": "0.003125"
+          }
+        }
+      },
+      {
+        "iteration": 8,
+        "x": [
+          22.167172055062565,
+          22.167160774978356,
+          22.167160785538726
+        ],
+        "error": 2.2586647219213773e-05,
+        "extra": {
+          "h": {
+            "value": 0.00078125,
+            "exact": true,
+            "text": "0.00078125",
+            "latex": "0.00078125",
+            "approx": null
+          },
+          "punto_medio": {
+            "D": 22.167172055062565,
+            "previous_D": 22.16718332986659,
+            "estimated_error": 1.1274804023742035e-05,
+            "real_error": 3.758270615605852e-06,
+            "bound": 3.7617932621808517e-06,
+            "M": 36.97993248454264,
+            "M_substitution": {
+              "x": 2.00078125,
+              "x_display": {
+                "exact": true,
+                "text": "2.00078125",
+                "latex": "2.00078125",
+                "approx": null
+              },
+              "function_latex": "x e^{x} + 3 e^{x}",
+              "function_text": "x*exp(x) + 3*exp(x)",
+              "terms": [
+                {
+                  "sign": "+",
+                  "template": "@@0@@ \\cdot e^{@@0@@}",
+                  "text": "@@0@@*exp(@@0@@)",
+                  "value": 14.795439320873879
+                },
+                {
+                  "sign": "+",
+                  "template": "3 \\cdot e^{@@0@@}",
+                  "text": "3*exp(@@0@@)",
+                  "value": 22.18449316366876
+                }
+              ],
+              "value": 36.97993248454264
+            },
+            "x_M": 2.00078125,
+            "interval": [
+              1.99921875,
+              2.00078125
+            ],
+            "interval_display": [
+              {
+                "exact": true,
+                "text": "1.99921875",
+                "latex": "1.99921875",
+                "approx": null
+              },
+              {
+                "exact": true,
+                "text": "2.00078125",
+                "latex": "2.00078125",
+                "approx": null
+              }
+            ],
+            "ratio": 0.25000013009772964,
+            "rounding": 3.360156506493669e-11,
+            "within_bound": true,
+            "by_rounding": false,
+            "points": [
+              {
+                "offset": 1,
+                "weight": 1,
+                "role": "x_0 + h",
+                "x": 2.00078125,
+                "display": {
+                  "exact": true,
+                  "text": "2.00078125",
+                  "latex": "2.00078125",
+                  "approx": null
+                },
+                "f": 14.795439320873879,
+                "f_display": "14.795439321"
+              },
+              {
+                "offset": -1,
+                "weight": -1,
+                "role": "x_0 - h",
+                "x": 1.99921875,
+                "display": {
+                  "exact": true,
+                  "text": "1.99921875",
+                  "latex": "1.99921875",
+                  "approx": null
+                },
+                "f": 14.760803114537843,
+                "f_display": "14.760803115"
+              }
+            ],
+            "decimals": 9,
+            "numerator_display": "0.034636206",
+            "products_display": [
+              "14.795439321",
+              "-14.760803115"
+            ],
+            "denominator_display": "0.0015625"
+          },
+          "extremo_adelante": {
+            "D": 22.167160774978356,
+            "previous_D": 22.167138188331137,
+            "estimated_error": 2.2586647219213773e-05,
+            "real_error": 7.521813593314164e-06,
+            "bound": 7.530642918311977e-06,
+            "M": 37.01461607208702,
+            "M_substitution": {
+              "x": 2.0015625,
+              "x_display": {
+                "exact": true,
+                "text": "2.0015625",
+                "latex": "2.0015625",
+                "approx": null
+              },
+              "function_latex": "x e^{x} + 3 e^{x}",
+              "function_text": "x*exp(x) + 3*exp(x)",
+              "terms": [
+                {
+                  "sign": "+",
+                  "template": "@@0@@ \\cdot e^{@@0@@}",
+                  "text": "@@0@@*exp(@@0@@)",
+                  "value": 14.812784501200712
+                },
+                {
+                  "sign": "+",
+                  "template": "3 \\cdot e^{@@0@@}",
+                  "text": "3*exp(@@0@@)",
+                  "value": 22.201831570886313
+                }
+              ],
+              "value": 37.01461607208702
+            },
+            "x_M": 2.0015625,
+            "interval": [
+              2.0,
+              2.0015625
+            ],
+            "interval_display": [
+              {
+                "exact": true,
+                "text": "2",
+                "latex": "2",
+                "approx": null
+              },
+              {
+                "exact": true,
+                "text": "2.0015625",
+                "latex": "2.0015625",
+                "approx": null
+              }
+            ],
+            "ratio": 0.24982391627885492,
+            "rounding": 1.3454407912740333e-10,
+            "within_bound": true,
+            "by_rounding": false,
+            "points": [
+              {
+                "offset": 0,
+                "weight": -3,
+                "role": "x_0",
+                "x": 2.0,
+                "display": {
+                  "exact": true,
+                  "text": "2",
+                  "latex": "2",
+                  "approx": null
+                },
+                "f": 14.7781121978613,
+                "f_display": "14.778112198"
+              },
+              {
+                "offset": 1,
+                "weight": 4,
+                "role": "x_0 + h",
+                "x": 2.00078125,
+                "display": {
+                  "exact": true,
+                  "text": "2.00078125",
+                  "latex": "2.00078125",
+                  "approx": null
+                },
+                "f": 14.795439320873879,
+                "f_display": "14.795439321"
+              },
+              {
+                "offset": 2,
+                "weight": -1,
+                "role": "x_0 + 2h",
+                "x": 2.0015625,
+                "display": {
+                  "exact": true,
+                  "text": "2.0015625",
+                  "latex": "2.0015625",
+                  "approx": null
+                },
+                "f": 14.812784501200712,
+                "f_display": "14.812784501"
+              }
+            ],
+            "decimals": 9,
+            "numerator_display": "0.034636189",
+            "products_display": [
+              "-44.334336594",
+              "59.181757284",
+              "-14.812784501"
+            ],
+            "denominator_display": "0.0015625"
+          },
+          "extremo_atras": {
+            "D": 22.167160785538726,
+            "previous_D": 22.167138272885722,
+            "estimated_error": 2.2512653004014282e-05,
+            "real_error": 7.511253222958203e-06,
+            "bound": 7.516536558970795e-06,
+            "M": 36.94528049465325,
+            "M_substitution": {
+              "x": 2.0,
+              "x_display": {
+                "exact": true,
+                "text": "2",
+                "latex": "2",
+                "approx": null
+              },
+              "function_latex": "x e^{x} + 3 e^{x}",
+              "function_text": "x*exp(x) + 3*exp(x)",
+              "terms": [
+                {
+                  "sign": "+",
+                  "template": "@@0@@ \\cdot e^{@@0@@}",
+                  "text": "@@0@@*exp(@@0@@)",
+                  "value": 14.7781121978613
+                },
+                {
+                  "sign": "+",
+                  "template": "3 \\cdot e^{@@0@@}",
+                  "text": "3*exp(@@0@@)",
+                  "value": 22.16716829679195
+                }
+              ],
+              "value": 36.94528049465325
+            },
+            "x_M": 2.0,
+            "interval": [
+              1.9984375,
+              2.0
+            ],
+            "interval_display": [
+              {
+                "exact": true,
+                "text": "1.9984375",
+                "latex": "1.9984375",
+                "approx": null
+              },
+              {
+                "exact": true,
+                "text": "2",
+                "latex": "2",
+                "approx": null
+              }
+            ],
+            "ratio": 0.25017574882412674,
+            "rounding": 1.342684413921246e-10,
+            "within_bound": true,
+            "by_rounding": false,
+            "points": [
+              {
+                "offset": 0,
+                "weight": 3,
+                "role": "x_0",
+                "x": 2.0,
+                "display": {
+                  "exact": true,
+                  "text": "2",
+                  "latex": "2",
+                  "approx": null
+                },
+                "f": 14.7781121978613,
+                "f_display": "14.7781121979"
+              },
+              {
+                "offset": -1,
+                "weight": -4,
+                "role": "x_0 - h",
+                "x": 1.99921875,
+                "display": {
+                  "exact": true,
+                  "text": "1.99921875",
+                  "latex": "1.99921875",
+                  "approx": null
+                },
+                "f": 14.760803114537843,
+                "f_display": "14.7608031145"
+              },
+              {
+                "offset": -2,
+                "weight": 1,
+                "role": "x_0 - 2h",
+                "x": 1.9984375,
+                "display": {
+                  "exact": true,
+                  "text": "1.9984375",
+                  "latex": "1.9984375",
+                  "approx": null
+                },
+                "f": 14.743512053294879,
+                "f_display": "14.7435120533"
+              }
+            ],
+            "decimals": 10,
+            "numerator_display": "0.034636189",
+            "products_display": [
+              "44.3343365937",
+              "-59.043212458",
+              "14.7435120533"
+            ],
+            "denominator_display": "0.0015625"
+          }
+        }
+      },
+      {
+        "iteration": 9,
+        "x": [
+          22.16716923636568,
+          22.167166417007138,
+          22.167166418330453
+        ],
+        "error": 5.642028781949193e-06,
+        "extra": {
+          "h": {
+            "value": 0.000390625,
+            "exact": true,
+            "text": "0.000390625",
+            "latex": "0.000390625",
+            "approx": null
+          },
+          "punto_medio": {
+            "D": 22.16716923636568,
+            "previous_D": 22.167172055062565,
+            "estimated_error": 2.8186968847876415e-06,
+            "real_error": 9.395737308182106e-07,
+            "bound": 9.400075923068775e-07,
+            "M": 36.96260254165411,
+            "M_substitution": {
+              "x": 2.000390625,
+              "x_display": {
+                "exact": true,
+                "text": "2.000390625",
+                "latex": "2.000390625",
+                "approx": null
+              },
+              "function_latex": "x e^{x} + 3 e^{x}",
+              "function_text": "x*exp(x) + 3*exp(x)",
+              "terms": [
+                {
+                  "sign": "+",
+                  "template": "@@0@@ \\cdot e^{@@0@@}",
+                  "text": "@@0@@*exp(@@0@@)",
+                  "value": 14.786773503305266
+                },
+                {
+                  "sign": "+",
+                  "template": "3 \\cdot e^{@@0@@}",
+                  "text": "3*exp(@@0@@)",
+                  "value": 22.175829038348844
+                }
+              ],
+              "value": 36.96260254165411
+            },
+            "x_M": 2.000390625,
+            "interval": [
+              1.999609375,
+              2.000390625
+            ],
+            "interval_display": [
+              {
+                "exact": true,
+                "text": "1.999609375",
+                "latex": "1.999609375",
+                "approx": null
+              },
+              {
+                "exact": true,
+                "text": "2.000390625",
+                "latex": "2.000390625",
+                "approx": null
+              }
+            ],
+            "ratio": 0.25000161694496464,
+            "rounding": 6.720308783057004e-11,
+            "within_bound": true,
+            "by_rounding": false,
+            "points": [
+              {
+                "offset": 1,
+                "weight": 1,
+                "role": "x_0 + h",
+                "x": 2.000390625,
+                "display": {
+                  "exact": true,
+                  "text": "2.000390625",
+                  "latex": "2.000390625",
+                  "approx": null
+                },
+                "f": 14.786773503305266,
+                "f_display": "14.7867735033"
+              },
+              {
+                "offset": -1,
+                "weight": -1,
+                "role": "x_0 - h",
+                "x": 1.999609375,
+                "display": {
+                  "exact": true,
+                  "text": "1.999609375",
+                  "latex": "1.999609375",
+                  "approx": null
+                },
+                "f": 14.769455402339355,
+                "f_display": "14.7694554023"
+              }
+            ],
+            "decimals": 10,
+            "numerator_display": "0.017318101",
+            "products_display": [
+              "14.7867735033",
+              "-14.7694554023"
+            ],
+            "denominator_display": "0.00078125"
+          },
+          "extremo_adelante": {
+            "D": 22.167166417007138,
+            "previous_D": 22.167160774978356,
+            "estimated_error": 5.642028781949193e-06,
+            "real_error": 1.8797848113649707e-06,
+            "bound": 1.8808966310904259e-06,
+            "M": 36.97993248454264,
+            "M_substitution": {
+              "x": 2.00078125,
+              "x_display": {
+                "exact": true,
+                "text": "2.00078125",
+                "latex": "2.00078125",
+                "approx": null
+              },
+              "function_latex": "x e^{x} + 3 e^{x}",
+              "function_text": "x*exp(x) + 3*exp(x)",
+              "terms": [
+                {
+                  "sign": "+",
+                  "template": "@@0@@ \\cdot e^{@@0@@}",
+                  "text": "@@0@@*exp(@@0@@)",
+                  "value": 14.795439320873879
+                },
+                {
+                  "sign": "+",
+                  "template": "3 \\cdot e^{@@0@@}",
+                  "text": "3*exp(@@0@@)",
+                  "value": 22.18449316366876
+                }
+              ],
+              "value": 36.97993248454264
+            },
+            "x_M": 2.00078125,
+            "interval": [
+              2.0,
+              2.00078125
+            ],
+            "interval_display": [
+              {
+                "exact": true,
+                "text": "2",
+                "latex": "2",
+                "approx": null
+              },
+              {
+                "exact": true,
+                "text": "2.00078125",
+                "latex": "2.00078125",
+                "approx": null
+              }
+            ],
+            "ratio": 0.2499111135957737,
+            "rounding": 2.6895017014185426e-10,
+            "within_bound": true,
+            "by_rounding": false,
+            "points": [
+              {
+                "offset": 0,
+                "weight": -3,
+                "role": "x_0",
+                "x": 2.0,
+                "display": {
+                  "exact": true,
+                  "text": "2",
+                  "latex": "2",
+                  "approx": null
+                },
+                "f": 14.7781121978613,
+                "f_display": "14.7781121979"
+              },
+              {
+                "offset": 1,
+                "weight": 4,
+                "role": "x_0 + h",
+                "x": 2.000390625,
+                "display": {
+                  "exact": true,
+                  "text": "2.000390625",
+                  "latex": "2.000390625",
+                  "approx": null
+                },
+                "f": 14.786773503305266,
+                "f_display": "14.7867735033"
+              },
+              {
+                "offset": 2,
+                "weight": -1,
+                "role": "x_0 + 2h",
+                "x": 2.00078125,
+                "display": {
+                  "exact": true,
+                  "text": "2.00078125",
+                  "latex": "2.00078125",
+                  "approx": null
+                },
+                "f": 14.795439320873879,
+                "f_display": "14.7954393209"
+              }
+            ],
+            "decimals": 10,
+            "numerator_display": "0.0173180986",
+            "products_display": [
+              "-44.3343365937",
+              "59.1470940132",
+              "-14.7954393209"
+            ],
+            "denominator_display": "0.00078125"
+          },
+          "extremo_atras": {
+            "D": 22.167166418330453,
+            "previous_D": 22.167160785538726,
+            "estimated_error": 5.632791726384312e-06,
+            "real_error": 1.878461496573891e-06,
+            "bound": 1.8791341397426988e-06,
+            "M": 36.94528049465325,
+            "M_substitution": {
+              "x": 2.0,
+              "x_display": {
+                "exact": true,
+                "text": "2",
+                "latex": "2",
+                "approx": null
+              },
+              "function_latex": "x e^{x} + 3 e^{x}",
+              "function_text": "x*exp(x) + 3*exp(x)",
+              "terms": [
+                {
+                  "sign": "+",
+                  "template": "@@0@@ \\cdot e^{@@0@@}",
+                  "text": "@@0@@*exp(@@0@@)",
+                  "value": 14.7781121978613
+                },
+                {
+                  "sign": "+",
+                  "template": "3 \\cdot e^{@@0@@}",
+                  "text": "3*exp(@@0@@)",
+                  "value": 22.16716829679195
+                }
+              ],
+              "value": 36.94528049465325
+            },
+            "x_M": 2.0,
+            "interval": [
+              1.99921875,
+              2.0
+            ],
+            "interval_display": [
+              {
+                "exact": true,
+                "text": "1.99921875",
+                "latex": "1.99921875",
+                "approx": null
+              },
+              {
+                "exact": true,
+                "text": "2",
+                "latex": "2",
+                "approx": null
+              }
+            ],
+            "ratio": 0.2500862959635496,
+            "rounding": 2.686745325027103e-10,
+            "within_bound": true,
+            "by_rounding": false,
+            "points": [
+              {
+                "offset": 0,
+                "weight": 3,
+                "role": "x_0",
+                "x": 2.0,
+                "display": {
+                  "exact": true,
+                  "text": "2",
+                  "latex": "2",
+                  "approx": null
+                },
+                "f": 14.7781121978613,
+                "f_display": "14.77811219786"
+              },
+              {
+                "offset": -1,
+                "weight": -4,
+                "role": "x_0 - h",
+                "x": 1.999609375,
+                "display": {
+                  "exact": true,
+                  "text": "1.999609375",
+                  "latex": "1.999609375",
+                  "approx": null
+                },
+                "f": 14.769455402339355,
+                "f_display": "14.76945540234"
+              },
+              {
+                "offset": -2,
+                "weight": 1,
+                "role": "x_0 - 2h",
+                "x": 1.99921875,
+                "display": {
+                  "exact": true,
+                  "text": "1.99921875",
+                  "latex": "1.99921875",
+                  "approx": null
+                },
+                "f": 14.760803114537843,
+                "f_display": "14.76080311454"
+              }
+            ],
+            "decimals": 11,
+            "numerator_display": "0.01731809876",
+            "products_display": [
+              "44.33433659358",
+              "-59.07782160936",
+              "14.76080311454"
+            ],
+            "denominator_display": "0.00078125"
+          }
+        }
+      },
+      {
+        "iteration": 10,
+        "x": [
+          22.167168531677817,
+          22.167167826892182,
+          22.167167827087724
+        ],
+        "error": 1.4098850442678668e-06,
+        "extra": {
+          "h": {
+            "value": 0.0001953125,
+            "exact": true,
+            "text": "0.0001953125",
+            "latex": "0.0001953125",
+            "approx": null
+          },
+          "punto_medio": {
+            "D": 22.167168531677817,
+            "previous_D": 22.16716923636568,
+            "estimated_error": 7.04687863617437e-07,
+            "real_error": 2.3488586720077365e-07,
+            "bound": 2.3494682649859125e-07,
+            "M": 36.953940531388014,
+            "M_substitution": {
+              "x": 2.0001953125,
+              "x_display": {
+                "exact": true,
+                "text": "2.0001953125",
+                "latex": "2.0001953125",
+                "approx": null
+              },
+              "function_latex": "x e^{x} + 3 e^{x}",
+              "function_text": "x*exp(x) + 3*exp(x)",
+              "terms": [
+                {
+                  "sign": "+",
+                  "template": "@@0@@ \\cdot e^{@@0@@}",
+                  "text": "@@0@@*exp(@@0@@)",
+                  "value": 14.782442286705386
+                },
+                {
+                  "sign": "+",
+                  "template": "3 \\cdot e^{@@0@@}",
+                  "text": "3*exp(@@0@@)",
+                  "value": 22.171498244682624
+                }
+              ],
+              "value": 36.953940531388014
+            },
+            "x_M": 2.0001953125,
+            "interval": [
+              1.9998046875,
+              2.0001953125
+            ],
+            "interval_display": [
+              {
+                "exact": true,
+                "text": "1.9998046875",
+                "latex": "1.9998046875",
+                "approx": null
+              },
+              {
+                "exact": true,
+                "text": "2.0001953125",
+                "latex": "2.0001953125",
+                "approx": null
+              }
+            ],
+            "ratio": 0.24999194794029372,
+            "rounding": 1.3440615451149036e-10,
+            "within_bound": true,
+            "by_rounding": false,
+            "points": [
+              {
+                "offset": 1,
+                "weight": 1,
+                "role": "x_0 + h",
+                "x": 2.0001953125,
+                "display": {
+                  "exact": true,
+                  "text": "2.0001953125",
+                  "latex": "2.0001953125",
+                  "approx": null
+                },
+                "f": 14.782442286705386,
+                "f_display": "14.7824422867"
+              },
+              {
+                "offset": -1,
+                "weight": -1,
+                "role": "x_0 - h",
+                "x": 1.9998046875,
+                "display": {
+                  "exact": true,
+                  "text": "1.9998046875",
+                  "latex": "1.9998046875",
+                  "approx": null
+                },
+                "f": 14.7737832364977,
+                "f_display": "14.7737832365"
+              }
+            ],
+            "decimals": 10,
+            "numerator_display": "0.0086590502",
+            "products_display": [
+              "14.7824422867",
+              "-14.7737832365"
+            ],
+            "denominator_display": "0.000390625"
+          },
+          "extremo_adelante": {
+            "D": 22.167167826892182,
+            "previous_D": 22.167166417007138,
+            "estimated_error": 1.4098850442678668e-06,
+            "real_error": 4.698997670971039e-07,
+            "bound": 4.7000379615343875e-07,
+            "M": 36.96260254165411,
+            "M_substitution": {
+              "x": 2.000390625,
+              "x_display": {
+                "exact": true,
+                "text": "2.000390625",
+                "latex": "2.000390625",
+                "approx": null
+              },
+              "function_latex": "x e^{x} + 3 e^{x}",
+              "function_text": "x*exp(x) + 3*exp(x)",
+              "terms": [
+                {
+                  "sign": "+",
+                  "template": "@@0@@ \\cdot e^{@@0@@}",
+                  "text": "@@0@@*exp(@@0@@)",
+                  "value": 14.786773503305266
+                },
+                {
+                  "sign": "+",
+                  "template": "3 \\cdot e^{@@0@@}",
+                  "text": "3*exp(@@0@@)",
+                  "value": 22.175829038348844
+                }
+              ],
+              "value": 36.96260254165411
+            },
+            "x_M": 2.000390625,
+            "interval": [
+              2.0,
+              2.000390625
+            ],
+            "interval_display": [
+              {
+                "exact": true,
+                "text": "2",
+                "latex": "2",
+                "approx": null
+              },
+              {
+                "exact": true,
+                "text": "2.000390625",
+                "latex": "2.000390625",
+                "approx": null
+              }
+            ],
+            "ratio": 0.24997529730857596,
+            "rounding": 5.37762436853517e-10,
+            "within_bound": true,
+            "by_rounding": false,
+            "points": [
+              {
+                "offset": 0,
+                "weight": -3,
+                "role": "x_0",
+                "x": 2.0,
+                "display": {
+                  "exact": true,
+                  "text": "2",
+                  "latex": "2",
+                  "approx": null
+                },
+                "f": 14.7781121978613,
+                "f_display": "14.77811219786"
+              },
+              {
+                "offset": 1,
+                "weight": 4,
+                "role": "x_0 + h",
+                "x": 2.0001953125,
+                "display": {
+                  "exact": true,
+                  "text": "2.0001953125",
+                  "latex": "2.0001953125",
+                  "approx": null
+                },
+                "f": 14.782442286705386,
+                "f_display": "14.78244228671"
+              },
+              {
+                "offset": 2,
+                "weight": -1,
+                "role": "x_0 + 2h",
+                "x": 2.000390625,
+                "display": {
+                  "exact": true,
+                  "text": "2.000390625",
+                  "latex": "2.000390625",
+                  "approx": null
+                },
+                "f": 14.786773503305266,
+                "f_display": "14.78677350331"
+              }
+            ],
+            "decimals": 11,
+            "numerator_display": "0.00865904995",
+            "products_display": [
+              "-44.33433659358",
+              "59.12976914684",
+              "-14.78677350331"
+            ],
+            "denominator_display": "0.000390625"
+          },
+          "extremo_atras": {
+            "D": 22.167167827087724,
+            "previous_D": 22.167166418330453,
+            "estimated_error": 1.4087572708376683e-06,
+            "real_error": 4.697042257362227e-07,
+            "bound": 4.697835349356747e-07,
+            "M": 36.94528049465325,
+            "M_substitution": {
+              "x": 2.0,
+              "x_display": {
+                "exact": true,
+                "text": "2",
+                "latex": "2",
+                "approx": null
+              },
+              "function_latex": "x e^{x} + 3 e^{x}",
+              "function_text": "x*exp(x) + 3*exp(x)",
+              "terms": [
+                {
+                  "sign": "+",
+                  "template": "@@0@@ \\cdot e^{@@0@@}",
+                  "text": "@@0@@*exp(@@0@@)",
+                  "value": 14.7781121978613
+                },
+                {
+                  "sign": "+",
+                  "template": "3 \\cdot e^{@@0@@}",
+                  "text": "3*exp(@@0@@)",
+                  "value": 22.16716829679195
+                }
+              ],
+              "value": 36.94528049465325
+            },
+            "x_M": 2.0,
+            "interval": [
+              1.999609375,
+              2.0
+            ],
+            "interval_display": [
+              {
+                "exact": true,
+                "text": "1.999609375",
+                "latex": "1.999609375",
+                "approx": null
+              },
+              {
+                "exact": true,
+                "text": "2",
+                "latex": "2",
+                "approx": null
+              }
+            ],
+            "ratio": 0.2500473001937554,
+            "rounding": 5.374867992384067e-10,
+            "within_bound": true,
+            "by_rounding": false,
+            "points": [
+              {
+                "offset": 0,
+                "weight": 3,
+                "role": "x_0",
+                "x": 2.0,
+                "display": {
+                  "exact": true,
+                  "text": "2",
+                  "latex": "2",
+                  "approx": null
+                },
+                "f": 14.7781121978613,
+                "f_display": "14.7781121979"
+              },
+              {
+                "offset": -1,
+                "weight": -4,
+                "role": "x_0 - h",
+                "x": 1.9998046875,
+                "display": {
+                  "exact": true,
+                  "text": "1.9998046875",
+                  "latex": "1.9998046875",
+                  "approx": null
+                },
+                "f": 14.7737832364977,
+                "f_display": "14.7737832365"
+              },
+              {
+                "offset": -2,
+                "weight": 1,
+                "role": "x_0 - 2h",
+                "x": 1.999609375,
+                "display": {
+                  "exact": true,
+                  "text": "1.999609375",
+                  "latex": "1.999609375",
+                  "approx": null
+                },
+                "f": 14.769455402339355,
+                "f_display": "14.7694554023"
+              }
+            ],
+            "decimals": 10,
+            "numerator_display": "0.00865905",
+            "products_display": [
+              "44.3343365937",
+              "-59.095132946",
+              "14.7694554023"
+            ],
+            "denominator_display": "0.000390625"
+          }
+        }
+      },
+      {
+        "iteration": 11,
+        "x": [
+          22.167168355499598,
+          22.167168179348664,
+          22.167168179294094
+        ],
+        "error": 3.524564817780629e-07,
+        "extra": {
+          "h": {
+            "value": 9.765625e-05,
+            "exact": true,
+            "text": "0.00009765625",
+            "latex": "0.00009765625",
+            "approx": null
+          },
+          "punto_medio": {
+            "D": 22.167168355499598,
+            "previous_D": 22.167168531677817,
+            "estimated_error": 1.7617821868043393e-07,
+            "real_error": 5.870764852033972e-08,
+            "bound": 5.8729823853741895e-08,
+            "M": 36.94961026635675,
+            "M_substitution": {
+              "x": 2.00009765625,
+              "x_display": {
+                "exact": true,
+                "text": "2.00009765625",
+                "latex": "2.00009765625",
+                "approx": null
+              },
+              "function_latex": "x e^{x} + 3 e^{x}",
+              "function_text": "x*exp(x) + 3*exp(x)",
+              "terms": [
+                {
+                  "sign": "+",
+                  "template": "@@0@@ \\cdot e^{@@0@@}",
+                  "text": "@@0@@*exp(@@0@@)",
+                  "value": 14.780277101331079
+                },
+                {
+                  "sign": "+",
+                  "template": "3 \\cdot e^{@@0@@}",
+                  "text": "3*exp(@@0@@)",
+                  "value": 22.16933316502567
+                }
+              ],
+              "value": 36.94961026635675
+            },
+            "x_M": 2.00009765625,
+            "interval": [
+              1.99990234375,
+              2.00009765625
+            ],
+            "interval_display": [
+              {
+                "exact": true,
+                "text": "1.99990234375",
+                "latex": "1.99990234375",
+                "approx": null
+              },
+              {
+                "exact": true,
+                "text": "2.00009765625",
+                "latex": "2.00009765625",
+                "approx": null
+              }
+            ],
+            "ratio": 0.2499411702371949,
+            "rounding": 2.688122984481562e-10,
+            "within_bound": true,
+            "by_rounding": false,
+            "points": [
+              {
+                "offset": 1,
+                "weight": 1,
+                "role": "x_0 + h",
+                "x": 2.00009765625,
+                "display": {
+                  "exact": true,
+                  "text": "2.00009765625",
+                  "latex": "2.00009765625",
+                  "approx": null
+                },
+                "f": 14.780277101331079,
+                "f_display": "14.7802771013"
+              },
+              {
+                "offset": -1,
+                "weight": -1,
+                "role": "x_0 - h",
+                "x": 1.99990234375,
+                "display": {
+                  "exact": true,
+                  "text": "1.99990234375",
+                  "latex": "1.99990234375",
+                  "approx": null
+                },
+                "f": 14.775947576261645,
+                "f_display": "14.7759475763"
+              }
+            ],
+            "decimals": 10,
+            "numerator_display": "0.004329525",
+            "products_display": [
+              "14.7802771013",
+              "-14.7759475763"
+            ],
+            "denominator_display": "0.0001953125"
+          },
+          "extremo_adelante": {
+            "D": 22.167168179348664,
+            "previous_D": 22.167167826892182,
+            "estimated_error": 3.524564817780629e-07,
+            "real_error": 1.1744328531904102e-07,
+            "bound": 1.1747341324929563e-07,
+            "M": 36.953940531388014,
+            "M_substitution": {
+              "x": 2.0001953125,
+              "x_display": {
+                "exact": true,
+                "text": "2.0001953125",
+                "latex": "2.0001953125",
+                "approx": null
+              },
+              "function_latex": "x e^{x} + 3 e^{x}",
+              "function_text": "x*exp(x) + 3*exp(x)",
+              "terms": [
+                {
+                  "sign": "+",
+                  "template": "@@0@@ \\cdot e^{@@0@@}",
+                  "text": "@@0@@*exp(@@0@@)",
+                  "value": 14.782442286705386
+                },
+                {
+                  "sign": "+",
+                  "template": "3 \\cdot e^{@@0@@}",
+                  "text": "3*exp(@@0@@)",
+                  "value": 22.171498244682624
+                }
+              ],
+              "value": 36.953940531388014
+            },
+            "x_M": 2.0001953125,
+            "interval": [
+              2.0,
+              2.0001953125
+            ],
+            "interval_display": [
+              {
+                "exact": true,
+                "text": "2",
+                "latex": "2",
+                "approx": null
+              },
+              {
+                "exact": true,
+                "text": "2.0001953125",
+                "latex": "2.0001953125",
+                "approx": null
+              }
+            ],
+            "ratio": 0.24993263147281278,
+            "rounding": 1.0753870125971758e-09,
+            "within_bound": true,
+            "by_rounding": false,
+            "points": [
+              {
+                "offset": 0,
+                "weight": -3,
+                "role": "x_0",
+                "x": 2.0,
+                "display": {
+                  "exact": true,
+                  "text": "2",
+                  "latex": "2",
+                  "approx": null
+                },
+                "f": 14.7781121978613,
+                "f_display": "14.77811219786"
+              },
+              {
+                "offset": 1,
+                "weight": 4,
+                "role": "x_0 + h",
+                "x": 2.00009765625,
+                "display": {
+                  "exact": true,
+                  "text": "2.00009765625",
+                  "latex": "2.00009765625",
+                  "approx": null
+                },
+                "f": 14.780277101331079,
+                "f_display": "14.78027710133"
+              },
+              {
+                "offset": 2,
+                "weight": -1,
+                "role": "x_0 + 2h",
+                "x": 2.0001953125,
+                "display": {
+                  "exact": true,
+                  "text": "2.0001953125",
+                  "latex": "2.0001953125",
+                  "approx": null
+                },
+                "f": 14.782442286705386,
+                "f_display": "14.78244228671"
+              }
+            ],
+            "decimals": 11,
+            "numerator_display": "0.00432952503",
+            "products_display": [
+              "-44.33433659358",
+              "59.12110840532",
+              "-14.78244228671"
+            ],
+            "denominator_display": "0.0001953125"
+          },
+          "extremo_atras": {
+            "D": 22.167168179294094,
+            "previous_D": 22.167167827087724,
+            "estimated_error": 3.522063707350753e-07,
+            "real_error": 1.174978550011474e-07,
+            "bound": 1.1744588373391868e-07,
+            "M": 36.94528049465325,
+            "M_substitution": {
+              "x": 2.0,
+              "x_display": {
+                "exact": true,
+                "text": "2",
+                "latex": "2",
+                "approx": null
+              },
+              "function_latex": "x e^{x} + 3 e^{x}",
+              "function_text": "x*exp(x) + 3*exp(x)",
+              "terms": [
+                {
+                  "sign": "+",
+                  "template": "@@0@@ \\cdot e^{@@0@@}",
+                  "text": "@@0@@*exp(@@0@@)",
+                  "value": 14.7781121978613
+                },
+                {
+                  "sign": "+",
+                  "template": "3 \\cdot e^{@@0@@}",
+                  "text": "3*exp(@@0@@)",
+                  "value": 22.16716829679195
+                }
+              ],
+              "value": 36.94528049465325
+            },
+            "x_M": 2.0,
+            "interval": [
+              1.9998046875,
+              2.0
+            ],
+            "interval_display": [
+              {
+                "exact": true,
+                "text": "1.9998046875",
+                "latex": "1.9998046875",
+                "approx": null
+              },
+              {
+                "exact": true,
+                "text": "2",
+                "latex": "2",
+                "approx": null
+              }
+            ],
+            "ratio": 0.2501528591040014,
+            "rounding": 1.075111374988074e-09,
+            "within_bound": true,
+            "by_rounding": true,
+            "points": [
+              {
+                "offset": 0,
+                "weight": 3,
+                "role": "x_0",
+                "x": 2.0,
+                "display": {
+                  "exact": true,
+                  "text": "2",
+                  "latex": "2",
+                  "approx": null
+                },
+                "f": 14.7781121978613,
+                "f_display": "14.7781121979"
+              },
+              {
+                "offset": -1,
+                "weight": -4,
+                "role": "x_0 - h",
+                "x": 1.99990234375,
+                "display": {
+                  "exact": true,
+                  "text": "1.99990234375",
+                  "latex": "1.99990234375",
+                  "approx": null
+                },
+                "f": 14.775947576261645,
+                "f_display": "14.7759475763"
+              },
+              {
+                "offset": -2,
+                "weight": 1,
+                "role": "x_0 - 2h",
+                "x": 1.9998046875,
+                "display": {
+                  "exact": true,
+                  "text": "1.9998046875",
+                  "latex": "1.9998046875",
+                  "approx": null
+                },
+                "f": 14.7737832364977,
+                "f_display": "14.7737832365"
+              }
+            ],
+            "decimals": 10,
+            "numerator_display": "0.004329525",
+            "products_display": [
+              "44.3343365937",
+              "-59.1037903052",
+              "14.7737832365"
+            ],
+            "denominator_display": "0.0001953125"
+          }
+        }
+      }
+    ],
+    "iterations_used": 11,
+    "solution": [
+      22.167168355499598,
+      22.167168179348664,
+      22.167168179294094
+    ],
+    "variables": [
+      "punto_medio",
+      "extremo_adelante",
+      "extremo_atras"
+    ],
+    "warnings": [],
+    "mode": "function",
+    "x0": 2.0,
+    "x0_display": {
+      "exact": true,
+      "text": "2",
+      "latex": "2",
+      "approx": null
+    },
+    "h0": 0.1,
+    "tolerance": 1e-06,
+    "max_iterations": 25,
+    "exact": 22.16716829679195,
+    "differentiable": true,
+    "verification": {
+      "substitution": {
+        "x": 2.0,
+        "x_display": {
+          "exact": true,
+          "text": "2",
+          "latex": "2",
+          "approx": null
+        },
+        "function_latex": "x e^{x} + e^{x}",
+        "function_text": "x*exp(x) + exp(x)",
+        "terms": [
+          {
+            "sign": "+",
+            "template": "@@0@@ \\cdot e^{@@0@@}",
+            "text": "@@0@@*exp(@@0@@)",
+            "value": 14.7781121978613
+          },
+          {
+            "sign": "+",
+            "template": "e^{@@0@@}",
+            "text": "exp(@@0@@)",
+            "value": 7.38905609893065
+          }
+        ],
+        "value": 22.16716829679195
+      },
+      "final": {
+        "punto_medio": {
+          "D": 22.167168355499598,
+          "real_error": 5.870764852033972e-08,
+          "bound": 5.8729823853741895e-08,
+          "rounding": 2.688122984481562e-10,
+          "within_bound": true,
+          "by_rounding": false
+        },
+        "extremo_adelante": {
+          "D": 22.167168179348664,
+          "real_error": 1.1744328531904102e-07,
+          "bound": 1.1747341324929563e-07,
+          "rounding": 1.0753870125971758e-09,
+          "within_bound": true,
+          "by_rounding": false
+        },
+        "extremo_atras": {
+          "D": 22.167168179294094,
+          "real_error": 1.174978550011474e-07,
+          "bound": 1.1744588373391868e-07,
+          "rounding": 1.075111374988074e-09,
+          "within_bound": true,
+          "by_rounding": true
+        }
+      },
+      "failed_rows": {
+        "punto_medio": [],
+        "extremo_adelante": [],
+        "extremo_atras": []
+      },
+      "all_within": true,
+      "identities": [
+        {
+          "key": "punto_medio",
+          "name": "Punto medio",
+          "kind": "average",
+          "forward": 23.708446185307643,
+          "backward": 20.749127575306918,
+          "value": 22.228786880307283,
+          "D": 22.22878688030728,
+          "ok": true
+        },
+        {
+          "key": "extremo_adelante",
+          "name": "Extremo hacia adelante",
+          "kind": "richardson",
+          "direction": "+",
+          "base": 23.708446185307643,
+          "double": 25.384587504468854,
+          "value": 22.032304866146433,
+          "D": 22.03230486614645,
+          "ok": true
+        },
+        {
+          "key": "extremo_atras",
+          "name": "Extremo hacia atrás",
+          "kind": "richardson",
+          "direction": "-",
+          "base": 20.749127575306918,
+          "double": 19.443733809589983,
+          "value": 22.054521341023854,
+          "D": 22.054521341023836,
+          "ok": true
+        }
+      ]
+    },
+    "comparison": [
+      {
+        "k": 1,
+        "h": {
+          "value": 0.1,
+          "exact": true,
+          "text": "0.1",
+          "latex": "0.1",
+          "approx": null
+        },
+        "forward": {
+          "D": 23.708446185307643,
+          "real_error": 1.541277888515694
+        },
+        "backward": {
+          "D": 20.749127575306918,
+          "real_error": 1.4180407214850312
+        },
+        "text": "Con h = 0.1, la diferencia progresiva daría 23.708446 (error 1.541278) y la regresiva 20.749128 (error 1.418041). Con la fórmula de 3 puntos: punto medio 22.228787 (error 0.061619: 25 veces menor que el de la progresiva y 23 veces menor que el de la regresiva); extremo hacia adelante 22.032305 (error 0.134863: 11 veces menor que el de la progresiva y 11 veces menor que el de la regresiva); extremo hacia atrás 22.054521 (error 0.112647: 14 veces menor que el de la progresiva y 13 veces menor que el de la regresiva)."
+      },
+      {
+        "k": 11,
+        "h": {
+          "value": 9.765625e-05,
+          "exact": true,
+          "text": "0.00009765625",
+          "latex": "0.00009765625",
+          "approx": null
+        },
+        "forward": {
+          "D": 22.168611530523776,
+          "real_error": 0.001443233731826865
+        },
+        "backward": {
+          "D": 22.16572518047542,
+          "real_error": 0.0014431163165298244
+        },
+        "text": "Con h = 0.00009765625, la diferencia progresiva daría 22.168612 (error 0.001443) y la regresiva 22.165725 (error 0.001443). Con la fórmula de 3 puntos: punto medio 22.167168 (error 5.9×10⁻⁸: 24583 veces menor que el de la progresiva y 24581 veces menor que el de la regresiva); extremo hacia adelante 22.167168 (error 1.2×10⁻⁷: 12289 veces menor que el de la progresiva y 12288 veces menor que el de la regresiva); extremo hacia atrás 22.167168 (error 1.2×10⁻⁷: 12283 veces menor que el de la progresiva y 12282 veces menor que el de la regresiva)."
+      }
+    ],
+    "rounding_text": "R = 2ε·Σ|cᵢ|·(|f(xᵢ)| + |xᵢ·f′(xᵢ)|) / (factor·h)",
+    "formula": "all",
+    "formulas": [
+      {
+        "key": "punto_medio",
+        "name": "Punto medio",
+        "symbol_latex": "D^{\\text{med}}",
+        "formula_latex": "D^{\\text{med}}(h) = \\frac{f(x_0 + h) - f(x_0 - h)}{2h}",
+        "formula_text": "Dmed(h) = [f(x0 + h) - f(x0 - h)] / (2h)",
+        "bound_latex": "|E| \\le \\frac{h^{2}}{6} \\max_{\\xi \\in [x_0 - h,\\, x_0 + h]} \\left|f'''(\\xi)\\right|",
+        "order": 2,
+        "expected_ratio": 0.25,
+        "bound_derivative": 3,
+        "bound_coefficient": [
+          1,
+          6
+        ],
+        "nodes": [
+          [
+            1,
+            1
+          ],
+          [
+            -1,
+            -1
+          ]
+        ],
+        "divisor": 2
+      },
+      {
+        "key": "extremo_adelante",
+        "name": "Extremo hacia adelante",
+        "symbol_latex": "D^{\\text{ad}}",
+        "formula_latex": "D^{\\text{ad}}(h) = \\frac{-3f(x_0) + 4f(x_0 + h) - f(x_0 + 2h)}{2h}",
+        "formula_text": "Dad(h) = [-3f(x0) + 4f(x0 + h) - f(x0 + 2h)] / (2h)",
+        "bound_latex": "|E| \\le \\frac{h^{2}}{3} \\max_{\\xi \\in [x_0,\\, x_0 + 2h]} \\left|f'''(\\xi)\\right|",
+        "order": 2,
+        "expected_ratio": 0.25,
+        "bound_derivative": 3,
+        "bound_coefficient": [
+          1,
+          3
+        ],
+        "nodes": [
+          [
+            0,
+            -3
+          ],
+          [
+            1,
+            4
+          ],
+          [
+            2,
+            -1
+          ]
+        ],
+        "divisor": 2
+      },
+      {
+        "key": "extremo_atras",
+        "name": "Extremo hacia atrás",
+        "symbol_latex": "D^{\\text{at}}",
+        "formula_latex": "D^{\\text{at}}(h) = \\frac{3f(x_0) - 4f(x_0 - h) + f(x_0 - 2h)}{2h}",
+        "formula_text": "Dat(h) = [3f(x0) - 4f(x0 - h) + f(x0 - 2h)] / (2h)",
+        "bound_latex": "|E| \\le \\frac{h^{2}}{3} \\max_{\\xi \\in [x_0 - 2h,\\, x_0]} \\left|f'''(\\xi)\\right|",
+        "order": 2,
+        "expected_ratio": 0.25,
+        "bound_derivative": 3,
+        "bound_coefficient": [
+          1,
+          3
+        ],
+        "nodes": [
+          [
+            0,
+            3
+          ],
+          [
+            -1,
+            -4
+          ],
+          [
+            -2,
+            1
+          ]
+        ],
+        "divisor": 2
+      }
+    ],
+    "function": {
+      "latex": "x e^{x}",
+      "text": "x*exp(x)",
+      "template": "@@0@@ \\cdot e^{@@0@@}",
+      "uses_trigonometry": false,
+      "derivative": {
+        "latex": "x e^{x} + e^{x}",
+        "text": "x*exp(x) + exp(x)",
+        "steps": {
+          "terms": [
+            {
+              "latex": "\\frac{d}{d x}\\left(x e^{x}\\right) = 1 \\cdot e^{x} + x \\cdot e^{x} = x e^{x} + e^{x}",
+              "rule": "regla del producto: (u·v)′ = u′·v + u·v′"
+            }
+          ],
+          "sum_latex": null
+        }
+      },
+      "higher_derivatives": {
+        "2": {
+          "latex": "x e^{x} + 2 e^{x}",
+          "text": "x*exp(x) + 2*exp(x)",
+          "steps": {
+            "terms": [
+              {
+                "latex": "\\frac{d}{d x}\\left(x e^{x}\\right) = 1 \\cdot e^{x} + x \\cdot e^{x} = x e^{x} + e^{x}",
+                "rule": "regla del producto: (u·v)′ = u′·v + u·v′"
+              },
+              {
+                "latex": "\\frac{d}{d x}\\left(e^{x}\\right) = e^{x}",
+                "rule": "derivada de la función exponencial"
+              }
+            ],
+            "sum_latex": "f''(x) = x e^{x} + e^{x} + e^{x} = x e^{x} + 2 e^{x}"
+          }
+        },
+        "3": {
+          "latex": "x e^{x} + 3 e^{x}",
+          "text": "x*exp(x) + 3*exp(x)",
+          "steps": {
+            "terms": [
+              {
+                "latex": "\\frac{d}{d x}\\left(x e^{x}\\right) = 1 \\cdot e^{x} + x \\cdot e^{x} = x e^{x} + e^{x}",
+                "rule": "regla del producto: (u·v)′ = u′·v + u·v′"
+              },
+              {
+                "latex": "\\frac{d}{d x}\\left(2 e^{x}\\right) = 2 \\cdot e^{x} = 2 e^{x}",
+                "rule": "derivada de la función exponencial"
+              }
+            ],
+            "sum_latex": "f'''(x) = x e^{x} + e^{x} + 2 e^{x} = x e^{x} + 3 e^{x}"
+          }
+        }
+      }
+    },
+    "sampling_points": 401
+  },
+  "table": {
+    "request": {
+      "mode": "table",
+      "formula": "all",
+      "h0": 0.1,
+      "points": [
+        [
+          1.8,
+          10.889365
+        ],
+        [
+          1.9,
+          12.703199
+        ],
+        [
+          2.0,
+          14.778112
+        ],
+        [
+          2.1,
+          17.148957
+        ],
+        [
+          2.2,
+          19.85503
+        ]
+      ],
+      "compare_function": "x*exp(x)",
+      "tolerance": 1e-06,
+      "max_iterations": 25
+    },
+    "method": "tres-puntos",
+    "category": "differentiation",
+    "converged": true,
+    "iterations": [
+      {
+        "iteration": 1,
+        "x": [
+          null,
+          16.83294500000001,
+          null
+        ],
+        "error": null,
+        "extra": {
+          "x": 1.8,
+          "y": 10.889365,
+          "x_display": {
+            "exact": true,
+            "text": "1.8",
+            "latex": "1.8",
+            "approx": null
+          },
+          "exact": 16.93901290035625,
+          "punto_medio": null,
+          "extremo_adelante": {
+            "D": 16.83294500000001,
+            "h": {
+              "value": 0.09999999999999987,
+              "exact": true,
+              "text": "0.1",
+              "latex": "0.1",
+              "approx": null
+            },
+            "points": [
+              {
+                "offset": 0,
+                "weight": -3,
+                "role": "x_0",
+                "index": 0,
+                "x": 1.8,
+                "display": {
+                  "exact": true,
+                  "text": "1.8",
+                  "latex": "1.8",
+                  "approx": null
+                },
+                "f": 10.889365,
+                "f_display": "10.889365"
+              },
+              {
+                "offset": 1,
+                "weight": 4,
+                "role": "x_0 + h",
+                "index": 1,
+                "x": 1.9,
+                "display": {
+                  "exact": true,
+                  "text": "1.9",
+                  "latex": "1.9",
+                  "approx": null
+                },
+                "f": 12.703199,
+                "f_display": "12.703199"
+              },
+              {
+                "offset": 2,
+                "weight": -1,
+                "role": "x_0 + 2h",
+                "index": 2,
+                "x": 2.0,
+                "display": {
+                  "exact": true,
+                  "text": "2",
+                  "latex": "2",
+                  "approx": null
+                },
+                "f": 14.778112,
+                "f_display": "14.778112"
+              }
+            ],
+            "decimals": 7,
+            "numerator_display": "3.366589",
+            "real_error": 0.10606790035624059,
+            "bound": 0.12315093498217716,
+            "M": 36.94528049465325,
+            "x_M": 2.0,
+            "rounding": 2.1817881501462498e-13,
+            "within_bound": true,
+            "by_rounding": false,
+            "interval": [
+              1.8,
+              2.0
+            ],
+            "M_substitution": {
+              "x": 2.0,
+              "x_display": {
+                "exact": true,
+                "text": "2",
+                "latex": "2",
+                "approx": null
+              },
+              "function_latex": "x e^{x} + 3 e^{x}",
+              "function_text": "x*exp(x) + 3*exp(x)",
+              "terms": [
+                {
+                  "sign": "+",
+                  "template": "@@0@@ \\cdot e^{@@0@@}",
+                  "text": "@@0@@*exp(@@0@@)",
+                  "value": 14.7781121978613
+                },
+                {
+                  "sign": "+",
+                  "template": "3 \\cdot e^{@@0@@}",
+                  "text": "3*exp(@@0@@)",
+                  "value": 22.16716829679195
+                }
+              ],
+              "value": 36.94528049465325
+            },
+            "products_display": [
+              "-32.668095",
+              "50.812796",
+              "-14.778112"
+            ],
+            "denominator_display": "0.2"
+          },
+          "extremo_atras": null,
+          "recommended": {
+            "key": "extremo_adelante",
+            "name": "Extremo hacia adelante",
+            "D": 16.83294500000001
+          }
+        }
+      },
+      {
+        "iteration": 2,
+        "x": [
+          19.443734999999986,
+          19.269469999999984,
+          null
+        ],
+        "error": null,
+        "extra": {
+          "x": 1.9,
+          "y": 12.703199,
+          "x_display": {
+            "exact": true,
+            "text": "1.9",
+            "latex": "1.9",
+            "approx": null
+          },
+          "exact": 19.389093882609878,
+          "punto_medio": {
+            "D": 19.443734999999986,
+            "h": {
+              "value": 0.10000000000000009,
+              "exact": true,
+              "text": "0.1",
+              "latex": "0.1",
+              "approx": null
+            },
+            "points": [
+              {
+                "offset": 1,
+                "weight": 1,
+                "role": "x_0 + h",
+                "index": 2,
+                "x": 2.0,
+                "display": {
+                  "exact": true,
+                  "text": "2",
+                  "latex": "2",
+                  "approx": null
+                },
+                "f": 14.778112,
+                "f_display": "14.778112"
+              },
+              {
+                "offset": -1,
+                "weight": -1,
+                "role": "x_0 - h",
+                "index": 0,
+                "x": 1.8,
+                "display": {
+                  "exact": true,
+                  "text": "1.8",
+                  "latex": "1.8",
+                  "approx": null
+                },
+                "f": 10.889365,
+                "f_display": "10.889365"
+              }
+            ],
+            "decimals": 7,
+            "numerator_display": "3.888747",
+            "real_error": 0.05464111739010846,
+            "bound": 0.06157546749108885,
+            "M": 36.94528049465325,
+            "x_M": 2.0,
+            "rounding": 5.699324789887322e-14,
+            "within_bound": true,
+            "by_rounding": false,
+            "interval": [
+              1.8,
+              2.0
+            ],
+            "M_substitution": {
+              "x": 2.0,
+              "x_display": {
+                "exact": true,
+                "text": "2",
+                "latex": "2",
+                "approx": null
+              },
+              "function_latex": "x e^{x} + 3 e^{x}",
+              "function_text": "x*exp(x) + 3*exp(x)",
+              "terms": [
+                {
+                  "sign": "+",
+                  "template": "@@0@@ \\cdot e^{@@0@@}",
+                  "text": "@@0@@*exp(@@0@@)",
+                  "value": 14.7781121978613
+                },
+                {
+                  "sign": "+",
+                  "template": "3 \\cdot e^{@@0@@}",
+                  "text": "3*exp(@@0@@)",
+                  "value": 22.16716829679195
+                }
+              ],
+              "value": 36.94528049465325
+            },
+            "products_display": [
+              "14.778112",
+              "-10.889365"
+            ],
+            "denominator_display": "0.2"
+          },
+          "extremo_adelante": {
+            "D": 19.269469999999984,
+            "h": {
+              "value": 0.10000000000000009,
+              "exact": true,
+              "text": "0.1",
+              "latex": "0.1",
+              "approx": null
+            },
+            "points": [
+              {
+                "offset": 0,
+                "weight": -3,
+                "role": "x_0",
+                "index": 1,
+                "x": 1.9,
+                "display": {
+                  "exact": true,
+                  "text": "1.9",
+                  "latex": "1.9",
+                  "approx": null
+                },
+                "f": 12.703199,
+                "f_display": "12.703199"
+              },
+              {
+                "offset": 1,
+                "weight": 4,
+                "role": "x_0 + h",
+                "index": 2,
+                "x": 2.0,
+                "display": {
+                  "exact": true,
+                  "text": "2",
+                  "latex": "2",
+                  "approx": null
+                },
+                "f": 14.778112,
+                "f_display": "14.778112"
+              },
+              {
+                "offset": 2,
+                "weight": -1,
+                "role": "x_0 + 2h",
+                "index": 3,
+                "x": 2.1,
+                "display": {
+                  "exact": true,
+                  "text": "2.1",
+                  "latex": "2.1",
+                  "approx": null
+                },
+                "f": 17.148957,
+                "f_display": "17.148957"
+              }
+            ],
+            "decimals": 7,
+            "numerator_display": "3.853894",
+            "real_error": 0.11962388260989343,
+            "bound": 0.1388248885136503,
+            "M": 41.64746655409502,
+            "x_M": 2.1,
+            "rounding": 2.5395463953969945e-13,
+            "within_bound": true,
+            "by_rounding": false,
+            "interval": [
+              1.9,
+              2.1
+            ],
+            "M_substitution": {
+              "x": 2.1,
+              "x_display": {
+                "exact": true,
+                "text": "2.1",
+                "latex": "2.1",
+                "approx": null
+              },
+              "function_latex": "x e^{x} + 3 e^{x}",
+              "function_text": "x*exp(x) + 3*exp(x)",
+              "terms": [
+                {
+                  "sign": "+",
+                  "template": "@@0@@ \\cdot e^{@@0@@}",
+                  "text": "@@0@@*exp(@@0@@)",
+                  "value": 17.148956816392065
+                },
+                {
+                  "sign": "+",
+                  "template": "3 \\cdot e^{@@0@@}",
+                  "text": "3*exp(@@0@@)",
+                  "value": 24.49850973770295
+                }
+              ],
+              "value": 41.64746655409502
+            },
+            "products_display": [
+              "-38.109597",
+              "59.112448",
+              "-17.148957"
+            ],
+            "denominator_display": "0.2"
+          },
+          "extremo_atras": null,
+          "recommended": {
+            "key": "punto_medio",
+            "name": "Punto medio",
+            "D": 19.443734999999986
+          }
+        }
+      },
+      {
+        "iteration": 3,
+        "x": [
+          22.22878999999998,
+          22.032309999999967,
+          22.054524999999988
+        ],
+        "error": null,
+        "extra": {
+          "x": 2.0,
+          "y": 14.778112,
+          "x_display": {
+            "exact": true,
+            "text": "2",
+            "latex": "2",
+            "approx": null
+          },
+          "exact": 22.16716829679195,
+          "punto_medio": {
+            "D": 22.22878999999998,
+            "h": {
+              "value": 0.10000000000000009,
+              "exact": true,
+              "text": "0.1",
+              "latex": "0.1",
+              "approx": null
+            },
+            "points": [
+              {
+                "offset": 1,
+                "weight": 1,
+                "role": "x_0 + h",
+                "index": 3,
+                "x": 2.1,
+                "display": {
+                  "exact": true,
+                  "text": "2.1",
+                  "latex": "2.1",
+                  "approx": null
+                },
+                "f": 17.148957,
+                "f_display": "17.148957"
+              },
+              {
+                "offset": -1,
+                "weight": -1,
+                "role": "x_0 - h",
+                "index": 1,
+                "x": 1.9,
+                "display": {
+                  "exact": true,
+                  "text": "1.9",
+                  "latex": "1.9",
+                  "approx": null
+                },
+                "f": 12.703199,
+                "f_display": "12.703199"
+              }
+            ],
+            "decimals": 7,
+            "numerator_display": "4.445758",
+            "real_error": 0.06162170320802929,
+            "bound": 0.06941244425682515,
+            "M": 41.64746655409502,
+            "x_M": 2.1,
+            "rounding": 6.628510185180397e-14,
+            "within_bound": true,
+            "by_rounding": false,
+            "interval": [
+              1.9,
+              2.1
+            ],
+            "M_substitution": {
+              "x": 2.1,
+              "x_display": {
+                "exact": true,
+                "text": "2.1",
+                "latex": "2.1",
+                "approx": null
+              },
+              "function_latex": "x e^{x} + 3 e^{x}",
+              "function_text": "x*exp(x) + 3*exp(x)",
+              "terms": [
+                {
+                  "sign": "+",
+                  "template": "@@0@@ \\cdot e^{@@0@@}",
+                  "text": "@@0@@*exp(@@0@@)",
+                  "value": 17.148956816392065
+                },
+                {
+                  "sign": "+",
+                  "template": "3 \\cdot e^{@@0@@}",
+                  "text": "3*exp(@@0@@)",
+                  "value": 24.49850973770295
+                }
+              ],
+              "value": 41.64746655409502
+            },
+            "products_display": [
+              "17.148957",
+              "-12.703199"
+            ],
+            "denominator_display": "0.2"
+          },
+          "extremo_adelante": {
+            "D": 22.032309999999967,
+            "h": {
+              "value": 0.10000000000000009,
+              "exact": true,
+              "text": "0.1",
+              "latex": "0.1",
+              "approx": null
+            },
+            "points": [
+              {
+                "offset": 0,
+                "weight": -3,
+                "role": "x_0",
+                "index": 2,
+                "x": 2.0,
+                "display": {
+                  "exact": true,
+                  "text": "2",
+                  "latex": "2",
+                  "approx": null
+                },
+                "f": 14.778112,
+                "f_display": "14.778112"
+              },
+              {
+                "offset": 1,
+                "weight": 4,
+                "role": "x_0 + h",
+                "index": 3,
+                "x": 2.1,
+                "display": {
+                  "exact": true,
+                  "text": "2.1",
+                  "latex": "2.1",
+                  "approx": null
+                },
+                "f": 17.148957,
+                "f_display": "17.148957"
+              },
+              {
+                "offset": 2,
+                "weight": -1,
+                "role": "x_0 + 2h",
+                "index": 4,
+                "x": 2.2,
+                "display": {
+                  "exact": true,
+                  "text": "2.2",
+                  "latex": "2.2",
+                  "approx": null
+                },
+                "f": 19.85503,
+                "f_display": "19.85503"
+              }
+            ],
+            "decimals": 7,
+            "numerator_display": "4.406462",
+            "real_error": 0.13485829679198247,
+            "bound": 0.15643356732352504,
+            "M": 46.93007019705743,
+            "x_M": 2.2,
+            "rounding": 2.948423594162361e-13,
+            "within_bound": true,
+            "by_rounding": false,
+            "interval": [
+              2.0,
+              2.2
+            ],
+            "M_substitution": {
+              "x": 2.2,
+              "x_display": {
+                "exact": true,
+                "text": "2.2",
+                "latex": "2.2",
+                "approx": null
+              },
+              "function_latex": "x e^{x} + 3 e^{x}",
+              "function_text": "x*exp(x) + 3*exp(x)",
+              "terms": [
+                {
+                  "sign": "+",
+                  "template": "@@0@@ \\cdot e^{@@0@@}",
+                  "text": "@@0@@*exp(@@0@@)",
+                  "value": 19.85502969875507
+                },
+                {
+                  "sign": "+",
+                  "template": "3 \\cdot e^{@@0@@}",
+                  "text": "3*exp(@@0@@)",
+                  "value": 27.075040498302364
+                }
+              ],
+              "value": 46.93007019705743
+            },
+            "products_display": [
+              "-44.334336",
+              "68.595828",
+              "-19.85503"
+            ],
+            "denominator_display": "0.2"
+          },
+          "extremo_atras": {
+            "D": 22.054524999999988,
+            "h": {
+              "value": 0.10000000000000009,
+              "exact": true,
+              "text": "0.1",
+              "latex": "0.1",
+              "approx": null
+            },
+            "points": [
+              {
+                "offset": 0,
+                "weight": 3,
+                "role": "x_0",
+                "index": 2,
+                "x": 2.0,
+                "display": {
+                  "exact": true,
+                  "text": "2",
+                  "latex": "2",
+                  "approx": null
+                },
+                "f": 14.778112,
+                "f_display": "14.778112"
+              },
+              {
+                "offset": -1,
+                "weight": -4,
+                "role": "x_0 - h",
+                "index": 1,
+                "x": 1.9,
+                "display": {
+                  "exact": true,
+                  "text": "1.9",
+                  "latex": "1.9",
+                  "approx": null
+                },
+                "f": 12.703199,
+                "f_display": "12.703199"
+              },
+              {
+                "offset": -2,
+                "weight": 1,
+                "role": "x_0 - 2h",
+                "index": 0,
+                "x": 1.8,
+                "display": {
+                  "exact": true,
+                  "text": "1.8",
+                  "latex": "1.8",
+                  "approx": null
+                },
+                "f": 10.889365,
+                "f_display": "10.889365"
+              }
+            ],
+            "decimals": 7,
+            "numerator_display": "4.410905",
+            "real_error": 0.11264329679196194,
+            "bound": 0.1231509349821777,
+            "M": 36.94528049465325,
+            "x_M": 2.0,
+            "rounding": 2.3544832083999244e-13,
+            "within_bound": true,
+            "by_rounding": false,
+            "interval": [
+              1.8,
+              2.0
+            ],
+            "M_substitution": {
+              "x": 2.0,
+              "x_display": {
+                "exact": true,
+                "text": "2",
+                "latex": "2",
+                "approx": null
+              },
+              "function_latex": "x e^{x} + 3 e^{x}",
+              "function_text": "x*exp(x) + 3*exp(x)",
+              "terms": [
+                {
+                  "sign": "+",
+                  "template": "@@0@@ \\cdot e^{@@0@@}",
+                  "text": "@@0@@*exp(@@0@@)",
+                  "value": 14.7781121978613
+                },
+                {
+                  "sign": "+",
+                  "template": "3 \\cdot e^{@@0@@}",
+                  "text": "3*exp(@@0@@)",
+                  "value": 22.16716829679195
+                }
+              ],
+              "value": 36.94528049465325
+            },
+            "products_display": [
+              "44.334336",
+              "-50.812796",
+              "10.889365"
+            ],
+            "denominator_display": "0.2"
+          },
+          "recommended": {
+            "key": "punto_medio",
+            "name": "Punto medio",
+            "D": 22.22878999999998
+          }
+        }
+      },
+      {
+        "iteration": 4,
+        "x": [
+          25.384589999999974,
+          null,
+          25.18810999999998
+        ],
+        "error": null,
+        "extra": {
+          "x": 2.1,
+          "y": 17.148957,
+          "x_display": {
+            "exact": true,
+            "text": "2.1",
+            "latex": "2.1",
+            "approx": null
+          },
+          "exact": 25.315126728959715,
+          "punto_medio": {
+            "D": 25.384589999999974,
+            "h": {
+              "value": 0.10000000000000009,
+              "exact": true,
+              "text": "0.1",
+              "latex": "0.1",
+              "approx": null
+            },
+            "points": [
+              {
+                "offset": 1,
+                "weight": 1,
+                "role": "x_0 + h",
+                "index": 4,
+                "x": 2.2,
+                "display": {
+                  "exact": true,
+                  "text": "2.2",
+                  "latex": "2.2",
+                  "approx": null
+                },
+                "f": 19.85503,
+                "f_display": "19.85503"
+              },
+              {
+                "offset": -1,
+                "weight": -1,
+                "role": "x_0 - h",
+                "index": 2,
+                "x": 2.0,
+                "display": {
+                  "exact": true,
+                  "text": "2",
+                  "latex": "2",
+                  "approx": null
+                },
+                "f": 14.778112,
+                "f_display": "14.778112"
+              }
+            ],
+            "decimals": 7,
+            "numerator_display": "5.076918",
+            "real_error": 0.0694632710402594,
+            "bound": 0.07821678366176252,
+            "M": 46.93007019705743,
+            "x_M": 2.2,
+            "rounding": 7.690102332702502e-14,
+            "within_bound": true,
+            "by_rounding": false,
+            "interval": [
+              2.0,
+              2.2
+            ],
+            "M_substitution": {
+              "x": 2.2,
+              "x_display": {
+                "exact": true,
+                "text": "2.2",
+                "latex": "2.2",
+                "approx": null
+              },
+              "function_latex": "x e^{x} + 3 e^{x}",
+              "function_text": "x*exp(x) + 3*exp(x)",
+              "terms": [
+                {
+                  "sign": "+",
+                  "template": "@@0@@ \\cdot e^{@@0@@}",
+                  "text": "@@0@@*exp(@@0@@)",
+                  "value": 19.85502969875507
+                },
+                {
+                  "sign": "+",
+                  "template": "3 \\cdot e^{@@0@@}",
+                  "text": "3*exp(@@0@@)",
+                  "value": 27.075040498302364
+                }
+              ],
+              "value": 46.93007019705743
+            },
+            "products_display": [
+              "19.85503",
+              "-14.778112"
+            ],
+            "denominator_display": "0.2"
+          },
+          "extremo_adelante": null,
+          "extremo_atras": {
+            "D": 25.18810999999998,
+            "h": {
+              "value": 0.10000000000000009,
+              "exact": true,
+              "text": "0.1",
+              "latex": "0.1",
+              "approx": null
+            },
+            "points": [
+              {
+                "offset": 0,
+                "weight": 3,
+                "role": "x_0",
+                "index": 3,
+                "x": 2.1,
+                "display": {
+                  "exact": true,
+                  "text": "2.1",
+                  "latex": "2.1",
+                  "approx": null
+                },
+                "f": 17.148957,
+                "f_display": "17.148957"
+              },
+              {
+                "offset": -1,
+                "weight": -4,
+                "role": "x_0 - h",
+                "index": 2,
+                "x": 2.0,
+                "display": {
+                  "exact": true,
+                  "text": "2",
+                  "latex": "2",
+                  "approx": null
+                },
+                "f": 14.778112,
+                "f_display": "14.778112"
+              },
+              {
+                "offset": -2,
+                "weight": 1,
+                "role": "x_0 - 2h",
+                "index": 1,
+                "x": 1.9,
+                "display": {
+                  "exact": true,
+                  "text": "1.9",
+                  "latex": "1.9",
+                  "approx": null
+                },
+                "f": 12.703199,
+                "f_display": "12.703199"
+              }
+            ],
+            "decimals": 7,
+            "numerator_display": "5.037622",
+            "real_error": 0.1270167289597346,
+            "bound": 0.1388248885136503,
+            "M": 41.64746655409502,
+            "x_M": 2.1,
+            "rounding": 2.7369777111374535e-13,
+            "within_bound": true,
+            "by_rounding": false,
+            "interval": [
+              1.9,
+              2.1
+            ],
+            "M_substitution": {
+              "x": 2.1,
+              "x_display": {
+                "exact": true,
+                "text": "2.1",
+                "latex": "2.1",
+                "approx": null
+              },
+              "function_latex": "x e^{x} + 3 e^{x}",
+              "function_text": "x*exp(x) + 3*exp(x)",
+              "terms": [
+                {
+                  "sign": "+",
+                  "template": "@@0@@ \\cdot e^{@@0@@}",
+                  "text": "@@0@@*exp(@@0@@)",
+                  "value": 17.148956816392065
+                },
+                {
+                  "sign": "+",
+                  "template": "3 \\cdot e^{@@0@@}",
+                  "text": "3*exp(@@0@@)",
+                  "value": 24.49850973770295
+                }
+              ],
+              "value": 41.64746655409502
+            },
+            "products_display": [
+              "51.446871",
+              "-59.112448",
+              "12.703199"
+            ],
+            "denominator_display": "0.2"
+          },
+          "recommended": {
+            "key": "punto_medio",
+            "name": "Punto medio",
+            "D": 25.384589999999974
+          }
+        }
+      },
+      {
+        "iteration": 5,
+        "x": [
+          null,
+          null,
+          28.73686999999998
+        ],
+        "error": null,
+        "extra": {
+          "x": 2.2,
+          "y": 19.85503,
+          "x_display": {
+            "exact": true,
+            "text": "2.2",
+            "latex": "2.2",
+            "approx": null
+          },
+          "exact": 28.880043198189192,
+          "punto_medio": null,
+          "extremo_adelante": null,
+          "extremo_atras": {
+            "D": 28.73686999999998,
+            "h": {
+              "value": 0.10000000000000009,
+              "exact": true,
+              "text": "0.1",
+              "latex": "0.1",
+              "approx": null
+            },
+            "points": [
+              {
+                "offset": 0,
+                "weight": 3,
+                "role": "x_0",
+                "index": 4,
+                "x": 2.2,
+                "display": {
+                  "exact": true,
+                  "text": "2.2",
+                  "latex": "2.2",
+                  "approx": null
+                },
+                "f": 19.85503,
+                "f_display": "19.85503"
+              },
+              {
+                "offset": -1,
+                "weight": -4,
+                "role": "x_0 - h",
+                "index": 3,
+                "x": 2.1,
+                "display": {
+                  "exact": true,
+                  "text": "2.1",
+                  "latex": "2.1",
+                  "approx": null
+                },
+                "f": 17.148957,
+                "f_display": "17.148957"
+              },
+              {
+                "offset": -2,
+                "weight": 1,
+                "role": "x_0 - 2h",
+                "index": 2,
+                "x": 2.0,
+                "display": {
+                  "exact": true,
+                  "text": "2",
+                  "latex": "2",
+                  "approx": null
+                },
+                "f": 14.778112,
+                "f_display": "14.778112"
+              }
+            ],
+            "decimals": 7,
+            "numerator_display": "5.747374",
+            "real_error": 0.14317319818921348,
+            "bound": 0.15643356732352504,
+            "M": 46.93007019705743,
+            "x_M": 2.2,
+            "rounding": 3.1738840444717163e-13,
+            "within_bound": true,
+            "by_rounding": false,
+            "interval": [
+              2.0,
+              2.2
+            ],
+            "M_substitution": {
+              "x": 2.2,
+              "x_display": {
+                "exact": true,
+                "text": "2.2",
+                "latex": "2.2",
+                "approx": null
+              },
+              "function_latex": "x e^{x} + 3 e^{x}",
+              "function_text": "x*exp(x) + 3*exp(x)",
+              "terms": [
+                {
+                  "sign": "+",
+                  "template": "@@0@@ \\cdot e^{@@0@@}",
+                  "text": "@@0@@*exp(@@0@@)",
+                  "value": 19.85502969875507
+                },
+                {
+                  "sign": "+",
+                  "template": "3 \\cdot e^{@@0@@}",
+                  "text": "3*exp(@@0@@)",
+                  "value": 27.075040498302364
+                }
+              ],
+              "value": 46.93007019705743
+            },
+            "products_display": [
+              "59.56509",
+              "-68.595828",
+              "14.778112"
+            ],
+            "denominator_display": "0.2"
+          },
+          "recommended": {
+            "key": "extremo_atras",
+            "name": "Extremo hacia atrás",
+            "D": 28.73686999999998
+          }
+        }
+      }
+    ],
+    "iterations_used": 5,
+    "solution": [],
+    "variables": [
+      "punto_medio",
+      "extremo_adelante",
+      "extremo_atras"
+    ],
+    "warnings": [],
+    "mode": "table",
+    "points": [
+      [
+        1.8,
+        10.889365
+      ],
+      [
+        1.9,
+        12.703199
+      ],
+      [
+        2.0,
+        14.778112
+      ],
+      [
+        2.1,
+        17.148957
+      ],
+      [
+        2.2,
+        19.85503
+      ]
+    ],
+    "uniform": true,
+    "verification": {
+      "data": [
+        {
+          "i": 1,
+          "y": 10.889365,
+          "f": 10.889365435943304,
+          "difference": 4.3594330456642183e-07,
+          "ok": true
+        },
+        {
+          "i": 2,
+          "y": 12.703199,
+          "f": 12.703199440330609,
+          "difference": 4.4033060930814827e-07,
+          "ok": true
+        },
+        {
+          "i": 3,
+          "y": 14.778112,
+          "f": 14.7781121978613,
+          "difference": 1.978613006770047e-07,
+          "ok": true
+        },
+        {
+          "i": 4,
+          "y": 17.148957,
+          "f": 17.148956816392065,
+          "difference": 1.8360793418992216e-07,
+          "ok": true
+        },
+        {
+          "i": 5,
+          "y": 19.85503,
+          "f": 19.85502969875507,
+          "difference": 3.012449276695861e-07,
+          "ok": true
+        }
+      ],
+      "substitutions": [
+        {
+          "x": 1.8,
+          "x_display": {
+            "exact": true,
+            "text": "1.8",
+            "latex": "1.8",
+            "approx": null
+          },
+          "function_latex": "x e^{x} + e^{x}",
+          "function_text": "x*exp(x) + exp(x)",
+          "terms": [
+            {
+              "sign": "+",
+              "template": "@@0@@ \\cdot e^{@@0@@}",
+              "text": "@@0@@*exp(@@0@@)",
+              "value": 10.889365435943304
+            },
+            {
+              "sign": "+",
+              "template": "e^{@@0@@}",
+              "text": "exp(@@0@@)",
+              "value": 6.0496474644129465
+            }
+          ],
+          "value": 16.93901290035625
+        },
+        {
+          "x": 1.9,
+          "x_display": {
+            "exact": true,
+            "text": "1.9",
+            "latex": "1.9",
+            "approx": null
+          },
+          "function_latex": "x e^{x} + e^{x}",
+          "function_text": "x*exp(x) + exp(x)",
+          "terms": [
+            {
+              "sign": "+",
+              "template": "@@0@@ \\cdot e^{@@0@@}",
+              "text": "@@0@@*exp(@@0@@)",
+              "value": 12.703199440330609
+            },
+            {
+              "sign": "+",
+              "template": "e^{@@0@@}",
+              "text": "exp(@@0@@)",
+              "value": 6.6858944422792685
+            }
+          ],
+          "value": 19.389093882609878
+        },
+        {
+          "x": 2.0,
+          "x_display": {
+            "exact": true,
+            "text": "2",
+            "latex": "2",
+            "approx": null
+          },
+          "function_latex": "x e^{x} + e^{x}",
+          "function_text": "x*exp(x) + exp(x)",
+          "terms": [
+            {
+              "sign": "+",
+              "template": "@@0@@ \\cdot e^{@@0@@}",
+              "text": "@@0@@*exp(@@0@@)",
+              "value": 14.7781121978613
+            },
+            {
+              "sign": "+",
+              "template": "e^{@@0@@}",
+              "text": "exp(@@0@@)",
+              "value": 7.38905609893065
+            }
+          ],
+          "value": 22.16716829679195
+        },
+        {
+          "x": 2.1,
+          "x_display": {
+            "exact": true,
+            "text": "2.1",
+            "latex": "2.1",
+            "approx": null
+          },
+          "function_latex": "x e^{x} + e^{x}",
+          "function_text": "x*exp(x) + exp(x)",
+          "terms": [
+            {
+              "sign": "+",
+              "template": "@@0@@ \\cdot e^{@@0@@}",
+              "text": "@@0@@*exp(@@0@@)",
+              "value": 17.148956816392065
+            },
+            {
+              "sign": "+",
+              "template": "e^{@@0@@}",
+              "text": "exp(@@0@@)",
+              "value": 8.16616991256765
+            }
+          ],
+          "value": 25.315126728959715
+        },
+        {
+          "x": 2.2,
+          "x_display": {
+            "exact": true,
+            "text": "2.2",
+            "latex": "2.2",
+            "approx": null
+          },
+          "function_latex": "x e^{x} + e^{x}",
+          "function_text": "x*exp(x) + exp(x)",
+          "terms": [
+            {
+              "sign": "+",
+              "template": "@@0@@ \\cdot e^{@@0@@}",
+              "text": "@@0@@*exp(@@0@@)",
+              "value": 19.85502969875507
+            },
+            {
+              "sign": "+",
+              "template": "e^{@@0@@}",
+              "text": "exp(@@0@@)",
+              "value": 9.025013499434122
+            }
+          ],
+          "value": 28.880043198189192
+        }
+      ],
+      "failed_rows": {
+        "punto_medio": [],
+        "extremo_adelante": [],
+        "extremo_atras": []
+      },
+      "all_within": true,
+      "identities": [
+        {
+          "i": 1,
+          "x_display": {
+            "exact": true,
+            "text": "1.8",
+            "latex": "1.8",
+            "approx": null
+          },
+          "items": [
+            {
+              "key": "extremo_adelante",
+              "name": "Extremo hacia adelante",
+              "kind": "richardson",
+              "direction": "+",
+              "base": 18.138340000000024,
+              "double": 19.44373500000003,
+              "value": 16.83294500000002,
+              "D": 16.83294500000001,
+              "ok": true
+            }
+          ]
+        },
+        {
+          "i": 2,
+          "x_display": {
+            "exact": true,
+            "text": "1.9",
+            "latex": "1.9",
+            "approx": null
+          },
+          "items": [
+            {
+              "key": "punto_medio",
+              "name": "Punto medio",
+              "kind": "average",
+              "forward": 20.749129999999987,
+              "backward": 18.13833999999998,
+              "value": 19.443734999999982,
+              "D": 19.443734999999986,
+              "ok": true
+            },
+            {
+              "key": "extremo_adelante",
+              "name": "Extremo hacia adelante",
+              "kind": "richardson",
+              "direction": "+",
+              "base": 20.749129999999987,
+              "double": 22.22878999999998,
+              "value": 19.269469999999995,
+              "D": 19.269469999999984,
+              "ok": true
+            }
+          ]
+        },
+        {
+          "i": 3,
+          "x_display": {
+            "exact": true,
+            "text": "2",
+            "latex": "2",
+            "approx": null
+          },
+          "items": [
+            {
+              "key": "punto_medio",
+              "name": "Punto medio",
+              "kind": "average",
+              "forward": 23.70844999999997,
+              "backward": 20.749129999999987,
+              "value": 22.22878999999998,
+              "D": 22.22878999999998,
+              "ok": true
+            },
+            {
+              "key": "extremo_adelante",
+              "name": "Extremo hacia adelante",
+              "kind": "richardson",
+              "direction": "+",
+              "base": 23.70844999999997,
+              "double": 25.384589999999974,
+              "value": 22.032309999999967,
+              "D": 22.032309999999967,
+              "ok": true
+            },
+            {
+              "key": "extremo_atras",
+              "name": "Extremo hacia atrás",
+              "kind": "richardson",
+              "direction": "-",
+              "base": 20.749129999999987,
+              "double": 19.443734999999986,
+              "value": 22.054524999999988,
+              "D": 22.054524999999988,
+              "ok": true
+            }
+          ]
+        },
+        {
+          "i": 4,
+          "x_display": {
+            "exact": true,
+            "text": "2.1",
+            "latex": "2.1",
+            "approx": null
+          },
+          "items": [
+            {
+              "key": "punto_medio",
+              "name": "Punto medio",
+              "kind": "average",
+              "forward": 27.060729999999975,
+              "backward": 23.70844999999997,
+              "value": 25.384589999999974,
+              "D": 25.384589999999974,
+              "ok": true
+            },
+            {
+              "key": "extremo_atras",
+              "name": "Extremo hacia atrás",
+              "kind": "richardson",
+              "direction": "-",
+              "base": 23.70844999999997,
+              "double": 22.22878999999998,
+              "value": 25.188109999999963,
+              "D": 25.18810999999998,
+              "ok": true
+            }
+          ]
+        },
+        {
+          "i": 5,
+          "x_display": {
+            "exact": true,
+            "text": "2.2",
+            "latex": "2.2",
+            "approx": null
+          },
+          "items": [
+            {
+              "key": "extremo_atras",
+              "name": "Extremo hacia atrás",
+              "kind": "richardson",
+              "direction": "-",
+              "base": 27.060729999999975,
+              "double": 25.384589999999974,
+              "value": 28.736869999999975,
+              "D": 28.73686999999998,
+              "ok": true
+            }
+          ]
+        }
+      ]
+    },
+    "rounding_text": "R = 2ε·Σ|cᵢ·f(xᵢ)| / (factor·h)",
+    "formula": "all",
+    "formulas": [
+      {
+        "key": "punto_medio",
+        "name": "Punto medio",
+        "symbol_latex": "D^{\\text{med}}",
+        "formula_latex": "D^{\\text{med}}(h) = \\frac{f(x_0 + h) - f(x_0 - h)}{2h}",
+        "formula_text": "Dmed(h) = [f(x0 + h) - f(x0 - h)] / (2h)",
+        "bound_latex": "|E| \\le \\frac{h^{2}}{6} \\max_{\\xi \\in [x_0 - h,\\, x_0 + h]} \\left|f'''(\\xi)\\right|",
+        "order": 2,
+        "expected_ratio": 0.25,
+        "bound_derivative": 3,
+        "bound_coefficient": [
+          1,
+          6
+        ],
+        "nodes": [
+          [
+            1,
+            1
+          ],
+          [
+            -1,
+            -1
+          ]
+        ],
+        "divisor": 2
+      },
+      {
+        "key": "extremo_adelante",
+        "name": "Extremo hacia adelante",
+        "symbol_latex": "D^{\\text{ad}}",
+        "formula_latex": "D^{\\text{ad}}(h) = \\frac{-3f(x_0) + 4f(x_0 + h) - f(x_0 + 2h)}{2h}",
+        "formula_text": "Dad(h) = [-3f(x0) + 4f(x0 + h) - f(x0 + 2h)] / (2h)",
+        "bound_latex": "|E| \\le \\frac{h^{2}}{3} \\max_{\\xi \\in [x_0,\\, x_0 + 2h]} \\left|f'''(\\xi)\\right|",
+        "order": 2,
+        "expected_ratio": 0.25,
+        "bound_derivative": 3,
+        "bound_coefficient": [
+          1,
+          3
+        ],
+        "nodes": [
+          [
+            0,
+            -3
+          ],
+          [
+            1,
+            4
+          ],
+          [
+            2,
+            -1
+          ]
+        ],
+        "divisor": 2
+      },
+      {
+        "key": "extremo_atras",
+        "name": "Extremo hacia atrás",
+        "symbol_latex": "D^{\\text{at}}",
+        "formula_latex": "D^{\\text{at}}(h) = \\frac{3f(x_0) - 4f(x_0 - h) + f(x_0 - 2h)}{2h}",
+        "formula_text": "Dat(h) = [3f(x0) - 4f(x0 - h) + f(x0 - 2h)] / (2h)",
+        "bound_latex": "|E| \\le \\frac{h^{2}}{3} \\max_{\\xi \\in [x_0 - 2h,\\, x_0]} \\left|f'''(\\xi)\\right|",
+        "order": 2,
+        "expected_ratio": 0.25,
+        "bound_derivative": 3,
+        "bound_coefficient": [
+          1,
+          3
+        ],
+        "nodes": [
+          [
+            0,
+            3
+          ],
+          [
+            -1,
+            -4
+          ],
+          [
+            -2,
+            1
+          ]
+        ],
+        "divisor": 2
+      }
+    ],
+    "function": {
+      "latex": "x e^{x}",
+      "text": "x*exp(x)",
+      "template": "@@0@@ \\cdot e^{@@0@@}",
+      "uses_trigonometry": false,
+      "derivative": {
+        "latex": "x e^{x} + e^{x}",
+        "text": "x*exp(x) + exp(x)",
+        "steps": {
+          "terms": [
+            {
+              "latex": "\\frac{d}{d x}\\left(x e^{x}\\right) = 1 \\cdot e^{x} + x \\cdot e^{x} = x e^{x} + e^{x}",
+              "rule": "regla del producto: (u·v)′ = u′·v + u·v′"
+            }
+          ],
+          "sum_latex": null
+        }
+      },
+      "higher_derivatives": {
+        "2": {
+          "latex": "x e^{x} + 2 e^{x}",
+          "text": "x*exp(x) + 2*exp(x)",
+          "steps": {
+            "terms": [
+              {
+                "latex": "\\frac{d}{d x}\\left(x e^{x}\\right) = 1 \\cdot e^{x} + x \\cdot e^{x} = x e^{x} + e^{x}",
+                "rule": "regla del producto: (u·v)′ = u′·v + u·v′"
+              },
+              {
+                "latex": "\\frac{d}{d x}\\left(e^{x}\\right) = e^{x}",
+                "rule": "derivada de la función exponencial"
+              }
+            ],
+            "sum_latex": "f''(x) = x e^{x} + e^{x} + e^{x} = x e^{x} + 2 e^{x}"
+          }
+        },
+        "3": {
+          "latex": "x e^{x} + 3 e^{x}",
+          "text": "x*exp(x) + 3*exp(x)",
+          "steps": {
+            "terms": [
+              {
+                "latex": "\\frac{d}{d x}\\left(x e^{x}\\right) = 1 \\cdot e^{x} + x \\cdot e^{x} = x e^{x} + e^{x}",
+                "rule": "regla del producto: (u·v)′ = u′·v + u·v′"
+              },
+              {
+                "latex": "\\frac{d}{d x}\\left(2 e^{x}\\right) = 2 \\cdot e^{x} = 2 e^{x}",
+                "rule": "derivada de la función exponencial"
+              }
+            ],
+            "sum_latex": "f'''(x) = x e^{x} + e^{x} + 2 e^{x} = x e^{x} + 3 e^{x}"
+          }
+        }
+      }
+    },
+    "sampling_points": 401
+  }
+}

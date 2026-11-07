@@ -2,13 +2,16 @@
 import DifferentiationFundamentalsSection from './DifferentiationFundamentalsSection.vue'
 import DifferentiationReferencesSection from './DifferentiationReferencesSection.vue'
 import FiniteDifferencesSection from './FiniteDifferencesSection.vue'
+import ThreePointSection from './ThreePointSection.vue'
 
 /**
  * Métodos de la categoría que tienen teoría escrita, y su sección propia.
- * Las fórmulas de 3 y 5 puntos se agregan aquí, cada una con su sección.
+ * La fórmula de 5 puntos se agrega aquí con su sección (y su nota en
+ * DifferentiationReferencesSection).
  */
 export const THEORY_SECTIONS = {
   'diferencias-finitas': FiniteDifferencesSection,
+  'tres-puntos': ThreePointSection,
 }
 </script>
 
@@ -32,6 +35,6 @@ const section = computed(() => THEORY_SECTIONS[props.method])
   <TheoryLayout>
     <DifferentiationFundamentalsSection />
     <component :is="section" />
-    <DifferentiationReferencesSection />
+    <DifferentiationReferencesSection :method="method" />
   </TheoryLayout>
 </template>

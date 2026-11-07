@@ -83,7 +83,7 @@ import { ERROR_SOURCES, tex } from './content'
           <tr>
             <th scope="row"><MathFormula expression="O(h^2)" /></th>
             <td>se divide entre 4</td>
-            <td>Fórmula de 3 puntos (próxima sección)</td>
+            <td>Fórmula de 3 puntos</td>
           </tr>
           <tr>
             <th scope="row"><MathFormula expression="O(h^4)" /></th>

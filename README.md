@@ -105,14 +105,13 @@ para estudiar la teoría de cada método.
   [detalle](#diferencias-progresiva-y-regresiva)). La **fórmula de 3 puntos**
   usa la misma vista, con tres tablas apiladas, un gráfico de hasta 6 series,
   la comparación con las diferencias y las identidades de la comprobación
-  (ver su [detalle](#fórmula-de-3-puntos)). Su página de teoría aún no
-  existe: el método aparece en «Resolver ▾» pero no en «Teoría ▾».
+  (ver su [detalle](#fórmula-de-3-puntos)).
 
 ### Vista «Teoría» (`/teoria/<método>`)
 
-Una página por método, con el mismo formato en las seis (Jacobi,
-Gauss-Seidel, Punto Fijo, Newton, Bairstow y diferencias progresiva y
-regresiva): fundamento común
+Una página por método, con el mismo formato en las siete (Jacobi,
+Gauss-Seidel, Punto Fijo, Newton, Bairstow, diferencias progresiva y
+regresiva y fórmula de 3 puntos): fundamento común
 de la categoría, definición formal en LaTeX, condición de convergencia,
 restricciones, algoritmo en tarjetas, ejemplo resuelto paso a paso con datos
 reales del solver, tabla comparativa y referencias bibliográficas (APA).
@@ -139,6 +138,16 @@ reales del solver, tabla comparativa y referencias bibliográficas (APA).
   (tabla y gráfico log-log); el ejemplo de Burden y Faires y el del carro con
   datos reales del solver, dibujados con los mismos componentes del paso a
   paso de Resolver; progresiva frente a regresiva y a la derivada analítica.
+  La **fórmula de 3 puntos** comparte ese fundamento y agrega: definición
+  formal con el término exacto del error; figura de la parábola por los 3
+  puntos con selector de fórmula y deslizador de `h`; derivación con el
+  polinomio de **Lagrange** y con **Taylor** (desarrollo del error de cada
+  fórmula, exactitud para polinomios de grado ≤ 2); conexión con las
+  diferencias por **extrapolación de Richardson** (punto medio = promedio,
+  extremo = `2·D(h) − D(2h)`); tabla de razones ≈ 0.25, **comparación con
+  las diferencias** (error, eficiencia y la «V» del redondeo de las dos
+  fórmulas); el ejemplo de `x·eˣ` de Burden y Faires y su tabla de datos con
+  datos reales del solver; tabla comparativa de diferencias y 3 puntos.
 
 Los menús «Resolver ▾» y «Teoría ▾» se generan automáticamente a partir del
 catálogo de métodos del backend, agrupados por categoría.
@@ -934,7 +943,7 @@ cd backend
 python manage.py test numeric_methods
 ```
 
-**337 tests**, todos en verde:
+**339 tests**, todos en verde:
 
 | Archivo | Tests | Qué cubre |
 | --- | --- | --- |
@@ -949,7 +958,7 @@ python manage.py test numeric_methods
 | `test_newton.py` | 38 | Newton y regla de Cramer: iteraciones calculadas a mano, Jacobiana singular, endpoint y comprobación (tres ejercicios con solución entera, ejemplo decimal, funciones trigonométricas, no convergencia) |
 | `test_newton_steps.py` | 16 | Derivadas parciales paso a paso y sustitución en F |
 | `test_differentiation.py` | 30 | Diferencias progresiva y regresiva: fórmulas exactas con `x²`, cúbica, Burden y Faires (filas 1, 2 y parada), respuestas guardadas para la teoría iguales a las del solver, filas de parada de los ejemplos, mínimo de 6 filas, no convergencia, razón ≈ 0.5, error real ≤ cota, h exacto, errores 400, modo tabla (secante común, datos, espaciado no uniforme), comprobación término a término, `abs(x)` y endpoint |
-| `test_three_point.py` | 25 | Fórmula de 3 puntos: fracciones exactas (cúbica y `x²`), Burden y Faires (filas 1, 2, parada 11 y comparación con diferencias), filas de parada y primeras filas de los ejemplos, cuadrática exacta, razón ≈ 0.25, error real ≤ cota + R, identidades, productos del paso a paso, modo tabla (valores, «—», recomendada, identidades por punto, `x³` con errores iguales a la cota, dato alterado), errores 400 (tabla no uniforme, 2 puntos, dominio en «x₀ − 2h», tolerancia, máximo) y endpoint |
+| `test_three_point.py` | 27 | Fórmula de 3 puntos: fracciones exactas (cúbica y `x²`), Burden y Faires (filas 1, 2, parada 11 y comparación con diferencias), filas de parada y primeras filas de los ejemplos, cuadrática exacta, razón ≈ 0.25, error real ≤ cota + R, identidades, productos del paso a paso, modo tabla (valores, «—», recomendada, identidades por punto, `x³` con errores iguales a la cota, dato alterado), errores 400 (tabla no uniforme, 2 puntos, dominio en «x₀ − 2h», tolerancia, máximo), respuestas guardadas para la teoría (filas 1 y 2, identidades e iguales a las del solver) y endpoint |
 | `test_bairstow.py` | 30 | Bairstow: divisiones sintéticas, primera iteración de Chapra calculada a mano, ejemplos, raíces nulas, raíz doble, cierres directos, fallos, endpoint y comprobación de raíces (sustitución término a término, potencias faltantes, par complejo, raíz nula y residuo) |
 
 ---
@@ -966,5 +975,4 @@ python manage.py test numeric_methods
 - En diferencias finitas y en la fórmula de 3 puntos, `M = máx |f''|` (o
   `|f'''|`) se estima por muestreo (401 puntos), no se calcula exactamente:
   entre dos muestras podría haber un máximo algo mayor.
-- La teoría de la fórmula de 3 puntos y la fórmula de 5 puntos quedan para
-  otra tarea.
+- La fórmula de 5 puntos queda para otra tarea.
