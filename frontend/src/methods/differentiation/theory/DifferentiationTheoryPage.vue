@@ -2,16 +2,16 @@
 import DifferentiationFundamentalsSection from './DifferentiationFundamentalsSection.vue'
 import DifferentiationReferencesSection from './DifferentiationReferencesSection.vue'
 import FiniteDifferencesSection from './FiniteDifferencesSection.vue'
+import FivePointSection from './FivePointSection.vue'
 import ThreePointSection from './ThreePointSection.vue'
 
 /**
  * Métodos de la categoría que tienen teoría escrita, y su sección propia.
- * La fórmula de 5 puntos se agrega aquí con su sección (y su nota en
- * DifferentiationReferencesSection).
  */
 export const THEORY_SECTIONS = {
   'diferencias-finitas': FiniteDifferencesSection,
   'tres-puntos': ThreePointSection,
+  'cinco-puntos': FivePointSection,
 }
 </script>
 

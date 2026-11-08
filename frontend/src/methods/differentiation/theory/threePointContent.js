@@ -154,11 +154,11 @@ export const efficiency = { k: enough.iteration, h: enough.extra.h.text }
    difiere de math.exp en el último bit y, en h = 10⁻⁸, eso cambia el
    resultado. Es sólo ilustrativo. */
 const V_POWERS = Array.from({ length: 12 }, (_, i) => i + 1)
-const V_FORWARD = [1.54, 0.148, 0.0148, 0.00148, 0.000148, 1.48e-5, 1.44e-6, 1.07e-7, 1.14e-6, 6.47e-6, 1.13e-5, 0.00177]
-const V_MID = [0.0616, 0.000616, 6.16e-6, 6.16e-8, 7.79e-10, 6.01e-10, 1.81e-8, 1.96e-7, 1.14e-6, 6.47e-6, 7.75e-5, 0.00177]
+export const V_FORWARD = [1.54, 0.148, 0.0148, 0.00148, 0.000148, 1.48e-5, 1.44e-6, 1.07e-7, 1.14e-6, 6.47e-6, 1.13e-5, 0.00177]
+export const V_MID = [0.0616, 0.000616, 6.16e-6, 6.16e-8, 7.79e-10, 6.01e-10, 1.81e-8, 1.96e-7, 1.14e-6, 6.47e-6, 7.75e-5, 0.00177]
 
 const SUPERSCRIPT = { '-': '⁻', 0: '⁰', 1: '¹', 2: '²', 3: '³', 4: '⁴', 5: '⁵', 6: '⁶', 7: '⁷', 8: '⁸', 9: '⁹' }
-const power10 = (p) => `10${String(p).replace(/./g, (c) => SUPERSCRIPT[c])}`
+export const power10 = (p) => `10${String(p).replace(/./g, (c) => SUPERSCRIPT[c])}`
 
 export const roundingCurve = {
   iterations: V_POWERS.map((p) => ({ iteration: p })),

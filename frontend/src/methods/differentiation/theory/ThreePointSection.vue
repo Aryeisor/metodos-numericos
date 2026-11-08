@@ -530,7 +530,7 @@ const firstRow = rowSummary(1)
       </table>
     </div>
     <p class="table-note">
-      La fórmula de 5 puntos (próxima sección) sube el orden a <MathFormula expression="O(h^4)" /> con
+      La fórmula de 5 puntos sube el orden a <MathFormula expression="O(h^4)" /> con
       5 puntos.
     </p>
   </div>

@@ -1,3 +1,6 @@
+import json
+from pathlib import Path
+
 from django.test import SimpleTestCase
 from rest_framework.test import APITestCase
 
@@ -10,6 +13,10 @@ URL = "/api/solve/cinco-puntos/"
 EXAMPLE = {example["id"]: example for example in EXAMPLES["cinco-puntos"]}
 MID, AHEAD, BEHIND, MID3 = "punto_medio_5", "extremo_adelante_5", "extremo_atras_5", "punto_medio"
 FIVE = (MID, AHEAD, BEHIND)
+
+# Respuestas del solver guardadas para la página de teoría (frontend).
+THEORY_EXAMPLE = (Path(__file__).resolve().parents[3] / "frontend" / "src" / "methods"
+                  / "differentiation" / "theory" / "fivePointExample.json")
 
 
 def solve(**data):
@@ -255,6 +262,45 @@ class TableModeTests(SimpleTestCase):
         self.assertEqual([item["ok"] for item in result["verification"]["data"]],
                          [True] * 4 + [False] + [True] * 4)
         self.assertTrue(any("Punto 5: el dato no coincide con la función" in w for w in result["warnings"]))
+
+
+class TheoryExampleTests(SimpleTestCase):
+    """La página de teoría usa respuestas guardadas del solver: deben ser las
+    que el solver devuelve hoy y mostrar los valores del libro."""
+
+    def setUp(self):
+        self.saved = json.loads(THEORY_EXAMPLE.read_text(encoding="utf-8"))
+
+    def test_rows_one_and_two_and_identity(self):
+        result = self.saved["function"]
+        expected = {
+            1: {MID: ("22.166996", "0.000173", "0.000217"),
+                AHEAD: ("22.165915", "0.001254", "0.001631"),
+                BEHIND: ("22.166312", "0.000857", "0.001034")},
+            2: {MID: ("22.167158", None, None),
+                AHEAD: ("22.167097", None, None),
+                BEHIND: ("22.167109", None, None)},
+        }
+        for k, formulas in expected.items():
+            for key, (D, real, bound) in formulas.items():
+                with self.subTest(k=k, formula=key):
+                    item = row(result, k, key)
+                    self.assertEqual(fixed(item["D"]), D)
+                    if real:
+                        self.assertEqual(fixed(item["real_error"]), real)
+                        self.assertEqual(fixed(item["bound"]), bound)
+        [identity] = result["verification"]["identities"]
+        self.assertTrue(identity["ok"])
+        self.assertEqual((identity["base_display"], identity["double_display"], identity["value_display"]),
+                         ("22.228787", "22.414161", "22.166996"))
+        self.assertEqual(result["iterations_used"], 6)
+
+    def test_saved_responses_match_solver(self):
+        for key, example_id in (("function", "cp-burden-xexp"), ("table", "cp-tabla-burden")):
+            with self.subTest(example=example_id):
+                stored = self.saved[key]
+                self.assertEqual(json.loads(json.dumps(example(example_id))),
+                                 {k: v for k, v in stored.items() if k != "request"})
 
 
 class EndpointTests(APITestCase):

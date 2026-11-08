@@ -1,0 +1,6487 @@
+{
+  "function": {
+    "request": {
+      "mode": "function",
+      "formula": "all",
+      "function": "x*exp(x)",
+      "x0": 2,
+      "h0": 0.1,
+      "tolerance": 1e-06,
+      "max_iterations": 25
+    },
+    "method": "cinco-puntos",
+    "category": "differentiation",
+    "converged": true,
+    "iterations": [
+      {
+        "iteration": 1,
+        "x": [
+          22.1669956213999,
+          22.165914568055097,
+          22.166311738949112
+        ],
+        "error": null,
+        "extra": {
+          "h": {
+            "value": 0.1,
+            "exact": true,
+            "text": "0.1",
+            "latex": "0.1",
+            "approx": null
+          },
+          "punto_medio_5": {
+            "D": 22.1669956213999,
+            "previous_D": null,
+            "estimated_error": null,
+            "real_error": 0.00017267539205079174,
+            "bound": 0.00021660032398641897,
+            "M": 64.98009719592568,
+            "M_substitution": {
+              "x": 2.2,
+              "x_display": {
+                "exact": true,
+                "text": "2.2",
+                "latex": "2.2",
+                "approx": null
+              },
+              "function_latex": "x e^{x} + 5 e^{x}",
+              "function_text": "x*exp(x) + 5*exp(x)",
+              "terms": [
+                {
+                  "sign": "+",
+                  "template": "@@0@@ \\cdot e^{@@0@@}",
+                  "text": "@@0@@*exp(@@0@@)",
+                  "value": 19.85502969875507
+                },
+                {
+                  "sign": "+",
+                  "template": "5 \\cdot e^{@@0@@}",
+                  "text": "5*exp(@@0@@)",
+                  "value": 45.12506749717061
+                }
+              ],
+              "value": 64.98009719592568
+            },
+            "x_M": 2.2,
+            "interval": [
+              1.8,
+              2.2
+            ],
+            "interval_display": [
+              {
+                "exact": true,
+                "text": "1.8",
+                "latex": "1.8",
+                "approx": null
+              },
+              {
+                "exact": true,
+                "text": "2.2",
+                "latex": "2.2",
+                "approx": null
+              }
+            ],
+            "ratio": null,
+            "rounding": 4.0101119443870526e-13,
+            "within_bound": true,
+            "by_rounding": false,
+            "points": [
+              {
+                "offset": -2,
+                "weight": 1,
+                "role": "x_0 - 2h",
+                "x": 1.8,
+                "display": {
+                  "exact": true,
+                  "text": "1.8",
+                  "latex": "1.8",
+                  "approx": null
+                },
+                "f": 10.889365435943304,
+                "f_display": "10.8893654"
+              },
+              {
+                "offset": -1,
+                "weight": -8,
+                "role": "x_0 - h",
+                "x": 1.9,
+                "display": {
+                  "exact": true,
+                  "text": "1.9",
+                  "latex": "1.9",
+                  "approx": null
+                },
+                "f": 12.703199440330609,
+                "f_display": "12.7031994"
+              },
+              {
+                "offset": 1,
+                "weight": 8,
+                "role": "x_0 + h",
+                "x": 2.1,
+                "display": {
+                  "exact": true,
+                  "text": "2.1",
+                  "latex": "2.1",
+                  "approx": null
+                },
+                "f": 17.148956816392065,
+                "f_display": "17.1489568"
+              },
+              {
+                "offset": 2,
+                "weight": -1,
+                "role": "x_0 + 2h",
+                "x": 2.2,
+                "display": {
+                  "exact": true,
+                  "text": "2.2",
+                  "latex": "2.2",
+                  "approx": null
+                },
+                "f": 19.85502969875507,
+                "f_display": "19.8550297"
+              }
+            ],
+            "decimals": 7,
+            "numerator_display": "26.6003949",
+            "products_display": [
+              "10.8893654",
+              "-101.6255952",
+              "137.1916544",
+              "-19.8550297"
+            ],
+            "denominator_display": "1.2"
+          },
+          "extremo_adelante_5": {
+            "D": 22.165914568055097,
+            "previous_D": null,
+            "estimated_error": null,
+            "real_error": 0.0012537287368523664,
+            "bound": 0.0016314301043349575,
+            "M": 81.57150521674785,
+            "M_substitution": {
+              "x": 2.4,
+              "x_display": {
+                "exact": true,
+                "text": "2.4",
+                "latex": "2.4",
+                "approx": null
+              },
+              "function_latex": "x e^{x} + 5 e^{x}",
+              "function_text": "x*exp(x) + 5*exp(x)",
+              "terms": [
+                {
+                  "sign": "+",
+                  "template": "@@0@@ \\cdot e^{@@0@@}",
+                  "text": "@@0@@*exp(@@0@@)",
+                  "value": 26.455623313539842
+                },
+                {
+                  "sign": "+",
+                  "template": "5 \\cdot e^{@@0@@}",
+                  "text": "5*exp(@@0@@)",
+                  "value": 55.115881903208006
+                }
+              ],
+              "value": 81.57150521674785
+            },
+            "x_M": 2.4,
+            "interval": [
+              2.0,
+              2.4
+            ],
+            "interval_display": [
+              {
+                "exact": true,
+                "text": "2",
+                "latex": "2",
+                "approx": null
+              },
+              {
+                "exact": true,
+                "text": "2.4",
+                "latex": "2.4",
+                "approx": null
+              }
+            ],
+            "ratio": null,
+            "rounding": 3.6201912841898737e-12,
+            "within_bound": true,
+            "by_rounding": false,
+            "points": [
+              {
+                "offset": 0,
+                "weight": -25,
+                "role": "x_0",
+                "x": 2.0,
+                "display": {
+                  "exact": true,
+                  "text": "2",
+                  "latex": "2",
+                  "approx": null
+                },
+                "f": 14.7781121978613,
+                "f_display": "14.7781122"
+              },
+              {
+                "offset": 1,
+                "weight": 48,
+                "role": "x_0 + h",
+                "x": 2.1,
+                "display": {
+                  "exact": true,
+                  "text": "2.1",
+                  "latex": "2.1",
+                  "approx": null
+                },
+                "f": 17.148956816392065,
+                "f_display": "17.14895682"
+              },
+              {
+                "offset": 2,
+                "weight": -36,
+                "role": "x_0 + 2h",
+                "x": 2.2,
+                "display": {
+                  "exact": true,
+                  "text": "2.2",
+                  "latex": "2.2",
+                  "approx": null
+                },
+                "f": 19.85502969875507,
+                "f_display": "19.8550297"
+              },
+              {
+                "offset": 3,
+                "weight": 16,
+                "role": "x_0 + 3h",
+                "x": 2.3,
+                "display": {
+                  "exact": true,
+                  "text": "2.3",
+                  "latex": "2.3",
+                  "approx": null
+                },
+                "f": 22.94061964607385,
+                "f_display": "22.94061965"
+              },
+              {
+                "offset": 4,
+                "weight": -3,
+                "role": "x_0 + 4h",
+                "x": 2.4,
+                "display": {
+                  "exact": true,
+                  "text": "2.4",
+                  "latex": "2.4",
+                  "approx": null
+                },
+                "f": 26.455623313539842,
+                "f_display": "26.45562331"
+              }
+            ],
+            "decimals": 8,
+            "numerator_display": "26.59909763",
+            "products_display": [
+              "-369.452805",
+              "823.14992736",
+              "-714.7810692",
+              "367.0499144",
+              "-79.36686993"
+            ],
+            "denominator_display": "1.2"
+          },
+          "extremo_atras_5": {
+            "D": 22.166311738949112,
+            "previous_D": null,
+            "estimated_error": null,
+            "real_error": 0.0008565578428374465,
+            "bound": 0.0010344678538502913,
+            "M": 51.72339269251455,
+            "M_substitution": {
+              "x": 2.0,
+              "x_display": {
+                "exact": true,
+                "text": "2",
+                "latex": "2",
+                "approx": null
+              },
+              "function_latex": "x e^{x} + 5 e^{x}",
+              "function_text": "x*exp(x) + 5*exp(x)",
+              "terms": [
+                {
+                  "sign": "+",
+                  "template": "@@0@@ \\cdot e^{@@0@@}",
+                  "text": "@@0@@*exp(@@0@@)",
+                  "value": 14.7781121978613
+                },
+                {
+                  "sign": "+",
+                  "template": "5 \\cdot e^{@@0@@}",
+                  "text": "5*exp(@@0@@)",
+                  "value": 36.945280494653254
+                }
+              ],
+              "value": 51.72339269251455
+            },
+            "x_M": 2.0,
+            "interval": [
+              1.6,
+              2.0
+            ],
+            "interval_display": [
+              {
+                "exact": true,
+                "text": "1.6",
+                "latex": "1.6",
+                "approx": null
+              },
+              {
+                "exact": true,
+                "text": "2",
+                "latex": "2",
+                "approx": null
+              }
+            ],
+            "ratio": null,
+            "rounding": 2.213785381843816e-12,
+            "within_bound": true,
+            "by_rounding": false,
+            "points": [
+              {
+                "offset": 0,
+                "weight": 25,
+                "role": "x_0",
+                "x": 2.0,
+                "display": {
+                  "exact": true,
+                  "text": "2",
+                  "latex": "2",
+                  "approx": null
+                },
+                "f": 14.7781121978613,
+                "f_display": "14.7781122"
+              },
+              {
+                "offset": -1,
+                "weight": -48,
+                "role": "x_0 - h",
+                "x": 1.9,
+                "display": {
+                  "exact": true,
+                  "text": "1.9",
+                  "latex": "1.9",
+                  "approx": null
+                },
+                "f": 12.703199440330609,
+                "f_display": "12.7031994"
+              },
+              {
+                "offset": -2,
+                "weight": 36,
+                "role": "x_0 - 2h",
+                "x": 1.8,
+                "display": {
+                  "exact": true,
+                  "text": "1.8",
+                  "latex": "1.8",
+                  "approx": null
+                },
+                "f": 10.889365435943304,
+                "f_display": "10.8893654"
+              },
+              {
+                "offset": -3,
+                "weight": -16,
+                "role": "x_0 - 3h",
+                "x": 1.7,
+                "display": {
+                  "exact": true,
+                  "text": "1.7",
+                  "latex": "1.7",
+                  "approx": null
+                },
+                "f": 9.30571056593624,
+                "f_display": "9.3057106"
+              },
+              {
+                "offset": -4,
+                "weight": 3,
+                "role": "x_0 - 4h",
+                "x": 1.6,
+                "display": {
+                  "exact": true,
+                  "text": "1.6",
+                  "latex": "1.6",
+                  "approx": null
+                },
+                "f": 7.924851879032184,
+                "f_display": "7.9248519"
+              }
+            ],
+            "decimals": 7,
+            "numerator_display": "26.5995743",
+            "products_display": [
+              "369.452805",
+              "-609.7535712",
+              "392.0171544",
+              "-148.8913696",
+              "23.7745557"
+            ],
+            "denominator_display": "1.2"
+          }
+        }
+      },
+      {
+        "iteration": 2,
+        "x": [
+          22.167157516961005,
+          22.167097150989477,
+          22.16710949015386
+        ],
+        "error": 0.0011825829343798944,
+        "extra": {
+          "h": {
+            "value": 0.05,
+            "exact": true,
+            "text": "0.05",
+            "latex": "0.05",
+            "approx": null
+          },
+          "punto_medio_5": {
+            "D": 22.167157516961005,
+            "previous_D": 22.1669956213999,
+            "estimated_error": 0.00016189556110646208,
+            "real_error": 1.077983094432966e-05,
+            "bound": 1.2079126329006318e-05,
+            "M": 57.97980637923032,
+            "M_substitution": {
+              "x": 2.1,
+              "x_display": {
+                "exact": true,
+                "text": "2.1",
+                "latex": "2.1",
+                "approx": null
+              },
+              "function_latex": "x e^{x} + 5 e^{x}",
+              "function_text": "x*exp(x) + 5*exp(x)",
+              "terms": [
+                {
+                  "sign": "+",
+                  "template": "@@0@@ \\cdot e^{@@0@@}",
+                  "text": "@@0@@*exp(@@0@@)",
+                  "value": 17.148956816392065
+                },
+                {
+                  "sign": "+",
+                  "template": "5 \\cdot e^{@@0@@}",
+                  "text": "5*exp(@@0@@)",
+                  "value": 40.83084956283825
+                }
+              ],
+              "value": 57.97980637923032
+            },
+            "x_M": 2.1,
+            "interval": [
+              1.9,
+              2.1
+            ],
+            "interval_display": [
+              {
+                "exact": true,
+                "text": "1.9",
+                "latex": "1.9",
+                "approx": null
+              },
+              {
+                "exact": true,
+                "text": "2.1",
+                "latex": "2.1",
+                "approx": null
+              }
+            ],
+            "ratio": 0.062428298649287665,
+            "rounding": 7.911485695909154e-13,
+            "within_bound": true,
+            "by_rounding": false,
+            "points": [
+              {
+                "offset": -2,
+                "weight": 1,
+                "role": "x_0 - 2h",
+                "x": 1.9,
+                "display": {
+                  "exact": true,
+                  "text": "1.9",
+                  "latex": "1.9",
+                  "approx": null
+                },
+                "f": 12.703199440330609,
+                "f_display": "12.7031994"
+              },
+              {
+                "offset": -1,
+                "weight": -8,
+                "role": "x_0 - h",
+                "x": 1.95,
+                "display": {
+                  "exact": true,
+                  "text": "1.95",
+                  "latex": "1.95",
+                  "approx": null
+                },
+                "f": 13.70594078214912,
+                "f_display": "13.7059408"
+              },
+              {
+                "offset": 1,
+                "weight": 8,
+                "role": "x_0 + h",
+                "x": 2.05,
+                "display": {
+                  "exact": true,
+                  "text": "2.05",
+                  "latex": "2.05",
+                  "approx": null
+                },
+                "f": 15.924197267928879,
+                "f_display": "15.9241973"
+              },
+              {
+                "offset": 2,
+                "weight": -1,
+                "role": "x_0 + 2h",
+                "x": 2.1,
+                "display": {
+                  "exact": true,
+                  "text": "2.1",
+                  "latex": "2.1",
+                  "approx": null
+                },
+                "f": 17.148956816392065,
+                "f_display": "17.1489568"
+              }
+            ],
+            "decimals": 7,
+            "numerator_display": "13.3002946",
+            "products_display": [
+              "12.7031994",
+              "-109.6475264",
+              "127.3935784",
+              "-17.1489568"
+            ],
+            "denominator_display": "0.6"
+          },
+          "extremo_adelante_5": {
+            "D": 22.167097150989477,
+            "previous_D": 22.165914568055097,
+            "estimated_error": 0.0011825829343798944,
+            "real_error": 7.114580247247204e-05,
+            "bound": 8.122512149490712e-05,
+            "M": 64.98009719592568,
+            "M_substitution": {
+              "x": 2.2,
+              "x_display": {
+                "exact": true,
+                "text": "2.2",
+                "latex": "2.2",
+                "approx": null
+              },
+              "function_latex": "x e^{x} + 5 e^{x}",
+              "function_text": "x*exp(x) + 5*exp(x)",
+              "terms": [
+                {
+                  "sign": "+",
+                  "template": "@@0@@ \\cdot e^{@@0@@}",
+                  "text": "@@0@@*exp(@@0@@)",
+                  "value": 19.85502969875507
+                },
+                {
+                  "sign": "+",
+                  "template": "5 \\cdot e^{@@0@@}",
+                  "text": "5*exp(@@0@@)",
+                  "value": 45.12506749717061
+                }
+              ],
+              "value": 64.98009719592568
+            },
+            "x_M": 2.2,
+            "interval": [
+              2.0,
+              2.2
+            ],
+            "interval_display": [
+              {
+                "exact": true,
+                "text": "2",
+                "latex": "2",
+                "approx": null
+              },
+              {
+                "exact": true,
+                "text": "2.2",
+                "latex": "2.2",
+                "approx": null
+              }
+            ],
+            "ratio": 0.0567473651845071,
+            "rounding": 6.3507783874401385e-12,
+            "within_bound": true,
+            "by_rounding": false,
+            "points": [
+              {
+                "offset": 0,
+                "weight": -25,
+                "role": "x_0",
+                "x": 2.0,
+                "display": {
+                  "exact": true,
+                  "text": "2",
+                  "latex": "2",
+                  "approx": null
+                },
+                "f": 14.7781121978613,
+                "f_display": "14.7781122"
+              },
+              {
+                "offset": 1,
+                "weight": 48,
+                "role": "x_0 + h",
+                "x": 2.05,
+                "display": {
+                  "exact": true,
+                  "text": "2.05",
+                  "latex": "2.05",
+                  "approx": null
+                },
+                "f": 15.924197267928879,
+                "f_display": "15.92419727"
+              },
+              {
+                "offset": 2,
+                "weight": -36,
+                "role": "x_0 + 2h",
+                "x": 2.1,
+                "display": {
+                  "exact": true,
+                  "text": "2.1",
+                  "latex": "2.1",
+                  "approx": null
+                },
+                "f": 17.148956816392065,
+                "f_display": "17.14895682"
+              },
+              {
+                "offset": 3,
+                "weight": 16,
+                "role": "x_0 + 3h",
+                "x": 2.15,
+                "display": {
+                  "exact": true,
+                  "text": "2.15",
+                  "latex": "2.15",
+                  "approx": null
+                },
+                "f": 18.45744555393247,
+                "f_display": "18.45744555"
+              },
+              {
+                "offset": 4,
+                "weight": -3,
+                "role": "x_0 + 4h",
+                "x": 2.2,
+                "display": {
+                  "exact": true,
+                  "text": "2.2",
+                  "latex": "2.2",
+                  "approx": null
+                },
+                "f": 19.85502969875507,
+                "f_display": "19.8550297"
+              }
+            ],
+            "decimals": 8,
+            "numerator_display": "13.30025814",
+            "products_display": [
+              "-369.452805",
+              "764.36146896",
+              "-617.36244552",
+              "295.3191288",
+              "-59.5650891"
+            ],
+            "denominator_display": "0.6"
+          },
+          "extremo_atras_5": {
+            "D": 22.16710949015386,
+            "previous_D": 22.166311738949112,
+            "estimated_error": 0.0007977512047467883,
+            "real_error": 5.8806638090658225e-05,
+            "bound": 6.465424086564321e-05,
+            "M": 51.72339269251455,
+            "M_substitution": {
+              "x": 2.0,
+              "x_display": {
+                "exact": true,
+                "text": "2",
+                "latex": "2",
+                "approx": null
+              },
+              "function_latex": "x e^{x} + 5 e^{x}",
+              "function_text": "x*exp(x) + 5*exp(x)",
+              "terms": [
+                {
+                  "sign": "+",
+                  "template": "@@0@@ \\cdot e^{@@0@@}",
+                  "text": "@@0@@*exp(@@0@@)",
+                  "value": 14.7781121978613
+                },
+                {
+                  "sign": "+",
+                  "template": "5 \\cdot e^{@@0@@}",
+                  "text": "5*exp(@@0@@)",
+                  "value": 36.945280494653254
+                }
+              ],
+              "value": 51.72339269251455
+            },
+            "x_M": 2.0,
+            "interval": [
+              1.8,
+              2.0
+            ],
+            "interval_display": [
+              {
+                "exact": true,
+                "text": "1.8",
+                "latex": "1.8",
+                "approx": null
+              },
+              {
+                "exact": true,
+                "text": "2",
+                "latex": "2",
+                "approx": null
+              }
+            ],
+            "ratio": 0.06865460235102683,
+            "rounding": 4.965576536819119e-12,
+            "within_bound": true,
+            "by_rounding": false,
+            "points": [
+              {
+                "offset": 0,
+                "weight": 25,
+                "role": "x_0",
+                "x": 2.0,
+                "display": {
+                  "exact": true,
+                  "text": "2",
+                  "latex": "2",
+                  "approx": null
+                },
+                "f": 14.7781121978613,
+                "f_display": "14.778112198"
+              },
+              {
+                "offset": -1,
+                "weight": -48,
+                "role": "x_0 - h",
+                "x": 1.95,
+                "display": {
+                  "exact": true,
+                  "text": "1.95",
+                  "latex": "1.95",
+                  "approx": null
+                },
+                "f": 13.70594078214912,
+                "f_display": "13.705940782"
+              },
+              {
+                "offset": -2,
+                "weight": 36,
+                "role": "x_0 - 2h",
+                "x": 1.9,
+                "display": {
+                  "exact": true,
+                  "text": "1.9",
+                  "latex": "1.9",
+                  "approx": null
+                },
+                "f": 12.703199440330609,
+                "f_display": "12.70319944"
+              },
+              {
+                "offset": -3,
+                "weight": -16,
+                "role": "x_0 - 3h",
+                "x": 1.85,
+                "display": {
+                  "exact": true,
+                  "text": "1.85",
+                  "latex": "1.85",
+                  "approx": null
+                },
+                "f": 11.76566611681339,
+                "f_display": "11.765666117"
+              },
+              {
+                "offset": -4,
+                "weight": 3,
+                "role": "x_0 - 4h",
+                "x": 1.8,
+                "display": {
+                  "exact": true,
+                  "text": "1.8",
+                  "latex": "1.8",
+                  "approx": null
+                },
+                "f": 10.889365435943304,
+                "f_display": "10.889365436"
+              }
+            ],
+            "decimals": 9,
+            "numerator_display": "13.30026569",
+            "products_display": [
+              "369.45280495",
+              "-657.885157536",
+              "457.31517984",
+              "-188.250657872",
+              "32.668096308"
+            ],
+            "denominator_display": "0.6"
+          }
+        }
+      },
+      {
+        "iteration": 3,
+        "x": [
+          22.16716762324574,
+          22.16716405835799,
+          22.167164443391954
+        ],
+        "error": 6.690736851311385e-05,
+        "extra": {
+          "h": {
+            "value": 0.025,
+            "exact": true,
+            "text": "0.025",
+            "latex": "0.025",
+            "approx": null
+          },
+          "punto_medio_5": {
+            "D": 22.16716762324574,
+            "previous_D": 22.167157516961005,
+            "estimated_error": 1.0106284733524262e-05,
+            "real_error": 6.73546210805398e-07,
+            "bound": 7.130690468680045e-07,
+            "M": 54.763702799462735,
+            "M_substitution": {
+              "x": 2.05,
+              "x_display": {
+                "exact": true,
+                "text": "2.05",
+                "latex": "2.05",
+                "approx": null
+              },
+              "function_latex": "x e^{x} + 5 e^{x}",
+              "function_text": "x*exp(x) + 5*exp(x)",
+              "terms": [
+                {
+                  "sign": "+",
+                  "template": "@@0@@ \\cdot e^{@@0@@}",
+                  "text": "@@0@@*exp(@@0@@)",
+                  "value": 15.924197267928879
+                },
+                {
+                  "sign": "+",
+                  "template": "5 \\cdot e^{@@0@@}",
+                  "text": "5*exp(@@0@@)",
+                  "value": 38.83950553153385
+                }
+              ],
+              "value": 54.763702799462735
+            },
+            "x_M": 2.05,
+            "interval": [
+              1.95,
+              2.05
+            ],
+            "interval_display": [
+              {
+                "exact": true,
+                "text": "1.95",
+                "latex": "1.95",
+                "approx": null
+              },
+              {
+                "exact": true,
+                "text": "2.05",
+                "latex": "2.05",
+                "approx": null
+              }
+            ],
+            "ratio": 0.06248207548743541,
+            "rounding": 1.5768771866454768e-12,
+            "within_bound": true,
+            "by_rounding": false,
+            "points": [
+              {
+                "offset": -2,
+                "weight": 1,
+                "role": "x_0 - 2h",
+                "x": 1.95,
+                "display": {
+                  "exact": true,
+                  "text": "1.95",
+                  "latex": "1.95",
+                  "approx": null
+                },
+                "f": 13.70594078214912,
+                "f_display": "13.705940782"
+              },
+              {
+                "offset": -1,
+                "weight": -8,
+                "role": "x_0 - h",
+                "x": 1.975,
+                "display": {
+                  "exact": true,
+                  "text": "1.975",
+                  "latex": "1.975",
+                  "approx": null
+                },
+                "f": 14.233073816295425,
+                "f_display": "14.233073816"
+              },
+              {
+                "offset": 1,
+                "weight": 8,
+                "role": "x_0 + h",
+                "x": 2.025,
+                "display": {
+                  "exact": true,
+                  "text": "2.025",
+                  "latex": "2.025",
+                  "approx": null
+                },
+                "f": 15.341624662889611,
+                "f_display": "15.341624663"
+              },
+              {
+                "offset": 2,
+                "weight": -1,
+                "role": "x_0 + 2h",
+                "x": 2.05,
+                "display": {
+                  "exact": true,
+                  "text": "2.05",
+                  "latex": "2.05",
+                  "approx": null
+                },
+                "f": 15.924197267928879,
+                "f_display": "15.924197268"
+              }
+            ],
+            "decimals": 9,
+            "numerator_display": "6.65015029",
+            "products_display": [
+              "13.705940782",
+              "-113.864590528",
+              "122.732997304",
+              "-15.924197268"
+            ],
+            "denominator_display": "0.3"
+          },
+          "extremo_adelante_5": {
+            "D": 22.16716405835799,
+            "previous_D": 22.167097150989477,
+            "estimated_error": 6.690736851311385e-05,
+            "real_error": 4.23843395935819e-06,
+            "bound": 4.52967237337737e-06,
+            "M": 57.97980637923032,
+            "M_substitution": {
+              "x": 2.1,
+              "x_display": {
+                "exact": true,
+                "text": "2.1",
+                "latex": "2.1",
+                "approx": null
+              },
+              "function_latex": "x e^{x} + 5 e^{x}",
+              "function_text": "x*exp(x) + 5*exp(x)",
+              "terms": [
+                {
+                  "sign": "+",
+                  "template": "@@0@@ \\cdot e^{@@0@@}",
+                  "text": "@@0@@*exp(@@0@@)",
+                  "value": 17.148956816392065
+                },
+                {
+                  "sign": "+",
+                  "template": "5 \\cdot e^{@@0@@}",
+                  "text": "5*exp(@@0@@)",
+                  "value": 40.83084956283825
+                }
+              ],
+              "value": 57.97980637923032
+            },
+            "x_M": 2.1,
+            "interval": [
+              2.0,
+              2.1
+            ],
+            "interval_display": [
+              {
+                "exact": true,
+                "text": "2",
+                "latex": "2",
+                "approx": null
+              },
+              {
+                "exact": true,
+                "text": "2.1",
+                "latex": "2.1",
+                "approx": null
+              }
+            ],
+            "ratio": 0.05957391458193388,
+            "rounding": 1.1919379151244519e-11,
+            "within_bound": true,
+            "by_rounding": false,
+            "points": [
+              {
+                "offset": 0,
+                "weight": -25,
+                "role": "x_0",
+                "x": 2.0,
+                "display": {
+                  "exact": true,
+                  "text": "2",
+                  "latex": "2",
+                  "approx": null
+                },
+                "f": 14.7781121978613,
+                "f_display": "14.778112198"
+              },
+              {
+                "offset": 1,
+                "weight": 48,
+                "role": "x_0 + h",
+                "x": 2.025,
+                "display": {
+                  "exact": true,
+                  "text": "2.025",
+                  "latex": "2.025",
+                  "approx": null
+                },
+                "f": 15.341624662889611,
+                "f_display": "15.341624663"
+              },
+              {
+                "offset": 2,
+                "weight": -36,
+                "role": "x_0 + 2h",
+                "x": 2.05,
+                "display": {
+                  "exact": true,
+                  "text": "2.05",
+                  "latex": "2.05",
+                  "approx": null
+                },
+                "f": 15.924197267928879,
+                "f_display": "15.924197268"
+              },
+              {
+                "offset": 3,
+                "weight": 16,
+                "role": "x_0 + 3h",
+                "x": 2.075,
+                "display": {
+                  "exact": true,
+                  "text": "2.075",
+                  "latex": "2.075",
+                  "approx": null
+                },
+                "f": 16.526433902497157,
+                "f_display": "16.526433902"
+              },
+              {
+                "offset": 4,
+                "weight": -3,
+                "role": "x_0 + 4h",
+                "x": 2.1,
+                "display": {
+                  "exact": true,
+                  "text": "2.1",
+                  "latex": "2.1",
+                  "approx": null
+                },
+                "f": 17.148956816392065,
+                "f_display": "17.148956816"
+              }
+            ],
+            "decimals": 9,
+            "numerator_display": "6.65014921",
+            "products_display": [
+              "-369.45280495",
+              "736.397983824",
+              "-573.271101648",
+              "264.422942432",
+              "-51.446870448"
+            ],
+            "denominator_display": "0.3"
+          },
+          "extremo_atras_5": {
+            "D": 22.167164443391954,
+            "previous_D": 22.16710949015386,
+            "estimated_error": 5.4953238095123425e-05,
+            "real_error": 3.853399995534801e-06,
+            "bound": 4.0408900541027005e-06,
+            "M": 51.72339269251455,
+            "M_substitution": {
+              "x": 2.0,
+              "x_display": {
+                "exact": true,
+                "text": "2",
+                "latex": "2",
+                "approx": null
+              },
+              "function_latex": "x e^{x} + 5 e^{x}",
+              "function_text": "x*exp(x) + 5*exp(x)",
+              "terms": [
+                {
+                  "sign": "+",
+                  "template": "@@0@@ \\cdot e^{@@0@@}",
+                  "text": "@@0@@*exp(@@0@@)",
+                  "value": 14.7781121978613
+                },
+                {
+                  "sign": "+",
+                  "template": "5 \\cdot e^{@@0@@}",
+                  "text": "5*exp(@@0@@)",
+                  "value": 36.945280494653254
+                }
+              ],
+              "value": 51.72339269251455
+            },
+            "x_M": 2.0,
+            "interval": [
+              1.9,
+              2.0
+            ],
+            "interval_display": [
+              {
+                "exact": true,
+                "text": "1.9",
+                "latex": "1.9",
+                "approx": null
+              },
+              {
+                "exact": true,
+                "text": "2",
+                "latex": "2",
+                "approx": null
+              }
+            ],
+            "ratio": 0.06552661605300875,
+            "rounding": 1.0539440192920146e-11,
+            "within_bound": true,
+            "by_rounding": false,
+            "points": [
+              {
+                "offset": 0,
+                "weight": 25,
+                "role": "x_0",
+                "x": 2.0,
+                "display": {
+                  "exact": true,
+                  "text": "2",
+                  "latex": "2",
+                  "approx": null
+                },
+                "f": 14.7781121978613,
+                "f_display": "14.7781122"
+              },
+              {
+                "offset": -1,
+                "weight": -48,
+                "role": "x_0 - h",
+                "x": 1.975,
+                "display": {
+                  "exact": true,
+                  "text": "1.975",
+                  "latex": "1.975",
+                  "approx": null
+                },
+                "f": 14.233073816295425,
+                "f_display": "14.23307382"
+              },
+              {
+                "offset": -2,
+                "weight": 36,
+                "role": "x_0 - 2h",
+                "x": 1.95,
+                "display": {
+                  "exact": true,
+                  "text": "1.95",
+                  "latex": "1.95",
+                  "approx": null
+                },
+                "f": 13.70594078214912,
+                "f_display": "13.70594078"
+              },
+              {
+                "offset": -3,
+                "weight": -16,
+                "role": "x_0 - 3h",
+                "x": 1.925,
+                "display": {
+                  "exact": true,
+                  "text": "1.925",
+                  "latex": "1.925",
+                  "approx": null
+                },
+                "f": 13.196161181855919,
+                "f_display": "13.19616118"
+              },
+              {
+                "offset": -4,
+                "weight": 3,
+                "role": "x_0 - 4h",
+                "x": 1.9,
+                "display": {
+                  "exact": true,
+                  "text": "1.9",
+                  "latex": "1.9",
+                  "approx": null
+                },
+                "f": 12.703199440330609,
+                "f_display": "12.70319944"
+              }
+            ],
+            "decimals": 8,
+            "numerator_display": "6.65014916",
+            "products_display": [
+              "369.452805",
+              "-683.18754336",
+              "493.41386808",
+              "-211.13857888",
+              "38.10959832"
+            ],
+            "denominator_display": "0.3"
+          }
+        }
+      },
+      {
+        "iteration": 4,
+        "x": [
+          22.167168254698616,
+          22.16716803814506,
+          22.167168050173174
+        ],
+        "error": 3.979787070562679e-06,
+        "extra": {
+          "h": {
+            "value": 0.0125,
+            "exact": true,
+            "text": "0.0125",
+            "latex": "0.0125",
+            "approx": null
+          },
+          "punto_medio_5": {
+            "D": 22.167168254698616,
+            "previous_D": 22.16716762324574,
+            "estimated_error": 6.314528775419603e-07,
+            "real_error": 4.209333326343767e-08,
+            "bound": 4.331232046392728e-08,
+            "M": 53.22217938607383,
+            "M_substitution": {
+              "x": 2.025,
+              "x_display": {
+                "exact": true,
+                "text": "2.025",
+                "latex": "2.025",
+                "approx": null
+              },
+              "function_latex": "x e^{x} + 5 e^{x}",
+              "function_text": "x*exp(x) + 5*exp(x)",
+              "terms": [
+                {
+                  "sign": "+",
+                  "template": "@@0@@ \\cdot e^{@@0@@}",
+                  "text": "@@0@@*exp(@@0@@)",
+                  "value": 15.341624662889611
+                },
+                {
+                  "sign": "+",
+                  "template": "5 \\cdot e^{@@0@@}",
+                  "text": "5*exp(@@0@@)",
+                  "value": 37.880554723184225
+                }
+              ],
+              "value": 53.22217938607383
+            },
+            "x_M": 2.025,
+            "interval": [
+              1.975,
+              2.025
+            ],
+            "interval_display": [
+              {
+                "exact": true,
+                "text": "1.975",
+                "latex": "1.975",
+                "approx": null
+              },
+              {
+                "exact": true,
+                "text": "2.025",
+                "latex": "2.025",
+                "approx": null
+              }
+            ],
+            "ratio": 0.062495093266287174,
+            "rounding": 3.1510465131551186e-12,
+            "within_bound": true,
+            "by_rounding": false,
+            "points": [
+              {
+                "offset": -2,
+                "weight": 1,
+                "role": "x_0 - 2h",
+                "x": 1.975,
+                "display": {
+                  "exact": true,
+                  "text": "1.975",
+                  "latex": "1.975",
+                  "approx": null
+                },
+                "f": 14.233073816295425,
+                "f_display": "14.23307382"
+              },
+              {
+                "offset": -1,
+                "weight": -8,
+                "role": "x_0 - h",
+                "x": 1.9875,
+                "display": {
+                  "exact": true,
+                  "text": "1.9875",
+                  "latex": "1.9875",
+                  "approx": null
+                },
+                "f": 14.503319692691814,
+                "f_display": "14.50331969"
+              },
+              {
+                "offset": 1,
+                "weight": 8,
+                "role": "x_0 + h",
+                "x": 2.0125,
+                "display": {
+                  "exact": true,
+                  "text": "2.0125",
+                  "latex": "2.0125",
+                  "approx": null
+                },
+                "f": 15.057522953291686,
+                "f_display": "15.05752295"
+              },
+              {
+                "offset": 2,
+                "weight": -1,
+                "role": "x_0 + 2h",
+                "x": 2.025,
+                "display": {
+                  "exact": true,
+                  "text": "2.025",
+                  "latex": "2.025",
+                  "approx": null
+                },
+                "f": 15.341624662889611,
+                "f_display": "15.34162466"
+              }
+            ],
+            "decimals": 8,
+            "numerator_display": "3.32507524",
+            "products_display": [
+              "14.23307382",
+              "-116.02655752",
+              "120.4601836",
+              "-15.34162466"
+            ],
+            "denominator_display": "0.15"
+          },
+          "extremo_adelante_5": {
+            "D": 22.16716803814506,
+            "previous_D": 22.16716405835799,
+            "estimated_error": 3.979787070562679e-06,
+            "real_error": 2.586468887955107e-07,
+            "bound": 2.674008925755017e-07,
+            "M": 54.763702799462735,
+            "M_substitution": {
+              "x": 2.05,
+              "x_display": {
+                "exact": true,
+                "text": "2.05",
+                "latex": "2.05",
+                "approx": null
+              },
+              "function_latex": "x e^{x} + 5 e^{x}",
+              "function_text": "x*exp(x) + 5*exp(x)",
+              "terms": [
+                {
+                  "sign": "+",
+                  "template": "@@0@@ \\cdot e^{@@0@@}",
+                  "text": "@@0@@*exp(@@0@@)",
+                  "value": 15.924197267928879
+                },
+                {
+                  "sign": "+",
+                  "template": "5 \\cdot e^{@@0@@}",
+                  "text": "5*exp(@@0@@)",
+                  "value": 38.83950553153385
+                }
+              ],
+              "value": 54.763702799462735
+            },
+            "x_M": 2.05,
+            "interval": [
+              2.0,
+              2.05
+            ],
+            "interval_display": [
+              {
+                "exact": true,
+                "text": "2",
+                "latex": "2",
+                "approx": null
+              },
+              {
+                "exact": true,
+                "text": "2.05",
+                "latex": "2.05",
+                "approx": null
+              }
+            ],
+            "ratio": 0.06102416394254179,
+            "rounding": 2.3104778173573413e-11,
+            "within_bound": true,
+            "by_rounding": false,
+            "points": [
+              {
+                "offset": 0,
+                "weight": -25,
+                "role": "x_0",
+                "x": 2.0,
+                "display": {
+                  "exact": true,
+                  "text": "2",
+                  "latex": "2",
+                  "approx": null
+                },
+                "f": 14.7781121978613,
+                "f_display": "14.778112198"
+              },
+              {
+                "offset": 1,
+                "weight": 48,
+                "role": "x_0 + h",
+                "x": 2.0125,
+                "display": {
+                  "exact": true,
+                  "text": "2.0125",
+                  "latex": "2.0125",
+                  "approx": null
+                },
+                "f": 15.057522953291686,
+                "f_display": "15.057522953"
+              },
+              {
+                "offset": 2,
+                "weight": -36,
+                "role": "x_0 + 2h",
+                "x": 2.025,
+                "display": {
+                  "exact": true,
+                  "text": "2.025",
+                  "latex": "2.025",
+                  "approx": null
+                },
+                "f": 15.341624662889611,
+                "f_display": "15.341624663"
+              },
+              {
+                "offset": 3,
+                "weight": 16,
+                "role": "x_0 + 3h",
+                "x": 2.0375,
+                "display": {
+                  "exact": true,
+                  "text": "2.0375",
+                  "latex": "2.0375",
+                  "approx": null
+                },
+                "f": 15.630491128879127,
+                "f_display": "15.630491129"
+              },
+              {
+                "offset": 4,
+                "weight": -3,
+                "role": "x_0 + 4h",
+                "x": 2.05,
+                "display": {
+                  "exact": true,
+                  "text": "2.05",
+                  "latex": "2.05",
+                  "approx": null
+                },
+                "f": 15.924197267928879,
+                "f_display": "15.924197268"
+              }
+            ],
+            "decimals": 9,
+            "numerator_display": "3.325075186",
+            "products_display": [
+              "-369.45280495",
+              "722.761101744",
+              "-552.298487868",
+              "250.087858064",
+              "-47.772591804"
+            ],
+            "denominator_display": "0.15"
+          },
+          "extremo_atras_5": {
+            "D": 22.167168050173174,
+            "previous_D": 22.167164443391954,
+            "estimated_error": 3.606781220355515e-06,
+            "real_error": 2.466187751792859e-07,
+            "bound": 2.525556283814188e-07,
+            "M": 51.72339269251455,
+            "M_substitution": {
+              "x": 2.0,
+              "x_display": {
+                "exact": true,
+                "text": "2",
+                "latex": "2",
+                "approx": null
+              },
+              "function_latex": "x e^{x} + 5 e^{x}",
+              "function_text": "x*exp(x) + 5*exp(x)",
+              "terms": [
+                {
+                  "sign": "+",
+                  "template": "@@0@@ \\cdot e^{@@0@@}",
+                  "text": "@@0@@*exp(@@0@@)",
+                  "value": 14.7781121978613
+                },
+                {
+                  "sign": "+",
+                  "template": "5 \\cdot e^{@@0@@}",
+                  "text": "5*exp(@@0@@)",
+                  "value": 36.945280494653254
+                }
+              ],
+              "value": 51.72339269251455
+            },
+            "x_M": 2.0,
+            "interval": [
+              1.95,
+              2.0
+            ],
+            "interval_display": [
+              {
+                "exact": true,
+                "text": "1.95",
+                "latex": "1.95",
+                "approx": null
+              },
+              {
+                "exact": true,
+                "text": "2",
+                "latex": "2",
+                "approx": null
+              }
+            ],
+            "ratio": 0.06400030504620854,
+            "rounding": 2.1726152565403275e-11,
+            "within_bound": true,
+            "by_rounding": false,
+            "points": [
+              {
+                "offset": 0,
+                "weight": 25,
+                "role": "x_0",
+                "x": 2.0,
+                "display": {
+                  "exact": true,
+                  "text": "2",
+                  "latex": "2",
+                  "approx": null
+                },
+                "f": 14.7781121978613,
+                "f_display": "14.778112198"
+              },
+              {
+                "offset": -1,
+                "weight": -48,
+                "role": "x_0 - h",
+                "x": 1.9875,
+                "display": {
+                  "exact": true,
+                  "text": "1.9875",
+                  "latex": "1.9875",
+                  "approx": null
+                },
+                "f": 14.503319692691814,
+                "f_display": "14.503319693"
+              },
+              {
+                "offset": -2,
+                "weight": 36,
+                "role": "x_0 - 2h",
+                "x": 1.975,
+                "display": {
+                  "exact": true,
+                  "text": "1.975",
+                  "latex": "1.975",
+                  "approx": null
+                },
+                "f": 14.233073816295425,
+                "f_display": "14.233073816"
+              },
+              {
+                "offset": -3,
+                "weight": -16,
+                "role": "x_0 - 3h",
+                "x": 1.9625,
+                "display": {
+                  "exact": true,
+                  "text": "1.9625",
+                  "latex": "1.9625",
+                  "approx": null
+                },
+                "f": 13.967304013930137,
+                "f_display": "13.967304014"
+              },
+              {
+                "offset": -4,
+                "weight": 3,
+                "role": "x_0 - 4h",
+                "x": 1.95,
+                "display": {
+                  "exact": true,
+                  "text": "1.95",
+                  "latex": "1.95",
+                  "approx": null
+                },
+                "f": 13.70594078214912,
+                "f_display": "13.705940782"
+              }
+            ],
+            "decimals": 9,
+            "numerator_display": "3.325075184",
+            "products_display": [
+              "369.45280495",
+              "-696.159345264",
+              "512.390657376",
+              "-223.476864224",
+              "41.117822346"
+            ],
+            "denominator_display": "0.15"
+          }
+        }
+      },
+      {
+        "iteration": 5,
+        "x": [
+          22.167168294161495,
+          22.16716828081625,
+          22.167168281195014
+        ],
+        "error": 2.4267118803322774e-07,
+        "extra": {
+          "h": {
+            "value": 0.00625,
+            "exact": true,
+            "text": "0.00625",
+            "latex": "0.00625",
+            "approx": null
+          },
+          "punto_medio_5": {
+            "D": 22.167168294161495,
+            "previous_D": 22.167168254698616,
+            "estimated_error": 3.946287918665803e-08,
+            "real_error": 2.6304540767796425e-09,
+            "bound": 2.6686359592845713e-09,
+            "M": 52.46751786830209,
+            "M_substitution": {
+              "x": 2.0125,
+              "x_display": {
+                "exact": true,
+                "text": "2.0125",
+                "latex": "2.0125",
+                "approx": null
+              },
+              "function_latex": "x e^{x} + 5 e^{x}",
+              "function_text": "x*exp(x) + 5*exp(x)",
+              "terms": [
+                {
+                  "sign": "+",
+                  "template": "@@0@@ \\cdot e^{@@0@@}",
+                  "text": "@@0@@*exp(@@0@@)",
+                  "value": 15.057522953291686
+                },
+                {
+                  "sign": "+",
+                  "template": "5 \\cdot e^{@@0@@}",
+                  "text": "5*exp(@@0@@)",
+                  "value": 37.4099949150104
+                }
+              ],
+              "value": 52.46751786830209
+            },
+            "x_M": 2.0125,
+            "interval": [
+              1.9875,
+              2.0125
+            ],
+            "interval_display": [
+              {
+                "exact": true,
+                "text": "1.9875",
+                "latex": "1.9875",
+                "approx": null
+              },
+              {
+                "exact": true,
+                "text": "2.0125",
+                "latex": "2.0125",
+                "approx": null
+              }
+            ],
+            "ratio": 0.062490990207811806,
+            "rounding": 6.300739360649406e-12,
+            "within_bound": true,
+            "by_rounding": false,
+            "points": [
+              {
+                "offset": -2,
+                "weight": 1,
+                "role": "x_0 - 2h",
+                "x": 1.9875,
+                "display": {
+                  "exact": true,
+                  "text": "1.9875",
+                  "latex": "1.9875",
+                  "approx": null
+                },
+                "f": 14.503319692691814,
+                "f_display": "14.50331969"
+              },
+              {
+                "offset": -1,
+                "weight": -8,
+                "role": "x_0 - h",
+                "x": 1.99375,
+                "display": {
+                  "exact": true,
+                  "text": "1.99375",
+                  "latex": "1.99375",
+                  "approx": null
+                },
+                "f": 14.640143165521362,
+                "f_display": "14.64014317"
+              },
+              {
+                "offset": 1,
+                "weight": 8,
+                "role": "x_0 + h",
+                "x": 2.00625,
+                "display": {
+                  "exact": true,
+                  "text": "2.00625",
+                  "latex": "2.00625",
+                  "approx": null
+                },
+                "f": 14.91723577585411,
+                "f_display": "14.91723578"
+              },
+              {
+                "offset": 2,
+                "weight": -1,
+                "role": "x_0 + 2h",
+                "x": 2.0125,
+                "display": {
+                  "exact": true,
+                  "text": "2.0125",
+                  "latex": "2.0125",
+                  "approx": null
+                },
+                "f": 15.057522953291686,
+                "f_display": "15.05752295"
+              }
+            ],
+            "decimals": 8,
+            "numerator_display": "1.66253762",
+            "products_display": [
+              "14.50331969",
+              "-117.12114536",
+              "119.33788624",
+              "-15.05752295"
+            ],
+            "denominator_display": "0.075"
+          },
+          "extremo_adelante_5": {
+            "D": 22.16716828081625,
+            "previous_D": 22.16716803814506,
+            "estimated_error": 2.4267118803322774e-07,
+            "real_error": 1.597570076228294e-08,
+            "bound": 1.624212017397273e-08,
+            "M": 53.22217938607383,
+            "M_substitution": {
+              "x": 2.025,
+              "x_display": {
+                "exact": true,
+                "text": "2.025",
+                "latex": "2.025",
+                "approx": null
+              },
+              "function_latex": "x e^{x} + 5 e^{x}",
+              "function_text": "x*exp(x) + 5*exp(x)",
+              "terms": [
+                {
+                  "sign": "+",
+                  "template": "@@0@@ \\cdot e^{@@0@@}",
+                  "text": "@@0@@*exp(@@0@@)",
+                  "value": 15.341624662889611
+                },
+                {
+                  "sign": "+",
+                  "template": "5 \\cdot e^{@@0@@}",
+                  "text": "5*exp(@@0@@)",
+                  "value": 37.880554723184225
+                }
+              ],
+              "value": 53.22217938607383
+            },
+            "x_M": 2.025,
+            "interval": [
+              2.0,
+              2.025
+            ],
+            "interval_display": [
+              {
+                "exact": true,
+                "text": "2",
+                "latex": "2",
+                "approx": null
+              },
+              {
+                "exact": true,
+                "text": "2.025",
+                "latex": "2.025",
+                "approx": null
+              }
+            ],
+            "ratio": 0.0617664524660628,
+            "rounding": 4.549841727245121e-11,
+            "within_bound": true,
+            "by_rounding": false,
+            "points": [
+              {
+                "offset": 0,
+                "weight": -25,
+                "role": "x_0",
+                "x": 2.0,
+                "display": {
+                  "exact": true,
+                  "text": "2",
+                  "latex": "2",
+                  "approx": null
+                },
+                "f": 14.7781121978613,
+                "f_display": "14.778112198"
+              },
+              {
+                "offset": 1,
+                "weight": 48,
+                "role": "x_0 + h",
+                "x": 2.00625,
+                "display": {
+                  "exact": true,
+                  "text": "2.00625",
+                  "latex": "2.00625",
+                  "approx": null
+                },
+                "f": 14.91723577585411,
+                "f_display": "14.917235776"
+              },
+              {
+                "offset": 2,
+                "weight": -36,
+                "role": "x_0 + 2h",
+                "x": 2.0125,
+                "display": {
+                  "exact": true,
+                  "text": "2.0125",
+                  "latex": "2.0125",
+                  "approx": null
+                },
+                "f": 15.057522953291686,
+                "f_display": "15.057522953"
+              },
+              {
+                "offset": 3,
+                "weight": 16,
+                "role": "x_0 + 3h",
+                "x": 2.01875,
+                "display": {
+                  "exact": true,
+                  "text": "2.01875",
+                  "latex": "2.01875",
+                  "approx": null
+                },
+                "f": 15.198982852110378,
+                "f_display": "15.198982852"
+              },
+              {
+                "offset": 4,
+                "weight": -3,
+                "role": "x_0 + 4h",
+                "x": 2.025,
+                "display": {
+                  "exact": true,
+                  "text": "2.025",
+                  "latex": "2.025",
+                  "approx": null
+                },
+                "f": 15.341624662889611,
+                "f_display": "15.341624663"
+              }
+            ],
+            "decimals": 9,
+            "numerator_display": "1.662537633",
+            "products_display": [
+              "-369.45280495",
+              "716.027317248",
+              "-542.070826308",
+              "243.183725632",
+              "-46.024873989"
+            ],
+            "denominator_display": "0.075"
+          },
+          "extremo_atras_5": {
+            "D": 22.167168281195014,
+            "previous_D": 22.167168050173174,
+            "estimated_error": 2.310218398804409e-07,
+            "real_error": 1.5596935298844983e-08,
+            "bound": 1.5784726773838674e-08,
+            "M": 51.72339269251455,
+            "M_substitution": {
+              "x": 2.0,
+              "x_display": {
+                "exact": true,
+                "text": "2",
+                "latex": "2",
+                "approx": null
+              },
+              "function_latex": "x e^{x} + 5 e^{x}",
+              "function_text": "x*exp(x) + 5*exp(x)",
+              "terms": [
+                {
+                  "sign": "+",
+                  "template": "@@0@@ \\cdot e^{@@0@@}",
+                  "text": "@@0@@*exp(@@0@@)",
+                  "value": 14.7781121978613
+                },
+                {
+                  "sign": "+",
+                  "template": "5 \\cdot e^{@@0@@}",
+                  "text": "5*exp(@@0@@)",
+                  "value": 36.945280494653254
+                }
+              ],
+              "value": 51.72339269251455
+            },
+            "x_M": 2.0,
+            "interval": [
+              1.975,
+              2.0
+            ],
+            "interval_display": [
+              {
+                "exact": true,
+                "text": "1.975",
+                "latex": "1.975",
+                "approx": null
+              },
+              {
+                "exact": true,
+                "text": "2",
+                "latex": "2",
+                "approx": null
+              }
+            ],
+            "ratio": 0.06324309772241139,
+            "rounding": 4.412011985366205e-11,
+            "within_bound": true,
+            "by_rounding": false,
+            "points": [
+              {
+                "offset": 0,
+                "weight": 25,
+                "role": "x_0",
+                "x": 2.0,
+                "display": {
+                  "exact": true,
+                  "text": "2",
+                  "latex": "2",
+                  "approx": null
+                },
+                "f": 14.7781121978613,
+                "f_display": "14.778112198"
+              },
+              {
+                "offset": -1,
+                "weight": -48,
+                "role": "x_0 - h",
+                "x": 1.99375,
+                "display": {
+                  "exact": true,
+                  "text": "1.99375",
+                  "latex": "1.99375",
+                  "approx": null
+                },
+                "f": 14.640143165521362,
+                "f_display": "14.640143166"
+              },
+              {
+                "offset": -2,
+                "weight": 36,
+                "role": "x_0 - 2h",
+                "x": 1.9875,
+                "display": {
+                  "exact": true,
+                  "text": "1.9875",
+                  "latex": "1.9875",
+                  "approx": null
+                },
+                "f": 14.503319692691814,
+                "f_display": "14.503319693"
+              },
+              {
+                "offset": -3,
+                "weight": -16,
+                "role": "x_0 - 3h",
+                "x": 1.98125,
+                "display": {
+                  "exact": true,
+                  "text": "1.98125",
+                  "latex": "1.98125",
+                  "approx": null
+                },
+                "f": 14.36763286038807,
+                "f_display": "14.36763286"
+              },
+              {
+                "offset": -4,
+                "weight": 3,
+                "role": "x_0 - 4h",
+                "x": 1.975,
+                "display": {
+                  "exact": true,
+                  "text": "1.975",
+                  "latex": "1.975",
+                  "approx": null
+                },
+                "f": 14.233073816295425,
+                "f_display": "14.233073816"
+              }
+            ],
+            "decimals": 9,
+            "numerator_display": "1.662537618",
+            "products_display": [
+              "369.45280495",
+              "-702.726871968",
+              "522.119508948",
+              "-229.88212576",
+              "42.699221448"
+            ],
+            "denominator_display": "0.075"
+          }
+        }
+      },
+      {
+        "iteration": 6,
+        "x": [
+          22.167168296626485,
+          22.167168295787857,
+          22.16716829580794
+        ],
+        "error": 1.497160795338459e-08,
+        "extra": {
+          "h": {
+            "value": 0.003125,
+            "exact": true,
+            "text": "0.003125",
+            "latex": "0.003125",
+            "approx": null
+          },
+          "punto_medio_5": {
+            "D": 22.167168296626485,
+            "previous_D": 22.167168294161495,
+            "estimated_error": 2.464989989903188e-09,
+            "real_error": 1.6546408687645453e-10,
+            "bound": 1.6560283459589571e-10,
+            "M": 52.09414736676778,
+            "M_substitution": {
+              "x": 2.00625,
+              "x_display": {
+                "exact": true,
+                "text": "2.00625",
+                "latex": "2.00625",
+                "approx": null
+              },
+              "function_latex": "x e^{x} + 5 e^{x}",
+              "function_text": "x*exp(x) + 5*exp(x)",
+              "terms": [
+                {
+                  "sign": "+",
+                  "template": "@@0@@ \\cdot e^{@@0@@}",
+                  "text": "@@0@@*exp(@@0@@)",
+                  "value": 14.91723577585411
+                },
+                {
+                  "sign": "+",
+                  "template": "5 \\cdot e^{@@0@@}",
+                  "text": "5*exp(@@0@@)",
+                  "value": 37.17691159091367
+                }
+              ],
+              "value": 52.09414736676778
+            },
+            "x_M": 2.00625,
+            "interval": [
+              1.99375,
+              2.00625
+            ],
+            "interval_display": [
+              {
+                "exact": true,
+                "text": "1.99375",
+                "latex": "1.99375",
+                "approx": null
+              },
+              {
+                "exact": true,
+                "text": "2.00625",
+                "latex": "2.00625",
+                "approx": null
+              }
+            ],
+            "ratio": 0.06290324105525745,
+            "rounding": 1.260080192151586e-11,
+            "within_bound": true,
+            "by_rounding": false,
+            "points": [
+              {
+                "offset": -2,
+                "weight": 1,
+                "role": "x_0 - 2h",
+                "x": 1.99375,
+                "display": {
+                  "exact": true,
+                  "text": "1.99375",
+                  "latex": "1.99375",
+                  "approx": null
+                },
+                "f": 14.640143165521362,
+                "f_display": "14.640143166"
+              },
+              {
+                "offset": -1,
+                "weight": -8,
+                "role": "x_0 - h",
+                "x": 1.996875,
+                "display": {
+                  "exact": true,
+                  "text": "1.996875",
+                  "latex": "1.996875",
+                  "approx": null
+                },
+                "f": 14.708983926698384,
+                "f_display": "14.708983927"
+              },
+              {
+                "offset": 1,
+                "weight": 8,
+                "role": "x_0 + h",
+                "x": 2.003125,
+                "display": {
+                  "exact": true,
+                  "text": "2.003125",
+                  "latex": "2.003125",
+                  "approx": null
+                },
+                "f": 14.847529104380413,
+                "f_display": "14.847529104"
+              },
+              {
+                "offset": 2,
+                "weight": -1,
+                "role": "x_0 + 2h",
+                "x": 2.00625,
+                "display": {
+                  "exact": true,
+                  "text": "2.00625",
+                  "latex": "2.00625",
+                  "approx": null
+                },
+                "f": 14.91723577585411,
+                "f_display": "14.917235776"
+              }
+            ],
+            "decimals": 9,
+            "numerator_display": "0.831268806",
+            "products_display": [
+              "14.640143166",
+              "-117.671871416",
+              "118.780232832",
+              "-14.917235776"
+            ],
+            "denominator_display": "0.0375"
+          },
+          "extremo_adelante_5": {
+            "D": 22.167168295787857,
+            "previous_D": 22.16716828081625,
+            "estimated_error": 1.497160795338459e-08,
+            "real_error": 1.0040928088983492e-09,
+            "bound": 1.0007384847317143e-09,
+            "M": 52.46751786830209,
+            "M_substitution": {
+              "x": 2.0125,
+              "x_display": {
+                "exact": true,
+                "text": "2.0125",
+                "latex": "2.0125",
+                "approx": null
+              },
+              "function_latex": "x e^{x} + 5 e^{x}",
+              "function_text": "x*exp(x) + 5*exp(x)",
+              "terms": [
+                {
+                  "sign": "+",
+                  "template": "@@0@@ \\cdot e^{@@0@@}",
+                  "text": "@@0@@*exp(@@0@@)",
+                  "value": 15.057522953291686
+                },
+                {
+                  "sign": "+",
+                  "template": "5 \\cdot e^{@@0@@}",
+                  "text": "5*exp(@@0@@)",
+                  "value": 37.4099949150104
+                }
+              ],
+              "value": 52.46751786830209
+            },
+            "x_M": 2.0125,
+            "interval": [
+              2.0,
+              2.0125
+            ],
+            "interval_display": [
+              {
+                "exact": true,
+                "text": "2",
+                "latex": "2",
+                "approx": null
+              },
+              {
+                "exact": true,
+                "text": "2.0125",
+                "latex": "2.0125",
+                "approx": null
+              }
+            ],
+            "ratio": 0.06285125290208951,
+            "rounding": 9.029681557930643e-11,
+            "within_bound": true,
+            "by_rounding": true,
+            "points": [
+              {
+                "offset": 0,
+                "weight": -25,
+                "role": "x_0",
+                "x": 2.0,
+                "display": {
+                  "exact": true,
+                  "text": "2",
+                  "latex": "2",
+                  "approx": null
+                },
+                "f": 14.7781121978613,
+                "f_display": "14.778112198"
+              },
+              {
+                "offset": 1,
+                "weight": 48,
+                "role": "x_0 + h",
+                "x": 2.003125,
+                "display": {
+                  "exact": true,
+                  "text": "2.003125",
+                  "latex": "2.003125",
+                  "approx": null
+                },
+                "f": 14.847529104380413,
+                "f_display": "14.847529104"
+              },
+              {
+                "offset": 2,
+                "weight": -36,
+                "role": "x_0 + 2h",
+                "x": 2.00625,
+                "display": {
+                  "exact": true,
+                  "text": "2.00625",
+                  "latex": "2.00625",
+                  "approx": null
+                },
+                "f": 14.91723577585411,
+                "f_display": "14.917235776"
+              },
+              {
+                "offset": 3,
+                "weight": 16,
+                "role": "x_0 + 3h",
+                "x": 2.009375,
+                "display": {
+                  "exact": true,
+                  "text": "2.009375",
+                  "latex": "2.009375",
+                  "approx": null
+                },
+                "f": 14.987233346124237,
+                "f_display": "14.987233346"
+              },
+              {
+                "offset": 4,
+                "weight": -3,
+                "role": "x_0 + 4h",
+                "x": 2.0125,
+                "display": {
+                  "exact": true,
+                  "text": "2.0125",
+                  "latex": "2.0125",
+                  "approx": null
+                },
+                "f": 15.057522953291686,
+                "f_display": "15.057522953"
+              }
+            ],
+            "decimals": 9,
+            "numerator_display": "0.831268783",
+            "products_display": [
+              "-369.45280495",
+              "712.681396992",
+              "-537.020487936",
+              "239.795733536",
+              "-45.172568859"
+            ],
+            "denominator_display": "0.0375"
+          },
+          "extremo_atras_5": {
+            "D": 22.16716829580794,
+            "previous_D": 22.167168281195014,
+            "estimated_error": 1.4612925980372893e-08,
+            "real_error": 9.8400931847209e-10,
+            "bound": 9.865454233649171e-10,
+            "M": 51.72339269251455,
+            "M_substitution": {
+              "x": 2.0,
+              "x_display": {
+                "exact": true,
+                "text": "2",
+                "latex": "2",
+                "approx": null
+              },
+              "function_latex": "x e^{x} + 5 e^{x}",
+              "function_text": "x*exp(x) + 5*exp(x)",
+              "terms": [
+                {
+                  "sign": "+",
+                  "template": "@@0@@ \\cdot e^{@@0@@}",
+                  "text": "@@0@@*exp(@@0@@)",
+                  "value": 14.7781121978613
+                },
+                {
+                  "sign": "+",
+                  "template": "5 \\cdot e^{@@0@@}",
+                  "text": "5*exp(@@0@@)",
+                  "value": 36.945280494653254
+                }
+              ],
+              "value": 51.72339269251455
+            },
+            "x_M": 2.0,
+            "interval": [
+              1.9875,
+              2.0
+            ],
+            "interval_display": [
+              {
+                "exact": true,
+                "text": "1.9875",
+                "latex": "1.9875",
+                "approx": null
+              },
+              {
+                "exact": true,
+                "text": "2",
+                "latex": "2",
+                "approx": null
+              }
+            ],
+            "ratio": 0.06308991475684071,
+            "rounding": 8.891860019860501e-11,
+            "within_bound": true,
+            "by_rounding": false,
+            "points": [
+              {
+                "offset": 0,
+                "weight": 25,
+                "role": "x_0",
+                "x": 2.0,
+                "display": {
+                  "exact": true,
+                  "text": "2",
+                  "latex": "2",
+                  "approx": null
+                },
+                "f": 14.7781121978613,
+                "f_display": "14.7781121979"
+              },
+              {
+                "offset": -1,
+                "weight": -48,
+                "role": "x_0 - h",
+                "x": 1.996875,
+                "display": {
+                  "exact": true,
+                  "text": "1.996875",
+                  "latex": "1.996875",
+                  "approx": null
+                },
+                "f": 14.708983926698384,
+                "f_display": "14.7089839267"
+              },
+              {
+                "offset": -2,
+                "weight": 36,
+                "role": "x_0 - 2h",
+                "x": 1.99375,
+                "display": {
+                  "exact": true,
+                  "text": "1.99375",
+                  "latex": "1.99375",
+                  "approx": null
+                },
+                "f": 14.640143165521362,
+                "f_display": "14.6401431655"
+              },
+              {
+                "offset": -3,
+                "weight": -16,
+                "role": "x_0 - 3h",
+                "x": 1.990625,
+                "display": {
+                  "exact": true,
+                  "text": "1.990625",
+                  "latex": "1.990625",
+                  "approx": null
+                },
+                "f": 14.571588793172605,
+                "f_display": "14.5715887932"
+              },
+              {
+                "offset": -4,
+                "weight": 3,
+                "role": "x_0 - 4h",
+                "x": 1.9875,
+                "display": {
+                  "exact": true,
+                  "text": "1.9875",
+                  "latex": "1.9875",
+                  "approx": null
+                },
+                "f": 14.503319692691814,
+                "f_display": "14.5033196927"
+              }
+            ],
+            "decimals": 10,
+            "numerator_display": "0.8312688108",
+            "products_display": [
+              "369.4528049475",
+              "-706.0312284816",
+              "527.045153958",
+              "-233.1454206912",
+              "43.5099590781"
+            ],
+            "denominator_display": "0.0375"
+          }
+        }
+      }
+    ],
+    "iterations_used": 6,
+    "solution": [
+      22.167168296626485,
+      22.167168295787857,
+      22.16716829580794
+    ],
+    "variables": [
+      "punto_medio_5",
+      "extremo_adelante_5",
+      "extremo_atras_5"
+    ],
+    "warnings": [],
+    "mode": "function",
+    "x0": 2.0,
+    "x0_display": {
+      "exact": true,
+      "text": "2",
+      "latex": "2",
+      "approx": null
+    },
+    "h0": 0.1,
+    "tolerance": 1e-06,
+    "max_iterations": 25,
+    "exact": 22.16716829679195,
+    "differentiable": true,
+    "verification": {
+      "substitution": {
+        "x": 2.0,
+        "x_display": {
+          "exact": true,
+          "text": "2",
+          "latex": "2",
+          "approx": null
+        },
+        "function_latex": "x e^{x} + e^{x}",
+        "function_text": "x*exp(x) + exp(x)",
+        "terms": [
+          {
+            "sign": "+",
+            "template": "@@0@@ \\cdot e^{@@0@@}",
+            "text": "@@0@@*exp(@@0@@)",
+            "value": 14.7781121978613
+          },
+          {
+            "sign": "+",
+            "template": "e^{@@0@@}",
+            "text": "exp(@@0@@)",
+            "value": 7.38905609893065
+          }
+        ],
+        "value": 22.16716829679195
+      },
+      "final": {
+        "punto_medio_5": {
+          "D": 22.167168296626485,
+          "real_error": 1.6546408687645453e-10,
+          "bound": 1.6560283459589571e-10,
+          "rounding": 1.260080192151586e-11,
+          "within_bound": true,
+          "by_rounding": false
+        },
+        "extremo_adelante_5": {
+          "D": 22.167168295787857,
+          "real_error": 1.0040928088983492e-09,
+          "bound": 1.0007384847317143e-09,
+          "rounding": 9.029681557930643e-11,
+          "within_bound": true,
+          "by_rounding": true
+        },
+        "extremo_atras_5": {
+          "D": 22.16716829580794,
+          "real_error": 9.8400931847209e-10,
+          "bound": 9.865454233649171e-10,
+          "rounding": 8.891860019860501e-11,
+          "within_bound": true,
+          "by_rounding": false
+        }
+      },
+      "failed_rows": {
+        "punto_medio_5": [],
+        "extremo_adelante_5": [],
+        "extremo_atras_5": []
+      },
+      "all_within": true,
+      "identities": [
+        {
+          "key": "punto_medio_5",
+          "name": "Punto medio",
+          "kind": "romberg",
+          "base": 22.22878688030728,
+          "double": 22.414160657029417,
+          "value": 22.166995621399902,
+          "D": 22.1669956213999,
+          "base_display": "22.228787",
+          "double_display": "22.414161",
+          "value_display": "22.166996",
+          "D_display": "22.166996",
+          "rounding_difference": false,
+          "ok": true
+        }
+      ]
+    },
+    "comparison": [
+      {
+        "k": 1,
+        "h": {
+          "value": 0.1,
+          "exact": true,
+          "text": "0.1",
+          "latex": "0.1",
+          "approx": null
+        },
+        "midpoint_3": {
+          "D": 22.22878688030728,
+          "real_error": 0.06161858351532956
+        },
+        "forward": {
+          "D": 23.708446185307643,
+          "real_error": 1.541277888515694
+        },
+        "backward": {
+          "D": 20.749127575306918,
+          "real_error": 1.4180407214850312
+        },
+        "text": "Con h = 0.1, la fórmula de 3 puntos (punto medio) daría 22.228787 (error 0.061619), la diferencia progresiva 23.708446 (error 1.541278) y la regresiva 20.749128 (error 1.418041). Con la fórmula de 5 puntos: punto medio 22.166996 (error 0.000173: 357 veces menor que el de la fórmula de 3 puntos, 8926 veces menor que el de la progresiva y 8212 veces menor que el de la regresiva); extremo hacia adelante 22.165915 (error 0.001254: 49 veces menor que el de la fórmula de 3 puntos, 1229 veces menor que el de la progresiva y 1131 veces menor que el de la regresiva); extremo hacia atrás 22.166312 (error 0.000857: 72 veces menor que el de la fórmula de 3 puntos, 1799 veces menor que el de la progresiva y 1656 veces menor que el de la regresiva)."
+      },
+      {
+        "k": 6,
+        "h": {
+          "value": 0.003125,
+          "exact": true,
+          "text": "0.003125",
+          "latex": "0.003125",
+          "approx": null
+        },
+        "midpoint_3": {
+          "D": 22.167228429124748,
+          "real_error": 6.0132332798445987e-05
+        },
+        "forward": {
+          "D": 22.213410086116028,
+          "real_error": 0.0462417893240783
+        },
+        "backward": {
+          "D": 22.121046772133468,
+          "real_error": 0.046121524658481405
+        },
+        "text": "Con h = 0.003125, la fórmula de 3 puntos (punto medio) daría 22.167228 (error 0.00006), la diferencia progresiva 22.21341 (error 0.046242) y la regresiva 22.121047 (error 0.046122). Con la fórmula de 5 puntos: punto medio 22.167168 (error 1.7×10⁻¹⁰: 363416 veces menor que el de la fórmula de 3 puntos, 279467226 veces menor que el de la progresiva y 278740393 veces menor que el de la regresiva); extremo hacia adelante 22.167168 (error 1.0×10⁻⁹: 59887 veces menor que el de la fórmula de 3 puntos, 46053302 veces menor que el de la progresiva y 45933528 veces menor que el de la regresiva); extremo hacia atrás 22.167168 (error 9.8×10⁻¹⁰: 61110 veces menor que el de la fórmula de 3 puntos, 46993243 veces menor que el de la progresiva y 46871024 veces menor que el de la regresiva)."
+      }
+    ],
+    "comparison_title": "Comparación con la fórmula de 3 puntos y las diferencias progresiva y regresiva",
+    "rounding_text": "R = 2ε·Σ|cᵢ|·(|f(xᵢ)| + |xᵢ·f′(xᵢ)|) / (factor·h)",
+    "formula": "all",
+    "formulas": [
+      {
+        "key": "punto_medio_5",
+        "name": "Punto medio",
+        "symbol_latex": "D^{\\text{med},5}",
+        "formula_latex": "D^{\\text{med},5}(h) = \\frac{f(x_0 - 2h) - 8f(x_0 - h) + 8f(x_0 + h) - f(x_0 + 2h)}{12h}",
+        "formula_text": "Dmed5(h) = [f(x0 - 2h) - 8f(x0 - h) + 8f(x0 + h) - f(x0 + 2h)] / (12h)",
+        "bound_latex": "|E| \\le \\frac{h^{4}}{30} \\max_{\\xi \\in [x_0 - 2h,\\, x_0 + 2h]} \\left|f^{(5)}(\\xi)\\right|",
+        "order": 4,
+        "expected_ratio": 0.0625,
+        "bound_derivative": 5,
+        "bound_coefficient": [
+          1,
+          30
+        ],
+        "nodes": [
+          [
+            -2,
+            1
+          ],
+          [
+            -1,
+            -8
+          ],
+          [
+            1,
+            8
+          ],
+          [
+            2,
+            -1
+          ]
+        ],
+        "divisor": 12
+      },
+      {
+        "key": "extremo_adelante_5",
+        "name": "Extremo hacia adelante",
+        "symbol_latex": "D^{\\text{ad},5}",
+        "formula_latex": "D^{\\text{ad},5}(h) = \\frac{-25f(x_0) + 48f(x_0 + h) - 36f(x_0 + 2h) + 16f(x_0 + 3h) - 3f(x_0 + 4h)}{12h}",
+        "formula_text": "Dad5(h) = [-25f(x0) + 48f(x0 + h) - 36f(x0 + 2h) + 16f(x0 + 3h) - 3f(x0 + 4h)] / (12h)",
+        "bound_latex": "|E| \\le \\frac{h^{4}}{5} \\max_{\\xi \\in [x_0,\\, x_0 + 4h]} \\left|f^{(5)}(\\xi)\\right|",
+        "order": 4,
+        "expected_ratio": 0.0625,
+        "bound_derivative": 5,
+        "bound_coefficient": [
+          1,
+          5
+        ],
+        "nodes": [
+          [
+            0,
+            -25
+          ],
+          [
+            1,
+            48
+          ],
+          [
+            2,
+            -36
+          ],
+          [
+            3,
+            16
+          ],
+          [
+            4,
+            -3
+          ]
+        ],
+        "divisor": 12
+      },
+      {
+        "key": "extremo_atras_5",
+        "name": "Extremo hacia atrás",
+        "symbol_latex": "D^{\\text{at},5}",
+        "formula_latex": "D^{\\text{at},5}(h) = \\frac{25f(x_0) - 48f(x_0 - h) + 36f(x_0 - 2h) - 16f(x_0 - 3h) + 3f(x_0 - 4h)}{12h}",
+        "formula_text": "Dat5(h) = [25f(x0) - 48f(x0 - h) + 36f(x0 - 2h) - 16f(x0 - 3h) + 3f(x0 - 4h)] / (12h)",
+        "bound_latex": "|E| \\le \\frac{h^{4}}{5} \\max_{\\xi \\in [x_0 - 4h,\\, x_0]} \\left|f^{(5)}(\\xi)\\right|",
+        "order": 4,
+        "expected_ratio": 0.0625,
+        "bound_derivative": 5,
+        "bound_coefficient": [
+          1,
+          5
+        ],
+        "nodes": [
+          [
+            0,
+            25
+          ],
+          [
+            -1,
+            -48
+          ],
+          [
+            -2,
+            36
+          ],
+          [
+            -3,
+            -16
+          ],
+          [
+            -4,
+            3
+          ]
+        ],
+        "divisor": 12
+      }
+    ],
+    "function": {
+      "latex": "x e^{x}",
+      "text": "x*exp(x)",
+      "template": "@@0@@ \\cdot e^{@@0@@}",
+      "uses_trigonometry": false,
+      "derivative": {
+        "latex": "x e^{x} + e^{x}",
+        "text": "x*exp(x) + exp(x)",
+        "steps": {
+          "terms": [
+            {
+              "latex": "\\frac{d}{d x}\\left(x e^{x}\\right) = 1 \\cdot e^{x} + x \\cdot e^{x} = x e^{x} + e^{x}",
+              "rule": "regla del producto: (u·v)′ = u′·v + u·v′"
+            }
+          ],
+          "sum_latex": null
+        }
+      },
+      "higher_derivatives": {
+        "2": {
+          "latex": "x e^{x} + 2 e^{x}",
+          "text": "x*exp(x) + 2*exp(x)",
+          "steps": {
+            "terms": [
+              {
+                "latex": "\\frac{d}{d x}\\left(x e^{x}\\right) = 1 \\cdot e^{x} + x \\cdot e^{x} = x e^{x} + e^{x}",
+                "rule": "regla del producto: (u·v)′ = u′·v + u·v′"
+              },
+              {
+                "latex": "\\frac{d}{d x}\\left(e^{x}\\right) = e^{x}",
+                "rule": "derivada de la función exponencial"
+              }
+            ],
+            "sum_latex": "f''(x) = x e^{x} + e^{x} + e^{x} = x e^{x} + 2 e^{x}"
+          }
+        },
+        "3": {
+          "latex": "x e^{x} + 3 e^{x}",
+          "text": "x*exp(x) + 3*exp(x)",
+          "steps": {
+            "terms": [
+              {
+                "latex": "\\frac{d}{d x}\\left(x e^{x}\\right) = 1 \\cdot e^{x} + x \\cdot e^{x} = x e^{x} + e^{x}",
+                "rule": "regla del producto: (u·v)′ = u′·v + u·v′"
+              },
+              {
+                "latex": "\\frac{d}{d x}\\left(2 e^{x}\\right) = 2 \\cdot e^{x} = 2 e^{x}",
+                "rule": "derivada de la función exponencial"
+              }
+            ],
+            "sum_latex": "f'''(x) = x e^{x} + e^{x} + 2 e^{x} = x e^{x} + 3 e^{x}"
+          }
+        },
+        "4": {
+          "latex": "x e^{x} + 4 e^{x}",
+          "text": "x*exp(x) + 4*exp(x)",
+          "steps": {
+            "terms": [
+              {
+                "latex": "\\frac{d}{d x}\\left(x e^{x}\\right) = 1 \\cdot e^{x} + x \\cdot e^{x} = x e^{x} + e^{x}",
+                "rule": "regla del producto: (u·v)′ = u′·v + u·v′"
+              },
+              {
+                "latex": "\\frac{d}{d x}\\left(3 e^{x}\\right) = 3 \\cdot e^{x} = 3 e^{x}",
+                "rule": "derivada de la función exponencial"
+              }
+            ],
+            "sum_latex": "f''''(x) = x e^{x} + e^{x} + 3 e^{x} = x e^{x} + 4 e^{x}"
+          }
+        },
+        "5": {
+          "latex": "x e^{x} + 5 e^{x}",
+          "text": "x*exp(x) + 5*exp(x)",
+          "steps": {
+            "terms": [
+              {
+                "latex": "\\frac{d}{d x}\\left(x e^{x}\\right) = 1 \\cdot e^{x} + x \\cdot e^{x} = x e^{x} + e^{x}",
+                "rule": "regla del producto: (u·v)′ = u′·v + u·v′"
+              },
+              {
+                "latex": "\\frac{d}{d x}\\left(4 e^{x}\\right) = 4 \\cdot e^{x} = 4 e^{x}",
+                "rule": "derivada de la función exponencial"
+              }
+            ],
+            "sum_latex": "f'''''(x) = x e^{x} + e^{x} + 4 e^{x} = x e^{x} + 5 e^{x}"
+          }
+        }
+      }
+    },
+    "sampling_points": 401
+  },
+  "table": {
+    "request": {
+      "mode": "table",
+      "formula": "all",
+      "h0": 0.1,
+      "points": [
+        [
+          1.6,
+          7.924852
+        ],
+        [
+          1.7,
+          9.305711
+        ],
+        [
+          1.8,
+          10.889365
+        ],
+        [
+          1.9,
+          12.703199
+        ],
+        [
+          2.0,
+          14.778112
+        ],
+        [
+          2.1,
+          17.148957
+        ],
+        [
+          2.2,
+          19.85503
+        ],
+        [
+          2.3,
+          22.94062
+        ],
+        [
+          2.4,
+          26.455623
+        ]
+      ],
+      "compare_function": "x*exp(x)",
+      "tolerance": 1e-06,
+      "max_iterations": 25
+    },
+    "method": "cinco-puntos",
+    "category": "differentiation",
+    "converged": true,
+    "iterations": [
+      {
+        "iteration": 1,
+        "x": [
+          null,
+          12.877113333333364,
+          null,
+          null
+        ],
+        "error": null,
+        "extra": {
+          "x": 1.6,
+          "y": 7.924852,
+          "x_display": {
+            "exact": true,
+            "text": "1.6",
+            "latex": "1.6",
+            "approx": null
+          },
+          "exact": 12.8778843034273,
+          "punto_medio_5": null,
+          "extremo_adelante_5": {
+            "D": 12.877113333333364,
+            "h": {
+              "value": 0.09999999999999987,
+              "exact": true,
+              "text": "0.1",
+              "latex": "0.1",
+              "approx": null
+            },
+            "points": [
+              {
+                "offset": 0,
+                "weight": -25,
+                "role": "x_0",
+                "index": 0,
+                "x": 1.6,
+                "display": {
+                  "exact": true,
+                  "text": "1.6",
+                  "latex": "1.6",
+                  "approx": null
+                },
+                "f": 7.924852,
+                "f_display": "7.924852"
+              },
+              {
+                "offset": 1,
+                "weight": 48,
+                "role": "x_0 + h",
+                "index": 1,
+                "x": 1.7,
+                "display": {
+                  "exact": true,
+                  "text": "1.7",
+                  "latex": "1.7",
+                  "approx": null
+                },
+                "f": 9.305711,
+                "f_display": "9.305711"
+              },
+              {
+                "offset": 2,
+                "weight": -36,
+                "role": "x_0 + 2h",
+                "index": 2,
+                "x": 1.8,
+                "display": {
+                  "exact": true,
+                  "text": "1.8",
+                  "latex": "1.8",
+                  "approx": null
+                },
+                "f": 10.889365,
+                "f_display": "10.889365"
+              },
+              {
+                "offset": 3,
+                "weight": 16,
+                "role": "x_0 + 3h",
+                "index": 3,
+                "x": 1.9,
+                "display": {
+                  "exact": true,
+                  "text": "1.9",
+                  "latex": "1.9",
+                  "approx": null
+                },
+                "f": 12.703199,
+                "f_display": "12.703199"
+              },
+              {
+                "offset": 4,
+                "weight": -3,
+                "role": "x_0 + 4h",
+                "index": 4,
+                "x": 2.0,
+                "display": {
+                  "exact": true,
+                  "text": "2",
+                  "latex": "2",
+                  "approx": null
+                },
+                "f": 14.778112,
+                "f_display": "14.778112"
+              }
+            ],
+            "decimals": 6,
+            "numerator_display": "15.452536",
+            "real_error": 0.0007709700939351194,
+            "bound": 0.0010344678538502855,
+            "M": 51.72339269251455,
+            "x_M": 2.0,
+            "rounding": 4.753227766940433e-13,
+            "within_bound": true,
+            "by_rounding": false,
+            "interval": [
+              1.6,
+              2.0
+            ],
+            "M_substitution": {
+              "x": 2.0,
+              "x_display": {
+                "exact": true,
+                "text": "2",
+                "latex": "2",
+                "approx": null
+              },
+              "function_latex": "x e^{x} + 5 e^{x}",
+              "function_text": "x*exp(x) + 5*exp(x)",
+              "terms": [
+                {
+                  "sign": "+",
+                  "template": "@@0@@ \\cdot e^{@@0@@}",
+                  "text": "@@0@@*exp(@@0@@)",
+                  "value": 14.7781121978613
+                },
+                {
+                  "sign": "+",
+                  "template": "5 \\cdot e^{@@0@@}",
+                  "text": "5*exp(@@0@@)",
+                  "value": 36.945280494653254
+                }
+              ],
+              "value": 51.72339269251455
+            },
+            "products_display": [
+              "-198.1213",
+              "446.674128",
+              "-392.01714",
+              "203.251184",
+              "-44.334336"
+            ],
+            "denominator_display": "1.2"
+          },
+          "extremo_atras_5": null,
+          "punto_medio": null,
+          "recommended": {
+            "key": "extremo_adelante_5",
+            "name": "Extremo hacia adelante",
+            "D": 12.877113333333364
+          }
+        }
+      },
+      {
+        "iteration": 2,
+        "x": [
+          null,
+          14.77875166666666,
+          null,
+          14.822564999999988
+        ],
+        "error": null,
+        "extra": {
+          "x": 1.7,
+          "y": 9.305711,
+          "x_display": {
+            "exact": true,
+            "text": "1.7",
+            "latex": "1.7",
+            "approx": null
+          },
+          "exact": 14.779657957663439,
+          "punto_medio_5": null,
+          "extremo_adelante_5": {
+            "D": 14.77875166666666,
+            "h": {
+              "value": 0.10000000000000009,
+              "exact": true,
+              "text": "0.1",
+              "latex": "0.1",
+              "approx": null
+            },
+            "points": [
+              {
+                "offset": 0,
+                "weight": -25,
+                "role": "x_0",
+                "index": 1,
+                "x": 1.7,
+                "display": {
+                  "exact": true,
+                  "text": "1.7",
+                  "latex": "1.7",
+                  "approx": null
+                },
+                "f": 9.305711,
+                "f_display": "9.305711"
+              },
+              {
+                "offset": 1,
+                "weight": 48,
+                "role": "x_0 + h",
+                "index": 2,
+                "x": 1.8,
+                "display": {
+                  "exact": true,
+                  "text": "1.8",
+                  "latex": "1.8",
+                  "approx": null
+                },
+                "f": 10.889365,
+                "f_display": "10.889365"
+              },
+              {
+                "offset": 2,
+                "weight": -36,
+                "role": "x_0 + 2h",
+                "index": 3,
+                "x": 1.9,
+                "display": {
+                  "exact": true,
+                  "text": "1.9",
+                  "latex": "1.9",
+                  "approx": null
+                },
+                "f": 12.703199,
+                "f_display": "12.703199"
+              },
+              {
+                "offset": 3,
+                "weight": 16,
+                "role": "x_0 + 3h",
+                "index": 4,
+                "x": 2.0,
+                "display": {
+                  "exact": true,
+                  "text": "2",
+                  "latex": "2",
+                  "approx": null
+                },
+                "f": 14.778112,
+                "f_display": "14.778112"
+              },
+              {
+                "offset": 4,
+                "weight": -3,
+                "role": "x_0 + 4h",
+                "index": 5,
+                "x": 2.1,
+                "display": {
+                  "exact": true,
+                  "text": "2.1",
+                  "latex": "2.1",
+                  "approx": null
+                },
+                "f": 17.148957,
+                "f_display": "17.148957"
+              }
+            ],
+            "decimals": 6,
+            "numerator_display": "17.734502",
+            "real_error": 0.000906290996779191,
+            "bound": 0.0011595961275846106,
+            "M": 57.97980637923032,
+            "x_M": 2.1,
+            "rounding": 5.553128779034462e-13,
+            "within_bound": true,
+            "by_rounding": false,
+            "interval": [
+              1.7,
+              2.1
+            ],
+            "M_substitution": {
+              "x": 2.1,
+              "x_display": {
+                "exact": true,
+                "text": "2.1",
+                "latex": "2.1",
+                "approx": null
+              },
+              "function_latex": "x e^{x} + 5 e^{x}",
+              "function_text": "x*exp(x) + 5*exp(x)",
+              "terms": [
+                {
+                  "sign": "+",
+                  "template": "@@0@@ \\cdot e^{@@0@@}",
+                  "text": "@@0@@*exp(@@0@@)",
+                  "value": 17.148956816392065
+                },
+                {
+                  "sign": "+",
+                  "template": "5 \\cdot e^{@@0@@}",
+                  "text": "5*exp(@@0@@)",
+                  "value": 40.83084956283825
+                }
+              ],
+              "value": 57.97980637923032
+            },
+            "products_display": [
+              "-232.642775",
+              "522.68952",
+              "-457.315164",
+              "236.449792",
+              "-51.446871"
+            ],
+            "denominator_display": "1.2"
+          },
+          "extremo_atras_5": null,
+          "punto_medio": {
+            "D": 14.822564999999988,
+            "h": {
+              "value": 0.10000000000000009,
+              "exact": true,
+              "text": "0.1",
+              "latex": "0.1",
+              "approx": null
+            },
+            "points": [
+              {
+                "offset": 1,
+                "weight": 1,
+                "role": "x_0 + h",
+                "index": 2,
+                "x": 1.8,
+                "display": {
+                  "exact": true,
+                  "text": "1.8",
+                  "latex": "1.8",
+                  "approx": null
+                },
+                "f": 10.889365,
+                "f_display": "10.889365"
+              },
+              {
+                "offset": -1,
+                "weight": -1,
+                "role": "x_0 - h",
+                "index": 0,
+                "x": 1.6,
+                "display": {
+                  "exact": true,
+                  "text": "1.6",
+                  "latex": "1.6",
+                  "approx": null
+                },
+                "f": 7.924852,
+                "f_display": "7.924852"
+              }
+            ],
+            "decimals": 7,
+            "numerator_display": "2.964513",
+            "real_error": 0.04290704233654985,
+            "bound": 0.04839717971530366,
+            "M": 29.038307829182145,
+            "x_M": 1.8,
+            "rounding": 4.177595380738804e-14,
+            "within_bound": true,
+            "by_rounding": false,
+            "interval": [
+              1.6,
+              1.8
+            ],
+            "M_substitution": {
+              "x": 1.8,
+              "x_display": {
+                "exact": true,
+                "text": "1.8",
+                "latex": "1.8",
+                "approx": null
+              },
+              "function_latex": "x e^{x} + 3 e^{x}",
+              "function_text": "x*exp(x) + 3*exp(x)",
+              "terms": [
+                {
+                  "sign": "+",
+                  "template": "@@0@@ \\cdot e^{@@0@@}",
+                  "text": "@@0@@*exp(@@0@@)",
+                  "value": 10.889365435943304
+                },
+                {
+                  "sign": "+",
+                  "template": "3 \\cdot e^{@@0@@}",
+                  "text": "3*exp(@@0@@)",
+                  "value": 18.14894239323884
+                }
+              ],
+              "value": 29.038307829182145
+            },
+            "products_display": [
+              "10.889365",
+              "-7.924852"
+            ],
+            "denominator_display": "0.2"
+          },
+          "recommended": {
+            "key": "extremo_adelante_5",
+            "name": "Extremo hacia adelante",
+            "D": 14.77875166666666
+          }
+        }
+      },
+      {
+        "iteration": 3,
+        "x": [
+          16.93887000000002,
+          16.938014166666708,
+          null,
+          16.987440000000017
+        ],
+        "error": null,
+        "extra": {
+          "x": 1.8,
+          "y": 10.889365,
+          "x_display": {
+            "exact": true,
+            "text": "1.8",
+            "latex": "1.8",
+            "approx": null
+          },
+          "exact": 16.93901290035625,
+          "punto_medio_5": {
+            "D": 16.93887000000002,
+            "h": {
+              "value": 0.09999999999999987,
+              "exact": true,
+              "text": "0.1",
+              "latex": "0.1",
+              "approx": null
+            },
+            "points": [
+              {
+                "offset": -2,
+                "weight": 1,
+                "role": "x_0 - 2h",
+                "index": 0,
+                "x": 1.6,
+                "display": {
+                  "exact": true,
+                  "text": "1.6",
+                  "latex": "1.6",
+                  "approx": null
+                },
+                "f": 7.924852,
+                "f_display": "7.924852"
+              },
+              {
+                "offset": -1,
+                "weight": -8,
+                "role": "x_0 - h",
+                "index": 1,
+                "x": 1.7,
+                "display": {
+                  "exact": true,
+                  "text": "1.7",
+                  "latex": "1.7",
+                  "approx": null
+                },
+                "f": 9.305711,
+                "f_display": "9.305711"
+              },
+              {
+                "offset": 1,
+                "weight": 8,
+                "role": "x_0 + h",
+                "index": 3,
+                "x": 1.9,
+                "display": {
+                  "exact": true,
+                  "text": "1.9",
+                  "latex": "1.9",
+                  "approx": null
+                },
+                "f": 12.703199,
+                "f_display": "12.703199"
+              },
+              {
+                "offset": 2,
+                "weight": -1,
+                "role": "x_0 + 2h",
+                "index": 4,
+                "x": 2.0,
+                "display": {
+                  "exact": true,
+                  "text": "2",
+                  "latex": "2",
+                  "approx": null
+                },
+                "f": 14.778112,
+                "f_display": "14.778112"
+              }
+            ],
+            "decimals": 6,
+            "numerator_display": "20.326644",
+            "real_error": 0.00014290035623076847,
+            "bound": 0.0001724113089750476,
+            "M": 51.72339269251455,
+            "x_M": 2.0,
+            "rounding": 7.356124746375305e-14,
+            "within_bound": true,
+            "by_rounding": false,
+            "interval": [
+              1.6,
+              2.0
+            ],
+            "M_substitution": {
+              "x": 2.0,
+              "x_display": {
+                "exact": true,
+                "text": "2",
+                "latex": "2",
+                "approx": null
+              },
+              "function_latex": "x e^{x} + 5 e^{x}",
+              "function_text": "x*exp(x) + 5*exp(x)",
+              "terms": [
+                {
+                  "sign": "+",
+                  "template": "@@0@@ \\cdot e^{@@0@@}",
+                  "text": "@@0@@*exp(@@0@@)",
+                  "value": 14.7781121978613
+                },
+                {
+                  "sign": "+",
+                  "template": "5 \\cdot e^{@@0@@}",
+                  "text": "5*exp(@@0@@)",
+                  "value": 36.945280494653254
+                }
+              ],
+              "value": 51.72339269251455
+            },
+            "products_display": [
+              "7.924852",
+              "-74.445688",
+              "101.625592",
+              "-14.778112"
+            ],
+            "denominator_display": "1.2"
+          },
+          "extremo_adelante_5": {
+            "D": 16.938014166666708,
+            "h": {
+              "value": 0.09999999999999987,
+              "exact": true,
+              "text": "0.1",
+              "latex": "0.1",
+              "approx": null
+            },
+            "points": [
+              {
+                "offset": 0,
+                "weight": -25,
+                "role": "x_0",
+                "index": 2,
+                "x": 1.8,
+                "display": {
+                  "exact": true,
+                  "text": "1.8",
+                  "latex": "1.8",
+                  "approx": null
+                },
+                "f": 10.889365,
+                "f_display": "10.889365"
+              },
+              {
+                "offset": 1,
+                "weight": 48,
+                "role": "x_0 + h",
+                "index": 3,
+                "x": 1.9,
+                "display": {
+                  "exact": true,
+                  "text": "1.9",
+                  "latex": "1.9",
+                  "approx": null
+                },
+                "f": 12.703199,
+                "f_display": "12.703199"
+              },
+              {
+                "offset": 2,
+                "weight": -36,
+                "role": "x_0 + 2h",
+                "index": 4,
+                "x": 2.0,
+                "display": {
+                  "exact": true,
+                  "text": "2",
+                  "latex": "2",
+                  "approx": null
+                },
+                "f": 14.778112,
+                "f_display": "14.778112"
+              },
+              {
+                "offset": 3,
+                "weight": 16,
+                "role": "x_0 + 3h",
+                "index": 5,
+                "x": 2.1,
+                "display": {
+                  "exact": true,
+                  "text": "2.1",
+                  "latex": "2.1",
+                  "approx": null
+                },
+                "f": 17.148957,
+                "f_display": "17.148957"
+              },
+              {
+                "offset": 4,
+                "weight": -3,
+                "role": "x_0 + 4h",
+                "index": 6,
+                "x": 2.2,
+                "display": {
+                  "exact": true,
+                  "text": "2.2",
+                  "latex": "2.2",
+                  "approx": null
+                },
+                "f": 19.85503,
+                "f_display": "19.85503"
+              }
+            ],
+            "decimals": 6,
+            "numerator_display": "20.325617",
+            "real_error": 0.000998733689542064,
+            "bound": 0.0012996019439185066,
+            "M": 64.98009719592568,
+            "x_M": 2.2,
+            "rounding": 6.468707462274172e-13,
+            "within_bound": true,
+            "by_rounding": false,
+            "interval": [
+              1.8,
+              2.2
+            ],
+            "M_substitution": {
+              "x": 2.2,
+              "x_display": {
+                "exact": true,
+                "text": "2.2",
+                "latex": "2.2",
+                "approx": null
+              },
+              "function_latex": "x e^{x} + 5 e^{x}",
+              "function_text": "x*exp(x) + 5*exp(x)",
+              "terms": [
+                {
+                  "sign": "+",
+                  "template": "@@0@@ \\cdot e^{@@0@@}",
+                  "text": "@@0@@*exp(@@0@@)",
+                  "value": 19.85502969875507
+                },
+                {
+                  "sign": "+",
+                  "template": "5 \\cdot e^{@@0@@}",
+                  "text": "5*exp(@@0@@)",
+                  "value": 45.12506749717061
+                }
+              ],
+              "value": 64.98009719592568
+            },
+            "products_display": [
+              "-272.234125",
+              "609.753552",
+              "-532.012032",
+              "274.383312",
+              "-59.56509"
+            ],
+            "denominator_display": "1.2"
+          },
+          "extremo_atras_5": null,
+          "punto_medio": {
+            "D": 16.987440000000017,
+            "h": {
+              "value": 0.09999999999999987,
+              "exact": true,
+              "text": "0.1",
+              "latex": "0.1",
+              "approx": null
+            },
+            "points": [
+              {
+                "offset": 1,
+                "weight": 1,
+                "role": "x_0 + h",
+                "index": 3,
+                "x": 1.9,
+                "display": {
+                  "exact": true,
+                  "text": "1.9",
+                  "latex": "1.9",
+                  "approx": null
+                },
+                "f": 12.703199,
+                "f_display": "12.703199"
+              },
+              {
+                "offset": -1,
+                "weight": -1,
+                "role": "x_0 - h",
+                "index": 1,
+                "x": 1.7,
+                "display": {
+                  "exact": true,
+                  "text": "1.7",
+                  "latex": "1.7",
+                  "approx": null
+                },
+                "f": 9.305711,
+                "f_display": "9.305711"
+              }
+            ],
+            "decimals": 7,
+            "numerator_display": "3.397488",
+            "real_error": 0.048427099643767235,
+            "bound": 0.054601471278613874,
+            "M": 32.76088276716841,
+            "x_M": 1.9,
+            "rounding": 4.886959725780577e-14,
+            "within_bound": true,
+            "by_rounding": false,
+            "interval": [
+              1.7,
+              1.9
+            ],
+            "M_substitution": {
+              "x": 1.9,
+              "x_display": {
+                "exact": true,
+                "text": "1.9",
+                "latex": "1.9",
+                "approx": null
+              },
+              "function_latex": "x e^{x} + 3 e^{x}",
+              "function_text": "x*exp(x) + 3*exp(x)",
+              "terms": [
+                {
+                  "sign": "+",
+                  "template": "@@0@@ \\cdot e^{@@0@@}",
+                  "text": "@@0@@*exp(@@0@@)",
+                  "value": 12.703199440330609
+                },
+                {
+                  "sign": "+",
+                  "template": "3 \\cdot e^{@@0@@}",
+                  "text": "3*exp(@@0@@)",
+                  "value": 20.057683326837804
+                }
+              ],
+              "value": 32.76088276716841
+            },
+            "products_display": [
+              "12.703199",
+              "-9.305711"
+            ],
+            "denominator_display": "0.2"
+          },
+          "recommended": {
+            "key": "punto_medio_5",
+            "name": "Punto medio",
+            "D": 16.93887000000002
+          }
+        }
+      },
+      {
+        "iteration": 4,
+        "x": [
+          19.388941666666653,
+          19.387974166666684,
+          null,
+          19.443734999999986
+        ],
+        "error": null,
+        "extra": {
+          "x": 1.9,
+          "y": 12.703199,
+          "x_display": {
+            "exact": true,
+            "text": "1.9",
+            "latex": "1.9",
+            "approx": null
+          },
+          "exact": 19.389093882609878,
+          "punto_medio_5": {
+            "D": 19.388941666666653,
+            "h": {
+              "value": 0.10000000000000009,
+              "exact": true,
+              "text": "0.1",
+              "latex": "0.1",
+              "approx": null
+            },
+            "points": [
+              {
+                "offset": -2,
+                "weight": 1,
+                "role": "x_0 - 2h",
+                "index": 1,
+                "x": 1.7,
+                "display": {
+                  "exact": true,
+                  "text": "1.7",
+                  "latex": "1.7",
+                  "approx": null
+                },
+                "f": 9.305711,
+                "f_display": "9.305711"
+              },
+              {
+                "offset": -1,
+                "weight": -8,
+                "role": "x_0 - h",
+                "index": 2,
+                "x": 1.8,
+                "display": {
+                  "exact": true,
+                  "text": "1.8",
+                  "latex": "1.8",
+                  "approx": null
+                },
+                "f": 10.889365,
+                "f_display": "10.889365"
+              },
+              {
+                "offset": 1,
+                "weight": 8,
+                "role": "x_0 + h",
+                "index": 4,
+                "x": 2.0,
+                "display": {
+                  "exact": true,
+                  "text": "2",
+                  "latex": "2",
+                  "approx": null
+                },
+                "f": 14.778112,
+                "f_display": "14.778112"
+              },
+              {
+                "offset": 2,
+                "weight": -1,
+                "role": "x_0 + 2h",
+                "index": 5,
+                "x": 2.1,
+                "display": {
+                  "exact": true,
+                  "text": "2.1",
+                  "latex": "2.1",
+                  "approx": null
+                },
+                "f": 17.148957,
+                "f_display": "17.148957"
+              }
+            ],
+            "decimals": 6,
+            "numerator_display": "23.26673",
+            "real_error": 0.00015221594322412102,
+            "bound": 0.00019326602126410174,
+            "M": 57.97980637923032,
+            "x_M": 2.1,
+            "rounding": 8.578119103930241e-14,
+            "within_bound": true,
+            "by_rounding": false,
+            "interval": [
+              1.7,
+              2.1
+            ],
+            "M_substitution": {
+              "x": 2.1,
+              "x_display": {
+                "exact": true,
+                "text": "2.1",
+                "latex": "2.1",
+                "approx": null
+              },
+              "function_latex": "x e^{x} + 5 e^{x}",
+              "function_text": "x*exp(x) + 5*exp(x)",
+              "terms": [
+                {
+                  "sign": "+",
+                  "template": "@@0@@ \\cdot e^{@@0@@}",
+                  "text": "@@0@@*exp(@@0@@)",
+                  "value": 17.148956816392065
+                },
+                {
+                  "sign": "+",
+                  "template": "5 \\cdot e^{@@0@@}",
+                  "text": "5*exp(@@0@@)",
+                  "value": 40.83084956283825
+                }
+              ],
+              "value": 57.97980637923032
+            },
+            "products_display": [
+              "9.305711",
+              "-87.11492",
+              "118.224896",
+              "-17.148957"
+            ],
+            "denominator_display": "1.2"
+          },
+          "extremo_adelante_5": {
+            "D": 19.387974166666684,
+            "h": {
+              "value": 0.10000000000000009,
+              "exact": true,
+              "text": "0.1",
+              "latex": "0.1",
+              "approx": null
+            },
+            "points": [
+              {
+                "offset": 0,
+                "weight": -25,
+                "role": "x_0",
+                "index": 3,
+                "x": 1.9,
+                "display": {
+                  "exact": true,
+                  "text": "1.9",
+                  "latex": "1.9",
+                  "approx": null
+                },
+                "f": 12.703199,
+                "f_display": "12.703199"
+              },
+              {
+                "offset": 1,
+                "weight": 48,
+                "role": "x_0 + h",
+                "index": 4,
+                "x": 2.0,
+                "display": {
+                  "exact": true,
+                  "text": "2",
+                  "latex": "2",
+                  "approx": null
+                },
+                "f": 14.778112,
+                "f_display": "14.778112"
+              },
+              {
+                "offset": 2,
+                "weight": -36,
+                "role": "x_0 + 2h",
+                "index": 5,
+                "x": 2.1,
+                "display": {
+                  "exact": true,
+                  "text": "2.1",
+                  "latex": "2.1",
+                  "approx": null
+                },
+                "f": 17.148957,
+                "f_display": "17.148957"
+              },
+              {
+                "offset": 3,
+                "weight": 16,
+                "role": "x_0 + 3h",
+                "index": 6,
+                "x": 2.2,
+                "display": {
+                  "exact": true,
+                  "text": "2.2",
+                  "latex": "2.2",
+                  "approx": null
+                },
+                "f": 19.85503,
+                "f_display": "19.85503"
+              },
+              {
+                "offset": 4,
+                "weight": -3,
+                "role": "x_0 + 4h",
+                "index": 7,
+                "x": 2.3,
+                "display": {
+                  "exact": true,
+                  "text": "2.3",
+                  "latex": "2.3",
+                  "approx": null
+                },
+                "f": 22.94062,
+                "f_display": "22.94062"
+              }
+            ],
+            "decimals": 6,
+            "numerator_display": "23.265569",
+            "real_error": 0.001119715943193711,
+            "bound": 0.0014562306384029542,
+            "M": 72.81153192014744,
+            "x_M": 2.3,
+            "rounding": 7.515448052775036e-13,
+            "within_bound": true,
+            "by_rounding": false,
+            "interval": [
+              1.9,
+              2.3
+            ],
+            "M_substitution": {
+              "x": 2.3,
+              "x_display": {
+                "exact": true,
+                "text": "2.3",
+                "latex": "2.3",
+                "approx": null
+              },
+              "function_latex": "x e^{x} + 5 e^{x}",
+              "function_text": "x*exp(x) + 5*exp(x)",
+              "terms": [
+                {
+                  "sign": "+",
+                  "template": "@@0@@ \\cdot e^{@@0@@}",
+                  "text": "@@0@@*exp(@@0@@)",
+                  "value": 22.94061964607385
+                },
+                {
+                  "sign": "+",
+                  "template": "5 \\cdot e^{@@0@@}",
+                  "text": "5*exp(@@0@@)",
+                  "value": 49.87091227407359
+                }
+              ],
+              "value": 72.81153192014744
+            },
+            "products_display": [
+              "-317.579975",
+              "709.349376",
+              "-617.362452",
+              "317.68048",
+              "-68.82186"
+            ],
+            "denominator_display": "1.2"
+          },
+          "extremo_atras_5": null,
+          "punto_medio": {
+            "D": 19.443734999999986,
+            "h": {
+              "value": 0.10000000000000009,
+              "exact": true,
+              "text": "0.1",
+              "latex": "0.1",
+              "approx": null
+            },
+            "points": [
+              {
+                "offset": 1,
+                "weight": 1,
+                "role": "x_0 + h",
+                "index": 4,
+                "x": 2.0,
+                "display": {
+                  "exact": true,
+                  "text": "2",
+                  "latex": "2",
+                  "approx": null
+                },
+                "f": 14.778112,
+                "f_display": "14.778112"
+              },
+              {
+                "offset": -1,
+                "weight": -1,
+                "role": "x_0 - h",
+                "index": 2,
+                "x": 1.8,
+                "display": {
+                  "exact": true,
+                  "text": "1.8",
+                  "latex": "1.8",
+                  "approx": null
+                },
+                "f": 10.889365,
+                "f_display": "10.889365"
+              }
+            ],
+            "decimals": 7,
+            "numerator_display": "3.888747",
+            "real_error": 0.05464111739010846,
+            "bound": 0.06157546749108885,
+            "M": 36.94528049465325,
+            "x_M": 2.0,
+            "rounding": 5.699324789887322e-14,
+            "within_bound": true,
+            "by_rounding": false,
+            "interval": [
+              1.8,
+              2.0
+            ],
+            "M_substitution": {
+              "x": 2.0,
+              "x_display": {
+                "exact": true,
+                "text": "2",
+                "latex": "2",
+                "approx": null
+              },
+              "function_latex": "x e^{x} + 3 e^{x}",
+              "function_text": "x*exp(x) + 3*exp(x)",
+              "terms": [
+                {
+                  "sign": "+",
+                  "template": "@@0@@ \\cdot e^{@@0@@}",
+                  "text": "@@0@@*exp(@@0@@)",
+                  "value": 14.7781121978613
+                },
+                {
+                  "sign": "+",
+                  "template": "3 \\cdot e^{@@0@@}",
+                  "text": "3*exp(@@0@@)",
+                  "value": 22.16716829679195
+                }
+              ],
+              "value": 36.94528049465325
+            },
+            "products_display": [
+              "14.778112",
+              "-10.889365"
+            ],
+            "denominator_display": "0.2"
+          },
+          "recommended": {
+            "key": "punto_medio_5",
+            "name": "Punto medio",
+            "D": 19.388941666666653
+          }
+        }
+      },
+      {
+        "iteration": 5,
+        "x": [
+          22.166999166666642,
+          22.165922499999994,
+          22.16630666666663,
+          22.22878999999998
+        ],
+        "error": null,
+        "extra": {
+          "x": 2.0,
+          "y": 14.778112,
+          "x_display": {
+            "exact": true,
+            "text": "2",
+            "latex": "2",
+            "approx": null
+          },
+          "exact": 22.16716829679195,
+          "punto_medio_5": {
+            "D": 22.166999166666642,
+            "h": {
+              "value": 0.10000000000000009,
+              "exact": true,
+              "text": "0.1",
+              "latex": "0.1",
+              "approx": null
+            },
+            "points": [
+              {
+                "offset": -2,
+                "weight": 1,
+                "role": "x_0 - 2h",
+                "index": 2,
+                "x": 1.8,
+                "display": {
+                  "exact": true,
+                  "text": "1.8",
+                  "latex": "1.8",
+                  "approx": null
+                },
+                "f": 10.889365,
+                "f_display": "10.889365"
+              },
+              {
+                "offset": -1,
+                "weight": -8,
+                "role": "x_0 - h",
+                "index": 3,
+                "x": 1.9,
+                "display": {
+                  "exact": true,
+                  "text": "1.9",
+                  "latex": "1.9",
+                  "approx": null
+                },
+                "f": 12.703199,
+                "f_display": "12.703199"
+              },
+              {
+                "offset": 1,
+                "weight": 8,
+                "role": "x_0 + h",
+                "index": 5,
+                "x": 2.1,
+                "display": {
+                  "exact": true,
+                  "text": "2.1",
+                  "latex": "2.1",
+                  "approx": null
+                },
+                "f": 17.148957,
+                "f_display": "17.148957"
+              },
+              {
+                "offset": 2,
+                "weight": -1,
+                "role": "x_0 + 2h",
+                "index": 6,
+                "x": 2.2,
+                "display": {
+                  "exact": true,
+                  "text": "2.2",
+                  "latex": "2.2",
+                  "approx": null
+                },
+                "f": 19.85503,
+                "f_display": "19.85503"
+              }
+            ],
+            "decimals": 6,
+            "numerator_display": "26.600399",
+            "real_error": 0.00016913012530750393,
+            "bound": 0.0002166003239864197,
+            "M": 64.98009719592568,
+            "x_M": 2.2,
+            "rounding": 9.97578475381288e-14,
+            "within_bound": true,
+            "by_rounding": false,
+            "interval": [
+              1.8,
+              2.2
+            ],
+            "M_substitution": {
+              "x": 2.2,
+              "x_display": {
+                "exact": true,
+                "text": "2.2",
+                "latex": "2.2",
+                "approx": null
+              },
+              "function_latex": "x e^{x} + 5 e^{x}",
+              "function_text": "x*exp(x) + 5*exp(x)",
+              "terms": [
+                {
+                  "sign": "+",
+                  "template": "@@0@@ \\cdot e^{@@0@@}",
+                  "text": "@@0@@*exp(@@0@@)",
+                  "value": 19.85502969875507
+                },
+                {
+                  "sign": "+",
+                  "template": "5 \\cdot e^{@@0@@}",
+                  "text": "5*exp(@@0@@)",
+                  "value": 45.12506749717061
+                }
+              ],
+              "value": 64.98009719592568
+            },
+            "products_display": [
+              "10.889365",
+              "-101.625592",
+              "137.191656",
+              "-19.85503"
+            ],
+            "denominator_display": "1.2"
+          },
+          "extremo_adelante_5": {
+            "D": 22.165922499999994,
+            "h": {
+              "value": 0.10000000000000009,
+              "exact": true,
+              "text": "0.1",
+              "latex": "0.1",
+              "approx": null
+            },
+            "points": [
+              {
+                "offset": 0,
+                "weight": -25,
+                "role": "x_0",
+                "index": 4,
+                "x": 2.0,
+                "display": {
+                  "exact": true,
+                  "text": "2",
+                  "latex": "2",
+                  "approx": null
+                },
+                "f": 14.778112,
+                "f_display": "14.778112"
+              },
+              {
+                "offset": 1,
+                "weight": 48,
+                "role": "x_0 + h",
+                "index": 5,
+                "x": 2.1,
+                "display": {
+                  "exact": true,
+                  "text": "2.1",
+                  "latex": "2.1",
+                  "approx": null
+                },
+                "f": 17.148957,
+                "f_display": "17.148957"
+              },
+              {
+                "offset": 2,
+                "weight": -36,
+                "role": "x_0 + 2h",
+                "index": 6,
+                "x": 2.2,
+                "display": {
+                  "exact": true,
+                  "text": "2.2",
+                  "latex": "2.2",
+                  "approx": null
+                },
+                "f": 19.85503,
+                "f_display": "19.85503"
+              },
+              {
+                "offset": 3,
+                "weight": 16,
+                "role": "x_0 + 3h",
+                "index": 7,
+                "x": 2.3,
+                "display": {
+                  "exact": true,
+                  "text": "2.3",
+                  "latex": "2.3",
+                  "approx": null
+                },
+                "f": 22.94062,
+                "f_display": "22.94062"
+              },
+              {
+                "offset": 4,
+                "weight": -3,
+                "role": "x_0 + 4h",
+                "index": 8,
+                "x": 2.4,
+                "display": {
+                  "exact": true,
+                  "text": "2.4",
+                  "latex": "2.4",
+                  "approx": null
+                },
+                "f": 26.455623,
+                "f_display": "26.455623"
+              }
+            ],
+            "decimals": 6,
+            "numerator_display": "26.599107",
+            "real_error": 0.001245796791955911,
+            "bound": 0.0016314301043349629,
+            "M": 81.57150521674785,
+            "x_M": 2.4,
+            "rounding": 8.710812090158736e-13,
+            "within_bound": true,
+            "by_rounding": false,
+            "interval": [
+              2.0,
+              2.4
+            ],
+            "M_substitution": {
+              "x": 2.4,
+              "x_display": {
+                "exact": true,
+                "text": "2.4",
+                "latex": "2.4",
+                "approx": null
+              },
+              "function_latex": "x e^{x} + 5 e^{x}",
+              "function_text": "x*exp(x) + 5*exp(x)",
+              "terms": [
+                {
+                  "sign": "+",
+                  "template": "@@0@@ \\cdot e^{@@0@@}",
+                  "text": "@@0@@*exp(@@0@@)",
+                  "value": 26.455623313539842
+                },
+                {
+                  "sign": "+",
+                  "template": "5 \\cdot e^{@@0@@}",
+                  "text": "5*exp(@@0@@)",
+                  "value": 55.115881903208006
+                }
+              ],
+              "value": 81.57150521674785
+            },
+            "products_display": [
+              "-369.4528",
+              "823.149936",
+              "-714.78108",
+              "367.04992",
+              "-79.366869"
+            ],
+            "denominator_display": "1.2"
+          },
+          "extremo_atras_5": {
+            "D": 22.16630666666663,
+            "h": {
+              "value": 0.10000000000000009,
+              "exact": true,
+              "text": "0.1",
+              "latex": "0.1",
+              "approx": null
+            },
+            "points": [
+              {
+                "offset": 0,
+                "weight": 25,
+                "role": "x_0",
+                "index": 4,
+                "x": 2.0,
+                "display": {
+                  "exact": true,
+                  "text": "2",
+                  "latex": "2",
+                  "approx": null
+                },
+                "f": 14.778112,
+                "f_display": "14.778112"
+              },
+              {
+                "offset": -1,
+                "weight": -48,
+                "role": "x_0 - h",
+                "index": 3,
+                "x": 1.9,
+                "display": {
+                  "exact": true,
+                  "text": "1.9",
+                  "latex": "1.9",
+                  "approx": null
+                },
+                "f": 12.703199,
+                "f_display": "12.703199"
+              },
+              {
+                "offset": -2,
+                "weight": 36,
+                "role": "x_0 - 2h",
+                "index": 2,
+                "x": 1.8,
+                "display": {
+                  "exact": true,
+                  "text": "1.8",
+                  "latex": "1.8",
+                  "approx": null
+                },
+                "f": 10.889365,
+                "f_display": "10.889365"
+              },
+              {
+                "offset": -3,
+                "weight": -16,
+                "role": "x_0 - 3h",
+                "index": 1,
+                "x": 1.7,
+                "display": {
+                  "exact": true,
+                  "text": "1.7",
+                  "latex": "1.7",
+                  "approx": null
+                },
+                "f": 9.305711,
+                "f_display": "9.305711"
+              },
+              {
+                "offset": -4,
+                "weight": 3,
+                "role": "x_0 - 4h",
+                "index": 0,
+                "x": 1.6,
+                "display": {
+                  "exact": true,
+                  "text": "1.6",
+                  "latex": "1.6",
+                  "approx": null
+                },
+                "f": 7.924852,
+                "f_display": "7.924852"
+              }
+            ],
+            "decimals": 6,
+            "numerator_display": "26.599568",
+            "real_error": 0.0008616301253177028,
+            "bound": 0.0010344678538502948,
+            "M": 51.72339269251455,
+            "x_M": 2.0,
+            "rounding": 5.713538620000231e-13,
+            "within_bound": true,
+            "by_rounding": false,
+            "interval": [
+              1.6,
+              2.0
+            ],
+            "M_substitution": {
+              "x": 2.0,
+              "x_display": {
+                "exact": true,
+                "text": "2",
+                "latex": "2",
+                "approx": null
+              },
+              "function_latex": "x e^{x} + 5 e^{x}",
+              "function_text": "x*exp(x) + 5*exp(x)",
+              "terms": [
+                {
+                  "sign": "+",
+                  "template": "@@0@@ \\cdot e^{@@0@@}",
+                  "text": "@@0@@*exp(@@0@@)",
+                  "value": 14.7781121978613
+                },
+                {
+                  "sign": "+",
+                  "template": "5 \\cdot e^{@@0@@}",
+                  "text": "5*exp(@@0@@)",
+                  "value": 36.945280494653254
+                }
+              ],
+              "value": 51.72339269251455
+            },
+            "products_display": [
+              "369.4528",
+              "-609.753552",
+              "392.01714",
+              "-148.891376",
+              "23.774556"
+            ],
+            "denominator_display": "1.2"
+          },
+          "punto_medio": {
+            "D": 22.22878999999998,
+            "h": {
+              "value": 0.10000000000000009,
+              "exact": true,
+              "text": "0.1",
+              "latex": "0.1",
+              "approx": null
+            },
+            "points": [
+              {
+                "offset": 1,
+                "weight": 1,
+                "role": "x_0 + h",
+                "index": 5,
+                "x": 2.1,
+                "display": {
+                  "exact": true,
+                  "text": "2.1",
+                  "latex": "2.1",
+                  "approx": null
+                },
+                "f": 17.148957,
+                "f_display": "17.148957"
+              },
+              {
+                "offset": -1,
+                "weight": -1,
+                "role": "x_0 - h",
+                "index": 3,
+                "x": 1.9,
+                "display": {
+                  "exact": true,
+                  "text": "1.9",
+                  "latex": "1.9",
+                  "approx": null
+                },
+                "f": 12.703199,
+                "f_display": "12.703199"
+              }
+            ],
+            "decimals": 7,
+            "numerator_display": "4.445758",
+            "real_error": 0.06162170320802929,
+            "bound": 0.06941244425682515,
+            "M": 41.64746655409502,
+            "x_M": 2.1,
+            "rounding": 6.628510185180397e-14,
+            "within_bound": true,
+            "by_rounding": false,
+            "interval": [
+              1.9,
+              2.1
+            ],
+            "M_substitution": {
+              "x": 2.1,
+              "x_display": {
+                "exact": true,
+                "text": "2.1",
+                "latex": "2.1",
+                "approx": null
+              },
+              "function_latex": "x e^{x} + 3 e^{x}",
+              "function_text": "x*exp(x) + 3*exp(x)",
+              "terms": [
+                {
+                  "sign": "+",
+                  "template": "@@0@@ \\cdot e^{@@0@@}",
+                  "text": "@@0@@*exp(@@0@@)",
+                  "value": 17.148956816392065
+                },
+                {
+                  "sign": "+",
+                  "template": "3 \\cdot e^{@@0@@}",
+                  "text": "3*exp(@@0@@)",
+                  "value": 24.49850973770295
+                }
+              ],
+              "value": 41.64746655409502
+            },
+            "products_display": [
+              "17.148957",
+              "-12.703199"
+            ],
+            "denominator_display": "0.2"
+          },
+          "recommended": {
+            "key": "punto_medio_5",
+            "name": "Punto medio",
+            "D": 22.166999166666642
+          }
+        }
+      },
+      {
+        "iteration": 6,
+        "x": [
+          25.314935833333305,
+          null,
+          25.314171666666635,
+          25.384589999999974
+        ],
+        "error": null,
+        "extra": {
+          "x": 2.1,
+          "y": 17.148957,
+          "x_display": {
+            "exact": true,
+            "text": "2.1",
+            "latex": "2.1",
+            "approx": null
+          },
+          "exact": 25.315126728959715,
+          "punto_medio_5": {
+            "D": 25.314935833333305,
+            "h": {
+              "value": 0.10000000000000009,
+              "exact": true,
+              "text": "0.1",
+              "latex": "0.1",
+              "approx": null
+            },
+            "points": [
+              {
+                "offset": -2,
+                "weight": 1,
+                "role": "x_0 - 2h",
+                "index": 3,
+                "x": 1.9,
+                "display": {
+                  "exact": true,
+                  "text": "1.9",
+                  "latex": "1.9",
+                  "approx": null
+                },
+                "f": 12.703199,
+                "f_display": "12.703199"
+              },
+              {
+                "offset": -1,
+                "weight": -8,
+                "role": "x_0 - h",
+                "index": 4,
+                "x": 2.0,
+                "display": {
+                  "exact": true,
+                  "text": "2",
+                  "latex": "2",
+                  "approx": null
+                },
+                "f": 14.778112,
+                "f_display": "14.778112"
+              },
+              {
+                "offset": 1,
+                "weight": 8,
+                "role": "x_0 + h",
+                "index": 6,
+                "x": 2.2,
+                "display": {
+                  "exact": true,
+                  "text": "2.2",
+                  "latex": "2.2",
+                  "approx": null
+                },
+                "f": 19.85503,
+                "f_display": "19.85503"
+              },
+              {
+                "offset": 2,
+                "weight": -1,
+                "role": "x_0 + 2h",
+                "index": 7,
+                "x": 2.3,
+                "display": {
+                  "exact": true,
+                  "text": "2.3",
+                  "latex": "2.3",
+                  "approx": null
+                },
+                "f": 22.94062,
+                "f_display": "22.94062"
+              }
+            ],
+            "decimals": 6,
+            "numerator_display": "30.377923",
+            "real_error": 0.00019089562641028124,
+            "bound": 0.00024270510640049235,
+            "M": 72.81153192014744,
+            "x_M": 2.3,
+            "rounding": 1.157255606158239e-13,
+            "within_bound": true,
+            "by_rounding": false,
+            "interval": [
+              1.9,
+              2.3
+            ],
+            "M_substitution": {
+              "x": 2.3,
+              "x_display": {
+                "exact": true,
+                "text": "2.3",
+                "latex": "2.3",
+                "approx": null
+              },
+              "function_latex": "x e^{x} + 5 e^{x}",
+              "function_text": "x*exp(x) + 5*exp(x)",
+              "terms": [
+                {
+                  "sign": "+",
+                  "template": "@@0@@ \\cdot e^{@@0@@}",
+                  "text": "@@0@@*exp(@@0@@)",
+                  "value": 22.94061964607385
+                },
+                {
+                  "sign": "+",
+                  "template": "5 \\cdot e^{@@0@@}",
+                  "text": "5*exp(@@0@@)",
+                  "value": 49.87091227407359
+                }
+              ],
+              "value": 72.81153192014744
+            },
+            "products_display": [
+              "12.703199",
+              "-118.224896",
+              "158.84024",
+              "-22.94062"
+            ],
+            "denominator_display": "1.2"
+          },
+          "extremo_adelante_5": null,
+          "extremo_atras_5": {
+            "D": 25.314171666666635,
+            "h": {
+              "value": 0.10000000000000009,
+              "exact": true,
+              "text": "0.1",
+              "latex": "0.1",
+              "approx": null
+            },
+            "points": [
+              {
+                "offset": 0,
+                "weight": 25,
+                "role": "x_0",
+                "index": 5,
+                "x": 2.1,
+                "display": {
+                  "exact": true,
+                  "text": "2.1",
+                  "latex": "2.1",
+                  "approx": null
+                },
+                "f": 17.148957,
+                "f_display": "17.148957"
+              },
+              {
+                "offset": -1,
+                "weight": -48,
+                "role": "x_0 - h",
+                "index": 4,
+                "x": 2.0,
+                "display": {
+                  "exact": true,
+                  "text": "2",
+                  "latex": "2",
+                  "approx": null
+                },
+                "f": 14.778112,
+                "f_display": "14.778112"
+              },
+              {
+                "offset": -2,
+                "weight": 36,
+                "role": "x_0 - 2h",
+                "index": 3,
+                "x": 1.9,
+                "display": {
+                  "exact": true,
+                  "text": "1.9",
+                  "latex": "1.9",
+                  "approx": null
+                },
+                "f": 12.703199,
+                "f_display": "12.703199"
+              },
+              {
+                "offset": -3,
+                "weight": -16,
+                "role": "x_0 - 3h",
+                "index": 2,
+                "x": 1.8,
+                "display": {
+                  "exact": true,
+                  "text": "1.8",
+                  "latex": "1.8",
+                  "approx": null
+                },
+                "f": 10.889365,
+                "f_display": "10.889365"
+              },
+              {
+                "offset": -4,
+                "weight": 3,
+                "role": "x_0 - 4h",
+                "index": 1,
+                "x": 1.7,
+                "display": {
+                  "exact": true,
+                  "text": "1.7",
+                  "latex": "1.7",
+                  "approx": null
+                },
+                "f": 9.305711,
+                "f_display": "9.305711"
+              }
+            ],
+            "decimals": 6,
+            "numerator_display": "30.377006",
+            "real_error": 0.0009550622930802888,
+            "bound": 0.0011595961275846106,
+            "M": 57.97980637923032,
+            "x_M": 2.1,
+            "rounding": 6.652217436157546e-13,
+            "within_bound": true,
+            "by_rounding": false,
+            "interval": [
+              1.7,
+              2.1
+            ],
+            "M_substitution": {
+              "x": 2.1,
+              "x_display": {
+                "exact": true,
+                "text": "2.1",
+                "latex": "2.1",
+                "approx": null
+              },
+              "function_latex": "x e^{x} + 5 e^{x}",
+              "function_text": "x*exp(x) + 5*exp(x)",
+              "terms": [
+                {
+                  "sign": "+",
+                  "template": "@@0@@ \\cdot e^{@@0@@}",
+                  "text": "@@0@@*exp(@@0@@)",
+                  "value": 17.148956816392065
+                },
+                {
+                  "sign": "+",
+                  "template": "5 \\cdot e^{@@0@@}",
+                  "text": "5*exp(@@0@@)",
+                  "value": 40.83084956283825
+                }
+              ],
+              "value": 57.97980637923032
+            },
+            "products_display": [
+              "428.723925",
+              "-709.349376",
+              "457.315164",
+              "-174.22984",
+              "27.917133"
+            ],
+            "denominator_display": "1.2"
+          },
+          "punto_medio": {
+            "D": 25.384589999999974,
+            "h": {
+              "value": 0.10000000000000009,
+              "exact": true,
+              "text": "0.1",
+              "latex": "0.1",
+              "approx": null
+            },
+            "points": [
+              {
+                "offset": 1,
+                "weight": 1,
+                "role": "x_0 + h",
+                "index": 6,
+                "x": 2.2,
+                "display": {
+                  "exact": true,
+                  "text": "2.2",
+                  "latex": "2.2",
+                  "approx": null
+                },
+                "f": 19.85503,
+                "f_display": "19.85503"
+              },
+              {
+                "offset": -1,
+                "weight": -1,
+                "role": "x_0 - h",
+                "index": 4,
+                "x": 2.0,
+                "display": {
+                  "exact": true,
+                  "text": "2",
+                  "latex": "2",
+                  "approx": null
+                },
+                "f": 14.778112,
+                "f_display": "14.778112"
+              }
+            ],
+            "decimals": 7,
+            "numerator_display": "5.076918",
+            "real_error": 0.0694632710402594,
+            "bound": 0.07821678366176252,
+            "M": 46.93007019705743,
+            "x_M": 2.2,
+            "rounding": 7.690102332702502e-14,
+            "within_bound": true,
+            "by_rounding": false,
+            "interval": [
+              2.0,
+              2.2
+            ],
+            "M_substitution": {
+              "x": 2.2,
+              "x_display": {
+                "exact": true,
+                "text": "2.2",
+                "latex": "2.2",
+                "approx": null
+              },
+              "function_latex": "x e^{x} + 3 e^{x}",
+              "function_text": "x*exp(x) + 3*exp(x)",
+              "terms": [
+                {
+                  "sign": "+",
+                  "template": "@@0@@ \\cdot e^{@@0@@}",
+                  "text": "@@0@@*exp(@@0@@)",
+                  "value": 19.85502969875507
+                },
+                {
+                  "sign": "+",
+                  "template": "3 \\cdot e^{@@0@@}",
+                  "text": "3*exp(@@0@@)",
+                  "value": 27.075040498302364
+                }
+              ],
+              "value": 46.93007019705743
+            },
+            "products_display": [
+              "19.85503",
+              "-14.778112"
+            ],
+            "denominator_display": "0.2"
+          },
+          "recommended": {
+            "key": "punto_medio_5",
+            "name": "Punto medio",
+            "D": 25.314935833333305
+          }
+        }
+      },
+      {
+        "iteration": 7,
+        "x": [
+          28.879827500000093,
+          null,
+          28.87896416666659,
+          28.958315000000102
+        ],
+        "error": null,
+        "extra": {
+          "x": 2.2,
+          "y": 19.85503,
+          "x_display": {
+            "exact": true,
+            "text": "2.2",
+            "latex": "2.2",
+            "approx": null
+          },
+          "exact": 28.880043198189192,
+          "punto_medio_5": {
+            "D": 28.879827500000093,
+            "h": {
+              "value": 0.09999999999999964,
+              "exact": true,
+              "text": "0.1",
+              "latex": "0.1",
+              "approx": null
+            },
+            "points": [
+              {
+                "offset": -2,
+                "weight": 1,
+                "role": "x_0 - 2h",
+                "index": 4,
+                "x": 2.0,
+                "display": {
+                  "exact": true,
+                  "text": "2",
+                  "latex": "2",
+                  "approx": null
+                },
+                "f": 14.778112,
+                "f_display": "14.778112"
+              },
+              {
+                "offset": -1,
+                "weight": -8,
+                "role": "x_0 - h",
+                "index": 5,
+                "x": 2.1,
+                "display": {
+                  "exact": true,
+                  "text": "2.1",
+                  "latex": "2.1",
+                  "approx": null
+                },
+                "f": 17.148957,
+                "f_display": "17.148957"
+              },
+              {
+                "offset": 1,
+                "weight": 8,
+                "role": "x_0 + h",
+                "index": 7,
+                "x": 2.3,
+                "display": {
+                  "exact": true,
+                  "text": "2.3",
+                  "latex": "2.3",
+                  "approx": null
+                },
+                "f": 22.94062,
+                "f_display": "22.94062"
+              },
+              {
+                "offset": 2,
+                "weight": -1,
+                "role": "x_0 + 2h",
+                "index": 8,
+                "x": 2.4,
+                "display": {
+                  "exact": true,
+                  "text": "2.4",
+                  "latex": "2.4",
+                  "approx": null
+                },
+                "f": 26.455623,
+                "f_display": "26.455623"
+              }
+            ],
+            "decimals": 6,
+            "numerator_display": "34.655793",
+            "real_error": 0.00021569818909839,
+            "bound": 0.0002719050173891556,
+            "M": 81.57150521674785,
+            "x_M": 2.4,
+            "rounding": 1.339485378171195e-13,
+            "within_bound": true,
+            "by_rounding": false,
+            "interval": [
+              2.0,
+              2.4
+            ],
+            "M_substitution": {
+              "x": 2.4,
+              "x_display": {
+                "exact": true,
+                "text": "2.4",
+                "latex": "2.4",
+                "approx": null
+              },
+              "function_latex": "x e^{x} + 5 e^{x}",
+              "function_text": "x*exp(x) + 5*exp(x)",
+              "terms": [
+                {
+                  "sign": "+",
+                  "template": "@@0@@ \\cdot e^{@@0@@}",
+                  "text": "@@0@@*exp(@@0@@)",
+                  "value": 26.455623313539842
+                },
+                {
+                  "sign": "+",
+                  "template": "5 \\cdot e^{@@0@@}",
+                  "text": "5*exp(@@0@@)",
+                  "value": 55.115881903208006
+                }
+              ],
+              "value": 81.57150521674785
+            },
+            "products_display": [
+              "14.778112",
+              "-137.191656",
+              "183.52496",
+              "-26.455623"
+            ],
+            "denominator_display": "1.2"
+          },
+          "extremo_adelante_5": null,
+          "extremo_atras_5": {
+            "D": 28.87896416666659,
+            "h": {
+              "value": 0.10000000000000009,
+              "exact": true,
+              "text": "0.1",
+              "latex": "0.1",
+              "approx": null
+            },
+            "points": [
+              {
+                "offset": 0,
+                "weight": 25,
+                "role": "x_0",
+                "index": 6,
+                "x": 2.2,
+                "display": {
+                  "exact": true,
+                  "text": "2.2",
+                  "latex": "2.2",
+                  "approx": null
+                },
+                "f": 19.85503,
+                "f_display": "19.85503"
+              },
+              {
+                "offset": -1,
+                "weight": -48,
+                "role": "x_0 - h",
+                "index": 5,
+                "x": 2.1,
+                "display": {
+                  "exact": true,
+                  "text": "2.1",
+                  "latex": "2.1",
+                  "approx": null
+                },
+                "f": 17.148957,
+                "f_display": "17.148957"
+              },
+              {
+                "offset": -2,
+                "weight": 36,
+                "role": "x_0 - 2h",
+                "index": 4,
+                "x": 2.0,
+                "display": {
+                  "exact": true,
+                  "text": "2",
+                  "latex": "2",
+                  "approx": null
+                },
+                "f": 14.778112,
+                "f_display": "14.778112"
+              },
+              {
+                "offset": -3,
+                "weight": -16,
+                "role": "x_0 - 3h",
+                "index": 3,
+                "x": 1.9,
+                "display": {
+                  "exact": true,
+                  "text": "1.9",
+                  "latex": "1.9",
+                  "approx": null
+                },
+                "f": 12.703199,
+                "f_display": "12.703199"
+              },
+              {
+                "offset": -4,
+                "weight": 3,
+                "role": "x_0 - 4h",
+                "index": 2,
+                "x": 1.8,
+                "display": {
+                  "exact": true,
+                  "text": "1.8",
+                  "latex": "1.8",
+                  "approx": null
+                },
+                "f": 10.889365,
+                "f_display": "10.889365"
+              }
+            ],
+            "decimals": 6,
+            "numerator_display": "34.654757",
+            "real_error": 0.00107903152260036,
+            "bound": 0.0012996019439185183,
+            "M": 64.98009719592568,
+            "x_M": 2.2,
+            "rounding": 7.725142736614282e-13,
+            "within_bound": true,
+            "by_rounding": false,
+            "interval": [
+              1.8,
+              2.2
+            ],
+            "M_substitution": {
+              "x": 2.2,
+              "x_display": {
+                "exact": true,
+                "text": "2.2",
+                "latex": "2.2",
+                "approx": null
+              },
+              "function_latex": "x e^{x} + 5 e^{x}",
+              "function_text": "x*exp(x) + 5*exp(x)",
+              "terms": [
+                {
+                  "sign": "+",
+                  "template": "@@0@@ \\cdot e^{@@0@@}",
+                  "text": "@@0@@*exp(@@0@@)",
+                  "value": 19.85502969875507
+                },
+                {
+                  "sign": "+",
+                  "template": "5 \\cdot e^{@@0@@}",
+                  "text": "5*exp(@@0@@)",
+                  "value": 45.12506749717061
+                }
+              ],
+              "value": 64.98009719592568
+            },
+            "products_display": [
+              "496.37575",
+              "-823.149936",
+              "532.012032",
+              "-203.251184",
+              "32.668095"
+            ],
+            "denominator_display": "1.2"
+          },
+          "punto_medio": {
+            "D": 28.958315000000102,
+            "h": {
+              "value": 0.09999999999999964,
+              "exact": true,
+              "text": "0.1",
+              "latex": "0.1",
+              "approx": null
+            },
+            "points": [
+              {
+                "offset": 1,
+                "weight": 1,
+                "role": "x_0 + h",
+                "index": 7,
+                "x": 2.3,
+                "display": {
+                  "exact": true,
+                  "text": "2.3",
+                  "latex": "2.3",
+                  "approx": null
+                },
+                "f": 22.94062,
+                "f_display": "22.94062"
+              },
+              {
+                "offset": -1,
+                "weight": -1,
+                "role": "x_0 - h",
+                "index": 5,
+                "x": 2.1,
+                "display": {
+                  "exact": true,
+                  "text": "2.1",
+                  "latex": "2.1",
+                  "approx": null
+                },
+                "f": 17.148957,
+                "f_display": "17.148957"
+              }
+            ],
+            "decimals": 7,
+            "numerator_display": "5.791663",
+            "real_error": 0.07827180181091009,
+            "bound": 0.08810527835086272,
+            "M": 52.863167010518005,
+            "x_M": 2.3,
+            "rounding": 8.901674286576653e-14,
+            "within_bound": true,
+            "by_rounding": false,
+            "interval": [
+              2.1,
+              2.3
+            ],
+            "M_substitution": {
+              "x": 2.3,
+              "x_display": {
+                "exact": true,
+                "text": "2.3",
+                "latex": "2.3",
+                "approx": null
+              },
+              "function_latex": "x e^{x} + 3 e^{x}",
+              "function_text": "x*exp(x) + 3*exp(x)",
+              "terms": [
+                {
+                  "sign": "+",
+                  "template": "@@0@@ \\cdot e^{@@0@@}",
+                  "text": "@@0@@*exp(@@0@@)",
+                  "value": 22.94061964607385
+                },
+                {
+                  "sign": "+",
+                  "template": "3 \\cdot e^{@@0@@}",
+                  "text": "3*exp(@@0@@)",
+                  "value": 29.922547364444156
+                }
+              ],
+              "value": 52.863167010518005
+            },
+            "products_display": [
+              "22.94062",
+              "-17.148957"
+            ],
+            "denominator_display": "0.2"
+          },
+          "recommended": {
+            "key": "punto_medio_5",
+            "name": "Punto medio",
+            "D": 28.879827500000093
+          }
+        }
+      },
+      {
+        "iteration": 8,
+        "x": [
+          null,
+          null,
+          32.913597500000094,
+          33.00296499999997
+        ],
+        "error": null,
+        "extra": {
+          "x": 2.3,
+          "y": 22.94062,
+          "x_display": {
+            "exact": true,
+            "text": "2.3",
+            "latex": "2.3",
+            "approx": null
+          },
+          "exact": 32.914802100888565,
+          "punto_medio_5": null,
+          "extremo_adelante_5": null,
+          "extremo_atras_5": {
+            "D": 32.913597500000094,
+            "h": {
+              "value": 0.09999999999999964,
+              "exact": true,
+              "text": "0.1",
+              "latex": "0.1",
+              "approx": null
+            },
+            "points": [
+              {
+                "offset": 0,
+                "weight": 25,
+                "role": "x_0",
+                "index": 7,
+                "x": 2.3,
+                "display": {
+                  "exact": true,
+                  "text": "2.3",
+                  "latex": "2.3",
+                  "approx": null
+                },
+                "f": 22.94062,
+                "f_display": "22.94062"
+              },
+              {
+                "offset": -1,
+                "weight": -48,
+                "role": "x_0 - h",
+                "index": 6,
+                "x": 2.2,
+                "display": {
+                  "exact": true,
+                  "text": "2.2",
+                  "latex": "2.2",
+                  "approx": null
+                },
+                "f": 19.85503,
+                "f_display": "19.85503"
+              },
+              {
+                "offset": -2,
+                "weight": 36,
+                "role": "x_0 - 2h",
+                "index": 5,
+                "x": 2.1,
+                "display": {
+                  "exact": true,
+                  "text": "2.1",
+                  "latex": "2.1",
+                  "approx": null
+                },
+                "f": 17.148957,
+                "f_display": "17.148957"
+              },
+              {
+                "offset": -3,
+                "weight": -16,
+                "role": "x_0 - 3h",
+                "index": 4,
+                "x": 2.0,
+                "display": {
+                  "exact": true,
+                  "text": "2",
+                  "latex": "2",
+                  "approx": null
+                },
+                "f": 14.778112,
+                "f_display": "14.778112"
+              },
+              {
+                "offset": -4,
+                "weight": 3,
+                "role": "x_0 - 4h",
+                "index": 3,
+                "x": 1.9,
+                "display": {
+                  "exact": true,
+                  "text": "1.9",
+                  "latex": "1.9",
+                  "approx": null
+                },
+                "f": 12.703199,
+                "f_display": "12.703199"
+              }
+            ],
+            "decimals": 6,
+            "numerator_display": "39.496317",
+            "real_error": 0.0012046008884709636,
+            "bound": 0.0014562306384029284,
+            "M": 72.81153192014744,
+            "x_M": 2.3,
+            "rounding": 8.95016942411197e-13,
+            "within_bound": true,
+            "by_rounding": false,
+            "interval": [
+              1.9,
+              2.3
+            ],
+            "M_substitution": {
+              "x": 2.3,
+              "x_display": {
+                "exact": true,
+                "text": "2.3",
+                "latex": "2.3",
+                "approx": null
+              },
+              "function_latex": "x e^{x} + 5 e^{x}",
+              "function_text": "x*exp(x) + 5*exp(x)",
+              "terms": [
+                {
+                  "sign": "+",
+                  "template": "@@0@@ \\cdot e^{@@0@@}",
+                  "text": "@@0@@*exp(@@0@@)",
+                  "value": 22.94061964607385
+                },
+                {
+                  "sign": "+",
+                  "template": "5 \\cdot e^{@@0@@}",
+                  "text": "5*exp(@@0@@)",
+                  "value": 49.87091227407359
+                }
+              ],
+              "value": 72.81153192014744
+            },
+            "products_display": [
+              "573.5155",
+              "-953.04144",
+              "617.362452",
+              "-236.449792",
+              "38.109597"
+            ],
+            "denominator_display": "1.2"
+          },
+          "punto_medio": {
+            "D": 33.00296499999997,
+            "h": {
+              "value": 0.10000000000000009,
+              "exact": true,
+              "text": "0.1",
+              "latex": "0.1",
+              "approx": null
+            },
+            "points": [
+              {
+                "offset": 1,
+                "weight": 1,
+                "role": "x_0 + h",
+                "index": 8,
+                "x": 2.4,
+                "display": {
+                  "exact": true,
+                  "text": "2.4",
+                  "latex": "2.4",
+                  "approx": null
+                },
+                "f": 26.455623,
+                "f_display": "26.455623"
+              },
+              {
+                "offset": -1,
+                "weight": -1,
+                "role": "x_0 - h",
+                "index": 6,
+                "x": 2.2,
+                "display": {
+                  "exact": true,
+                  "text": "2.2",
+                  "latex": "2.2",
+                  "approx": null
+                },
+                "f": 19.85503,
+                "f_display": "19.85503"
+              }
+            ],
+            "decimals": 7,
+            "numerator_display": "6.600593",
+            "real_error": 0.08816289911140274,
+            "bound": 0.09920858742577458,
+            "M": 59.52515245546465,
+            "x_M": 2.4,
+            "rounding": 1.0283030649205208e-13,
+            "within_bound": true,
+            "by_rounding": false,
+            "interval": [
+              2.2,
+              2.4
+            ],
+            "M_substitution": {
+              "x": 2.4,
+              "x_display": {
+                "exact": true,
+                "text": "2.4",
+                "latex": "2.4",
+                "approx": null
+              },
+              "function_latex": "x e^{x} + 3 e^{x}",
+              "function_text": "x*exp(x) + 3*exp(x)",
+              "terms": [
+                {
+                  "sign": "+",
+                  "template": "@@0@@ \\cdot e^{@@0@@}",
+                  "text": "@@0@@*exp(@@0@@)",
+                  "value": 26.455623313539842
+                },
+                {
+                  "sign": "+",
+                  "template": "3 \\cdot e^{@@0@@}",
+                  "text": "3*exp(@@0@@)",
+                  "value": 33.069529141924804
+                }
+              ],
+              "value": 59.52515245546465
+            },
+            "products_display": [
+              "26.455623",
+              "-19.85503"
+            ],
+            "denominator_display": "0.2"
+          },
+          "recommended": {
+            "key": "extremo_atras_5",
+            "name": "Extremo hacia atrás",
+            "D": 32.913597500000094
+          }
+        }
+      },
+      {
+        "iteration": 9,
+        "x": [
+          null,
+          null,
+          37.47743249999995,
+          null
+        ],
+        "error": null,
+        "extra": {
+          "x": 2.4,
+          "y": 26.455623,
+          "x_display": {
+            "exact": true,
+            "text": "2.4",
+            "latex": "2.4",
+            "approx": null
+          },
+          "exact": 37.47879969418145,
+          "punto_medio_5": null,
+          "extremo_adelante_5": null,
+          "extremo_atras_5": {
+            "D": 37.47743249999995,
+            "h": {
+              "value": 0.10000000000000009,
+              "exact": true,
+              "text": "0.1",
+              "latex": "0.1",
+              "approx": null
+            },
+            "points": [
+              {
+                "offset": 0,
+                "weight": 25,
+                "role": "x_0",
+                "index": 8,
+                "x": 2.4,
+                "display": {
+                  "exact": true,
+                  "text": "2.4",
+                  "latex": "2.4",
+                  "approx": null
+                },
+                "f": 26.455623,
+                "f_display": "26.455623"
+              },
+              {
+                "offset": -1,
+                "weight": -48,
+                "role": "x_0 - h",
+                "index": 7,
+                "x": 2.3,
+                "display": {
+                  "exact": true,
+                  "text": "2.3",
+                  "latex": "2.3",
+                  "approx": null
+                },
+                "f": 22.94062,
+                "f_display": "22.94062"
+              },
+              {
+                "offset": -2,
+                "weight": 36,
+                "role": "x_0 - 2h",
+                "index": 6,
+                "x": 2.2,
+                "display": {
+                  "exact": true,
+                  "text": "2.2",
+                  "latex": "2.2",
+                  "approx": null
+                },
+                "f": 19.85503,
+                "f_display": "19.85503"
+              },
+              {
+                "offset": -3,
+                "weight": -16,
+                "role": "x_0 - 3h",
+                "index": 5,
+                "x": 2.1,
+                "display": {
+                  "exact": true,
+                  "text": "2.1",
+                  "latex": "2.1",
+                  "approx": null
+                },
+                "f": 17.148957,
+                "f_display": "17.148957"
+              },
+              {
+                "offset": -4,
+                "weight": 3,
+                "role": "x_0 - 4h",
+                "index": 4,
+                "x": 2.0,
+                "display": {
+                  "exact": true,
+                  "text": "2",
+                  "latex": "2",
+                  "approx": null
+                },
+                "f": 14.778112,
+                "f_display": "14.778112"
+              }
+            ],
+            "decimals": 6,
+            "numerator_display": "44.972919",
+            "real_error": 0.0013671941814976662,
+            "bound": 0.0016314301043349629,
+            "M": 81.57150521674785,
+            "x_M": 2.4,
+            "rounding": 1.0347423151646487e-12,
+            "within_bound": true,
+            "by_rounding": false,
+            "interval": [
+              2.0,
+              2.4
+            ],
+            "M_substitution": {
+              "x": 2.4,
+              "x_display": {
+                "exact": true,
+                "text": "2.4",
+                "latex": "2.4",
+                "approx": null
+              },
+              "function_latex": "x e^{x} + 5 e^{x}",
+              "function_text": "x*exp(x) + 5*exp(x)",
+              "terms": [
+                {
+                  "sign": "+",
+                  "template": "@@0@@ \\cdot e^{@@0@@}",
+                  "text": "@@0@@*exp(@@0@@)",
+                  "value": 26.455623313539842
+                },
+                {
+                  "sign": "+",
+                  "template": "5 \\cdot e^{@@0@@}",
+                  "text": "5*exp(@@0@@)",
+                  "value": 55.115881903208006
+                }
+              ],
+              "value": 81.57150521674785
+            },
+            "products_display": [
+              "661.390575",
+              "-1101.14976",
+              "714.78108",
+              "-274.383312",
+              "44.334336"
+            ],
+            "denominator_display": "1.2"
+          },
+          "punto_medio": null,
+          "recommended": {
+            "key": "extremo_atras_5",
+            "name": "Extremo hacia atrás",
+            "D": 37.47743249999995
+          }
+        }
+      }
+    ],
+    "iterations_used": 9,
+    "solution": [],
+    "variables": [
+      "punto_medio_5",
+      "extremo_adelante_5",
+      "extremo_atras_5",
+      "punto_medio"
+    ],
+    "warnings": [],
+    "mode": "table",
+    "points": [
+      [
+        1.6,
+        7.924852
+      ],
+      [
+        1.7,
+        9.305711
+      ],
+      [
+        1.8,
+        10.889365
+      ],
+      [
+        1.9,
+        12.703199
+      ],
+      [
+        2.0,
+        14.778112
+      ],
+      [
+        2.1,
+        17.148957
+      ],
+      [
+        2.2,
+        19.85503
+      ],
+      [
+        2.3,
+        22.94062
+      ],
+      [
+        2.4,
+        26.455623
+      ]
+    ],
+    "uniform": true,
+    "verification": {
+      "data": [
+        {
+          "i": 1,
+          "y": 7.924852,
+          "f": 7.924851879032184,
+          "difference": 1.209678153202276e-07,
+          "ok": true
+        },
+        {
+          "i": 2,
+          "y": 9.305711,
+          "f": 9.30571056593624,
+          "difference": 4.3406376093457766e-07,
+          "ok": true
+        },
+        {
+          "i": 3,
+          "y": 10.889365,
+          "f": 10.889365435943304,
+          "difference": 4.3594330456642183e-07,
+          "ok": true
+        },
+        {
+          "i": 4,
+          "y": 12.703199,
+          "f": 12.703199440330609,
+          "difference": 4.4033060930814827e-07,
+          "ok": true
+        },
+        {
+          "i": 5,
+          "y": 14.778112,
+          "f": 14.7781121978613,
+          "difference": 1.978613006770047e-07,
+          "ok": true
+        },
+        {
+          "i": 6,
+          "y": 17.148957,
+          "f": 17.148956816392065,
+          "difference": 1.8360793418992216e-07,
+          "ok": true
+        },
+        {
+          "i": 7,
+          "y": 19.85503,
+          "f": 19.85502969875507,
+          "difference": 3.012449276695861e-07,
+          "ok": true
+        },
+        {
+          "i": 8,
+          "y": 22.94062,
+          "f": 22.94061964607385,
+          "difference": 3.539261506091407e-07,
+          "ok": true
+        },
+        {
+          "i": 9,
+          "y": 26.455623,
+          "f": 26.455623313539842,
+          "difference": 3.1353984297766146e-07,
+          "ok": true
+        }
+      ],
+      "substitutions": [
+        {
+          "x": 1.6,
+          "x_display": {
+            "exact": true,
+            "text": "1.6",
+            "latex": "1.6",
+            "approx": null
+          },
+          "function_latex": "x e^{x} + e^{x}",
+          "function_text": "x*exp(x) + exp(x)",
+          "terms": [
+            {
+              "sign": "+",
+              "template": "@@0@@ \\cdot e^{@@0@@}",
+              "text": "@@0@@*exp(@@0@@)",
+              "value": 7.924851879032184
+            },
+            {
+              "sign": "+",
+              "template": "e^{@@0@@}",
+              "text": "exp(@@0@@)",
+              "value": 4.953032424395115
+            }
+          ],
+          "value": 12.8778843034273
+        },
+        {
+          "x": 1.7,
+          "x_display": {
+            "exact": true,
+            "text": "1.7",
+            "latex": "1.7",
+            "approx": null
+          },
+          "function_latex": "x e^{x} + e^{x}",
+          "function_text": "x*exp(x) + exp(x)",
+          "terms": [
+            {
+              "sign": "+",
+              "template": "@@0@@ \\cdot e^{@@0@@}",
+              "text": "@@0@@*exp(@@0@@)",
+              "value": 9.30571056593624
+            },
+            {
+              "sign": "+",
+              "template": "e^{@@0@@}",
+              "text": "exp(@@0@@)",
+              "value": 5.4739473917272
+            }
+          ],
+          "value": 14.779657957663439
+        },
+        {
+          "x": 1.8,
+          "x_display": {
+            "exact": true,
+            "text": "1.8",
+            "latex": "1.8",
+            "approx": null
+          },
+          "function_latex": "x e^{x} + e^{x}",
+          "function_text": "x*exp(x) + exp(x)",
+          "terms": [
+            {
+              "sign": "+",
+              "template": "@@0@@ \\cdot e^{@@0@@}",
+              "text": "@@0@@*exp(@@0@@)",
+              "value": 10.889365435943304
+            },
+            {
+              "sign": "+",
+              "template": "e^{@@0@@}",
+              "text": "exp(@@0@@)",
+              "value": 6.0496474644129465
+            }
+          ],
+          "value": 16.93901290035625
+        },
+        {
+          "x": 1.9,
+          "x_display": {
+            "exact": true,
+            "text": "1.9",
+            "latex": "1.9",
+            "approx": null
+          },
+          "function_latex": "x e^{x} + e^{x}",
+          "function_text": "x*exp(x) + exp(x)",
+          "terms": [
+            {
+              "sign": "+",
+              "template": "@@0@@ \\cdot e^{@@0@@}",
+              "text": "@@0@@*exp(@@0@@)",
+              "value": 12.703199440330609
+            },
+            {
+              "sign": "+",
+              "template": "e^{@@0@@}",
+              "text": "exp(@@0@@)",
+              "value": 6.6858944422792685
+            }
+          ],
+          "value": 19.389093882609878
+        },
+        {
+          "x": 2.0,
+          "x_display": {
+            "exact": true,
+            "text": "2",
+            "latex": "2",
+            "approx": null
+          },
+          "function_latex": "x e^{x} + e^{x}",
+          "function_text": "x*exp(x) + exp(x)",
+          "terms": [
+            {
+              "sign": "+",
+              "template": "@@0@@ \\cdot e^{@@0@@}",
+              "text": "@@0@@*exp(@@0@@)",
+              "value": 14.7781121978613
+            },
+            {
+              "sign": "+",
+              "template": "e^{@@0@@}",
+              "text": "exp(@@0@@)",
+              "value": 7.38905609893065
+            }
+          ],
+          "value": 22.16716829679195
+        },
+        {
+          "x": 2.1,
+          "x_display": {
+            "exact": true,
+            "text": "2.1",
+            "latex": "2.1",
+            "approx": null
+          },
+          "function_latex": "x e^{x} + e^{x}",
+          "function_text": "x*exp(x) + exp(x)",
+          "terms": [
+            {
+              "sign": "+",
+              "template": "@@0@@ \\cdot e^{@@0@@}",
+              "text": "@@0@@*exp(@@0@@)",
+              "value": 17.148956816392065
+            },
+            {
+              "sign": "+",
+              "template": "e^{@@0@@}",
+              "text": "exp(@@0@@)",
+              "value": 8.16616991256765
+            }
+          ],
+          "value": 25.315126728959715
+        },
+        {
+          "x": 2.2,
+          "x_display": {
+            "exact": true,
+            "text": "2.2",
+            "latex": "2.2",
+            "approx": null
+          },
+          "function_latex": "x e^{x} + e^{x}",
+          "function_text": "x*exp(x) + exp(x)",
+          "terms": [
+            {
+              "sign": "+",
+              "template": "@@0@@ \\cdot e^{@@0@@}",
+              "text": "@@0@@*exp(@@0@@)",
+              "value": 19.85502969875507
+            },
+            {
+              "sign": "+",
+              "template": "e^{@@0@@}",
+              "text": "exp(@@0@@)",
+              "value": 9.025013499434122
+            }
+          ],
+          "value": 28.880043198189192
+        },
+        {
+          "x": 2.3,
+          "x_display": {
+            "exact": true,
+            "text": "2.3",
+            "latex": "2.3",
+            "approx": null
+          },
+          "function_latex": "x e^{x} + e^{x}",
+          "function_text": "x*exp(x) + exp(x)",
+          "terms": [
+            {
+              "sign": "+",
+              "template": "@@0@@ \\cdot e^{@@0@@}",
+              "text": "@@0@@*exp(@@0@@)",
+              "value": 22.94061964607385
+            },
+            {
+              "sign": "+",
+              "template": "e^{@@0@@}",
+              "text": "exp(@@0@@)",
+              "value": 9.974182454814718
+            }
+          ],
+          "value": 32.914802100888565
+        },
+        {
+          "x": 2.4,
+          "x_display": {
+            "exact": true,
+            "text": "2.4",
+            "latex": "2.4",
+            "approx": null
+          },
+          "function_latex": "x e^{x} + e^{x}",
+          "function_text": "x*exp(x) + exp(x)",
+          "terms": [
+            {
+              "sign": "+",
+              "template": "@@0@@ \\cdot e^{@@0@@}",
+              "text": "@@0@@*exp(@@0@@)",
+              "value": 26.455623313539842
+            },
+            {
+              "sign": "+",
+              "template": "e^{@@0@@}",
+              "text": "exp(@@0@@)",
+              "value": 11.023176380641601
+            }
+          ],
+          "value": 37.47879969418145
+        }
+      ],
+      "failed_rows": {
+        "punto_medio_5": [],
+        "extremo_adelante_5": [],
+        "extremo_atras_5": [],
+        "punto_medio": []
+      },
+      "all_within": true,
+      "identities": [
+        {
+          "i": 1,
+          "x_display": {
+            "exact": true,
+            "text": "1.6",
+            "latex": "1.6",
+            "approx": null
+          },
+          "items": []
+        },
+        {
+          "i": 2,
+          "x_display": {
+            "exact": true,
+            "text": "1.7",
+            "latex": "1.7",
+            "approx": null
+          },
+          "items": []
+        },
+        {
+          "i": 3,
+          "x_display": {
+            "exact": true,
+            "text": "1.8",
+            "latex": "1.8",
+            "approx": null
+          },
+          "items": [
+            {
+              "key": "punto_medio_5",
+              "name": "Punto medio",
+              "kind": "romberg",
+              "base": 16.987440000000017,
+              "double": 17.133150000000025,
+              "value": 16.938870000000012,
+              "D": 16.93887000000002,
+              "base_display": "16.98744",
+              "double_display": "17.13315",
+              "value_display": "16.93887",
+              "D_display": "16.93887",
+              "rounding_difference": false,
+              "ok": true
+            }
+          ]
+        },
+        {
+          "i": 4,
+          "x_display": {
+            "exact": true,
+            "text": "1.9",
+            "latex": "1.9",
+            "approx": null
+          },
+          "items": [
+            {
+              "key": "punto_medio_5",
+              "name": "Punto medio",
+              "kind": "romberg",
+              "base": 19.443734999999986,
+              "double": 19.60811499999998,
+              "value": 19.388941666666653,
+              "D": 19.388941666666653,
+              "base_display": "19.443735",
+              "double_display": "19.608115",
+              "value_display": "19.388942",
+              "D_display": "19.388942",
+              "rounding_difference": false,
+              "ok": true
+            }
+          ]
+        },
+        {
+          "i": 5,
+          "x_display": {
+            "exact": true,
+            "text": "2",
+            "latex": "2",
+            "approx": null
+          },
+          "items": [
+            {
+              "key": "punto_medio_5",
+              "name": "Punto medio",
+              "kind": "romberg",
+              "base": 22.22878999999998,
+              "double": 22.41416249999998,
+              "value": 22.166999166666645,
+              "D": 22.166999166666642,
+              "base_display": "22.22879",
+              "double_display": "22.414162",
+              "value_display": "22.166999",
+              "D_display": "22.166999",
+              "rounding_difference": false,
+              "ok": true
+            }
+          ]
+        },
+        {
+          "i": 6,
+          "x_display": {
+            "exact": true,
+            "text": "2.1",
+            "latex": "2.1",
+            "approx": null
+          },
+          "items": [
+            {
+              "key": "punto_medio_5",
+              "name": "Punto medio",
+              "kind": "romberg",
+              "base": 25.384589999999974,
+              "double": 25.593552499999976,
+              "value": 25.31493583333331,
+              "D": 25.314935833333305,
+              "base_display": "25.38459",
+              "double_display": "25.593552",
+              "value_display": "25.314936",
+              "D_display": "25.314936",
+              "rounding_difference": false,
+              "ok": true
+            }
+          ]
+        },
+        {
+          "i": 7,
+          "x_display": {
+            "exact": true,
+            "text": "2.2",
+            "latex": "2.2",
+            "approx": null
+          },
+          "items": [
+            {
+              "key": "punto_medio_5",
+              "name": "Punto medio",
+              "kind": "romberg",
+              "base": 28.958315000000102,
+              "double": 29.193777500000103,
+              "value": 28.8798275000001,
+              "D": 28.879827500000093,
+              "base_display": "28.958315",
+              "double_display": "29.193778",
+              "value_display": "28.879827",
+              "D_display": "28.879828",
+              "rounding_difference": true,
+              "ok": true
+            }
+          ]
+        },
+        {
+          "i": 8,
+          "x_display": {
+            "exact": true,
+            "text": "2.3",
+            "latex": "2.3",
+            "approx": null
+          },
+          "items": []
+        },
+        {
+          "i": 9,
+          "x_display": {
+            "exact": true,
+            "text": "2.4",
+            "latex": "2.4",
+            "approx": null
+          },
+          "items": []
+        }
+      ]
+    },
+    "rounding_text": "R = 2ε·Σ|cᵢ·f(xᵢ)| / (factor·h)",
+    "formula": "all",
+    "formulas": [
+      {
+        "key": "punto_medio_5",
+        "name": "Punto medio",
+        "symbol_latex": "D^{\\text{med},5}",
+        "formula_latex": "D^{\\text{med},5}(h) = \\frac{f(x_0 - 2h) - 8f(x_0 - h) + 8f(x_0 + h) - f(x_0 + 2h)}{12h}",
+        "formula_text": "Dmed5(h) = [f(x0 - 2h) - 8f(x0 - h) + 8f(x0 + h) - f(x0 + 2h)] / (12h)",
+        "bound_latex": "|E| \\le \\frac{h^{4}}{30} \\max_{\\xi \\in [x_0 - 2h,\\, x_0 + 2h]} \\left|f^{(5)}(\\xi)\\right|",
+        "order": 4,
+        "expected_ratio": 0.0625,
+        "bound_derivative": 5,
+        "bound_coefficient": [
+          1,
+          30
+        ],
+        "nodes": [
+          [
+            -2,
+            1
+          ],
+          [
+            -1,
+            -8
+          ],
+          [
+            1,
+            8
+          ],
+          [
+            2,
+            -1
+          ]
+        ],
+        "divisor": 12
+      },
+      {
+        "key": "extremo_adelante_5",
+        "name": "Extremo hacia adelante",
+        "symbol_latex": "D^{\\text{ad},5}",
+        "formula_latex": "D^{\\text{ad},5}(h) = \\frac{-25f(x_0) + 48f(x_0 + h) - 36f(x_0 + 2h) + 16f(x_0 + 3h) - 3f(x_0 + 4h)}{12h}",
+        "formula_text": "Dad5(h) = [-25f(x0) + 48f(x0 + h) - 36f(x0 + 2h) + 16f(x0 + 3h) - 3f(x0 + 4h)] / (12h)",
+        "bound_latex": "|E| \\le \\frac{h^{4}}{5} \\max_{\\xi \\in [x_0,\\, x_0 + 4h]} \\left|f^{(5)}(\\xi)\\right|",
+        "order": 4,
+        "expected_ratio": 0.0625,
+        "bound_derivative": 5,
+        "bound_coefficient": [
+          1,
+          5
+        ],
+        "nodes": [
+          [
+            0,
+            -25
+          ],
+          [
+            1,
+            48
+          ],
+          [
+            2,
+            -36
+          ],
+          [
+            3,
+            16
+          ],
+          [
+            4,
+            -3
+          ]
+        ],
+        "divisor": 12
+      },
+      {
+        "key": "extremo_atras_5",
+        "name": "Extremo hacia atrás",
+        "symbol_latex": "D^{\\text{at},5}",
+        "formula_latex": "D^{\\text{at},5}(h) = \\frac{25f(x_0) - 48f(x_0 - h) + 36f(x_0 - 2h) - 16f(x_0 - 3h) + 3f(x_0 - 4h)}{12h}",
+        "formula_text": "Dat5(h) = [25f(x0) - 48f(x0 - h) + 36f(x0 - 2h) - 16f(x0 - 3h) + 3f(x0 - 4h)] / (12h)",
+        "bound_latex": "|E| \\le \\frac{h^{4}}{5} \\max_{\\xi \\in [x_0 - 4h,\\, x_0]} \\left|f^{(5)}(\\xi)\\right|",
+        "order": 4,
+        "expected_ratio": 0.0625,
+        "bound_derivative": 5,
+        "bound_coefficient": [
+          1,
+          5
+        ],
+        "nodes": [
+          [
+            0,
+            25
+          ],
+          [
+            -1,
+            -48
+          ],
+          [
+            -2,
+            36
+          ],
+          [
+            -3,
+            -16
+          ],
+          [
+            -4,
+            3
+          ]
+        ],
+        "divisor": 12
+      },
+      {
+        "key": "punto_medio",
+        "name": "Punto medio de 3 puntos",
+        "symbol_latex": "D^{\\text{med},3}",
+        "formula_latex": "D^{\\text{med}}(h) = \\frac{f(x_0 + h) - f(x_0 - h)}{2h}",
+        "formula_text": "Dmed(h) = [f(x0 + h) - f(x0 - h)] / (2h)",
+        "bound_latex": "|E| \\le \\frac{h^{2}}{6} \\max_{\\xi \\in [x_0 - h,\\, x_0 + h]} \\left|f'''(\\xi)\\right|",
+        "order": 2,
+        "expected_ratio": 0.25,
+        "bound_derivative": 3,
+        "bound_coefficient": [
+          1,
+          6
+        ],
+        "nodes": [
+          [
+            1,
+            1
+          ],
+          [
+            -1,
+            -1
+          ]
+        ],
+        "divisor": 2
+      }
+    ],
+    "function": {
+      "latex": "x e^{x}",
+      "text": "x*exp(x)",
+      "template": "@@0@@ \\cdot e^{@@0@@}",
+      "uses_trigonometry": false,
+      "derivative": {
+        "latex": "x e^{x} + e^{x}",
+        "text": "x*exp(x) + exp(x)",
+        "steps": {
+          "terms": [
+            {
+              "latex": "\\frac{d}{d x}\\left(x e^{x}\\right) = 1 \\cdot e^{x} + x \\cdot e^{x} = x e^{x} + e^{x}",
+              "rule": "regla del producto: (u·v)′ = u′·v + u·v′"
+            }
+          ],
+          "sum_latex": null
+        }
+      },
+      "higher_derivatives": {
+        "2": {
+          "latex": "x e^{x} + 2 e^{x}",
+          "text": "x*exp(x) + 2*exp(x)",
+          "steps": {
+            "terms": [
+              {
+                "latex": "\\frac{d}{d x}\\left(x e^{x}\\right) = 1 \\cdot e^{x} + x \\cdot e^{x} = x e^{x} + e^{x}",
+                "rule": "regla del producto: (u·v)′ = u′·v + u·v′"
+              },
+              {
+                "latex": "\\frac{d}{d x}\\left(e^{x}\\right) = e^{x}",
+                "rule": "derivada de la función exponencial"
+              }
+            ],
+            "sum_latex": "f''(x) = x e^{x} + e^{x} + e^{x} = x e^{x} + 2 e^{x}"
+          }
+        },
+        "3": {
+          "latex": "x e^{x} + 3 e^{x}",
+          "text": "x*exp(x) + 3*exp(x)",
+          "steps": {
+            "terms": [
+              {
+                "latex": "\\frac{d}{d x}\\left(x e^{x}\\right) = 1 \\cdot e^{x} + x \\cdot e^{x} = x e^{x} + e^{x}",
+                "rule": "regla del producto: (u·v)′ = u′·v + u·v′"
+              },
+              {
+                "latex": "\\frac{d}{d x}\\left(2 e^{x}\\right) = 2 \\cdot e^{x} = 2 e^{x}",
+                "rule": "derivada de la función exponencial"
+              }
+            ],
+            "sum_latex": "f'''(x) = x e^{x} + e^{x} + 2 e^{x} = x e^{x} + 3 e^{x}"
+          }
+        },
+        "4": {
+          "latex": "x e^{x} + 4 e^{x}",
+          "text": "x*exp(x) + 4*exp(x)",
+          "steps": {
+            "terms": [
+              {
+                "latex": "\\frac{d}{d x}\\left(x e^{x}\\right) = 1 \\cdot e^{x} + x \\cdot e^{x} = x e^{x} + e^{x}",
+                "rule": "regla del producto: (u·v)′ = u′·v + u·v′"
+              },
+              {
+                "latex": "\\frac{d}{d x}\\left(3 e^{x}\\right) = 3 \\cdot e^{x} = 3 e^{x}",
+                "rule": "derivada de la función exponencial"
+              }
+            ],
+            "sum_latex": "f''''(x) = x e^{x} + e^{x} + 3 e^{x} = x e^{x} + 4 e^{x}"
+          }
+        },
+        "5": {
+          "latex": "x e^{x} + 5 e^{x}",
+          "text": "x*exp(x) + 5*exp(x)",
+          "steps": {
+            "terms": [
+              {
+                "latex": "\\frac{d}{d x}\\left(x e^{x}\\right) = 1 \\cdot e^{x} + x \\cdot e^{x} = x e^{x} + e^{x}",
+                "rule": "regla del producto: (u·v)′ = u′·v + u·v′"
+              },
+              {
+                "latex": "\\frac{d}{d x}\\left(4 e^{x}\\right) = 4 \\cdot e^{x} = 4 e^{x}",
+                "rule": "derivada de la función exponencial"
+              }
+            ],
+            "sum_latex": "f'''''(x) = x e^{x} + e^{x} + 4 e^{x} = x e^{x} + 5 e^{x}"
+          }
+        }
+      }
+    },
+    "sampling_points": 401
+  }
+}

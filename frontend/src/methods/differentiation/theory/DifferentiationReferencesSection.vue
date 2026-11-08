@@ -12,7 +12,14 @@ defineProps({
   <div class="card">
     <h2>Referencias</h2>
     <ul class="references">
-      <li v-if="method === 'tres-puntos'">
+      <li v-if="method === 'cinco-puntos'">
+        Burden, R. L., Faires, J. D., &amp; Burden, A. M. (2016).
+        <em>Numerical analysis</em> (10.ª ed.). Cengage Learning. (Capítulo 4: diferenciación e
+        integración numéricas. La sección 4.1 presenta las fórmulas de cinco puntos, de punto medio y
+        de extremo, con su error de truncamiento O(h⁴) y el ejemplo de x·eˣ en x₀ = 2; la sección 4.2,
+        la extrapolación de Richardson, que también lleva a la integración de Romberg.)
+      </li>
+      <li v-else-if="method === 'tres-puntos'">
         Burden, R. L., Faires, J. D., &amp; Burden, A. M. (2016).
         <em>Numerical analysis</em> (10.ª ed.). Cengage Learning. (Capítulo 4: diferenciación e
         integración numéricas. La sección 4.1 deriva las fórmulas de tres puntos, de punto medio y

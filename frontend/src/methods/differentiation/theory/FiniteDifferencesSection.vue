@@ -388,7 +388,7 @@ const FORMULAS = [forwardFormula, backwardFormula]
       </table>
     </div>
     <p class="table-note">
-      Las fórmulas de 3 y 5 puntos (próximas secciones) mejoran el orden a
+      Las fórmulas de 3 y 5 puntos mejoran el orden a
       <MathFormula expression="O(h^2)" /> y <MathFormula expression="O(h^4)" /> usando más puntos.
     </p>
   </div>
