@@ -118,9 +118,9 @@ para estudiar la teoría de cada método.
 
 ### Vista «Teoría» (`/teoria/<método>`)
 
-Una página por método, con el mismo formato en las siete (Jacobi,
+Una página por método, con el mismo formato en las ocho (Jacobi,
 Gauss-Seidel, Punto Fijo, Newton, Bairstow, diferencias progresiva y
-regresiva y fórmula de 3 puntos): fundamento común
+regresiva y fórmulas de 3 y 5 puntos): fundamento común
 de la categoría, definición formal en LaTeX, condición de convergencia,
 restricciones, algoritmo en tarjetas, ejemplo resuelto paso a paso con datos
 reales del solver, tabla comparativa y referencias bibliográficas (APA).
@@ -157,6 +157,16 @@ reales del solver, tabla comparativa y referencias bibliográficas (APA).
   las diferencias** (error, eficiencia y la «V» del redondeo de las dos
   fórmulas); el ejemplo de `x·eˣ` de Burden y Faires y su tabla de datos con
   datos reales del solver; tabla comparativa de diferencias y 3 puntos.
+  La **fórmula de 5 puntos** cierra la categoría: definición formal con el
+  error exacto; figura del polinomio de grado 4 con selector de fórmula y, de
+  referencia, la parábola de 3 puntos y la secante; derivación del punto medio
+  por **extrapolación de Richardson** (`(4D₃(h) − D₃(2h))/3`) y del extremo
+  por **coeficientes indeterminados**; desarrollo del error y exactitud para
+  grado ≤ 4; la **escalera de Richardson** hasta `O(h⁶)` como puente hacia
+  Romberg; tabla de razones ≈ 0.0625, eficiencia y la «V» del redondeo de las
+  tres fórmulas; el ejemplo de `x·eˣ` y su tabla de 9 datos con datos reales
+  del solver; y la **comparación de toda la categoría** con el puente hacia la
+  integración numérica.
 
 Los menús «Resolver ▾» y «Teoría ▾» se generan automáticamente a partir del
 catálogo de métodos del backend, agrupados por categoría.
