@@ -1,14 +1,16 @@
 <script>
 import IntegrationFundamentalsSection from './IntegrationFundamentalsSection.vue'
 import IntegrationReferencesSection from './IntegrationReferencesSection.vue'
+import SimpsonSection from './SimpsonSection.vue'
 import TrapezoidSection from './TrapezoidSection.vue'
 
 /**
  * Métodos de la categoría que tienen teoría escrita, y su sección propia.
- * Simpson, Romberg y cuadratura gaussiana se agregan aquí cuando tengan la suya.
+ * Romberg y cuadratura gaussiana se agregan aquí cuando tengan la suya.
  */
 export const THEORY_SECTIONS = {
   trapecio: TrapezoidSection,
+  simpson: SimpsonSection,
 }
 </script>
 

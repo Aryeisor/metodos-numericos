@@ -1,8 +1,10 @@
 """Método de Simpson: valores de referencia verificados con un script
 independiente (fracciones exactas y los ejemplos precargados)."""
 
+import json
 import math
 from fractions import Fraction
+from pathlib import Path
 
 from django.test import SimpleTestCase
 from rest_framework.test import APITestCase
@@ -11,6 +13,10 @@ from numeric_methods.examples_data import SIMPSON_EXAMPLES
 from numeric_methods.serializers.integration import SimpsonSerializer
 from numeric_methods.solvers.integration.rules import SIMPSON_13, SIMPSON_38, TRAPEZOID, apply
 from numeric_methods.solvers.integration.simpson import solve_simpson
+
+# Respuestas del solver guardadas para la página de teoría (frontend).
+THEORY_EXAMPLE = (Path(__file__).resolve().parents[3] / "frontend" / "src" / "methods"
+                  / "integration" / "theory" / "simpsonExample.json")
 
 CHAPRA = "0.2 + 25x - 200x^2 + 675x^3 - 900x^4 + 400x^5"
 
@@ -367,3 +373,46 @@ class PieceChartTests(SimpleTestCase):
     def test_no_stray_values(self):
         self.assertTrue(all(math.isfinite(y) for p in block(example(2), "simpson13")["chart_rows"][0]["pieces"]
                             for y in p["y"]))
+
+
+def theory_trimmed(result):
+    """Como se guarda para la teoría: sin `chart_rows` (la figura de la teoría
+    se calcula en el navegador) y las filas con más puntos que `fold` sólo con
+    los 8 primeros y los 8 últimos, como en la teoría del trapecio."""
+    result = json.loads(json.dumps(result))
+    for b in result.get("rules", []):
+        b.pop("chart_rows")
+        for row in b["rows"]:
+            step = row["step"]
+            if len(step["points"]) > step["fold"]:
+                step["points"] = step["points"][:8] + step["points"][-8:]
+    return result
+
+
+class TheoryExampleTests(SimpleTestCase):
+    """La página de teoría usa respuestas guardadas del solver: deben ser las
+    que el solver devuelve hoy y mostrar los valores de Chapra."""
+
+    def setUp(self):
+        self.saved = json.loads(THEORY_EXAMPLE.read_text(encoding="utf-8"))
+
+    def test_row_one_of_both_rules(self):
+        saved = self.saved["function"]
+        expected = {
+            # S, Eₜ, εₜ, Eₐ, cota
+            "simpson13": ("1.367467", "0.273067", "16.644993", "0.273067", "2.4576"),
+            "simpson38": ("1.51917", "0.121363", "7.397775", "0.121363", "1.092267"),
+        }
+        for key, values in expected.items():
+            row = rows(saved, key)[0]
+            shown = tuple(f"{row[k]:.6f}".rstrip("0").rstrip(".")
+                          for k in ("S", "true_error", "relative_error", "approx_error", "bound"))
+            self.assertEqual(shown, values, key)
+        self.assertEqual(saved["iterations_used"], 7)
+        self.assertEqual(f"{self.saved['table']['applications'][0]['total']:.6f}", "1.645077")
+
+    def test_saved_responses_match_solver(self):
+        for key, number in (("function", 1), ("table", 8)):
+            with self.subTest(example=number):
+                stored = self.saved[key]
+                self.assertEqual(theory_trimmed(example(number)), {k: v for k, v in stored.items() if k != "request"})

@@ -47,8 +47,7 @@ export default {
   theorySections: THEORY_SECTIONS,
 
   // Lo que cambia por método (sobrescribe la base). Simpson: la regla y un n₀
-  // por regla en la configuración, y su propia vista del resultado. Sin
-  // entrada en THEORY_SECTIONS, todavía no aparece en «Teoría ▾».
+  // por regla en la configuración, y su propia vista del resultado.
   methods: {
     simpson: {
       createStore: createSimpsonStore,

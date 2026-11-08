@@ -1,10 +1,12 @@
 <script setup>
-// Interpretación geométrica: la curva f(x), los n trapecios sombreados y, con
-// otro color tenue, lo que el trapecio pierde (curva por encima de la recta)
-// y lo que agrega (recta por encima de la curva). Un selector elige n.
+// Interpretación geométrica: la curva f(x), las piezas de la regla sombreadas
+// (trapecios; con `rules`, también parábolas de Simpson 1/3 o cúbicas de 3/8,
+// alternando dos tonos) y, con otro color tenue, lo que la regla pierde (curva
+// por encima de la pieza) y lo que agrega (pieza por encima de la curva).
+// Un selector elige n y, con `rules`, otro elige la regla.
 // Los valores se calculan aquí con JavaScript: es sólo ilustrativo (el ejemplo
 // resuelto usa los datos del solver). Colores de theme.css: sigue el tema.
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import MathFormula from '../../../components/MathFormula.vue'
 import { formatNumber } from '../../../utils/iterationSteps'
 
@@ -13,12 +15,54 @@ const props = defineProps({
   a: { type: Number, required: true },
   b: { type: Number, required: true },
   exact: { type: Number, required: true },
-  nValues: { type: Array, required: true },
+  // Valores de n del trapecio (sin `rules`).
+  nValues: { type: Array, default: null },
+  // [{ key: 'trapecio' | 'simpson13' | 'simpson38', nValues }]: agrega el selector de regla.
+  rules: { type: Array, default: null },
   // [{ x, label }] marcas del eje x
   ticks: { type: Array, required: true },
   label: { type: String, required: true },
   compact: { type: Boolean, default: false },
 })
+
+// Cada pieza es el polinomio que pasa por degree + 1 puntos seguidos; el área
+// de la regla compuesta es factor·h·Σ wⱼ·f(xⱼ), pieza por pieza.
+const RULES = {
+  trapecio: {
+    name: 'Trapecio',
+    degree: 1,
+    weights: [1, 1],
+    factor: 1 / 2,
+    value: 'T',
+    pieces: 'Trapecios',
+    shape: 'la recta',
+    subject: 'el trapecio',
+    units: 'trapecios',
+  },
+  simpson13: {
+    name: 'Simpson 1/3',
+    degree: 2,
+    weights: [1, 4, 1],
+    factor: 1 / 3,
+    value: 'S',
+    pieces: 'Parábolas',
+    shape: 'la parábola',
+    subject: 'Simpson',
+    units: 'segmentos',
+  },
+  simpson38: {
+    name: 'Simpson 3/8',
+    degree: 3,
+    weights: [1, 3, 3, 1],
+    factor: 3 / 8,
+    value: 'S',
+    pieces: 'Cúbicas',
+    shape: 'la cúbica',
+    subject: 'Simpson',
+    units: 'segmentos',
+  },
+}
+const choices = props.rules ?? [{ key: 'trapecio', nValues: props.nValues }]
 
 const SAMPLES = 240
 const BOX = { left: 12, right: 548, top: 14, bottom: 0 }
@@ -39,62 +83,97 @@ const pt = (x, y) => `${sx(x).toFixed(1)},${sy(y).toFixed(1)}`
 
 const curve = curvePoints.map(([x, y]) => pt(x, y)).join(' ')
 
-const n = ref(props.nValues[0])
+const ruleKey = ref(choices[0].key)
+const choice = computed(() => choices.find((c) => c.key === ruleKey.value))
+const rule = computed(() => RULES[ruleKey.value])
+const n = ref(choices[0].nValues[0])
+watch(ruleKey, () => {
+  n.value = choice.value.nValues[0]
+})
 
-/** Área de los trapecios con n segmentos. */
-function trapezoid(count) {
+/** Polinomio de interpolación (Lagrange) por los nodos (xs, fs), evaluado en x. */
+function lagrange(xs, fs, x) {
+  let sum = 0
+  for (let i = 0; i < xs.length; i++) {
+    let term = fs[i]
+    for (let j = 0; j < xs.length; j++) if (j !== i) term *= (x - xs[j]) / (xs[i] - xs[j])
+    sum += term
+  }
+  return sum
+}
+
+/** Área de la regla compuesta con n segmentos. */
+function ruleArea(count) {
+  const { degree, weights, factor } = rule.value
   const h = (props.b - props.a) / count
-  let sum = (props.f(props.a) + props.f(props.b)) / 2
-  for (let i = 1; i < count; i++) sum += props.f(props.a + i * h)
-  return h * sum
+  let sum = 0
+  for (let start = 0; start < count; start += degree) {
+    weights.forEach((w, j) => {
+      sum += w * props.f(props.a + (start + j) * h)
+    })
+  }
+  return factor * h * sum
 }
 
 const shapes = computed(() => {
   const count = n.value
+  const { degree } = rule.value
   const h = (props.b - props.a) / count
-  const traps = []
+  const pieces = []
   const lost = []
   const added = []
-  for (let i = 0; i < count; i++) {
-    const x0 = props.a + i * h
-    const x1 = x0 + h
-    const y0 = props.f(x0)
-    const y1 = props.f(x1)
-    traps.push([pt(x0, 0), pt(x0, y0), pt(x1, y1), pt(x1, 0)].join(' '))
-    // Entre la recta y la curva: max(f, recta) arriba (lo que se pierde) y
-    // min(f, recta) abajo (lo que se agrega), cada uno cerrado con la recta.
-    const steps = Math.max(8, Math.ceil(SAMPLES / count))
+  for (let start = 0; start < count; start += degree) {
+    const xs = Array.from({ length: degree + 1 }, (_, j) => props.a + (start + j) * h)
+    const fs = xs.map((x) => props.f(x))
+    const x0 = xs[0]
+    const x1 = xs[degree]
+    // Entre la pieza y la curva: max(f, pieza) arriba (lo que se pierde) y
+    // min(f, pieza) abajo (lo que se agrega), cada uno cerrado con la pieza.
+    const steps = Math.max(8, Math.ceil((SAMPLES * degree) / count))
     const top = []
     const bottom = []
-    const chord = []
+    const outline = []
     for (let j = 0; j <= steps; j++) {
-      const x = x0 + (h * j) / steps
+      const x = x0 + ((x1 - x0) * j) / steps
       const fx = props.f(x)
-      const line = y0 + ((y1 - y0) * j) / steps
-      top.push(pt(x, Math.max(fx, line)))
-      bottom.push(pt(x, Math.min(fx, line)))
-      chord.push(pt(x, line))
+      const p = degree === 1 ? fs[0] + ((fs[1] - fs[0]) * j) / steps : lagrange(xs, fs, x)
+      top.push(pt(x, Math.max(fx, p)))
+      bottom.push(pt(x, Math.min(fx, p)))
+      outline.push(pt(x, p))
     }
-    const back = chord.slice().reverse()
+    const back = outline.slice().reverse()
+    const edge = degree === 1 ? [pt(x0, fs[0]), pt(x1, fs[1])] : outline
+    pieces.push([pt(x0, 0), ...edge, pt(x1, 0)].join(' '))
     lost.push([...top, ...back].join(' '))
     added.push([...bottom, ...back].join(' '))
   }
-  return { traps, lost, added }
+  return { pieces, lost, added }
 })
 
-const area = computed(() => trapezoid(n.value))
+const area = computed(() => ruleArea(n.value))
 const error = computed(() => props.exact - area.value)
 const reading = computed(() => {
   const e = error.value
   if (formatNumber(e) === '0') return 'con 6 decimales, el área coincide con la exacta.'
-  return e > 0 ? 'el trapecio subestima (se queda corto).' : 'el trapecio sobreestima (se pasa).'
+  const who = rule.value.subject
+  return e > 0 ? `${who} subestima (se queda corto).` : `${who} sobreestima (se pasa).`
 })
 </script>
 
 <template>
   <figure class="trapezoid-figure" :class="{ compact }">
-    <svg :viewBox="`0 0 560 ${height}`" role="img" :aria-label="`${label}: ${n} trapecios, área ${formatNumber(area)}`">
-      <polygon v-for="(p, i) in shapes.traps" :key="`t${i}`" class="trap" :points="p" />
+    <svg
+      :viewBox="`0 0 560 ${height}`"
+      role="img"
+      :aria-label="`${label}: ${rules ? `${rule.name}, ` : ''}${n} ${rule.units}, área ${formatNumber(area)}`"
+    >
+      <polygon
+        v-for="(p, i) in shapes.pieces"
+        :key="`t${i}`"
+        class="trap"
+        :class="{ alt: rules && i % 2 === 1 }"
+        :points="p"
+      />
       <polygon v-for="(p, i) in shapes.lost" :key="`l${i}`" class="lost" :points="p" />
       <polygon v-for="(p, i) in shapes.added" :key="`a${i}`" class="added" :points="p" />
       <line class="axis" :x1="BOX.left" :y1="sy(0)" :x2="BOX.right" :y2="sy(0)" />
@@ -106,10 +185,25 @@ const reading = computed(() => {
     </svg>
 
     <figcaption>
-      <div class="n-picker" role="radiogroup" :aria-label="`Número de trapecios de ${label}`">
+      <div v-if="rules" class="n-picker" role="radiogroup" :aria-label="`Regla para ${label}`">
+        <span class="picker-label">Regla:</span>
+        <button
+          v-for="c in rules"
+          :key="c.key"
+          type="button"
+          role="radio"
+          class="n-btn"
+          :class="{ 'is-active': c.key === ruleKey }"
+          :aria-checked="c.key === ruleKey"
+          @click="ruleKey = c.key"
+        >
+          {{ RULES[c.key].name }}
+        </button>
+      </div>
+      <div class="n-picker" role="radiogroup" :aria-label="`Número de ${rule.units} de ${label}`">
         <span class="picker-label">Segmentos:</span>
         <button
-          v-for="value in nValues"
+          v-for="value in choice.nValues"
           :key="value"
           type="button"
           role="radio"
@@ -123,17 +217,17 @@ const reading = computed(() => {
       </div>
 
       <div class="live-values">
-        <span class="live"><MathFormula :expression="`T = ${formatNumber(area)}`" /></span>
+        <span class="live"><MathFormula :expression="`${rule.value} = ${formatNumber(area)}`" /></span>
         <span class="live"><MathFormula :expression="`I = ${formatNumber(exact)}`" /></span>
-        <span class="live"><MathFormula :expression="`E_t = I - T = ${formatNumber(error)}`" /></span>
+        <span class="live"><MathFormula :expression="`E_t = I - ${rule.value} = ${formatNumber(error)}`" /></span>
       </div>
       <p class="figure-note">Con n = {{ n }}, {{ reading }}</p>
 
       <ul class="figure-legend">
         <li><span class="swatch swatch-curve"></span>{{ label }}</li>
-        <li><span class="box box-trap"></span>Trapecios (área T)</li>
+        <li><span class="box box-trap"></span>{{ rule.pieces }} (área {{ rule.value }})</li>
         <li><span class="box box-lost"></span>Lo que se pierde (la curva está por encima)</li>
-        <li><span class="box box-added"></span>Lo que se agrega (la recta está por encima)</li>
+        <li><span class="box box-added"></span>Lo que se agrega ({{ rule.shape }} está por encima)</li>
       </ul>
     </figcaption>
   </figure>
@@ -161,6 +255,10 @@ svg {
   fill: var(--color-area-positive);
   stroke: var(--color-series-1);
   stroke-width: 1.2;
+}
+
+.trap.alt {
+  fill: var(--color-area-positive-alt);
 }
 
 .lost {

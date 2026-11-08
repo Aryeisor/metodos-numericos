@@ -1,6 +1,6 @@
 <script setup>
 import { computed, nextTick, ref, shallowRef, watch } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import ConfirmDialog from '../components/ConfirmDialog.vue'
 import ResultsTable from '../components/ResultsTable.vue'
 import { fetchExamples, solveSystem } from '../api/client'
@@ -13,6 +13,7 @@ const props = defineProps({
 })
 
 const router = useRouter()
+const route = useRoute()
 
 const activeMethod = computed(() => getMethod(props.method))
 const ui = computed(() => activeMethod.value?.ui ?? null)
@@ -83,6 +84,13 @@ watch(
     if (!getMethod(slug)) return
     try {
       examples.value = await fetchExamples(slug)
+      // «Resolver este ejemplo» de la Teoría: /resolver/<slug>?ejemplo=<id> lo carga y lo resuelve.
+      const requested = examples.value.find((ex) => ex.id === route.query.ejemplo)
+      if (requested) {
+        router.replace({ query: {} })
+        loadExample(requested)
+        handleSolve()
+      }
     } catch (err) {
       formErrors.value = ['No fue posible cargar los ejemplos desde el servidor.']
     }
