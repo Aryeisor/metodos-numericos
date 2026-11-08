@@ -16,7 +16,7 @@ export const MODES = { FUNCTION: 'function', TABLE: 'table' }
 
 const emptyRows = (n) => Array.from({ length: n }, () => [null, null])
 
-export function createIntegrationStore() {
+export function createIntegrationStore({ minPoints = MIN_POINTS } = {}) {
   const state = reactive({
     mode: MODES.FUNCTION,
     function: '',
@@ -36,7 +36,7 @@ export function createIntegrationStore() {
   }
 
   function removeRow(index) {
-    if (state.points.length > MIN_POINTS) state.points = state.points.filter((_, i) => i !== index)
+    if (state.points.length > minPoints) state.points = state.points.filter((_, i) => i !== index)
   }
 
   function loadExample(example) {
@@ -72,7 +72,7 @@ export function createIntegrationStore() {
 
   return {
     state,
-    minPoints: MIN_POINTS,
+    minPoints,
     maxPoints: MAX_POINTS,
     // Textos del formulario compartido (components/FunctionTableInput.vue).
     startFields: {
@@ -90,4 +90,33 @@ export function createIntegrationStore() {
     hasInvalidValues,
     buildPayload,
   }
+}
+
+// --- Método de Simpson ---------------------------------------------------------------
+// El mismo formulario, con la regla y un n₀ por regla (mismos valores que
+// solvers/integration/simpson.py). En modo tabla, desde 3 puntos.
+export const SIMPSON_RULE_OPTIONS = [
+  { value: 'simpson13', label: 'Simpson 1/3' },
+  { value: 'simpson38', label: 'Simpson 3/8' },
+  { value: 'both', label: 'Ambas' },
+]
+export const SIMPSON_DEFAULTS = { rule: 'both', n0_13: 2, n0_38: 3 }
+
+export function createSimpsonStore() {
+  const base = createIntegrationStore({ minPoints: 3 })
+  // `n0` (el del trapecio) queda sin uso: el backend de Simpson lee n0_13 y n0_38.
+  const { state } = base
+  Object.assign(state, SIMPSON_DEFAULTS)
+
+  function loadExample(example) {
+    base.loadExample(example)
+    Object.assign(state, { rule: example.rule, n0_13: example.n0_13, n0_38: example.n0_38 })
+  }
+
+  function buildPayload() {
+    const payload = { ...base.buildPayload(), rule: state.rule }
+    return state.mode === MODES.TABLE ? payload : { ...payload, n0_13: state.n0_13, n0_38: state.n0_38 }
+  }
+
+  return { ...base, ruleOptions: SIMPSON_RULE_OPTIONS, loadExample, buildPayload }
 }

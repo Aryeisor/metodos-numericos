@@ -2,10 +2,13 @@
 // Gráfico de una regla de integración: la curva f(x) y, debajo, los paneles
 // de la regla (trapecios: la poligonal que une los puntos (xᵢ, f(xᵢ))),
 // sombreados hasta el eje con un color sobre el eje y otro debajo (f < 0).
-// Sirve igual para Simpson (otra forma de panel, mismos datos de entrada).
+// Con `row.pieces` (Simpson) cada panel es la parábola o la cúbica que manda
+// el backend, alternando dos tonos para que se vea dónde empieza y termina.
 //
 //   curve   { x: [...], y: [...] } muestreada por el backend, o null (tabla sin función)
-//   row     { n, x: [...], y: [...] }: los puntos de la fila elegida
+//   row     { n, x: [...], y: [...], pieces?: [{ rule, x: [...], y: [...] }] }
+//   partLabels  { [rule]: texto }: con más de una regla (combinación 1/3 + 3/8),
+//               cada parte con su color y su entrada en la leyenda
 //   areaLabel / curveLabel  textos de la leyenda (área de la fila, integral exacta)
 //
 // Mismo tratamiento de colores y de la imagen del PDF que ConvergenceChart.
@@ -20,6 +23,7 @@ const props = defineProps({
   title: { type: String, default: 'Trapecios' },
   areaLabel: { type: String, required: true },
   curveLabel: { type: String, default: 'f(x)' },
+  partLabels: { type: Object, default: null },
 })
 
 const canvasRef = ref(null)
@@ -33,9 +37,14 @@ const TOKENS = [
   '--color-line',
   '--color-chart-grid',
   '--color-series-1',
+  '--color-series-2',
   '--color-series-3',
   '--color-area-positive',
   '--color-area-negative',
+  '--color-area-positive-alt',
+  '--color-area-negative-alt',
+  '--color-area-part2',
+  '--color-area-part2-alt',
 ]
 
 function readPalette(forcedTheme = null) {
@@ -52,11 +61,76 @@ function readPalette(forcedTheme = null) {
   return palette
 }
 
+// Series auxiliares, sin entrada en la leyenda.
+const HIDDEN = ['bordes', 'puntos']
+
 const finite = (value) => (value !== null && value !== undefined && Number.isFinite(value) ? value : null)
+
+// Parábolas o cúbicas: una serie por pieza, sin entrada propia en la leyenda
+// (label ''), salvo la primera de cada parte.
+function pieceDatasets(palette) {
+  const { x, y, pieces } = props.row
+  const rules = [...new Set(pieces.map((p) => p.rule))]
+  const second = (rule) => props.partLabels && rules.indexOf(rule) === 1
+  const named = new Set()
+  const datasets = pieces.map((piece, j) => {
+    const alt = j % 2 === 1
+    const part2 = second(piece.rule)
+    const line = palette[part2 ? '--color-series-2' : '--color-series-1']
+    let label = ''
+    if (!named.has(piece.rule)) {
+      named.add(piece.rule)
+      label = props.partLabels ? props.partLabels[piece.rule] : props.areaLabel
+    }
+    return {
+      label,
+      data: piece.x.map((xi, i) => ({ x: xi, y: piece.y[i] })),
+      borderColor: line,
+      backgroundColor: palette[part2 ? '--color-area-part2' : '--color-area-positive'],
+      borderWidth: 1.5,
+      pointRadius: 0,
+      tension: 0,
+      fill: {
+        target: 'origin',
+        above: palette[part2 ? (alt ? '--color-area-part2-alt' : '--color-area-part2') : alt ? '--color-area-positive-alt' : '--color-area-positive'],
+        below: palette[alt ? '--color-area-negative-alt' : '--color-area-negative'],
+      },
+      order: 2,
+    }
+  })
+  const edges = [...new Set(pieces.flatMap((p) => [p.x[0], p.x.at(-1)]))]
+  datasets.push(
+    {
+      // Lados verticales donde empieza y termina cada pieza.
+      label: 'bordes',
+      data: edges.flatMap((xi) => {
+        const i = x.findIndex((v) => Math.abs(v - xi) <= 1e-12 * Math.max(1, Math.abs(xi)))
+        return [{ x: xi, y: 0 }, { x: xi, y: i >= 0 ? y[i] : 0 }, { x: xi, y: null }]
+      }),
+      borderColor: palette['--color-series-1'],
+      borderWidth: 1,
+      pointRadius: 0,
+      spanGaps: false,
+      fill: false,
+      order: 1,
+    },
+    {
+      label: 'puntos',
+      data: x.map((xi, i) => ({ x: xi, y: y[i] })),
+      borderColor: palette['--color-series-1'],
+      backgroundColor: palette['--color-series-1'],
+      showLine: false,
+      pointRadius: x.length > 33 ? 1.5 : 3,
+      fill: false,
+      order: 1,
+    }
+  )
+  return datasets
+}
 
 function buildData(palette) {
   const { x, y } = props.row
-  const datasets = [
+  const datasets = props.row.pieces ? pieceDatasets(palette) : [
     {
       label: props.areaLabel,
       data: x.map((xi, i) => ({ x: xi, y: y[i] })),
@@ -119,7 +193,12 @@ function buildOptions(palette) {
     plugins: {
       legend: {
         position: 'bottom',
-        labels: { boxWidth: 14, font: { size: 11 }, color: text, filter: (item) => item.text !== 'bordes' },
+        labels: {
+          boxWidth: 14,
+          font: { size: 11 },
+          color: text,
+          filter: (item) => item.text && !HIDDEN.includes(item.text),
+        },
       },
       tooltip: {
         backgroundColor: palette['--color-ink'],
@@ -165,7 +244,7 @@ onMounted(() => {
   chart = new Chart(canvasRef.value, { type: 'line', data: buildData(palette), options: buildOptions(palette) })
 })
 
-watch([() => props.row, () => props.curve, () => props.areaLabel, theme], () => {
+watch([() => props.row, () => props.curve, () => props.areaLabel, () => props.partLabels, theme], () => {
   if (chart) render(readPalette())
 })
 

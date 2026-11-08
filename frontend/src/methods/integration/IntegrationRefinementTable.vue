@@ -1,6 +1,7 @@
 <script setup>
 // Tabla de refinamiento del modo función, paginada como ResultsTable, con el
-// paso a paso expandible de cada fila.
+// paso a paso expandible de cada fila. Con `block` (una regla de Simpson:
+// result.rules[i]) muestra sus filas, con S en lugar de T.
 import { computed, ref, watch } from 'vue'
 import GlossaryBlock from '../../components/GlossaryBlock.vue'
 import InfoTip from '../../components/InfoTip.vue'
@@ -8,27 +9,35 @@ import MathFormula from '../../components/MathFormula.vue'
 import TrapezoidStepDetail from './TrapezoidStepDetail.vue'
 import { tinyErrorNote } from './explain'
 import { boundMark, cell, percent } from './formulas'
-import { refinementColumns } from './glossary'
+import { refinementColumns, simpsonWords } from './glossary'
+import { simpsonRowSteps, weightReason } from './simpsonExplain'
 
 const PAGE_SIZE = 10
 
 const props = defineProps({
   result: { type: Object, required: true },
+  block: { type: Object, default: null },
 })
 
-const rows = computed(() =>
-  props.result.iterations.map((step, i) => ({
-    k: step.iteration,
-    item: step.extra,
-    previous: i > 0 ? props.result.iterations[i - 1].extra : null,
-  }))
+const items = computed(() =>
+  props.block ? props.block.rows.map((row) => ({ k: row.k, item: row })) : props.result.iterations.map((s) => ({ k: s.iteration, item: s.extra }))
 )
+const rows = computed(() => items.value.map((r, i) => ({ ...r, previous: i > 0 ? items.value[i - 1].item : null })))
+const valueKey = computed(() => (props.block ? 'S' : 'T'))
 const showTrue = computed(() => props.result.integral.value !== null)
-const showApprox = computed(() => props.result.mean_second !== null)
+const showApprox = computed(() => (props.block ? props.result.mean_fourth : props.result.mean_second) !== null)
 const reference = computed(() => props.result.integral.kind === 'reference')
 const headers = computed(() =>
-  refinementColumns({ showTrue: showTrue.value, showApprox: showApprox.value, reference: reference.value })
+  refinementColumns({
+    showTrue: showTrue.value,
+    showApprox: showApprox.value,
+    reference: reference.value,
+    ...(props.block ? { words: simpsonWords(props.block.rule.key) } : {}),
+  })
 )
+const customSteps = (row) =>
+  props.block ? simpsonRowSteps(props.result, props.block.rule, row.item, row.k, row.previous) : null
+const reason = computed(() => (props.block ? (i, n) => weightReason(props.block.rule, i, n) : null))
 // Filas donde Eₜ se ve 0 pero εₜ no: una nota debajo de la tabla.
 const tinyRows = computed(() =>
   rows.value.filter((r) => tinyErrorNote(r.item, reference.value)).map((r) => r.k)
@@ -90,7 +99,7 @@ function toggle(k) {
               <MathFormula v-if="!row.item.h.exact" :expression="row.item.h.latex" />
               <template v-else>{{ row.item.h.text }}</template>
             </td>
-            <td>{{ cell(row.item.T) }}</td>
+            <td>{{ cell(row.item[valueKey]) }}</td>
             <td>{{ cell(row.item.estimated_error) }}</td>
             <td v-if="showTrue">{{ cell(row.item.true_error) }}</td>
             <td v-if="showTrue">{{ percent(row.item.relative_error) }}</td>
@@ -105,7 +114,14 @@ function toggle(k) {
           <tr v-if="expanded.has(row.k)" class="detail-row">
             <td :colspan="columns">
               <div class="detail-inner">
-                <TrapezoidStepDetail :result="result" :row="row.item" :k="row.k" :previous="row.previous" />
+                <TrapezoidStepDetail
+                  :result="result"
+                  :row="row.item"
+                  :k="row.k"
+                  :previous="row.previous"
+                  :custom-steps="customSteps(row)"
+                  :weight-reason="reason"
+                />
               </div>
             </td>
           </tr>

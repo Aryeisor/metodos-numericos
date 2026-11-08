@@ -12,7 +12,9 @@
 import FunctionTableInput from '../../components/FunctionTableInput.vue'
 import IntegrationConfigFields from './IntegrationConfigFields.vue'
 import IntegrationResult from './IntegrationResult.vue'
-import { MODES, createIntegrationStore } from './store'
+import SimpsonConfigFields from './SimpsonConfigFields.vue'
+import SimpsonResult from './SimpsonResult.vue'
+import { MODES, createIntegrationStore, createSimpsonStore } from './store'
 import IntegrationTheoryPage, { THEORY_SECTIONS } from './theory/IntegrationTheoryPage.vue'
 
 export default {
@@ -43,4 +45,15 @@ export default {
 
   theoryPage: IntegrationTheoryPage,
   theorySections: THEORY_SECTIONS,
+
+  // Lo que cambia por método (sobrescribe la base). Simpson: la regla y un n₀
+  // por regla en la configuración, y su propia vista del resultado. Sin
+  // entrada en THEORY_SECTIONS, todavía no aparece en «Teoría ▾».
+  methods: {
+    simpson: {
+      createStore: createSimpsonStore,
+      configFields: SimpsonConfigFields,
+      resultView: SimpsonResult,
+    },
+  },
 }

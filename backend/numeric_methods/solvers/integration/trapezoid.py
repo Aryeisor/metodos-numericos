@@ -192,12 +192,13 @@ def _recurrence_display(previous_T, new_values, h_number, T):
 
 # --- f'' en [a, b] ----------------------------------------------------------------
 
-def _second_derivative(function, a, b, samples):
-    """(M₂, x donde se alcanza, valores muestreados); M₂ None si f'' no es finita."""
+def _second_derivative(function, a, b, samples, order=2):
+    """(M, x donde se alcanza, valores muestreados) de |f⁽ᵒʳᵈᵉʳ⁾| (M₂ en el
+    trapecio, M₄ en Simpson); M None si la derivada no es finita."""
     xs = [a + (b - a) * i / (samples - 1) for i in range(samples)]
     if function._has_kink(a, b, xs):
         return None, None, None
-    values = [_evaluate(function.evaluators[2], x) for x in xs]
+    values = [_evaluate(function.evaluators[order], x) for x in xs]
     if None in values:
         return None, None, None
     where = max(range(samples), key=lambda i: abs(values[i]))
@@ -497,6 +498,22 @@ def _segment_bound(function, a, b, width):
     return (None, None, None) if M is None else (width ** 3 / 12 * M, M, x_M)
 
 
+def _data_checks(function, xs, ys, warnings):
+    """Cada dato contra la función para comparar; agrega una advertencia por dato que no coincide."""
+    checks = []
+    for i, (x, y) in enumerate(zip(xs, ys)):
+        fx = function(x)
+        ok = fx is not None and abs(y - fx) <= DATA_RELATIVE * max(1.0, abs(fx))
+        checks.append({"i": i, "x_display": display.data_value(x), "y": y, "f": fx,
+                       "difference": None if fx is None else abs(y - fx), "ok": ok})
+        if not ok:
+            warnings.append(
+                f"Punto {i}: el dato no coincide con la función (y = {display.fixed(y)}, "
+                f"f(x) = {'no definida' if fx is None else display.fixed(fx)}); puede ser un error de captura."
+            )
+    return checks
+
+
 def _table_mode(data, rule=TRAPEZOID):
     xs = [float(x) for x, _ in data["points"]]
     ys = [float(y) for _, y in data["points"]]
@@ -566,17 +583,7 @@ def _table_mode(data, rule=TRAPEZOID):
             warnings.append(
                 "No se pudo calcular la integral exacta ni un valor de referencia de la función para comparar."
             )
-        data_checks = []
-        for i, (x, y) in enumerate(zip(xs, ys)):
-            fx = function(x)
-            ok = fx is not None and abs(y - fx) <= DATA_RELATIVE * max(1.0, abs(fx))
-            data_checks.append({"i": i, "x_display": display.data_value(x), "y": y, "f": fx,
-                                "difference": None if fx is None else abs(y - fx), "ok": ok})
-            if not ok:
-                warnings.append(
-                    f"Punto {i}: el dato no coincide con la función (y = {display.fixed(y)}, "
-                    f"f(x) = {'no definida' if fx is None else display.fixed(fx)}); puede ser un error de captura."
-                )
+        data_checks = _data_checks(function, xs, ys, warnings)
         bound = None if None in bounds else math.fsum(bounds)
         if bound is None:
             warnings.append("f''(x) no es finita en algún segmento: no se muestra la cota del error.")

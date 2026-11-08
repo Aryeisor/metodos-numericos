@@ -21,7 +21,7 @@ import {
   segmentColumns,
 } from './glossary'
 
-const TABLE = {
+export const TABLE = {
   theme: 'striped',
   margin: { left: MARGIN, right: MARGIN },
   styles: { fontSize: 8, halign: 'right', cellPadding: 1.5 },
@@ -33,20 +33,20 @@ const REPLACEMENTS = {
   '₀': '0', '₁': '1', '₂': '2', '₃': '3', '₄': '4', '₅': '5', '₆': '6', '₇': '7', '₈': '8', '₉': '9', '₊': '+',
   'ᵢ': 'i', 'ₜ': 't', 'ₐ': 'a', 'ₖ': 'k', 'ₙ': 'n', 'ε': 'e', '−': '-', '≈': '~', '≤': '<=', '≥': '>=', '≠': '!=',
   '′': "'", '✔': 'OK', '⚠': '(!)', '…': '...', '²': '^2', '³': '^3', 'ⁿ': '^n', '⁻': '-', '⁺': '+', '¹': '1',
-  '⁹': '9', 'ˣ': '^x', '∫': 'Integral ', '̄': '', 'Σ': 'Suma', '₌': '=',
+  '⁹': '9', 'ˣ': '^x', '∫': 'Integral ', '̄': '', 'Σ': 'Suma', '₌': '=', '⁽': '(', '⁾': ')', '⁴': '4', '→': '->',
 }
 // Un carácter fuera de WinAnsi hace que jsPDF escriba toda la línea mal: se reemplaza.
-const pdfSafe = (text) =>
-  String(text).replace(/[₀-₌ᵢₜₐₖₙε−≈≤≥≠′✔⚠…²³ⁿ⁻⁺¹⁹ˣ∫̄Σ]/g, (c) => REPLACEMENTS[c] ?? '')
-const num = (value) => (value === null || value === undefined ? '-' : formatNumber(value))
-const pct = (value) => (value === null || value === undefined ? '-' : `${formatNumber(value)} %`)
-const mark = (item) =>
+export const pdfSafe = (text) =>
+  String(text).replace(/[₀-₌ᵢₜₐₖₙε−≈≤≥≠′✔⚠…²³ⁿ⁻⁺¹⁹ˣ∫̄Σ⁽⁾⁴→]/g, (c) => REPLACEMENTS[c] ?? '')
+export const num = (value) => (value === null || value === undefined ? '-' : formatNumber(value))
+export const pct = (value) => (value === null || value === undefined ? '-' : `${formatNumber(value)} %`)
+export const mark = (item) =>
   !item || item.within_bound === null || item.within_bound === undefined
     ? '-'
     : item.within_bound ? (item.by_rounding ? 'OK (R)' : 'OK') : '(!)'
-const shown = (d) => (d.exact ? d.text : d.approx)
+export const shown = (d) => (d.exact ? d.text : d.approx)
 
-function addImage(doc, y, title, image) {
+export function addImage(doc, y, title, image) {
   if (!image?.dataUrl || !(image.width > 0)) return y
   const height = (CONTENT_WIDTH * image.height) / image.width
   y = sectionTitle(doc, y + 2, title)
@@ -55,12 +55,12 @@ function addImage(doc, y, title, image) {
   return y + height + 6
 }
 
-export function exportIntegrationPdf({ result, methodName, trapezoidImage, trapezoidRow, convergenceImage }) {
-  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' })
-  const isTable = result.mode === 'table'
-  const fn = result.function
-  const integral = result.integral
-  const check = result.verification
+/**
+ * Utilidades de escritura del PDF de integración, ligadas a un documento y a
+ * un resultado (las usa también el PDF de Simpson). `weightReason(i, n)`
+ * agrega la columna «Por qué» del peso en la tabla de puntos.
+ */
+export function pdfTools(doc, result, { weightReason = null } = {}) {
   const write = (y, text) => paragraph(doc, y, pdfSafe(text))
   const writeMath = (y, latex) => write(y, `   ${latexToText(latex)}`)
   const label = (y, text) => {
@@ -84,7 +84,7 @@ export function exportIntegrationPdf({ result, methodName, trapezoidImage, trape
   const pointsTable = (y, row) => {
     const first = row.step.kind === 'formula'
     const head = first
-      ? ['i', 'xi', 'Sustitución', 'f(xi)', 'Peso', 'Peso x f(xi)']
+      ? ['i', 'xi', 'Sustitución', 'f(xi)', 'Peso', ...(weightReason ? ['Por qué'] : []), 'Peso x f(xi)']
       : ['i', 'xi', 'Sustitución', 'f(xi)']
     const points = row.step.points.length > 16 ? [...row.step.points.slice(0, 8), ...row.step.points.slice(-8)] : row.step.points
     autoTable(doc, {
@@ -94,7 +94,8 @@ export function exportIntegrationPdf({ result, methodName, trapezoidImage, trape
       head: [head],
       body: points.map((p) => {
         const line = [p.i, shown(p.x_display), pdfSafe(substitutionText(pointSubstitution(result, p)).replace(/^f'/, 'f')), p.f_display]
-        return first ? [...line, p.weight, p.product] : line
+        const reason = weightReason ? [pdfSafe(weightReason(p.i, row.n))] : []
+        return first ? [...line, p.weight, ...reason, p.product] : line
       }),
     })
     y = doc.lastAutoTable.finalY + 4
@@ -125,6 +126,45 @@ export function exportIntegrationPdf({ result, methodName, trapezoidImage, trape
     }
     return y
   }
+
+  // Integral por otro camino: antiderivada paso a paso, F' = f y F(b) − F(a), o la referencia.
+  const integralCheck = (y) => {
+    const integral = result.integral
+    const check = result.verification
+    if (integral?.kind === 'exact' && check.upper) {
+      const anti = integral.antiderivative
+      y = label(y + 1, 'Antiderivada F(x): una función cuya derivada es f')
+      if (anti.steps.detailed) {
+        y = write(y, 'Se integra f término a término, con la regla de cada término:')
+        y = derivation(y, anti.steps, `F(x) = ${anti.latex}`)
+      } else {
+        y = write(y, `F(x) = ${anti.text}`)
+        y = write(y, 'Antiderivada obtenida con integración simbólica; la técnica no se detalla aquí.')
+      }
+      y = label(y + 1, 'Verificación de la antiderivada: al derivar F debe salir f')
+      y = derivation(y, { terms: anti.check.terms }, null)
+      y = writeMath(y, `${anti.check.sum_latex} ${anti.check.ok ? '= f(x) \\text{ OK}' : '\\ne f(x) \\text{ (!)}'}`)
+      y = label(y + 1, 'Teorema fundamental del cálculo: la integral de a a b es F(b) - F(a)')
+      y = write(y, substitutionText(check.upper).replace(/^f'/, 'F'))
+      y = write(y, check.lower.all_zero
+        ? `F(${shown(result.a_display)}) = 0 (todos sus términos se anulan)`
+        : substitutionText(check.lower).replace(/^f'/, 'F'))
+      y = write(y, `I = F(b) - F(a) = ${num(check.upper.value)} - ${num(check.lower.value)} = ${num(integral.value)}`)
+    } else if (integral?.kind === 'reference') {
+      y = write(y, `${referenceExplanation(integral)} Se compara con el ${integral.label}, I ~ ${num(integral.value)}.`)
+    }
+    return y
+  }
+  return { write, writeMath, label, derivation, glossary, pointsTable, steps, integralCheck }
+}
+
+export function exportIntegrationPdf({ result, methodName, trapezoidImage, trapezoidRow, convergenceImage }) {
+  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' })
+  const isTable = result.mode === 'table'
+  const fn = result.function
+  const integral = result.integral
+  const check = result.verification
+  const { write, writeMath, label, derivation, glossary, steps, integralCheck } = pdfTools(doc, result)
 
   doc.setFont('helvetica', 'bold')
   doc.setFontSize(16)
@@ -321,28 +361,7 @@ export function exportIntegrationPdf({ result, methodName, trapezoidImage, trape
   } else {
     y = write(y, 'Con datos, el área total es la suma de las áreas de los trapecios de cada segmento.')
   }
-  if (integral?.kind === 'exact' && check.upper) {
-    const anti = integral.antiderivative
-    y = label(y + 1, 'Antiderivada F(x): una función cuya derivada es f')
-    if (anti.steps.detailed) {
-      y = write(y, 'Se integra f término a término, con la regla de cada término:')
-      y = derivation(y, anti.steps, `F(x) = ${anti.latex}`)
-    } else {
-      y = write(y, `F(x) = ${anti.text}`)
-      y = write(y, 'Antiderivada obtenida con integración simbólica; la técnica no se detalla aquí.')
-    }
-    y = label(y + 1, 'Verificación de la antiderivada: al derivar F debe salir f')
-    y = derivation(y, { terms: anti.check.terms }, null)
-    y = writeMath(y, `${anti.check.sum_latex} ${anti.check.ok ? '= f(x) \\text{ OK}' : '\\ne f(x) \\text{ (!)}'}`)
-    y = label(y + 1, 'Teorema fundamental del cálculo: la integral de a a b es F(b) - F(a)')
-    y = write(y, substitutionText(check.upper).replace(/^f'/, 'F'))
-    y = write(y, check.lower.all_zero
-      ? `F(${shown(result.a_display)}) = 0 (todos sus términos se anulan)`
-      : substitutionText(check.lower).replace(/^f'/, 'F'))
-    y = write(y, `I = F(b) - F(a) = ${num(check.upper.value)} - ${num(check.lower.value)} = ${num(integral.value)}`)
-  } else if (integral?.kind === 'reference') {
-    y = write(y, `${referenceExplanation(integral)} Se compara con el ${integral.label}, I ~ ${num(integral.value)}.`)
-  }
+  y = integralCheck(y)
   const final = isTable ? check.final : { ...check.final, I: integral.value }
   if (final && final.true_error !== null && final.true_error !== undefined) {
     autoTable(doc, {

@@ -217,7 +217,12 @@ function recurrenceSteps(result, row, k, previous) {
 
 // --- Errores (todas las filas) ----------------------------------------------------
 
-function criterionCheck(result, item) {
+/**
+ * Comparación |Eₜ| con la cota. `derivative` es la derivada de la cota y
+ * `constant` si es constante (la igualdad se explica por eso); `factor`, el
+ * factor de R (h/2 en el trapecio, h/3 o 3h/8 en Simpson).
+ */
+function criterionCheck(result, item, { derivative = "f''", constant = result.function?.second.constant, factor = 'h/2' } = {}) {
   if (item.within_bound === null || item.within_bound === undefined) return null
   const size = latexNumber(Math.abs(item.true_error))
   const bound = latexNumber(item.bound)
@@ -234,9 +239,7 @@ function criterionCheck(result, item) {
       kind: 'check',
       ok: true,
       latex: `|E_t| = ${size} = ${bound} = \\text{cota}`,
-      text: result.function?.second.constant
-        ? "|Eₜ| = cota ✔ (la igualdad ocurre porque f'' es constante)."
-        : '|Eₜ| = cota ✔.',
+      text: constant ? `|Eₜ| = cota ✔ (la igualdad ocurre porque ${derivative} es constante).` : '|Eₜ| = cota ✔.',
     }
   }
   if (item.by_rounding) {
@@ -245,7 +248,7 @@ function criterionCheck(result, item) {
       ok: true,
       latex: `|E_t| = ${size} \\le ${bound} + R \\quad (R = ${latexNumber(item.rounding)})`,
       text:
-        '|Eₜ| supera la cota sólo por el redondeo de la computadora, R = 2ε·Σ|wᵢ·f(xᵢ)|·h/2: dentro de ese margen se cumple.',
+        `|Eₜ| supera la cota sólo por el redondeo de la computadora, R = 2ε·Σ|wᵢ·f(xᵢ)|·${factor}: dentro de ese margen se cumple.`,
     }
   }
   return {

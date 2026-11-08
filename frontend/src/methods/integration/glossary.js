@@ -54,20 +54,46 @@ export const BOUND_GLOSSARY = {
 
 const REFERENCE = ' (aquí respecto al valor de referencia, que no es exacto)'
 
+// Palabras que cambian de una regla a otra en las leyendas de las tablas.
+const TRAPEZOID_WORDS = {
+  value: 'T',
+  units: 'trapecios',
+  unit: 'trapecio',
+  area: 'los trapecios',
+  subject: 'el trapecio',
+  derivative: "f''",
+  ratio: '0.25',
+  divisor: '4',
+}
+
+/** Palabras de Simpson para la regla `rule` («simpson13» o «simpson38»). */
+export const simpsonWords = (rule) => ({
+  value: 'S',
+  units: 'segmentos',
+  unit: 'segmento',
+  area: rule === 'simpson38' ? 'las cúbicas' : 'las parábolas',
+  subject: 'Simpson',
+  derivative: 'f⁽⁴⁾',
+  ratio: '0.0625',
+  divisor: '16',
+})
+
 /** Columnas de la tabla de refinamiento (las que se muestran). */
-export function refinementColumns({ showTrue, showApprox, reference }) {
+export function refinementColumns({ showTrue, showApprox, reference, words = TRAPEZOID_WORDS }) {
   const about = reference ? REFERENCE : ''
+  const w = words
+  const V = w.value
   const columns = [
     { key: 'k', label: 'k', symbol: 'k', text: 'Número de la fila de refinamiento.' },
-    { key: 'n', label: 'n', symbol: 'n', text: 'Cuántos trapecios se usaron en esa fila; se duplica en cada fila.' },
-    { key: 'h', label: 'h', symbol: 'h', text: 'Ancho de cada trapecio, (b − a)/n.' },
-    { key: 'T', label: 'T', symbol: 'T', text: 'El área calculada con los trapecios (la aproximación de la integral).' },
+    { key: 'n', label: 'n', symbol: 'n', text: `Cuántos ${w.units} se usaron en esa fila; se duplica en cada fila.` },
+    { key: 'h', label: 'h', symbol: 'h', text: `Ancho de cada ${w.unit}, (b − a)/n.` },
+    { key: V, label: V, symbol: V, text: `El área calculada con ${w.area} (la aproximación de la integral).` },
     {
       key: 'estimated',
       label: 'Error estimado',
       symbol: '\\text{Error estimado}',
       text:
-        'Cuánto cambió T respecto a la fila anterior, |T_k − T_(k−1)|. Decide cuándo parar: cuando ya casi no cambia ' +
+        `Cuánto cambió ${V} respecto a la fila anterior, |${V}_k − ${V}_(k−1)|. Decide cuándo parar: cuando ya casi no cambia ` +
         '(es menor que la tolerancia), se considera que se llegó a la precisión pedida.',
     },
   ]
@@ -78,7 +104,7 @@ export function refinementColumns({ showTrue, showApprox, reference }) {
         label: 'Eₜ',
         symbol: 'E_t',
         text:
-          `Error verdadero, I − T${about}. Positivo si el trapecio se quedó corto (subestima); negativo si se pasó ` +
+          `Error verdadero, I − ${V}${about}. Positivo si ${w.subject} se quedó corto (subestima); negativo si se pasó ` +
           '(sobreestima). Sólo se puede calcular porque el sistema conoce la integral.',
       },
       {
@@ -94,7 +120,7 @@ export function refinementColumns({ showTrue, showApprox, reference }) {
       key: 'approx',
       label: 'Eₐ',
       symbol: 'E_a',
-      text: "El error estimado con la fórmula de Chapra (con el promedio de f'').",
+      text: `El error estimado con la fórmula de Chapra (con el promedio de ${w.derivative}).`,
     })
   }
   columns.push({ key: 'bound', label: 'Cota', symbol: '\\text{Cota}', text: 'El error máximo posible según la teoría.' })
@@ -104,7 +130,7 @@ export function refinementColumns({ showTrue, showApprox, reference }) {
         key: 'ratio',
         label: 'Razón',
         symbol: '\\text{Razón}',
-        text: 'El error de esta fila dividido entre el de la anterior. Debe acercarse a 0.25: al duplicar n el error se divide entre 4.',
+        text: `El error de esta fila dividido entre el de la anterior. Debe acercarse a ${w.ratio}: al duplicar n el error se divide entre ${w.divisor}.`,
       },
       {
         key: 'within',
@@ -140,16 +166,19 @@ export function segmentColumns(hasBound) {
 }
 
 /** Columnas de la tabla de comparación de la comprobación. */
-export function comparisonColumns({ reference, isTable }) {
+export function comparisonColumns({ reference, isTable, words = TRAPEZOID_WORDS }) {
+  const V = words.value
+  let valueText = isTable ? 'La suma de las áreas de los trapecios.' : 'Resultado del trapecio en la última fila.'
+  if (V !== 'T') valueText = isTable ? 'Resultado de Simpson con los datos.' : 'Resultado de Simpson en la última fila.'
   return [
-    { key: 'T', label: 'T', symbol: 'T', text: isTable ? 'La suma de las áreas de los trapecios.' : 'Resultado del trapecio en la última fila.' },
+    { key: V, label: V, symbol: V, text: valueText },
     {
       key: 'I',
       label: 'I',
       symbol: 'I',
       text: reference ? 'Valor de referencia: la integral calculada numéricamente con 30 dígitos.' : 'Valor exacto, calculado con la antiderivada.',
     },
-    { key: 'true', label: 'Eₜ = I − T', symbol: 'E_t = I - T', text: `Error verdadero${reference ? REFERENCE : ''}.` },
+    { key: 'true', label: `Eₜ = I − ${V}`, symbol: `E_t = I - ${V}`, text: `Error verdadero${reference ? REFERENCE : ''}.` },
     { key: 'relative', label: 'εₜ', symbol: '\\varepsilon_t', text: 'El error en porcentaje del valor de I.' },
     { key: 'bound', label: 'Cota', symbol: '\\text{Cota}', text: 'Error máximo teórico.' },
     { key: 'within', label: '|Eₜ| ≤ cota', symbol: '|E_t| \\le \\text{cota}', text: '✔ si se cumple la teoría.' },

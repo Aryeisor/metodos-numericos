@@ -45,7 +45,9 @@ function script(s, i, mark) {
   const arg = braced(s, i)
   if (arg) {
     const inner = latexToText(arg[0])
-    return [/^[\w.']+$/.test(inner) ? `${mark}${inner}` : `${mark}(${inner})`, arg[1]]
+    // f^{(4)} → f^(4): el orden de la derivada ya trae sus paréntesis.
+    const plain = /^[\w.']+$/.test(inner) || /^\(\w+\)$/.test(inner)
+    return [plain ? `${mark}${inner}` : `${mark}(${inner})`, arg[1]]
   }
   return [`${mark}${s[i] ?? ''}`, i + 1]
 }

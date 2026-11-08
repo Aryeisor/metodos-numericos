@@ -541,6 +541,63 @@ TRAPEZOID_EXAMPLES = [
 ]
 
 
+def _simpson_example(example_id, name, description, rule="both", **data):
+    """Ejemplo de Simpson: el de integración con la regla y un n₀ por regla."""
+    example = _integration_example(example_id, name, description, **data)
+    example.update({"rule": rule, "n0_13": data.get("n0_13", 2), "n0_38": data.get("n0_38", 3)})
+    return example
+
+
+# Método de Simpson. Los valores esperados (README y tests/test_simpson.py) se
+# verificaron con un script independiente (fracciones exactas).
+SIMPSON_EXAMPLES = [
+    _simpson_example(
+        "simp-chapra", "Polinomio de Chapra en [0, 0.8]",
+        "Exacta 1.640533. 1/3 con n = 2: 1.367467; 3/8 con n = 3: 1.51917. Eₐ = Eₜ en todas las filas.",
+        function=CHAPRA_POLYNOMIAL, a=0, b=0.8,
+    ),
+    _simpson_example(
+        "simp-gauss", "e^(−x²) en [0, 1]",
+        "Antiderivada con erf: se compara con un valor de referencia, 0.746824.",
+        function="exp(-x^2)", a=0, b=1,
+    ),
+    _simpson_example(
+        "simp-seno", "sin(x) en [0, π] con Simpson 1/3",
+        "Exacta 2. f⁽⁴⁾ = sin x > 0: Simpson sobreestima la integral.",
+        rule="simpson13", function="sin(x)", a=0, b=3.141592653589793,
+    ),
+    _simpson_example(
+        "simp-cubica", "x³ en [0, 2]",
+        "Exacta 4: Simpson es exacto para polinomios de grado ≤ 3 (error y cota 0).",
+        function="x^3", a=0, b=2,
+    ),
+    _simpson_example(
+        "simp-cuarta", "x⁴ en [0, 2]",
+        "Exacta 6.4. f⁽⁴⁾ = 24 es constante: Eₐ = Eₜ y el error es igual a la cota.",
+        function="x^4", a=0, b=2,
+    ),
+    _simpson_example(
+        "simp-reciproco", "1/x en [1, 2] con Simpson 3/8",
+        "Exacta ln 2 ≈ 0.693147.",
+        rule="simpson38", function="1/x", a=1, b=2,
+    ),
+    _simpson_example(
+        "simp-tabla-chapra", "Tabla de Chapra con h = 0.1 (tabla + función)",
+        "Nueve datos (n = 8, par): Simpson 1/3 da 1.639467; identidad con el trapecio.",
+        points=[[0, 0.2], [0.1, 1.289], [0.2, 1.288], [0.3, 1.607], [0.4, 2.456], [0.5, 3.325],
+                [0.6, 3.464], [0.7, 2.363], [0.8, 0.232]],
+        compare_function=CHAPRA_POLYNOMIAL,
+    ),
+    _simpson_example(
+        "simp-tabla-impar", "Tabla de Chapra con n = 5 (combinación 1/3 + 3/8)",
+        "Seis datos (n impar): 1/3 en [0, 0.32] y 3/8 en [0.32, 0.8]; total 1.645077.",
+        points=[[0, 0.2], [0.16, 1.296919], [0.32, 1.743393], [0.48, 3.186015], [0.64, 3.181929],
+                [0.8, 0.232]],
+        compare_function=CHAPRA_POLYNOMIAL,
+    ),
+]
+
+
 EXAMPLES = {
     "jacobi": LINEAR_SYSTEM_EXAMPLES,
     "gauss-seidel": LINEAR_SYSTEM_EXAMPLES,
@@ -551,6 +608,7 @@ EXAMPLES = {
     "tres-puntos": THREE_POINT_EXAMPLES,
     "cinco-puntos": FIVE_POINT_EXAMPLES,
     "trapecio": TRAPEZOID_EXAMPLES,
+    "simpson": SIMPSON_EXAMPLES,
 }
 
 

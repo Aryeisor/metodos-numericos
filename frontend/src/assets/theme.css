@@ -64,6 +64,12 @@
   /* Área de los trapecios (integración): sobre el eje y bajo el eje (f < 0). */
   --color-area-positive: rgba(37, 99, 235, 0.22);
   --color-area-negative: rgba(185, 28, 28, 0.22);
+  /* Simpson: cada parábola o cúbica alterna con el tono «alt»; la parte 3/8
+     de la combinación usa los tonos «part2». */
+  --color-area-positive-alt: rgba(37, 99, 235, 0.4);
+  --color-area-negative-alt: rgba(185, 28, 28, 0.4);
+  --color-area-part2: rgba(147, 51, 234, 0.2);
+  --color-area-part2-alt: rgba(147, 51, 234, 0.38);
 
   /* ---- Elevación --------------------------------------------------------- */
   --color-backdrop: rgba(15, 23, 42, 0.45);
@@ -122,6 +128,10 @@
   --color-chart-fill-danger: rgba(245, 154, 154, 0.15);
   --color-area-positive: rgba(130, 170, 248, 0.28);
   --color-area-negative: rgba(245, 154, 154, 0.28);
+  --color-area-positive-alt: rgba(130, 170, 248, 0.5);
+  --color-area-negative-alt: rgba(245, 154, 154, 0.5);
+  --color-area-part2: rgba(200, 162, 246, 0.26);
+  --color-area-part2-alt: rgba(200, 162, 246, 0.48);
 
   /* En oscuro la separación la dan los tonos; la sombra casi no se ve. */
   --color-backdrop: rgba(2, 6, 23, 0.7);

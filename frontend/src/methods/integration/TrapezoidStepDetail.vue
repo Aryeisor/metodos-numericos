@@ -1,7 +1,8 @@
 <script setup>
 // Paso a paso explicado de una fila de la tabla de refinamiento (modo función).
 // Los pasos (título, frases, fórmulas sustituidas y resultado) salen de
-// explain.js; aquí sólo se dibujan. Azul: valores de la fila anterior; verde:
+// explain.js, o de `customSteps` (Simpson: simpsonExplain.js); aquí sólo se
+// dibujan. `weightReason(i, n)` agrega la columna «Por qué» del peso. Azul: valores de la fila anterior; verde:
 // valores nuevos. Todos los números vienen del backend.
 import { computed, ref, watch } from 'vue'
 import MathFormula from '../../components/MathFormula.vue'
@@ -13,11 +14,13 @@ const props = defineProps({
   row: { type: Object, required: true },
   k: { type: Number, required: true },
   previous: { type: Object, default: null },
+  customSteps: { type: Array, default: null },
+  weightReason: { type: Function, default: null },
 })
 
 const step = computed(() => props.row.step)
 const isFirst = computed(() => step.value.kind === 'formula')
-const steps = computed(() => rowSteps(props.result, props.row, props.k, props.previous))
+const steps = computed(() => props.customSteps ?? rowSteps(props.result, props.row, props.k, props.previous))
 
 const showAll = ref(false)
 watch(
@@ -28,7 +31,7 @@ watch(
 )
 const points = computed(() => foldedPoints(step.value, showAll.value))
 const hidden = computed(() => step.value.count - step.value.points.length)
-const columns = computed(() => (isFirst.value ? 6 : 4))
+const columns = computed(() => (isFirst.value ? 6 : 4) + (props.weightReason ? 1 : 0))
 const substitution = (p) => substitutionLatex(pointSubstitution(props.result, p), 'f')
 </script>
 
@@ -66,6 +69,7 @@ const substitution = (p) => substitutionLatex(pointSubstitution(props.result, p)
                   <th>Sustitución</th>
                   <th>f(xᵢ)</th>
                   <th v-if="isFirst">Peso</th>
+                  <th v-if="isFirst && weightReason">Por qué</th>
                   <th v-if="isFirst">Peso × f(xᵢ)</th>
                 </tr>
               </thead>
@@ -81,6 +85,7 @@ const substitution = (p) => substitutionLatex(pointSubstitution(props.result, p)
                     <td class="substitution"><MathFormula :expression="substitution(p)" /></td>
                     <td :class="{ 'value-new': !isFirst }">{{ p.f_display }}</td>
                     <td v-if="isFirst">{{ p.weight }}</td>
+                    <td v-if="isFirst && weightReason" class="reason">{{ weightReason(p.i, row.n) }}</td>
                     <td v-if="isFirst">{{ p.product }}</td>
                   </template>
                   <td v-else :colspan="columns" class="gap-cell">
@@ -170,7 +175,8 @@ const substitution = (p) => substitutionLatex(pointSubstitution(props.result, p)
   font-variant-numeric: tabular-nums;
 }
 
-.eval-table .substitution {
+.eval-table .substitution,
+.eval-table .reason {
   text-align: left;
 }
 
