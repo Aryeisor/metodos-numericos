@@ -2,8 +2,9 @@
 
 Aplicación web full-stack para resolver, paso a paso, sistemas de ecuaciones
 **lineales** y **no lineales**, las **raíces de polinomios** con métodos
-iterativos y la **derivada numérica** con fórmulas de diferencias finitas, y
-para estudiar la teoría de cada método.
+iterativos, la **derivada numérica** con fórmulas de diferencias finitas y la
+**integral numérica** con reglas de integración (método del trapecio), y para
+estudiar la teoría de cada método.
 
 | Categoría | Método | Qué resuelve |
 | --- | --- | --- |
@@ -15,6 +16,7 @@ para estudiar la teoría de cada método.
 | Diferenciación numérica | **Diferencias progresiva y regresiva** | `f'(x₀)` a partir de `f(x)` (con refinamiento de h) o de una tabla de datos `(xᵢ, yᵢ)` |
 | Diferenciación numérica | **Fórmula de 3 puntos** | `f'(x₀)` con el punto medio y los extremos hacia adelante y hacia atrás, de orden `O(h²)`; desde `f(x)` o desde una tabla igualmente espaciada |
 | Diferenciación numérica | **Fórmula de 5 puntos** | `f'(x₀)` con el punto medio y los extremos de 5 puntos, de orden `O(h⁴)`; desde `f(x)` o desde una tabla igualmente espaciada (de 5 a 20 puntos) |
+| Integración numérica | **Método del trapecio** | `∫ₐᵇ f(x) dx` con la regla simple y la compuesta, refinando `n` (con la recurrencia que aprovecha los puntos ya evaluados), o desde una tabla de datos con espaciado no uniforme (de 2 a 30 puntos) |
 
 - **Backend:** Django + Django REST Framework (API REST) y sympy para el
   manejo simbólico de las ecuaciones.
@@ -43,12 +45,13 @@ para estudiar la teoría de cada método.
 
 ### Vista «Resolver» (`/resolver/<método>`)
 
-- **Ejemplos precargados** por método (46 en total: 6 lineales compartidos por
+- **Ejemplos precargados** por método (54 en total: 6 lineales compartidos por
   Jacobi y Gauss-Seidel, 4 de Punto Fijo, 3 de Newton, 9 de Bairstow, 8 de
-  diferencias finitas, 8 de la fórmula de 3 puntos y 8 de la de 5 puntos),
+  diferencias finitas, 8 de la fórmula de 3 puntos, 8 de la de 5 puntos y 8
+  del método del trapecio),
   que se cargan en el
   formulario con un clic.
-- **Botón «Limpiar»** al lado de «Resolver», en los ocho métodos: deja la
+- **Botón «Limpiar»** al lado de «Resolver», en los nueve métodos: deja la
   vista como al abrir el método (formulario con su tamaño y valores
   iniciales, tolerancia, máximo de iteraciones y opciones por defecto del
   método) y borra el resultado, los errores, las advertencias, las vistas
@@ -79,6 +82,15 @@ para estudiar la teoría de cada método.
     (punto medio, extremo hacia adelante, extremo hacia atrás o **todas**),
     tolerancia `0.000001` por defecto y de 5 a 20 puntos igualmente
     espaciados en modo tabla (9 filas vacías al empezar o al limpiar).
+  - Integración numérica: el mismo formulario de dos modos (compartido en
+    `components/FunctionTableInput.vue`). **Función**: `f(x)` con la barra de
+    símbolos y la vista previa, los límites `a` y `b` (números o fracciones,
+    con `a < b`) y, en la configuración, los **segmentos iniciales `n₀`** (de
+    1 a 1000, por defecto 1), la tolerancia del error estimado (`0.000001`) y
+    el máximo de refinamientos (20, de 6 a 22). **Tabla de datos**: de 2 a 30
+    puntos `(xᵢ, yᵢ)` con `x` estrictamente creciente y **espaciado libre**
+    (9 filas vacías al empezar o al limpiar) y una función opcional para
+    comparar; se ocultan `n₀`, la tolerancia y el máximo.
 - **Barra de símbolos matemáticos** (√, xⁿ, log, ln, exp, sin, cos, tan, π, e,
   |x|, paréntesis y un desplegable «Más funciones» con trigonométricas
   inversas e hiperbólicas). Inserta en la posición del cursor del campo activo
@@ -115,6 +127,15 @@ para estudiar la teoría de cada método.
   la misma vista, con la comparación con la de 3 puntos y las diferencias, la
   identidad de Richardson y, en modo tabla, el punto medio de 3 puntos como
   referencia (ver su [detalle](#fórmula-de-5-puntos)).
+- En el **método del trapecio**, el resultado tiene su propia vista: resumen
+  (`T`, la integral exacta o de referencia con su rótulo, `Eₜ` y `εₜ`),
+  datos del problema (`∫ₐᵇ f(x) dx`, `f'` y `f''`), el **gráfico de los
+  trapecios** (la curva y los trapecios sombreados de la fila elegida, con un
+  color distinto bajo el eje; selector de fila para `n ≤ 64`), la tabla de
+  refinamiento (o la de segmentos) con paso a paso, el gráfico de
+  convergencia y la «Comprobación» (ver su [detalle](#método-del-trapecio)).
+  El gráfico de trapecios (`components/TrapezoidChart.vue`) es genérico: lo
+  reutilizarán Simpson y las demás reglas.
 
 ### Vista «Teoría» (`/teoria/<método>`)
 
@@ -673,6 +694,101 @@ secciones).
   `(4(28.958315) − 29.193778)/3 = 28.879827`, que se muestra con la nota de
   diferencia por redondeo.
 
+### Método del trapecio
+
+- **Fórmulas** (notación de Chapra y Canale), con `h = (b − a)/n` y
+  `xᵢ = a + i·h`:
+  - simple (`n = 1`): `I ≈ (b − a)·[f(a) + f(b)]/2`;
+  - compuesta: `I ≈ (h/2)·[f(x₀) + 2·Σᵢ₌₁ⁿ⁻¹ f(xᵢ) + f(xₙ)]`.
+
+  En el motor es una **regla compuesta con pesos** (`solvers/integration/rules.py`):
+  pesos `1, 2, …, 2, 1` multiplicados por `h/2`. Simpson se declarará con
+  `1, 4, 2, …, 4, 1` y `h/3`.
+- **Tabla de refinamiento:** la fila `k` usa `n_k = n₀·2^(k−1)` y
+  `h_k = (b − a)/n_k`. Columnas: `k`, `n`, `h` (exacto con hasta 12 decimales;
+  si no, `(b − a)/n` con su aproximación), `T`, error estimado
+  `|T_k − T_(k−1)|`, `Eₜ`, `εₜ`, `Eₐ`, cota, razón `Eₜ,k/Eₜ,(k−1)` (→ 0.25) y
+  «`|Eₜ| ≤ cota + R_k`», con `R_k = 2ε·Σ|wᵢ·f(xᵢ)|·(h/2)`. Se detiene cuando
+  el error estimado es `≤` tolerancia con al menos 6 filas; si se agota el
+  máximo, `converged = false` con una advertencia.
+- **Errores:**
+  - verdadero `Eₜ = I − T`, con signo;
+  - relativo `εₜ = |Eₜ|/|I|·100` («—» si `|I| < 10⁻¹²`);
+  - aproximado de Chapra `Eₐ = −(b − a)h²/12·f̄''`, con
+    `f̄'' = [f'(b) − f'(a)]/(b − a)` (el promedio exacto de `f''`, con `f'`
+    simbólica; si `f'(a)` o `f'(b)` no es finita, no se muestra);
+  - cota `(b − a)h²/12·M₂`, con `M₂ = máx |f''|` estimado con 2001 puntos
+    equiespaciados (se indica en qué `x` se alcanzó).
+- **Recurrencia:** desde la fila 2,
+  `T_k = T_(k−1)/2 + h_k·Σ f(nuevos)`, con los nuevos en `a + (2j − 1)·h_k`:
+  sólo se evalúan los puntos nuevos (la base de Romberg). Ejemplo 1:
+  `T₂ = 0.1728/2 + 0.4·f(0.4) = 1.0688` y
+  `T₃ = 1.0688/2 + 0.2·[f(0.2) + f(0.6)] = 1.4848`.
+- **Paso a paso:** fila 1 con `h`, la tabla de `xᵢ`, `f(xᵢ)` y su peso (con
+  más de 17 puntos, los 8 primeros y los 8 últimos) y la sustitución en la
+  fórmula; filas siguientes con `h_k`, los puntos nuevos en verde (plegados
+  si son más de 16), `T_(k−1)` en azul y la recurrencia; después, error
+  estimado, `Eₜ`, `εₜ`, `Eₐ` con `f̄''` sustituido, la cota con `M₂` y la
+  razón. Los valores usan 6 decimales y se agregan decimales (hasta 15) si
+  hiciera falta para que el resultado visible sea coherente con ellos.
+- **Integral exacta o de referencia** (`solvers/integration/exact.py`, común a
+  todas las reglas): `sympy.integrate` da la antiderivada `F` (los decimales
+  de `f` se pasan antes a racionales, así `F` sale con fracciones exactas
+  como `200/3`); si `F` no contiene `Integral`, sólo usa funciones de la
+  lista blanca y `F(a)`, `F(b)` son reales y finitos, `I = F(b) − F(a)`
+  («exacta»). Si no (función especial como `erf`, tiempo agotado, integral
+  impropia…), `I` se calcula con `mpmath.quad` a 30 dígitos («valor de
+  referencia (cálculo numérico de alta precisión)») y `Eₜ` y `εₜ` se rotulan
+  «respecto al valor de referencia». Sin ninguno de los dos, no se muestran
+  `Eₜ`, `εₜ` ni la razón.
+- **Límite de tiempo de la integración simbólica (3 s):** `sympy.integrate`
+  corre en un **proceso hijo** que se mata al agotarse el plazo (`fork` en
+  Linux/gunicorn, `spawn` en Windows con `runserver`). Un hilo no puede
+  detenerse y `signal.alarm` no existe en Windows ni funciona fuera del hilo
+  principal. El plazo empieza cuando el hijo avisa que está listo (en
+  Windows, `spawn` tarda unos 2 s en importar sympy) y cada antiderivada se
+  guarda en una caché.
+- **Validaciones (400):** `a < b`; `f` real y finita en `a` y en `b`
+  («f(x) no está definida en x = 0 (límite a)»); `f` sólo en `x`; `n₀` de 1 a
+  1000; máximo de 6 a 22. Si un punto interior da un valor no finito (por
+  ejemplo `1/(x − 1)` en `[0, 2]`), el método se detiene con
+  `converged = false` y la advertencia «f(x) no está definida en x = 1,
+  dentro de [0, 2]: la integral puede no existir»; si ocurre ya en la fila
+  1, es un 400 con ese mensaje.
+- **Notas:** si `f''` tiene un solo signo en `[a, b]` (según el muestreo):
+  «f'' < 0 … el trapecio subestima la integral» o «f'' > 0 … sobreestima».
+- **Modo tabla (espaciado no uniforme):**
+  `I ≈ Σ (xᵢ₊₁ − xᵢ)·(yᵢ + yᵢ₊₁)/2`, cada trapecio con su propio ancho.
+  Tabla de segmentos: `i`, `[xᵢ, xᵢ₊₁]`, `hᵢ`, `yᵢ`, `yᵢ₊₁`, área y área
+  acumulada, con el paso a paso `hᵢ·(yᵢ + yᵢ₊₁)/2` de cada uno. Si el
+  espaciado es uniforme, se indica y se muestra también la fórmula compuesta
+  con `h`. Con función para comparar: integral exacta o de referencia en
+  `[x₀, xₙ]`, `Eₜ`, `εₜ`, la cota por segmentos `Σ hᵢ³/12·máx|f''|` (401
+  puntos por segmento) y la comprobación de los datos.
+- **Comprobación:** con valor exacto, `F(x)` en LaTeX (coeficientes racionales
+  como fracciones, `\frac{200}{3}x^3`), `F(b)` y `F(a)` término a término
+  (`F(0.8) = 0.2(0.8) + 12.5(0.8)² − (200/3)(0.8)³ + … ≈ 0.16 + 8 −
+  34.133333 + 69.12 − 58.9824 + 17.476267 ≈ 1.640533`; `F(0) = 0`, «todos sus
+  términos se anulan»), la comparación `T`, `I`, `Eₜ`, `εₜ`, cota con ✔/⚠ y
+  una línea sobre todas las filas. Con valor de referencia, se indica que no
+  hay antiderivada elemental y se compara con la referencia. En modo tabla:
+  la suma de las áreas es el total (con `≈` si las áreas a 6 decimales no
+  suman exacto), la fórmula compuesta es igual a esa suma (si es uniforme),
+  los datos contra `f` (`|yᵢ − f(xᵢ)| ≤ 10⁻⁶·máx(1, |f(xᵢ)|)`) y la
+  comparación con la integral.
+- **Ejemplos** (tolerancia `0.000001`, máximo 20):
+
+  | # | Datos | Resultado |
+  | --- | --- | --- |
+  | 1 | Chapra `0.2 + 25x − 200x² + 675x³ − 900x⁴ + 400x⁵` en `[0, 0.8]` | exacta 1.640533; fila 1: T = 0.1728, Eₜ = 1.467733 (89.4668 %), Eₐ = 2.56, cota 17.066667; para en la fila 13 (n = 4096) |
+  | 2 | `exp(-x^2)` en `[0, 1]` | referencia 0.746824 (erf); 0.68394, 0.73137, 0.742984; fila 10 |
+  | 3 | `sin(x)` en `[0, π]` | exacta 2; 0, 1.570796, 1.896119; subestima; fila 13 |
+  | 4 | `x^2` en `[0, 2]` | exacta 8/3; 4, 3, 2.75; `Eₐ = Eₜ` y `\|Eₜ\|` = cota; fila 12 |
+  | 5 | `2x + 1` en `[1, 3]` | exacta 10 en todas las filas, error y cota 0; fila 6 |
+  | 6 | `exp(x)` en `[0, 1]`, `n₀ = 2` | exacta e − 1; 1.753931, 1.727222, 1.720519; fila 10 (n = 1024) |
+  | 7 | Tabla de Chapra con h = 0.1 + función | total 1.6008 = fórmula compuesta; Eₜ = 0.039733 (2.422 %) |
+  | 8 | Tabla de Chapra con segmentos desiguales + función | total 1.594801; Eₜ = 0.045732 (2.7877 %); datos ✔ |
+
 ---
 
 ## API
@@ -691,6 +807,7 @@ Todas las rutas cuelgan de `/api/`.
 | POST | `/api/solve/diferencias-finitas/` | Aproxima `f'(x)` con las diferencias progresiva y regresiva |
 | POST | `/api/solve/tres-puntos/` | Aproxima `f'(x)` con la fórmula de 3 puntos (punto medio y extremos) |
 | POST | `/api/solve/cinco-puntos/` | Aproxima `f'(x)` con la fórmula de 5 puntos (punto medio y extremos) |
+| POST | `/api/solve/trapecio/` | Aproxima `∫ₐᵇ f(x) dx` con el método del trapecio |
 | POST | `/api/expressions/preview` | Valida una ecuación y devuelve su LaTeX (no resuelve nada) |
 
 ### Cuerpo de la petición
@@ -780,6 +897,20 @@ Fórmula de 5 puntos: el mismo cuerpo, con `formula` = `punto_medio_5`,
 `extremo_adelante_5`, `extremo_atras_5` o `all` (por defecto) y, en modo
 tabla, de 5 a 20 puntos igualmente espaciados.
 
+Método del trapecio, modo función (`n0` de 1 a 1000, por defecto 1;
+`max_iterations` de 6 a 22, por defecto 20; `tolerance` por defecto `0.000001`):
+
+```json
+{ "mode": "function", "function": "exp(-x^2)", "a": 0, "b": 1, "n0": 1, "tolerance": 0.000001, "max_iterations": 20 }
+```
+
+Modo tabla (de 2 a 30 puntos con x estrictamente creciente, espaciado libre;
+`compare_function` opcional):
+
+```json
+{ "mode": "table", "points": [[0, 0.2], [0.12, 1.309729], [0.22, 1.305241]], "compare_function": "" }
+```
+
 Vista previa de una ecuación:
 
 ```json
@@ -862,6 +993,25 @@ Campos propios de cada categoría:
   y `variables` incluyen el punto medio de 3 puntos (`punto_medio`) de
   referencia.
 
+- **Método del trapecio:** `mode`, `rule` (la regla como datos: `factor`,
+  `ends`, `interior`, `formula_latex`, `bound_latex`, `expected_ratio`…),
+  `function` (`latex`, `text`, `uses_trigonometry`, `first` y `second` con
+  `f'` y `f''`; `null` en modo tabla sin función), `integral` (`kind` —
+  `exact`, `reference` o `null`—, `value`, `label`, `special`, `timed_out`,
+  `antiderivative`), `curve` (300 puntos de `f`), `chart_rows` (los puntos de
+  cada fila con `n ≤ 64`), `notes`, `a_display`, `b_display`,
+  `sampling_points` y `verification` (`upper` y `lower` con `F(b)` y `F(a)`
+  término a término, `final`, `failed_rows`, `all_within`; en modo tabla,
+  `areas`, `areas_sum`, `total_display` y `data`). En modo función, además,
+  `n0`, `tolerance`, `max_iterations`, `width_display`, `mean_second`
+  (`f'(a)`, `f'(b)` y `f̄''`) y `M2` (valor y `x`); cada `extra` de
+  `iterations` lleva `n`, `h`, `T`, `previous_T`, `estimated_error`,
+  `true_error`, `relative_error`, `approx_error`, `bound`, `rounding`,
+  `within_bound`, `by_rounding`, `ratio` y `step` (el paso a paso con sus
+  textos). En modo tabla, `points`, `total`, `uniform` y `composite`; cada
+  `extra` es un segmento (`width`, `y`, `pair_sum`, `area`, `area_display`,
+  `cumulative`, `bound`).
+
 Los errores de validación de la entrada responden **400** con listas planas de
 mensajes por campo. Un despeje imposible en Punto Fijo responde **400** con el
 motivo en `detail`.
@@ -884,7 +1034,7 @@ metodos/
 │       ├── views.py, urls.py        # Una ruta /api/solve/<slug>/ por método registrado + methods, examples, preview
 │       ├── examples_data.py         # Ejemplos precargados por método
 │       ├── serializers/             # Validación de entrada: linear.py, nonlinear.py, polynomial.py,
-│       │                            # differentiation.py, expressions.py
+│       │                            # differentiation.py, integration.py, expressions.py
 │       ├── expressions/             # Manejo simbólico de ecuaciones (sympy)
 │       │   ├── parser.py            #   Parseo seguro de texto del usuario
 │       │   ├── differentiate.py     #   Derivadas parciales, gradiente y Jacobiano
@@ -907,6 +1057,9 @@ metodos/
 │       │                            #   (fórmula de 3 puntos sobre el mismo motor), five_point.py
 │       │                            #   (fórmula de 5 puntos), display.py
 │       │                            #   (h exacto y decimales del paso a paso)
+│       │   └── integration/         #   rules.py (cada regla compuesta como datos: pesos y factor),
+│       │                            #   exact.py (integral exacta o de referencia, con límite de
+│       │                            #   tiempo), trapezoid.py (modos función y tabla, recurrencia)
 │       └── tests/                   # Tests unitarios y de API
 └── frontend/
     ├── Dockerfile                   # Compila con Node y sirve dist/ con nginx
@@ -927,9 +1080,13 @@ metodos/
         │   └── differentiation/     # Diferencias, 3 y 5 puntos: formulario (función o tabla), vista de
         │                            # resultado, tablas de refinamiento, paso a paso, comprobación, PDF
         │                            # y teoría (theory/, con las respuestas del solver en JSON)
+        │   └── integration/         # Trapecio: vista de resultado, tabla de refinamiento con paso a
+        │                            # paso, tabla de segmentos, comprobación y PDF
         ├── components/              # ResultsTable, ConvergenceChart, MathFormula, MatrixInput,
         │   │                        # MathSymbolToolbar, MathSyntaxHelp, NavMenu,
-        │   │                        # NumericFieldsInput (x0, r0/s0, coeficientes), EquationPreview
+        │   │                        # NumericFieldsInput (x0, r0/s0, coeficientes), EquationPreview,
+        │   │                        # FunctionTableInput (formulario función/tabla de diferenciación e
+        │   │                        # integración), TrapezoidChart (gráfico de una regla de integración)
         │   └── theory/              # Piezas comunes de las páginas de teoría
         ├── composables/             # useExpressionPreviews (vista previa en vivo),
         │                            # useTheme (tema claro/oscuro, preferencia del sistema y elección guardada)
@@ -1003,6 +1160,25 @@ No hace falta tocar `App.vue`, el router ni `NavMenu.vue`.
    (`products_display`, `comparison`, `identities`, `recommended`,
    `rounding_text`).
 
+### Agregar una regla de integración (por ejemplo, Simpson 1/3)
+
+1. **Regla** en `solvers/integration/rules.py`: una `CompositeRule` con
+   `factor` (`1/3`), `ends` (`1`), `interior` (`(4, 2)`: el patrón de pesos
+   interiores), `segments_multiple` (`2`: n par), `order`,
+   `bound_derivative`, `bound_divisor` y los textos LaTeX. `apply(rule,
+   valores, h)` ya calcula la regla compuesta y el paso a paso de la fila 1
+   (`_first_row_display`) agrupa los interiores por peso.
+2. **Solver**: el modo función y el modo tabla de `trapezoid.py` reciben la
+   regla como parámetro; la recurrencia `T_k = T_(k−1)/2 + h·Σ nuevos` es
+   propia del trapecio (y la base de Romberg). La integral exacta o de
+   referencia sale de `exact.definite_integral` para cualquier regla.
+3. **Serializer, registro y ejemplos**: `IntegrationSerializer` sirve tal
+   cual (o una subclase con validaciones extra, como `n` par).
+4. **Frontend**: la categoría `integration` ya tiene formulario, gráfico de
+   trapecios (`TrapezoidChart`, que recibe los puntos de cada fila), tablas,
+   comprobación y PDF; un método nuevo sólo necesita su entrada en
+   `methods[slug]` si cambia algo.
+
 ---
 
 ## Seguridad del parser de expresiones
@@ -1033,7 +1209,7 @@ cd backend
 python manage.py test numeric_methods
 ```
 
-**367 tests**, todos en verde:
+**400 tests**, todos en verde:
 
 | Archivo | Tests | Qué cubre |
 | --- | --- | --- |
@@ -1050,6 +1226,7 @@ python manage.py test numeric_methods
 | `test_differentiation.py` | 30 | Diferencias progresiva y regresiva: fórmulas exactas con `x²`, cúbica, Burden y Faires (filas 1, 2 y parada), respuestas guardadas para la teoría iguales a las del solver, filas de parada de los ejemplos, mínimo de 6 filas, no convergencia, razón ≈ 0.5, error real ≤ cota, h exacto, errores 400, modo tabla (secante común, datos, espaciado no uniforme), comprobación término a término, `abs(x)` y endpoint |
 | `test_three_point.py` | 27 | Fórmula de 3 puntos: fracciones exactas (cúbica y `x²`), Burden y Faires (filas 1, 2, parada 11 y comparación con diferencias), filas de parada y primeras filas de los ejemplos, cuadrática exacta, razón ≈ 0.25, error real ≤ cota + R, identidades, productos del paso a paso, modo tabla (valores, «—», recomendada, identidades por punto, `x³` con errores iguales a la cota, dato alterado), errores 400 (tabla no uniforme, 2 puntos, dominio en «x₀ − 2h», tolerancia, máximo), respuestas guardadas para la teoría (filas 1 y 2, identidades e iguales a las del solver) y endpoint |
 | `test_five_point.py` | 28 | Fórmula de 5 puntos: fracciones exactas (`x⁵` y cuártica), Burden y Faires (filas 1 y 2, parada en 6, comparación, identidad de Richardson y productos del paso a paso), filas de parada de los ejemplos, `x⁵` con error = cota, cuártica exacta, razón ≈ 0.0625, error real ≤ cota + R, `f⁽⁵⁾` término a término, modo tabla (valores, «—», punto medio de 3 puntos, recomendada, identidad por punto con el caso de redondeo de `x = 2.2`, `x⁴` con función, una sola fórmula, 5 datos, dato alterado), errores 400 (tabla no uniforme, 4 puntos, dominio en «x₀ − 4h», tolerancia, máximo) y endpoint |
+| `test_trapezoid.py` | 31 | Método del trapecio: fracciones exactas (`x²` en [0, 2] con `Eₜ = Eₐ`, polinomio de Chapra), ejemplo 1 (filas 1 a 3, parada en 13, razón ≈ 0.25, comprobación término a término, paso a paso de la fila 1), recurrencia igual a la fórmula directa (ejemplos 1 y 6, filas 2 a 8, y a mano), filas de parada de los ejemplos, recta exacta, `\|Eₜ\| ≤ cota + R`, `x²` con error = cota, integral exacta o de referencia (erf, `sin`, `1/x`), límite de tiempo (simulado y real), notas de concavidad, modo tabla (uniforme, no uniforme, dato alterado, sin función), singularidad interior, errores 400 y endpoint |
 | `test_bairstow.py` | 30 | Bairstow: divisiones sintéticas, primera iteración de Chapra calculada a mano, ejemplos, raíces nulas, raíz doble, cierres directos, fallos, endpoint y comprobación de raíces (sustitución término a término, potencias faltantes, par complejo, raíz nula y residuo) |
 
 ---
@@ -1067,5 +1244,11 @@ python manage.py test numeric_methods
 - En diferencias finitas y en las fórmulas de 3 y 5 puntos, `M = máx |f''|`
   (o `|f'''|`, `|f⁽⁵⁾|`) se estima por muestreo (401 puntos), no se calcula exactamente:
   entre dos muestras podría haber un máximo algo mayor.
-- La página de Teoría de la fórmula de 5 puntos queda para otra tarea: hasta
+- En el método del trapecio, `M₂ = máx |f''|` se estima con 2001 puntos (401
+  por segmento en modo tabla). Los límites `a` y `b` aceptan números y
+  fracciones, no expresiones como `pi` (el formulario compartido con
+  diferenciación no las admite): el ejemplo de `sin(x)` usa
+  `b = 3.141592653589793`. `n_k` se limita a 2²¹ segmentos (con `n₀` grande
+  y muchas filas se detiene con una advertencia).
+- La página de Teoría del método del trapecio queda para otra tarea: hasta
   entonces no aparece en «Teoría ▾».
