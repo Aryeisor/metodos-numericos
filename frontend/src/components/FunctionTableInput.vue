@@ -1,19 +1,33 @@
 <script setup>
-// Formulario de diferenciación numérica. Dos modos de entrada:
+// Formulario de dos modos (diferenciación e integración numérica):
 //  - Función: f(x) con la barra de símbolos y la vista previa en vivo de los
-//    métodos no lineales (mismo parser y endpoint, variable x), x₀ y h₀.
+//    métodos no lineales (mismo parser y endpoint, variable x) y una fila de
+//    campos numéricos (x₀ y h₀ en diferenciación; a y b en integración).
 //  - Tabla de datos: puntos (xᵢ, yᵢ) con filas para agregar y quitar, y una
 //    función opcional para comparar (también con vista previa).
 // Los campos numéricos aceptan fracciones, como en los demás formularios.
+//
+// Lo que cambia por categoría sale del store (opcional; por defecto, lo de
+// diferenciación): maxPoints, startFields { title, labels, errorLabels } y
+// compareHint.
 import { computed, reactive, ref, watch } from 'vue'
-import EquationPreview from '../../components/EquationPreview.vue'
-import MathSymbolToolbar from '../../components/MathSymbolToolbar.vue'
-import MathSyntaxHelp from '../../components/MathSyntaxHelp.vue'
-import NumericFieldsInput from '../../components/NumericFieldsInput.vue'
-import { useExpressionPreviews } from '../../composables/useExpressionPreviews'
-import { formatNumber } from '../../utils/iterationSteps'
-import { INPUT_ERROR_MESSAGES, parseNumericInput } from '../../utils/numberInput'
-import { MAX_POINTS, MODES } from './store'
+import EquationPreview from './EquationPreview.vue'
+import MathSymbolToolbar from './MathSymbolToolbar.vue'
+import MathSyntaxHelp from './MathSyntaxHelp.vue'
+import NumericFieldsInput from './NumericFieldsInput.vue'
+import { useExpressionPreviews } from '../composables/useExpressionPreviews'
+import { formatNumber } from '../utils/iterationSteps'
+import { INPUT_ERROR_MESSAGES, parseNumericInput } from '../utils/numberInput'
+
+const MODES = { FUNCTION: 'function', TABLE: 'table' }
+const DEFAULT_START_FIELDS = {
+  title: 'Punto x₀ y paso inicial h₀ (h₀ > 0, por defecto 0.1)',
+  labels: ['x₀', 'h₀'],
+  errorLabels: ['Punto x₀', 'Paso inicial h₀'],
+}
+const DEFAULT_COMPARE_HINT =
+  'Si conoces la función de la que salen los datos, escríbela para comparar con la derivada ' +
+  'exacta, ver el error real y la cota, y comprobar los datos.'
 
 const props = defineProps({
   store: { type: Object, required: true },
@@ -22,6 +36,9 @@ const props = defineProps({
 const state = computed(() => props.store.state)
 const isTable = computed(() => state.value.mode === MODES.TABLE)
 const MIN_POINTS = computed(() => props.store.minPoints)
+const MAX_POINTS = computed(() => props.store.maxPoints ?? 20)
+const startFields = computed(() => props.store.startFields ?? DEFAULT_START_FIELDS)
+const compareHint = computed(() => props.store.compareHint ?? DEFAULT_COMPARE_HINT)
 
 // --- f(x) o la función para comparar: un solo campo de texto visible ------
 const functionText = computed({
@@ -197,10 +214,7 @@ const sub = (n) => String(n).replace(/\d/g, (d) => SUBSCRIPTS[d])
       />
       <EquationPreview id="difference-preview" :preview="preview" :text="functionText" lhs="f(x)" />
       <p class="input-hint">
-        <template v-if="isTable">
-          Si conoces la función de la que salen los datos, escríbela para comparar con la derivada
-          exacta, ver el error real y la cota, y comprobar los datos.
-        </template>
+        <template v-if="isTable">{{ compareHint }}</template>
         <template v-else>
           Escribe f en la variable x (<code>ln(x)</code>, <code>x^3 - 2x^2 + x</code>,
           <code>x*exp(x)</code>). Las funciones trigonométricas se evalúan en radianes.
@@ -210,11 +224,11 @@ const sub = (n) => String(n).replace(/\d/g, (d) => SUBSCRIPTS[d])
 
     <NumericFieldsInput
       v-if="!isTable"
-      title="Punto x₀ y paso inicial h₀ (h₀ > 0, por defecto 0.1)"
+      :title="startFields.title"
       suffix=""
       :values="state.start"
-      :labels="['x₀', 'h₀']"
-      :error-labels="['Punto x₀', 'Paso inicial h₀']"
+      :labels="startFields.labels"
+      :error-labels="startFields.errorLabels"
       @update:values="(values) => (state.start = values)"
     />
 

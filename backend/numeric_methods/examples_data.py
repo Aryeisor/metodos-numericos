@@ -469,6 +469,78 @@ FIVE_POINT_EXAMPLES = [
 ]
 
 
+def _integration_example(example_id, name, description, **data):
+    """Ejemplo de integración: modo función (function, a, b, n0) o modo tabla
+    (points y, opcional, compare_function)."""
+    return {
+        "id": example_id,
+        "name": name,
+        "description": description,
+        "mode": "table" if "points" in data else "function",
+        "function": data.get("function", ""),
+        "a": data.get("a"),
+        "b": data.get("b"),
+        "n0": data.get("n0", 1),
+        "points": data.get("points"),
+        "compare_function": data.get("compare_function", ""),
+        "tolerance": 0.000001,
+        "max_iterations": 20,
+    }
+
+
+CHAPRA_POLYNOMIAL = "0.2 + 25x - 200x^2 + 675x^3 - 900x^4 + 400x^5"
+
+# Método del trapecio. Los valores esperados (README y tests/test_trapezoid.py)
+# se verificaron con un script independiente.
+TRAPEZOID_EXAMPLES = [
+    _integration_example(
+        "trap-chapra", "Polinomio de Chapra en [0, 0.8]",
+        "Exacta 1.640533 (3076/1875). La regla simple da 0.1728 (εₜ = 89.5 %).",
+        function=CHAPRA_POLYNOMIAL, a=0, b=0.8,
+    ),
+    _integration_example(
+        "trap-gauss", "e^(−x²) en [0, 1]",
+        "Antiderivada con erf: se compara con un valor de referencia, 0.746824.",
+        function="exp(-x^2)", a=0, b=1,
+    ),
+    _integration_example(
+        "trap-seno", "sin(x) en [0, π]",
+        "Exacta 2. f'' < 0: el trapecio subestima la integral.",
+        function="sin(x)", a=0, b=3.141592653589793,
+    ),
+    _integration_example(
+        "trap-cuadrado", "x² en [0, 2]",
+        "Exacta 8/3. f'' = 2 es constante: Eₐ = Eₜ y el error es igual a la cota.",
+        function="x^2", a=0, b=2,
+    ),
+    _integration_example(
+        "trap-recta", "Recta 2x + 1 en [1, 3]",
+        "Exacta 10: el trapecio es exacto para rectas (error y cota 0).",
+        function="2x + 1", a=1, b=3,
+    ),
+    _integration_example(
+        "trap-exponencial", "eˣ en [0, 1] con n₀ = 2",
+        "Exacta e − 1 ≈ 1.718282, empezando con 2 segmentos.",
+        function="exp(x)", a=0, b=1, n0=2,
+    ),
+    _integration_example(
+        "trap-tabla-chapra", "Tabla de Chapra con h = 0.1 (tabla + función)",
+        "Nueve datos igualmente espaciados; se compara con el polinomio de Chapra.",
+        points=[[0, 0.2], [0.1, 1.289], [0.2, 1.288], [0.3, 1.607], [0.4, 2.456], [0.5, 3.325],
+                [0.6, 3.464], [0.7, 2.363], [0.8, 0.232]],
+        compare_function=CHAPRA_POLYNOMIAL,
+    ),
+    _integration_example(
+        "trap-tabla-desigual", "Tabla de Chapra con segmentos desiguales",
+        "Once datos con espaciado no uniforme: cada trapecio usa su propio ancho.",
+        points=[[0, 0.2], [0.12, 1.309729], [0.22, 1.305241], [0.32, 1.743393], [0.36, 2.074903],
+                [0.40, 2.456], [0.44, 2.842985], [0.54, 3.507297], [0.64, 3.181929], [0.70, 2.363],
+                [0.80, 0.232]],
+        compare_function=CHAPRA_POLYNOMIAL,
+    ),
+]
+
+
 EXAMPLES = {
     "jacobi": LINEAR_SYSTEM_EXAMPLES,
     "gauss-seidel": LINEAR_SYSTEM_EXAMPLES,
@@ -478,6 +550,7 @@ EXAMPLES = {
     "diferencias-finitas": DIFFERENCE_EXAMPLES,
     "tres-puntos": THREE_POINT_EXAMPLES,
     "cinco-puntos": FIVE_POINT_EXAMPLES,
+    "trapecio": TRAPEZOID_EXAMPLES,
 }
 
 

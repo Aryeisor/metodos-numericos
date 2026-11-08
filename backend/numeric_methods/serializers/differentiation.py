@@ -27,6 +27,37 @@ def _finite(value):
         and abs(value) <= MAX_MAGNITUDE
 
 
+def validate_points(points, min_points, max_points):
+    """Tabla [[x₁, y₁], ..., [xₙ, yₙ]]: entre min_points y max_points pares de
+    números finitos, con x estrictamente crecientes. Errores por fila."""
+    if not isinstance(points, list):
+        raise serializers.ValidationError({"points": ["Faltan los puntos (xᵢ, yᵢ) de la tabla."]})
+    if not min_points <= len(points) <= max_points:
+        raise serializers.ValidationError({
+            "points": [f"La tabla debe tener entre {min_points} y {max_points} puntos (tiene {len(points)})."]
+        })
+
+    errors = []
+    for i, point in enumerate(points, start=1):
+        if not (isinstance(point, list) and len(point) == 2):
+            errors.append(f"Fila {i}: cada punto debe ser un par [x, y].")
+            continue
+        for name, value in zip(("x", "y"), point):
+            if value is None:
+                errors.append(f"Fila {i}: falta el valor de {name}.")
+            elif not _finite(value):
+                errors.append(f"Fila {i}: {name} debe ser un número real finito de magnitud razonable.")
+    if not errors:
+        for i in range(1, len(points)):
+            if not points[i][0] > points[i - 1][0]:
+                errors.append(
+                    f"Fila {i + 1}: los valores de x deben ser estrictamente crecientes "
+                    f"(x{i + 1} = {points[i][0]:g} no es mayor que x{i} = {points[i - 1][0]:g})."
+                )
+    if errors:
+        raise serializers.ValidationError({"points": errors})
+
+
 class DifferentiationSerializer(serializers.Serializer):
     """Entrada de las fórmulas de diferencias, en uno de dos modos:
 
@@ -88,33 +119,7 @@ class DifferentiationSerializer(serializers.Serializer):
         return data
 
     def _validate_table(self, data):
-        points = data["points"]
-        if not isinstance(points, list):
-            raise serializers.ValidationError({"points": ["Faltan los puntos (xᵢ, yᵢ) de la tabla."]})
-        if not self.min_points <= len(points) <= MAX_POINTS:
-            raise serializers.ValidationError({
-                "points": [f"La tabla debe tener entre {self.min_points} y {MAX_POINTS} puntos (tiene {len(points)})."]
-            })
-
-        errors = []
-        for i, point in enumerate(points, start=1):
-            if not (isinstance(point, list) and len(point) == 2):
-                errors.append(f"Fila {i}: cada punto debe ser un par [x, y].")
-                continue
-            for name, value in zip(("x", "y"), point):
-                if value is None:
-                    errors.append(f"Fila {i}: falta el valor de {name}.")
-                elif not _finite(value):
-                    errors.append(f"Fila {i}: {name} debe ser un número real finito de magnitud razonable.")
-        if not errors:
-            for i in range(1, len(points)):
-                if not points[i][0] > points[i - 1][0]:
-                    errors.append(
-                        f"Fila {i + 1}: los valores de x deben ser estrictamente crecientes "
-                        f"(x{i + 1} = {points[i][0]:g} no es mayor que x{i} = {points[i - 1][0]:g})."
-                    )
-        if errors:
-            raise serializers.ValidationError({"points": errors})
+        validate_points(data["points"], self.min_points, MAX_POINTS)
 
         if data["compare_function"]:
             try:

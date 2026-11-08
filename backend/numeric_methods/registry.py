@@ -12,12 +12,14 @@ from dataclasses import dataclass
 from typing import Callable
 
 from .serializers.differentiation import DifferentiationSerializer, FivePointSerializer, ThreePointSerializer
+from .serializers.integration import IntegrationSerializer
 from .serializers.linear import LinearSystemSerializer
 from .serializers.nonlinear import NewtonSystemSerializer, NonlinearSystemSerializer
 from .serializers.polynomial import PolynomialSerializer
 from .solvers.differentiation.finite_differences import solve_finite_differences
 from .solvers.differentiation.five_point import solve_five_point
 from .solvers.differentiation.three_point import solve_three_point
+from .solvers.integration.trapezoid import solve_trapezoid
 from .solvers.linear.runner import solve_gauss_seidel, solve_jacobi
 from .solvers.nonlinear.fixed_point import solve_fixed_point
 from .solvers.nonlinear.newton import solve_newton
@@ -29,6 +31,7 @@ CATEGORIES = {
     "nonlinear_system": "Ecuaciones no lineales",
     "polynomial": "Polinomios",
     "differentiation": "Diferenciación numérica",
+    "integration": "Integración numérica",
 }
 
 
@@ -104,6 +107,13 @@ METHODS = {
             category="differentiation",
             serializer=FivePointSerializer,
             solver=solve_five_point,
+        ),
+        MethodSpec(
+            slug="trapecio",
+            name="Método del trapecio",
+            category="integration",
+            serializer=IntegrationSerializer,
+            solver=solve_trapezoid,
         ),
     )
 }

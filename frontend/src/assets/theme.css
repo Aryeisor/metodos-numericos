@@ -61,6 +61,9 @@
   --color-chart-grid: rgba(30, 41, 59, 0.1);
   --color-chart-fill: rgba(37, 99, 235, 0.12);
   --color-chart-fill-danger: rgba(185, 28, 28, 0.12);
+  /* Área de los trapecios (integración): sobre el eje y bajo el eje (f < 0). */
+  --color-area-positive: rgba(37, 99, 235, 0.22);
+  --color-area-negative: rgba(185, 28, 28, 0.22);
 
   /* ---- Elevación --------------------------------------------------------- */
   --color-backdrop: rgba(15, 23, 42, 0.45);
@@ -117,6 +120,8 @@
   --color-chart-grid: rgba(226, 232, 240, 0.1);
   --color-chart-fill: rgba(130, 170, 248, 0.15);
   --color-chart-fill-danger: rgba(245, 154, 154, 0.15);
+  --color-area-positive: rgba(130, 170, 248, 0.28);
+  --color-area-negative: rgba(245, 154, 154, 0.28);
 
   /* En oscuro la separación la dan los tonos; la sombra casi no se ve. */
   --color-backdrop: rgba(2, 6, 23, 0.7);

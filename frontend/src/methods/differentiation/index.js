@@ -12,7 +12,7 @@
 //
 // Los métodos con entrada en THEORY_SECTIONS aparecen en "Teoría ▾".
 import DifferentiationConfigFields from './DifferentiationConfigFields.vue'
-import DifferentiationInput from './DifferentiationInput.vue'
+import FunctionTableInput from '../../components/FunctionTableInput.vue'
 import DifferentiationResult from './DifferentiationResult.vue'
 import { MODES, createDifferentiationStore, createFivePointStore, createThreePointStore } from './store'
 import DifferentiationTheoryPage, { THEORY_SECTIONS } from './theory/DifferentiationTheoryPage.vue'
@@ -25,7 +25,7 @@ export default {
   configFields: DifferentiationConfigFields,
   configExtras: null,
 
-  form: DifferentiationInput,
+  form: FunctionTableInput,
   formBindings: (store) => ({ store }),
 
   invalidMessage: 'Hay campos con un valor inválido (marcados en rojo). Corrígelos antes de resolver.',

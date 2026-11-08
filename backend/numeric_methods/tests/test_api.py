@@ -151,6 +151,13 @@ class ExamplesEndpointTests(APITestCase):
                         self.assertIsNotNone(example["x0"])
                     else:
                         self.assertGreaterEqual(len(example["points"]), 2)
+                elif "n0" in example:
+                    # Integración: f(x) con a < b, o una tabla de puntos.
+                    if example["mode"] == "function":
+                        self.assertTrue(example["function"])
+                        self.assertLess(example["a"], example["b"])
+                    else:
+                        self.assertGreaterEqual(len(example["points"]), 2)
                 elif "equations" in example:
                     self.assertGreaterEqual(example["n"], 2)
                     self.assertEqual(len(example["equations"]), example["n"])

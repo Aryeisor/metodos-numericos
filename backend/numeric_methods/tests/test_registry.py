@@ -71,6 +71,7 @@ class MethodsEndpointTests(APITestCase):
                 ("diferencias-finitas", "Diferenciación numérica"),
                 ("tres-puntos", "Diferenciación numérica"),
                 ("cinco-puntos", "Diferenciación numérica"),
+                ("trapecio", "Integración numérica"),
             ],
         )
 
