@@ -139,9 +139,9 @@ estudiar la teoría de cada método.
 
 ### Vista «Teoría» (`/teoria/<método>`)
 
-Una página por método, con el mismo formato en las ocho (Jacobi,
+Una página por método, con el mismo formato en las nueve (Jacobi,
 Gauss-Seidel, Punto Fijo, Newton, Bairstow, diferencias progresiva y
-regresiva y fórmulas de 3 y 5 puntos): fundamento común
+regresiva, fórmulas de 3 y 5 puntos y método del trapecio): fundamento común
 de la categoría, definición formal en LaTeX, condición de convergencia,
 restricciones, algoritmo en tarjetas, ejemplo resuelto paso a paso con datos
 reales del solver, tabla comparativa y referencias bibliográficas (APA).
@@ -188,6 +188,20 @@ reales del solver, tabla comparativa y referencias bibliográficas (APA).
   tres fórmulas; el ejemplo de `x·eˣ` y su tabla de 9 datos con datos reales
   del solver; y la **comparación de toda la categoría** con el puente hacia la
   integración numérica.
+- **Integración numérica:** fundamento común pensado también para Simpson,
+  Romberg y cuadratura gaussiana (área con signo, por qué no basta la
+  antiderivada, Newton-Cotes y Gauss, forma general `Σ wᵢ·f(xᵢ)`, reglas
+  simples y compuestas, y por qué integrar **suaviza** el ruido que la
+  diferenciación amplifica). El **método del trapecio** agrega: definición
+  simple, compuesta y con segmentos desiguales; figura de los trapecios de
+  Chapra con selector de `n` y las zonas que se pierden o se agregan, y el
+  signo del error con `sin x` y `x²`; **derivación del error** (`−(b − a)³f''(ξ)/12`
+  y su versión compuesta, de donde salen la cota y el `Eₐ` de Chapra); la
+  fórmula de **Euler-Maclaurin**; la **recurrencia** al duplicar `n`; el
+  **puente a Simpson y Romberg** por Richardson; tabla de razones ≈ 0.25,
+  funciones periódicas; el ejemplo de Chapra y el de segmentos desiguales con
+  datos reales del solver; tabla comparativa de la categoría. Todas las
+  fórmulas importantes llevan su glosario «¿Qué significa cada símbolo?».
 
 Los menús «Resolver ▾» y «Teoría ▾» se generan automáticamente a partir del
 catálogo de métodos del backend, agrupados por categoría.
@@ -1140,7 +1154,7 @@ metodos/
         │                            # y teoría (theory/, con las respuestas del solver en JSON)
         │   └── integration/         # Trapecio: vista de resultado, tabla de refinamiento con paso a
         │                            # paso explicado (explain.js), glosarios (glossary.js), tabla de
-        │                            # segmentos, comprobación y PDF
+        │                            # segmentos, comprobación, PDF y teoría (theory/, con las respuestas del solver en JSON)
         ├── components/              # ResultsTable, ConvergenceChart, MathFormula, MatrixInput,
         │   │                        # MathSymbolToolbar, MathSyntaxHelp, NavMenu,
         │   │                        # NumericFieldsInput (x0, r0/s0, coeficientes), EquationPreview,
@@ -1271,7 +1285,7 @@ cd backend
 python manage.py test numeric_methods
 ```
 
-**410 tests**, todos en verde:
+**412 tests**, todos en verde:
 
 | Archivo | Tests | Qué cubre |
 | --- | --- | --- |
@@ -1288,7 +1302,7 @@ python manage.py test numeric_methods
 | `test_differentiation.py` | 30 | Diferencias progresiva y regresiva: fórmulas exactas con `x²`, cúbica, Burden y Faires (filas 1, 2 y parada), respuestas guardadas para la teoría iguales a las del solver, filas de parada de los ejemplos, mínimo de 6 filas, no convergencia, razón ≈ 0.5, error real ≤ cota, h exacto, errores 400, modo tabla (secante común, datos, espaciado no uniforme), comprobación término a término, `abs(x)` y endpoint |
 | `test_three_point.py` | 27 | Fórmula de 3 puntos: fracciones exactas (cúbica y `x²`), Burden y Faires (filas 1, 2, parada 11 y comparación con diferencias), filas de parada y primeras filas de los ejemplos, cuadrática exacta, razón ≈ 0.25, error real ≤ cota + R, identidades, productos del paso a paso, modo tabla (valores, «—», recomendada, identidades por punto, `x³` con errores iguales a la cota, dato alterado), errores 400 (tabla no uniforme, 2 puntos, dominio en «x₀ − 2h», tolerancia, máximo), respuestas guardadas para la teoría (filas 1 y 2, identidades e iguales a las del solver) y endpoint |
 | `test_five_point.py` | 28 | Fórmula de 5 puntos: fracciones exactas (`x⁵` y cuártica), Burden y Faires (filas 1 y 2, parada en 6, comparación, identidad de Richardson y productos del paso a paso), filas de parada de los ejemplos, `x⁵` con error = cota, cuártica exacta, razón ≈ 0.0625, error real ≤ cota + R, `f⁽⁵⁾` término a término, modo tabla (valores, «—», punto medio de 3 puntos, recomendada, identidad por punto con el caso de redondeo de `x = 2.2`, `x⁴` con función, una sola fórmula, 5 datos, dato alterado), errores 400 (tabla no uniforme, 4 puntos, dominio en «x₀ − 4h», tolerancia, máximo) y endpoint |
-| `test_trapezoid.py` | 41 | Método del trapecio: fracciones exactas (`x²` en [0, 2] con `Eₜ = Eₐ`, polinomio de Chapra), ejemplo 1 (filas 1 a 3, parada en 13, razón ≈ 0.25, comprobación término a término, paso a paso de la fila 1), recurrencia igual a la fórmula directa (ejemplos 1 y 6, filas 2 a 8, y a mano), filas de parada de los ejemplos, recta exacta, `\|Eₜ\| ≤ cota + R`, `x²` con error = cota, integral exacta o de referencia (erf, `sin`, `1/x`), límite de tiempo (simulado y real), notas de concavidad, modo tabla (uniforme, no uniforme, dato alterado, sin función), singularidad interior, errores 400 y endpoint. Explicaciones: ejemplo 4 fila 1 (sustituciones, suma ponderada, `f'(a)`, `f'(b)`, `f̄''`, `Eₐ`, `M₂`, cota, igualdad sin R) y filas 2 y 3 (puntos nuevos, sumas, `T`), desglose de `f'` y `f''` (`x²`, Chapra, `eˣ`), `M₂` sustituida en Chapra, antiderivada por términos y `F' = f` (`x²`, Chapra, `x·eˣ` sin desglose), nota de `Eₜ` que se ve 0 (ejemplo 6), ninguna R con `\|Eₜ\| ≤ cota·(1 + 10⁻⁹)`, paréntesis de la integral y puntos enviados (1024 o 16) |
+| `test_trapezoid.py` | 43 | Método del trapecio: fracciones exactas (`x²` en [0, 2] con `Eₜ = Eₐ`, polinomio de Chapra), ejemplo 1 (filas 1 a 3, parada en 13, razón ≈ 0.25, comprobación término a término, paso a paso de la fila 1), recurrencia igual a la fórmula directa (ejemplos 1 y 6, filas 2 a 8, y a mano), filas de parada de los ejemplos, recta exacta, `\|Eₜ\| ≤ cota + R`, `x²` con error = cota, integral exacta o de referencia (erf, `sin`, `1/x`), límite de tiempo (simulado y real), notas de concavidad, modo tabla (uniforme, no uniforme, dato alterado, sin función), singularidad interior, errores 400 y endpoint. Explicaciones: ejemplo 4 fila 1 (sustituciones, suma ponderada, `f'(a)`, `f'(b)`, `f̄''`, `Eₐ`, `M₂`, cota, igualdad sin R) y filas 2 y 3 (puntos nuevos, sumas, `T`), desglose de `f'` y `f''` (`x²`, Chapra, `eˣ`), `M₂` sustituida en Chapra, antiderivada por términos y `F' = f` (`x²`, Chapra, `x·eˣ` sin desglose), nota de `Eₜ` que se ve 0 (ejemplo 6), ninguna R con `\|Eₜ\| ≤ cota·(1 + 10⁻⁹)`, paréntesis de la integral y puntos enviados (1024 o 16). Teoría: filas 1 a 3 del ejemplo 1 y respuestas guardadas iguales a las del solver |
 | `test_bairstow.py` | 30 | Bairstow: divisiones sintéticas, primera iteración de Chapra calculada a mano, ejemplos, raíces nulas, raíz doble, cierres directos, fallos, endpoint y comprobación de raíces (sustitución término a término, potencias faltantes, par complejo, raíz nula y residuo) |
 
 ---
@@ -1312,5 +1326,3 @@ python manage.py test numeric_methods
   diferenciación no las admite): el ejemplo de `sin(x)` usa
   `b = 3.141592653589793`. `n_k` se limita a 2²¹ segmentos (con `n₀` grande
   y muchas filas se detiene con una advertencia).
-- La página de Teoría del método del trapecio queda para otra tarea: hasta
-  entonces no aparece en «Teoría ▾».
