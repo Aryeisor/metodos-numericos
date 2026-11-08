@@ -13,7 +13,7 @@ from ..solvers.integration.trapezoid import (
     MIN_REFINEMENTS,
 )
 from ..solvers.differentiation import display
-from ..solvers.integration import simpson
+from ..solvers.integration import romberg, simpson
 from ..solvers.validation import InputValidationError
 from .differentiation import UNIFORM_RELATIVE, _finite, validate_points
 
@@ -50,10 +50,13 @@ class IntegrationSerializer(serializers.Serializer):
     compare_function = serializers.CharField(required=False, allow_blank=True, default="", trim_whitespace=True)
 
     min_points = MIN_POINTS
+    max_points = MAX_POINTS
+    max_rows = MAX_REFINEMENTS
+    rows_error = "El máximo de refinamientos debe estar entre {low} y {high}."
 
     def validate(self, data):
         if data["mode"] == "table":
-            validate_points(data["points"], self.min_points, MAX_POINTS)
+            validate_points(data["points"], self.min_points, self.max_points)
             if data["compare_function"]:
                 errors = _function_errors(data["compare_function"], "Función para comparar")
                 if errors:
@@ -78,10 +81,8 @@ class IntegrationSerializer(serializers.Serializer):
             errors["n0"] = [f"Los segmentos iniciales n₀ deben ser un entero entre {MIN_N0} y {MAX_N0}."]
         if not (_finite(data["tolerance"]) and data["tolerance"] > 0):
             errors["tolerance"] = ["La tolerancia del error estimado debe ser mayor que 0."]
-        if not MIN_REFINEMENTS <= data["max_iterations"] <= MAX_REFINEMENTS:
-            errors["max_iterations"] = [
-                f"El máximo de refinamientos debe estar entre {MIN_REFINEMENTS} y {MAX_REFINEMENTS}."
-            ]
+        if not MIN_REFINEMENTS <= data["max_iterations"] <= self.max_rows:
+            errors["max_iterations"] = [self.rows_error.format(low=MIN_REFINEMENTS, high=self.max_rows)]
         if errors:
             raise serializers.ValidationError(errors)
         return data
@@ -134,14 +135,43 @@ class SimpsonSerializer(IntegrationSerializer):
         return data
 
     @staticmethod
-    def _validate_spacing(xs):
+    def _validate_spacing(xs, method="Simpson"):
         first = xs[1] - xs[0]
         for i in range(1, len(xs) - 1):
             if abs(xs[i + 1] - xs[i] - first) > UNIFORM_RELATIVE * max(1.0, abs(first)):
                 shown = [display.decimal(display.exact(b) - display.exact(a))["text"]
                          for a, b in ((xs[i], xs[i + 1]), (xs[0], xs[1]))]
                 raise serializers.ValidationError({"points": [
-                    f"Simpson necesita datos igualmente espaciados: entre la fila {i + 1} y la {i + 2} el "
+                    f"{method} necesita datos igualmente espaciados: entre la fila {i + 1} y la {i + 2} el "
                     f"espaciado es {shown[0]} y el de la primera pareja es {shown[1]}. Con datos de espaciado "
                     "desigual puedes usar el método del trapecio."
                 ]})
+
+
+class RombergSerializer(IntegrationSerializer):
+    """Entrada de la integración de Romberg: la misma del trapecio, pero
+
+    - sin `n0` (Romberg siempre empieza con n = 1; si llega, se ignora);
+    - `max_iterations` es el máximo de filas, de 6 a 20 (por defecto 15);
+    - en modo tabla, 2ᵐ + 1 puntos (3, 5, 9, 17 o 33) igualmente espaciados.
+    """
+
+    max_iterations = serializers.IntegerField(default=romberg.DEFAULT_MAX_ROWS)
+
+    min_points = romberg.MIN_POINTS
+    max_points = romberg.MAX_POINTS
+    max_rows = romberg.MAX_ROWS
+    rows_error = "El máximo de filas debe estar entre {low} y {high}."
+
+    def validate(self, data):
+        points = data.get("points")
+        if data["mode"] == "table" and isinstance(points, list) and len(points) not in romberg.TABLE_POINTS:
+            raise serializers.ValidationError({"points": [
+                "Romberg necesita 2ᵐ + 1 puntos igualmente espaciados (3, 5, 9, 17 o 33), porque cada fila duplica "
+                f"el número de segmentos. Tienes {len(points)} {'punto' if len(points) == 1 else 'puntos'}: puedes "
+                "usar el trapecio o Simpson."
+            ]})
+        data = super().validate(data)
+        if data["mode"] == "table":
+            SimpsonSerializer._validate_spacing([x for x, _ in data["points"]], "Romberg")
+        return data

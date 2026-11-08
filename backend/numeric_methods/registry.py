@@ -12,13 +12,14 @@ from dataclasses import dataclass
 from typing import Callable
 
 from .serializers.differentiation import DifferentiationSerializer, FivePointSerializer, ThreePointSerializer
-from .serializers.integration import IntegrationSerializer, SimpsonSerializer
+from .serializers.integration import IntegrationSerializer, RombergSerializer, SimpsonSerializer
 from .serializers.linear import LinearSystemSerializer
 from .serializers.nonlinear import NewtonSystemSerializer, NonlinearSystemSerializer
 from .serializers.polynomial import PolynomialSerializer
 from .solvers.differentiation.finite_differences import solve_finite_differences
 from .solvers.differentiation.five_point import solve_five_point
 from .solvers.differentiation.three_point import solve_three_point
+from .solvers.integration.romberg import solve_romberg
 from .solvers.integration.simpson import solve_simpson
 from .solvers.integration.trapezoid import solve_trapezoid
 from .solvers.linear.runner import solve_gauss_seidel, solve_jacobi
@@ -122,6 +123,13 @@ METHODS = {
             category="integration",
             serializer=SimpsonSerializer,
             solver=solve_simpson,
+        ),
+        MethodSpec(
+            slug="romberg",
+            name="Integración de Romberg",
+            category="integration",
+            serializer=RombergSerializer,
+            solver=solve_romberg,
         ),
     )
 }

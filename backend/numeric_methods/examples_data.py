@@ -598,6 +598,63 @@ SIMPSON_EXAMPLES = [
 ]
 
 
+def _romberg_example(example_id, name, description, **data):
+    """Ejemplo de Romberg: el de integración, con máximo 15 filas. Conserva
+    n0 = 1 (siempre empieza con n = 1): así lo reconocen como de integración
+    los tests de la API; el frontend no lo envía."""
+    example = _integration_example(example_id, name, description, **data)
+    example["max_iterations"] = 15
+    return example
+
+
+# Integración de Romberg. Los valores esperados (README y tests/test_romberg.py)
+# se verificaron con un script independiente (tolerancia 0.000001, máximo 15).
+ROMBERG_EXAMPLES = [
+    _romberg_example(
+        "romb-chapra", "Polinomio de Chapra en [0, 0.8]",
+        "Exacta 1.640533. R₃,₃ ya es exacto (Boole es exacta para grado 5); para en la fila 6 con 33 evaluaciones.",
+        function=CHAPRA_POLYNOMIAL, a=0, b=0.8,
+    ),
+    _romberg_example(
+        "romb-gauss", "e^(−x²) en [0, 1]",
+        "Antiderivada con erf: se compara con un valor de referencia, 0.746824.",
+        function="exp(-x^2)", a=0, b=1,
+    ),
+    _romberg_example(
+        "romb-seno", "sin(x) en [0, π]",
+        "Exacta 2. La diagonal pasa de 0 a 2.094395, 1.998571, 2.000006 y 2.",
+        function="sin(x)", a=0, b=3.141592653589793,
+    ),
+    _romberg_example(
+        "romb-quinta", "x⁵ en [0, 2]",
+        "Exacta 32/3 ≈ 10.666667. R₃,₃ es exacto: Boole integra sin error los polinomios de grado ≤ 5.",
+        function="x^5", a=0, b=2,
+    ),
+    _romberg_example(
+        "romb-raiz", "√x en [0, 1] (función poco suave)",
+        "Exacta 2/3. √x no es suave en 0: la diagonal mejora lentamente y se necesitan 13 filas.",
+        function="sqrt(x)", a=0, b=1,
+    ),
+    _romberg_example(
+        "romb-reciproco", "1/x en [1, 2]",
+        "Exacta ln 2 ≈ 0.693147.",
+        function="1/x", a=1, b=2,
+    ),
+    _romberg_example(
+        "romb-tabla-chapra", "Tabla de Chapra con h = 0.1 (tabla + función)",
+        "Nueve datos (2³ + 1): 4 filas; la diagonal llega a 1.640533 (Eₜ = 0).",
+        points=[[0, 0.2], [0.1, 1.289], [0.2, 1.288], [0.3, 1.607], [0.4, 2.456], [0.5, 3.325],
+                [0.6, 3.464], [0.7, 2.363], [0.8, 0.232]],
+        compare_function=CHAPRA_POLYNOMIAL,
+    ),
+    _romberg_example(
+        "romb-tabla-gauss", "Tabla de e^(−x²) sin función",
+        "Cinco datos (2² + 1) en [0, 1]: 3 filas; mejor valor 0.746834.",
+        points=[[0, 1], [0.25, 0.939413], [0.5, 0.778801], [0.75, 0.569783], [1, 0.367879]],
+    ),
+]
+
+
 EXAMPLES = {
     "jacobi": LINEAR_SYSTEM_EXAMPLES,
     "gauss-seidel": LINEAR_SYSTEM_EXAMPLES,
@@ -609,6 +666,7 @@ EXAMPLES = {
     "cinco-puntos": FIVE_POINT_EXAMPLES,
     "trapecio": TRAPEZOID_EXAMPLES,
     "simpson": SIMPSON_EXAMPLES,
+    "romberg": ROMBERG_EXAMPLES,
 }
 
 

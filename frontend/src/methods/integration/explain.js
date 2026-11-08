@@ -93,17 +93,20 @@ function weightedSumLatex(row) {
   )
 }
 
-function areaLatex(row) {
+// Nombres del valor de la fila j: T_j en el trapecio; Romberg pasa R_{j,1}.
+export const TRAPEZOID_NAMES = { latex: (j) => `T_{${j}}`, text: (j) => `T${sub(j)}` }
+
+export function areaLatex(row, names = TRAPEZOID_NAMES) {
   const step = row.step
   const h = row.h.exact ? row.h.latex : row.h.approx
   const half = step.factor_h.exact ? step.factor_h.latex : step.factor_h.approx
   return (
-    `T_{1} = \\frac{h}{2} \\cdot \\text{suma} = \\frac{${h}}{2} \\cdot ${paren(step.bracket)} = ` +
+    `${names.latex(1)} = \\frac{h}{2} \\cdot \\text{suma} = \\frac{${h}}{2} \\cdot ${paren(step.bracket)} = ` +
     `${half} \\cdot ${paren(step.bracket)} = \\mathbf{${latexNumber(row.T)}}`
   )
 }
 
-function firstRowSteps(result, row) {
+export function firstRowSteps(result, row, names = TRAPEZOID_NAMES) {
   const many = row.n === 1 ? 'Con un solo trapecio' : `Con ${row.n} trapecios`
   return [
     {
@@ -129,7 +132,7 @@ function firstRowSteps(result, row) {
       title: 'Paso 5. Área total',
       blocks: [
         text('Se multiplica la suma por h/2.'),
-        math(areaLatex(row)),
+        math(areaLatex(row, names)),
         text(`${many} el área es ${formatNumber(row.T)}.`),
       ],
     },
@@ -154,7 +157,7 @@ function newSumLatex(row) {
   return `\\sum_{\\text{nuevos}} f(x_i) = ${symbolic}${middle} = ${sum}`
 }
 
-function recurrenceSteps(result, row, k, previous) {
+export function recurrenceSteps(result, row, k, previous, names = TRAPEZOID_NAMES) {
   const estimated = []
   if (row.estimated_error !== null) {
     const tolerance = formatNumber(result.tolerance)
@@ -189,7 +192,7 @@ function recurrenceSteps(result, row, k, previous) {
       title: 'Paso 2. Por qué sólo se evalúan los puntos nuevos',
       blocks: [
         text(
-          `Los puntos de la fila anterior siguen siendo puntos de división, así que su suma ya está incluida en T${sub(k - 1)}. ` +
+          `Los puntos de la fila anterior siguen siendo puntos de división, así que su suma ya está incluida en ${names.text(k - 1)}. ` +
             'Sólo aparecen puntos nuevos en la mitad de cada trapecio anterior.'
         ),
       ],
@@ -205,9 +208,9 @@ function recurrenceSteps(result, row, k, previous) {
     {
       title: 'Paso 5. Nuevo valor',
       blocks: [
-        math(recurrenceLatex(row, k)),
+        math(recurrenceLatex(row, k, names.latex)),
         text(
-          `T${sub(k - 1)}/2 aprovecha todo lo ya calculado; h${sub(k)}·Σ agrega la contribución de los puntos nuevos.`
+          `${names.text(k - 1)}/2 aprovecha todo lo ya calculado; h${sub(k)}·Σ agrega la contribución de los puntos nuevos.`
         ),
       ],
     },

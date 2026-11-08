@@ -70,6 +70,13 @@
   --color-area-negative-alt: rgba(185, 28, 28, 0.4);
   --color-area-part2: rgba(147, 51, 234, 0.2);
   --color-area-part2-alt: rgba(147, 51, 234, 0.38);
+  /* Romberg: diagonal de la tabla triangular y las dos celdas de las que sale
+     una extrapolación (misma fila en verde, fila anterior en azul, como en el
+     paso a paso). */
+  --color-cell-diagonal: #fdf0c4;
+  --color-cell-diagonal-line: #c99a1a;
+  --color-cell-same: #d3f5df;
+  --color-cell-previous: #d6e4fd;
 
   /* ---- Elevación --------------------------------------------------------- */
   --color-backdrop: rgba(15, 23, 42, 0.45);
@@ -132,6 +139,10 @@
   --color-area-negative-alt: rgba(245, 154, 154, 0.5);
   --color-area-part2: rgba(200, 162, 246, 0.26);
   --color-area-part2-alt: rgba(200, 162, 246, 0.48);
+  --color-cell-diagonal: #3d3414;
+  --color-cell-diagonal-line: #b08a2a;
+  --color-cell-same: #17402b;
+  --color-cell-previous: #1d3557;
 
   /* En oscuro la separación la dan los tonos; la sombra casi no se ve. */
   --color-backdrop: rgba(2, 6, 23, 0.7);

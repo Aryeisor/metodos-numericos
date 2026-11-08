@@ -73,6 +73,7 @@ class MethodsEndpointTests(APITestCase):
                 ("cinco-puntos", "Diferenciación numérica"),
                 ("trapecio", "Integración numérica"),
                 ("simpson", "Integración numérica"),
+                ("romberg", "Integración numérica"),
             ],
         )
 

@@ -190,6 +190,36 @@ def _recurrence_display(previous_T, new_values, h_number, T):
             }
 
 
+def _first_step(rule, values, a, b, h_number, T, f_terms):
+    """Paso a paso de la fila 1: la fórmula de pesos con cada punto sustituido."""
+    n = len(values) - 1
+    step = _first_row_display(rule, values, h_number, T)
+    weights = rule.weights(n)
+    step.update({"count": n + 1, "fold": FOLD_FIRST_ROW, "points": []})
+    for i in _shown_indices(n + 1, FOLD_FIRST_ROW):
+        f_display = display.fixed(values[i], step["decimals"])
+        step["points"].append({
+            "i": i, "x": _x(a, b, i, n), "x_display": _x_display(a, b, i, n), "f": values[i],
+            "f_display": f_display, "terms": f_terms(_x(a, b, i, n)), "weight": weights[i],
+            "product": display.product(weights[i], f_display),
+        })
+    return step
+
+
+def _recurrence_step(previous_T, new_values, a, b, n, h_number, T, f_terms):
+    """Paso a paso de T_k = T_(k−1)/2 + h_k·Σ f(nuevos), con los puntos nuevos (i impar)."""
+    width = b - a
+    step = _recurrence_display(previous_T, new_values, h_number, T)
+    step.update({"count": len(new_values), "fold": FOLD_NEW_POINTS})
+    step["points"] = [
+        {"i": 2 * j + 1, "x": a + (2 * j + 1) * width / n, "x_display": _x_display(a, b, 2 * j + 1, n),
+         "f": new_values[j], "f_display": display.fixed(new_values[j], step["decimals"]),
+         "terms": f_terms(a + (2 * j + 1) * width / n)}
+        for j in _shown_indices(len(new_values), FOLD_NEW_POINTS)
+    ]
+    return step
+
+
 # --- f'' en [a, b] ----------------------------------------------------------------
 
 def _second_derivative(function, a, b, samples, order=2):
@@ -355,18 +385,7 @@ def _function_mode(data, rule=TRAPEZOID):
         h_number, h_shown = _step(a, b, n)
         if k == 1:
             T = apply(rule, values, h)
-            step = _first_row_display(rule, values, h_number, T)
-            weights = rule.weights(n)
-            step["count"] = n + 1
-            step["fold"] = FOLD_FIRST_ROW
-            step["points"] = []
-            for i in _shown_indices(n + 1, FOLD_FIRST_ROW):
-                f_display = display.fixed(values[i], step["decimals"])
-                step["points"].append({
-                    "i": i, "x": _x(a, b, i, n), "x_display": _x_display(a, b, i, n), "f": values[i],
-                    "f_display": f_display, "terms": f_terms(_x(a, b, i, n)), "weight": weights[i],
-                    "product": display.product(weights[i], f_display),
-                })
+            step = _first_step(rule, values, a, b, h_number, T, f_terms)
         else:
             new_values = [function(a + (2 * j - 1) * width / n) for j in range(1, n // 2 + 1)]
             if None in new_values:
@@ -378,15 +397,7 @@ def _function_mode(data, rule=TRAPEZOID):
                 break
             T = previous["T"] / 2 + h * math.fsum(new_values)
             abs_sum += 2 * sum(abs(v) for v in new_values)
-            step = _recurrence_display(previous["T"], new_values, h_number, T)
-            step["count"] = len(new_values)
-            step["fold"] = FOLD_NEW_POINTS
-            step["points"] = [
-                {"i": 2 * j + 1, "x": a + (2 * j + 1) * width / n, "x_display": _x_display(a, b, 2 * j + 1, n),
-                 "f": new_values[j], "f_display": display.fixed(new_values[j], step["decimals"]),
-                 "terms": f_terms(a + (2 * j + 1) * width / n)}
-                for j in _shown_indices(len(new_values), FOLD_NEW_POINTS)
-            ]
+            step = _recurrence_step(previous["T"], new_values, a, b, n, h_number, T, f_terms)
             if grid is not None and n <= CHART_MAX_N:
                 grid = [grid[i // 2] if i % 2 == 0 else new_values[i // 2] for i in range(n + 1)]
             else:

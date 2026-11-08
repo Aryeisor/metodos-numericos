@@ -40,13 +40,16 @@ export function stepSizeLatex(result, row, k) {
 /** xᵢ exacto, o «≈ aproximado». */
 export const pointLatex = (shown) => (shown.exact ? shown.latex : `\\approx ${shown.approx}`)
 
-/** T_k = T_(k−1)/2 + h_k·Σ nuevos, con T_(k−1) en azul y los nuevos en verde. */
-export function recurrenceLatex(row, k) {
+/**
+ * T_k = T_(k−1)/2 + h_k·Σ nuevos, con T_(k−1) en azul y los nuevos en verde.
+ * `name(j)` es el LaTeX del valor de la fila j (Romberg: R_{j,1}); `term`, el de la suma.
+ */
+export function recurrenceLatex(row, k, name = (j) => `T_{${j}}`, term = 'f(x_i)') {
   const step = row.step
   const previous = colorize(step.previous, PREVIOUS_COLOR)
   const sum = colorize(paren(step.sum), CURRENT_COLOR)
   return (
-    `T_{${k}} = \\frac{T_{${k - 1}}}{2} + h_{${k}} \\sum_{\\text{nuevos}} f(x_i) = ` +
+    `${name(k)} = \\frac{${name(k - 1)}}{2} + h_{${k}} \\sum_{\\text{nuevos}} ${term} = ` +
     `\\frac{${previous}}{2} + ${inline(row.h)} \\cdot ${sum} =${step.half} + ${paren(step.product)}` +
     ` = \\mathbf{${latexNumber(row.T)}}`
   )

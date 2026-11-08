@@ -13,8 +13,9 @@ import FunctionTableInput from '../../components/FunctionTableInput.vue'
 import IntegrationConfigFields from './IntegrationConfigFields.vue'
 import IntegrationResult from './IntegrationResult.vue'
 import SimpsonConfigFields from './SimpsonConfigFields.vue'
+import RombergResult from './RombergResult.vue'
 import SimpsonResult from './SimpsonResult.vue'
-import { MODES, createIntegrationStore, createSimpsonStore } from './store'
+import { MODES, createIntegrationStore, createRombergStore, createSimpsonStore } from './store'
 import IntegrationTheoryPage, { THEORY_SECTIONS } from './theory/IntegrationTheoryPage.vue'
 
 export default {
@@ -53,6 +54,14 @@ export default {
       createStore: createSimpsonStore,
       configFields: SimpsonConfigFields,
       resultView: SimpsonResult,
+    },
+    // Romberg: sin n₀ (siempre empieza con n = 1) y con máximo de filas.
+    romberg: {
+      createStore: createRombergStore,
+      configFields: null,
+      maxIterationsLabel: 'Máximo de filas (de 6 a 20)',
+      defaultMaxIterations: 15,
+      resultView: RombergResult,
     },
   },
 }

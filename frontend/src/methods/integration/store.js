@@ -16,7 +16,7 @@ export const MODES = { FUNCTION: 'function', TABLE: 'table' }
 
 const emptyRows = (n) => Array.from({ length: n }, () => [null, null])
 
-export function createIntegrationStore({ minPoints = MIN_POINTS } = {}) {
+export function createIntegrationStore({ minPoints = MIN_POINTS, maxPoints = MAX_POINTS } = {}) {
   const state = reactive({
     mode: MODES.FUNCTION,
     function: '',
@@ -32,7 +32,7 @@ export function createIntegrationStore({ minPoints = MIN_POINTS } = {}) {
   }
 
   function addRow() {
-    if (state.points.length < MAX_POINTS) state.points = [...state.points, [null, null]]
+    if (state.points.length < maxPoints) state.points = [...state.points, [null, null]]
   }
 
   function removeRow(index) {
@@ -73,7 +73,7 @@ export function createIntegrationStore({ minPoints = MIN_POINTS } = {}) {
   return {
     state,
     minPoints,
-    maxPoints: MAX_POINTS,
+    maxPoints,
     // Textos del formulario compartido (components/FunctionTableInput.vue).
     startFields: {
       title: 'Límites de integración (a < b)',
@@ -119,4 +119,27 @@ export function createSimpsonStore() {
   }
 
   return { ...base, ruleOptions: SIMPSON_RULE_OPTIONS, loadExample, buildPayload }
+}
+
+// --- Integración de Romberg ----------------------------------------------------------
+// El mismo formulario sin n₀ (Romberg siempre empieza con n = 1). En modo tabla,
+// 2ᵐ + 1 puntos (de 3 a 33; mismos valores que solvers/integration/romberg.py).
+export const ROMBERG_MAX_POINTS = 33
+
+export function createRombergStore() {
+  const base = createIntegrationStore({ minPoints: 3, maxPoints: ROMBERG_MAX_POINTS })
+
+  function buildPayload() {
+    const payload = base.buildPayload()
+    delete payload.n0
+    return payload
+  }
+
+  return {
+    ...base,
+    compareHint:
+      'Si conoces la función de la que salen los datos, escríbela para comparar con su integral, ' +
+      'ver el error verdadero y comprobar los datos.',
+    buildPayload,
+  }
 }
