@@ -36,8 +36,17 @@ const num = (value) => (value === null || value === undefined ? '-' : formatNumb
 const mark = (item) => (!item || item.within_bound === null ? '-' : item.within_bound ? (item.by_rounding ? 'OK (R)' : 'OK') : '(!)')
 const formulaNames = (result) => listNames(result.formulas.map((f) => f.name))
 // Encabezados cortos de la tabla del modo datos (las de 3 puntos no caben).
-const SHORT_NAMES = { punto_medio: 'Medio', extremo_adelante: 'Adelante', extremo_atras: 'Atrás' }
-const short = (formula) => SHORT_NAMES[formula.key] ?? formula.name
+const SHORT_NAMES = {
+  punto_medio: 'Medio',
+  extremo_adelante: 'Adelante',
+  extremo_atras: 'Atrás',
+  punto_medio_5: 'Medio 5',
+  extremo_adelante_5: 'Adelante 5',
+  extremo_atras_5: 'Atrás 5',
+}
+// En la tabla de 5 puntos, el punto medio de 3 puntos va como referencia.
+const short = (formula) =>
+  formula.name === 'Punto medio de 3 puntos' ? 'Medio 3' : SHORT_NAMES[formula.key] ?? formula.name
 // Título de cada método (el de diferencias se conserva tal cual).
 const TITLES = { 'diferencias-finitas': 'Diferencias finitas' }
 const STEMS = { 'diferencias-finitas': 'diferencias' }
@@ -131,7 +140,8 @@ export function exportDifferentiationPdf({ result, methodName, chartImage }) {
     autoTable(doc, {
       ...TABLE,
       // Con 3 fórmulas y función para comparar hay 14 columnas en vertical.
-      styles: { ...TABLE.styles, fontSize: head.length > 11 ? 6.5 : TABLE.styles.fontSize },
+      // Con la de 5 puntos (4 fórmulas) llegan a 18.
+      styles: { ...TABLE.styles, fontSize: head.length > 15 ? 5.5 : head.length > 11 ? 6.5 : TABLE.styles.fontSize },
       startY: y,
       head: [head],
       body: result.iterations.map((step) => {
@@ -181,12 +191,25 @@ export function exportDifferentiationPdf({ result, methodName, chartImage }) {
   // --- Comprobación --------------------------------------------------------------
   const check = result.verification
   y = sectionTitle(doc, y + 2, 'Comprobación')
-  if (check.identities) {
+  const fivePoint = result.method === 'cinco-puntos'
+  if (check.identities && fivePoint) {
+    if (check.identities.some((group) => (group.items ?? [group]).length)) {
+      y = write(
+        y,
+        `${isTable ? 'En cada punto donde aplica el punto medio de 5 puntos, con los datos' : 'En la fila 1'}: el punto ` +
+          'medio de 5 puntos combina dos fórmulas de 3 puntos para eliminar su error de orden h² (la idea de Romberg): ' +
+          `D5(h) = (4D3(h) - D3(2h))/3, con ${isTable ? 'D3(h) = (yi+1 - yi-1)/(2h) y D3(2h) = (yi+2 - yi-2)/(4h)' : 'D3(h) = [f(x0 + h) - f(x0 - h)]/(2h)'}. ` +
+          'El OK se decide con los valores sin redondear; la sustitución usa los valores que se ven.'
+      )
+    }
+  } else if (check.identities) {
     y = write(
       y,
       `${isTable ? 'En cada punto, con los datos' : 'En la fila 1, con los valores sin redondear'}: el punto medio ` +
         'es el promedio de la progresiva y la regresiva, y cada extremo es una extrapolación de Richardson, 2D(h) - D(2h).'
     )
+  }
+  if (check.identities) {
     const groups = isTable ? check.identities : [{ i: null, items: check.identities }]
     for (const group of groups) {
       for (const item of group.items) {
@@ -194,6 +217,9 @@ export function exportDifferentiationPdf({ result, methodName, chartImage }) {
       }
     }
     y += 2
+  }
+  if (fivePoint) {
+    y = write(y, 'Los extremos de 5 puntos no tienen identidad: en ellos sólo se comprueba que el error real quede por debajo de la cota.') + 2
   }
   if (isTable && check.secant) {
     y = write(y, 'Secante común: la progresiva en xi y la regresiva en xi+1 deben ser iguales.')

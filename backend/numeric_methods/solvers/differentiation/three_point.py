@@ -124,8 +124,21 @@ def _difference_at(function, formula, x0, h, exact):
     return D, None if exact is None else abs(D - exact)
 
 
-def _comparison(function, formulas, x0, iterations, exact):
-    """Qué darían la progresiva y la regresiva con el h₀ de la fila 1 y con el
+def _join(parts):
+    """«A y B», «A, B y C»."""
+    return parts[0] if len(parts) == 1 else ", ".join(parts[:-1]) + " y " + parts[-1]
+
+
+# (fórmula, campo de la respuesta, nombre al presentarla, nombre al compararla).
+DIFFERENCE_REFERENCES = (
+    (FORWARD, "forward", "diferencia progresiva", "progresiva"),
+    (BACKWARD, "backward", "regresiva", "regresiva"),
+)
+
+
+def _comparison(function, formulas, x0, iterations, exact, references=DIFFERENCE_REFERENCES,
+                method_label="la fórmula de 3 puntos"):
+    """Qué darían las fórmulas de `references` con el h₀ de la fila 1 y con el
     h de la última fila, y cuántas veces menor es el error de cada fórmula."""
     steps = iterations[:1] + iterations[1:][-1:]
     lines = []
@@ -133,7 +146,7 @@ def _comparison(function, formulas, x0, iterations, exact):
         h_shown = step.extra["h"]
         h = h_shown["value"]
         h_text = h_shown["text"] if h_shown["exact"] else f"{h_shown['text']} ≈ {h_shown['approx']}"
-        diffs = {f.key: _difference_at(function, f, x0, h, exact) for f in (FORWARD, BACKWARD)}
+        diffs = {f.key: _difference_at(function, f, x0, h, exact) for f, *_ in references}
 
         def said(formula, label, verb):
             D, error = diffs[formula.key]
@@ -141,8 +154,9 @@ def _comparison(function, formulas, x0, iterations, exact):
                 return f"la {label} no se puede calcular (f no está definida en sus puntos)"
             return f"la {label}{verb} {display.fixed(D)}" + ("" if error is None else f" (error {_error_text(error)})")
 
-        text = (f"Con h = {h_text}, {said(FORWARD, 'diferencia progresiva', ' daría')} y "
-                f"{said(BACKWARD, 'regresiva', '')}.")
+        text = f"Con h = {h_text}, " + _join([
+            said(f, label, " daría" if i == 0 else "") for i, (f, _, label, _) in enumerate(references)
+        ]) + "."
         mine = []
         for formula in formulas:
             row = step.extra[formula.key]
@@ -152,17 +166,16 @@ def _comparison(function, formulas, x0, iterations, exact):
             elif row["real_error"] is not None:
                 versus = [
                     _times(diffs[f.key][1], row["real_error"], name)
-                    for f, name in ((FORWARD, "progresiva"), (BACKWARD, "regresiva"))
+                    for f, _, _, name in references
                     if diffs[f.key][1] is not None
                 ]
-                part += f" (error {_error_text(row['real_error'])}" + (f": {' y '.join(versus)})" if versus else ")")
+                part += f" (error {_error_text(row['real_error'])}" + (f": {_join(versus)})" if versus else ")")
             mine.append(part)
-        text += " Con la fórmula de 3 puntos: " + "; ".join(mine) + "."
+        text += f" Con {method_label}: " + "; ".join(mine) + "."
         lines.append({
             "k": step.iteration,
             "h": h_shown,
-            "forward": {"D": diffs["forward"][0], "real_error": diffs["forward"][1]},
-            "backward": {"D": diffs["backward"][0], "real_error": diffs["backward"][1]},
+            **{field: {"D": diffs[f.key][0], "real_error": diffs[f.key][1]} for f, field, *_ in references},
             "text": text,
         })
     return lines

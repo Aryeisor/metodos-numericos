@@ -420,6 +420,55 @@ THREE_POINT_EXAMPLES = [
 ]
 
 
+# Fórmula de 5 puntos (misma tolerancia y máximo que la de 3 puntos). Los
+# valores esperados (README y tests/test_five_point.py) se verificaron con un
+# script independiente.
+FIVE_POINT_EXAMPLES = [
+    _three_point_example(
+        "cp-burden-xexp", "x·eˣ en x₀ = 2 (Burden y Faires)",
+        "Las tres fórmulas con h₀ = 0.1; exacta 3e² ≈ 22.167168. Punto medio 22.166996 en la fila 1.", "all",
+        function="x*exp(x)", x0=2, h0=0.1,
+    ),
+    _three_point_example(
+        "cp-ln", "ln(x) en x₀ = 1.8",
+        "El mismo ejemplo de diferencias y de 3 puntos: exacta 1/1.8 ≈ 0.555556.", "all",
+        function="ln(x)", x0=1.8, h0=0.1,
+    ),
+    _three_point_example(
+        "cp-seno", "sin(x) en x₀ = 1, punto medio",
+        "Exacta cos(1) ≈ 0.540302 (en radianes).", "punto_medio_5",
+        function="sin(x)", x0=1, h0=0.1,
+    ),
+    _three_point_example(
+        "cp-cuartica", "Cuártica x⁴ − 2x³ + x en x₀ = 1",
+        "f⁽⁵⁾ = 0: las tres fórmulas son exactas para polinomios de grado ≤ 4 (la de 3 puntos no).", "all",
+        function="x^4 - 2x^3 + x", x0=1, h0=0.5,
+    ),
+    _three_point_example(
+        "cp-quintica", "x⁵ en x₀ = 1",
+        "f⁽⁵⁾ = 120 es constante: el error real es igual a la cota en cada fila.", "all",
+        function="x^5", x0=1, h0=0.5,
+    ),
+    _three_point_example(
+        "cp-gauss", "e^(−x²) en x₀ = 0.5, extremo hacia atrás",
+        "Exacta −e^(−0.25) ≈ −0.778801.", "extremo_atras_5",
+        function="exp(-x^2)", x0=0.5, h0=0.1,
+    ),
+    _three_point_example(
+        "cp-tabla-burden", "Tabla de x·eˣ (Burden y Faires, tabla + función)",
+        "Nueve datos con h = 0.1; se compara con f(x) = x·eˣ.", "all",
+        points=[[1.6, 7.924852], [1.7, 9.305711], [1.8, 10.889365], [1.9, 12.703199], [2.0, 14.778112],
+                [2.1, 17.148957], [2.2, 19.85503], [2.3, 22.94062], [2.4, 26.455623]],
+        compare_function="x*exp(x)",
+    ),
+    _three_point_example(
+        "cp-tabla-cuartas", "Tabla de datos sin función",
+        "Datos de x⁴ en x = 0, 1, …, 6: las fórmulas de 5 puntos dan exactamente 4x³.", "all",
+        points=[[0, 0], [1, 1], [2, 16], [3, 81], [4, 256], [5, 625], [6, 1296]],
+    ),
+]
+
+
 EXAMPLES = {
     "jacobi": LINEAR_SYSTEM_EXAMPLES,
     "gauss-seidel": LINEAR_SYSTEM_EXAMPLES,
@@ -428,6 +477,7 @@ EXAMPLES = {
     "bairstow": POLYNOMIAL_EXAMPLES,
     "diferencias-finitas": DIFFERENCE_EXAMPLES,
     "tres-puntos": THREE_POINT_EXAMPLES,
+    "cinco-puntos": FIVE_POINT_EXAMPLES,
 }
 
 

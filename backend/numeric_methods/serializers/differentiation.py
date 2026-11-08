@@ -15,7 +15,9 @@ from ..solvers.differentiation.finite_differences import (
     parse_function_of_x,
 )
 from ..solvers.differentiation import display
-from ..solvers.differentiation.formulas import CHOICES, THREE_POINT_CHOICES
+from ..solvers.differentiation.five_point import DEFAULT_TOLERANCE as FIVE_POINT_TOLERANCE
+from ..solvers.differentiation.five_point import MIN_POINTS as FIVE_POINT_MIN_POINTS
+from ..solvers.differentiation.formulas import CHOICES, FIVE_POINT_CHOICES, THREE_POINT_CHOICES
 from ..solvers.differentiation.three_point import DEFAULT_TOLERANCE as THREE_POINT_TOLERANCE
 from ..solvers.differentiation.three_point import MIN_POINTS as THREE_POINT_MIN_POINTS
 
@@ -143,6 +145,7 @@ class ThreePointSerializer(DifferentiationSerializer):
     tolerance = serializers.FloatField(default=THREE_POINT_TOLERANCE)
 
     min_points = THREE_POINT_MIN_POINTS
+    method_label = "La fórmula de 3 puntos"
 
     def _validate_table(self, data):
         data = super()._validate_table(data)
@@ -154,7 +157,24 @@ class ThreePointSerializer(DifferentiationSerializer):
                 shown = [display.decimal(display.exact(b) - display.exact(a))["text"]
                          for a, b in ((xs[i], xs[i + 1]), (xs[0], xs[1]))]
                 raise serializers.ValidationError({"points": [
-                    "La fórmula de 3 puntos necesita datos igualmente espaciados: entre la fila "
+                    f"{self.method_label} necesita datos igualmente espaciados: entre la fila "
                     f"{i + 1} y la {i + 2} el espaciado es {shown[0]} y el de la primera pareja es {shown[1]}."
                 ]})
         return data
+
+
+class FivePointSerializer(ThreePointSerializer):
+    """Entrada de la fórmula de 5 puntos: la de 3 puntos con `formula` =
+    "punto_medio_5", "extremo_adelante_5", "extremo_atras_5" o "all" y, en modo
+    tabla, de 5 a 20 puntos igualmente espaciados."""
+
+    formula = serializers.ChoiceField(
+        choices=list(FIVE_POINT_CHOICES), default="all",
+        error_messages={
+            "invalid_choice": "La fórmula debe ser «punto_medio_5», «extremo_adelante_5», «extremo_atras_5» o «all»."
+        },
+    )
+    tolerance = serializers.FloatField(default=FIVE_POINT_TOLERANCE)
+
+    min_points = FIVE_POINT_MIN_POINTS
+    method_label = "La fórmula de 5 puntos"

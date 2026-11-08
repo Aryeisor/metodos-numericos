@@ -48,6 +48,16 @@ const identityGroups = computed(() => {
     }))
 })
 
+// Fórmula de 5 puntos: identidad de Richardson del punto medio.
+const isFivePoint = computed(() => props.result.method === 'cinco-puntos')
+const rombergFormula = computed(
+  () =>
+    'D_{5}(h) = \\frac{4D_{3}(h) - D_{3}(2h)}{3},\\quad ' +
+    (isTable.value
+      ? 'D_{3}(h) = \\frac{y_{i+1} - y_{i-1}}{2h},\\quad D_{3}(2h) = \\frac{y_{i+2} - y_{i-2}}{4h}'
+      : 'D_{3}(h) = \\frac{f(x_0 + h) - f(x_0 - h)}{2h}')
+)
+
 const secantLines = computed(() =>
   (check.value.secant ?? []).map((pair) => ({
     key: pair.i,
@@ -71,9 +81,16 @@ const substitutions = computed(() =>
   <section class="verification">
     <h4>Comprobación</h4>
 
-    <!-- Fórmula de 3 puntos: identidades -->
+    <!-- Fórmulas de 3 y 5 puntos: identidades -->
     <template v-if="identityGroups.length">
-      <p class="section-text">
+      <p v-if="isFivePoint" class="section-text">
+        {{ isTable ? 'En cada punto donde aplica el punto medio de 5 puntos, con los datos' : 'En la fila 1' }}:
+        el punto medio de 5 puntos combina dos fórmulas de 3 puntos para eliminar su error de orden
+        <MathFormula expression="h^2" />, igual que la de 3 puntos combina diferencias (es la idea de Romberg):
+        <MathFormula :expression="rombergFormula" />. El ✔ se decide con los valores sin redondear; la
+        sustitución se muestra con los valores que se ven.
+      </p>
+      <p v-else class="section-text">
         {{ isTable ? 'En cada punto, con los datos' : 'En la fila 1, con los valores sin redondear' }}:
         el punto medio es el promedio de la progresiva y la regresiva,
         <MathFormula expression="\frac{D^{+}(h) + D^{-}(h)}{2}" />, y cada extremo es una extrapolación de
@@ -91,6 +108,10 @@ const substitutions = computed(() =>
         </div>
       </div>
     </template>
+    <p v-if="isFivePoint" class="section-text note">
+      Los extremos de 5 puntos no tienen una identidad de este tipo: en ellos sólo se comprueba que el
+      error real quede por debajo de la cota.
+    </p>
 
     <!-- Modo tabla: secante común (diferencias) -->
     <template v-if="isTable">

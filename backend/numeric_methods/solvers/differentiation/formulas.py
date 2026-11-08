@@ -11,7 +11,7 @@ un dict de opciones del selector como `THREE_POINT_CHOICES`).
 No depende de Django: puede usarse y testearse de forma aislada.
 """
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from fractions import Fraction
 
 
@@ -105,9 +105,58 @@ BACKWARD_ENDPOINT = Formula(
     divisor=2,
 )
 
+MIDPOINT_5 = Formula(
+    key="punto_medio_5",
+    name="Punto medio",
+    symbol_latex=r"D^{\text{med},5}",
+    nodes=((-2, 1), (-1, -8), (1, 8), (2, -1)),
+    order=4,
+    bound_derivative=5,
+    bound_coefficient=Fraction(1, 30),
+    formula_latex=(r"D^{\text{med},5}(h) = \frac{f(x_0 - 2h) - 8f(x_0 - h) + 8f(x_0 + h) - f(x_0 + 2h)}{12h}"),
+    formula_text="Dmed5(h) = [f(x0 - 2h) - 8f(x0 - h) + 8f(x0 + h) - f(x0 + 2h)] / (12h)",
+    bound_latex=r"|E| \le \frac{h^{4}}{30} \max_{\xi \in [x_0 - 2h,\, x_0 + 2h]} \left|f^{(5)}(\xi)\right|",
+    divisor=12,
+)
+
+FORWARD_ENDPOINT_5 = Formula(
+    key="extremo_adelante_5",
+    name="Extremo hacia adelante",
+    symbol_latex=r"D^{\text{ad},5}",
+    nodes=((0, -25), (1, 48), (2, -36), (3, 16), (4, -3)),
+    order=4,
+    bound_derivative=5,
+    bound_coefficient=Fraction(1, 5),
+    formula_latex=(r"D^{\text{ad},5}(h) = \frac{-25f(x_0) + 48f(x_0 + h) - 36f(x_0 + 2h) + 16f(x_0 + 3h)"
+                   r" - 3f(x_0 + 4h)}{12h}"),
+    formula_text="Dad5(h) = [-25f(x0) + 48f(x0 + h) - 36f(x0 + 2h) + 16f(x0 + 3h) - 3f(x0 + 4h)] / (12h)",
+    bound_latex=r"|E| \le \frac{h^{4}}{5} \max_{\xi \in [x_0,\, x_0 + 4h]} \left|f^{(5)}(\xi)\right|",
+    divisor=12,
+)
+
+BACKWARD_ENDPOINT_5 = Formula(
+    key="extremo_atras_5",
+    name="Extremo hacia atrás",
+    symbol_latex=r"D^{\text{at},5}",
+    nodes=((0, 25), (-1, -48), (-2, 36), (-3, -16), (-4, 3)),
+    order=4,
+    bound_derivative=5,
+    bound_coefficient=Fraction(1, 5),
+    formula_latex=(r"D^{\text{at},5}(h) = \frac{25f(x_0) - 48f(x_0 - h) + 36f(x_0 - 2h) - 16f(x_0 - 3h)"
+                   r" + 3f(x_0 - 4h)}{12h}"),
+    formula_text="Dat5(h) = [25f(x0) - 48f(x0 - h) + 36f(x0 - 2h) - 16f(x0 - 3h) + 3f(x0 - 4h)] / (12h)",
+    bound_latex=r"|E| \le \frac{h^{4}}{5} \max_{\xi \in [x_0 - 4h,\, x_0]} \left|f^{(5)}(\xi)\right|",
+    divisor=12,
+)
+
+# El punto medio de 3 puntos como columna de referencia en la tabla de 5 puntos
+# (misma fórmula; otro nombre para distinguirla del punto medio de 5 puntos).
+MIDPOINT_3_REFERENCE = replace(MIDPOINT, name="Punto medio de 3 puntos", symbol_latex=r"D^{\text{med},3}")
+
 FORMULAS = {
     formula.key: formula
-    for formula in (FORWARD, BACKWARD, MIDPOINT, FORWARD_ENDPOINT, BACKWARD_ENDPOINT)
+    for formula in (FORWARD, BACKWARD, MIDPOINT, FORWARD_ENDPOINT, BACKWARD_ENDPOINT,
+                    MIDPOINT_5, FORWARD_ENDPOINT_5, BACKWARD_ENDPOINT_5)
 }
 
 # Opción del selector «Fórmula» -> fórmulas que se calculan (un dict por método).
@@ -123,6 +172,14 @@ THREE_POINT_CHOICES = {
     "extremo_adelante": (FORWARD_ENDPOINT,),
     "extremo_atras": (BACKWARD_ENDPOINT,),
     "all": THREE_POINT,
+}
+
+FIVE_POINT = (MIDPOINT_5, FORWARD_ENDPOINT_5, BACKWARD_ENDPOINT_5)
+FIVE_POINT_CHOICES = {
+    "punto_medio_5": (MIDPOINT_5,),
+    "extremo_adelante_5": (FORWARD_ENDPOINT_5,),
+    "extremo_atras_5": (BACKWARD_ENDPOINT_5,),
+    "all": FIVE_POINT,
 }
 
 

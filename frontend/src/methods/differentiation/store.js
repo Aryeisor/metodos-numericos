@@ -28,16 +28,25 @@ export const THREE_POINT_OPTIONS = [
   { value: 'all', label: 'Todas' },
 ]
 
+// Fórmula de 5 puntos (mismos valores que FIVE_POINT_CHOICES del backend).
+export const FIVE_POINT_OPTIONS = [
+  { value: 'punto_medio_5', label: 'Punto medio' },
+  { value: 'extremo_adelante_5', label: 'Extremo hacia adelante' },
+  { value: 'extremo_atras_5', label: 'Extremo hacia atrás' },
+  { value: 'all', label: 'Todas' },
+]
+
 const emptyRows = (n) => Array.from({ length: n }, () => [null, null])
 
 /**
  * Cada método de la categoría pasa sus opciones del selector, la fórmula por
- * defecto y el mínimo de puntos del modo tabla.
+ * defecto, el mínimo de puntos del modo tabla y las filas vacías iniciales.
  */
 export function createDifferentiationStore({
   formulaOptions = FORMULA_OPTIONS,
   defaultFormula = 'both',
   minPoints = MIN_POINTS,
+  defaultRows = DEFAULT_ROWS,
 } = {}) {
   const state = reactive({
     mode: MODES.FUNCTION,
@@ -45,7 +54,7 @@ export function createDifferentiationStore({
     // [x₀, h₀]; null = campo vacío.
     start: [null, DEFAULT_H0],
     formula: defaultFormula,
-    points: emptyRows(DEFAULT_ROWS),
+    points: emptyRows(defaultRows),
     compare: '',
   })
 
@@ -108,3 +117,11 @@ export function createDifferentiationStore({
 
 export const createThreePointStore = () =>
   createDifferentiationStore({ formulaOptions: THREE_POINT_OPTIONS, defaultFormula: 'all', minPoints: 3 })
+
+export const createFivePointStore = () =>
+  createDifferentiationStore({
+    formulaOptions: FIVE_POINT_OPTIONS,
+    defaultFormula: 'all',
+    minPoints: 5,
+    defaultRows: 9,
+  })

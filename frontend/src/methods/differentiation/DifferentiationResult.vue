@@ -12,7 +12,7 @@ import { latexNumber } from '../../utils/latexFormulas'
 import DataPointsTable from './DataPointsTable.vue'
 import DifferentiationVerification from './DifferentiationVerification.vue'
 import RefinementTable from './RefinementTable.vue'
-import { derivativeName, listNames } from './formulas'
+import { derivativeName, derivativeText, listNames } from './formulas'
 import { exportDifferentiationPdf } from './pdf'
 
 const props = defineProps({
@@ -37,10 +37,10 @@ const higher = computed(() =>
   Object.entries(fn.value?.higher_derivatives ?? {}).map(([n, d]) => ({
     n,
     latex: `${derivativeName(Number(n))}(x) = ${d.latex}`,
-    // Fórmula de 3 puntos: f'' se obtiene derivando f', y f''' derivando f''.
+    // Fórmulas de 3 y 5 puntos: cada derivada se obtiene derivando la anterior.
     steps: d.steps ?? null,
-    from: derivativeName(Number(n) - 1).replace(/'/g, '′'),
-    name: derivativeName(Number(n)).replace(/'/g, '′'),
+    from: derivativeText(Number(n) - 1),
+    name: derivativeText(Number(n)),
   }))
 )
 const higherSteps = computed(() => higher.value.filter((d) => d.steps))
@@ -50,7 +50,7 @@ const higherSteps = computed(() => higher.value.filter((d) => d.steps))
 // escala log; los valores null o 0 quedan como huecos (ConvergenceChart).
 // Modo tabla: aproximaciones frente a xᵢ, escala lineal.
 // Con n fórmulas: error estimado con los colores 1..n y error real con n+1..2n
-// (hasta 6 series con la fórmula de 3 puntos).
+// (hasta 6 series con las fórmulas de 3 y 5 puntos).
 const COLORS = [
   '--color-series-1',
   '--color-series-2',
@@ -98,6 +98,12 @@ const chartLabels = computed(() =>
 const order = computed(() => formulas.value[0].order)
 const roundingText = computed(() => props.result.rounding_text ?? 'R = 4ε·máx|f|/h')
 const hasRecommended = computed(() => Boolean(props.result.iterations[0]?.extra.recommended))
+// |f⁽⁵⁾(x)|, y «o |f′′′(x)| (según la fórmula)» con el punto medio de 3 puntos de referencia.
+const boundNames = computed(() => {
+  const names = [...new Set(formulas.value.map((f) => f.bound_derivative))].map((n) => `|${derivativeText(n)}(x)|`)
+  return names.length > 1 ? `${names.join(' o ')} (según la fórmula)` : names[0]
+})
+const isFivePoint = computed(() => props.result.method === 'cinco-puntos')
 
 const toleranceLabel = computed(() => `Tolerancia (${formatNumber(props.result.tolerance)})`)
 
@@ -152,7 +158,9 @@ function handleExportPdf() {
       </template>
     </p>
     <div v-if="result.comparison?.length" class="comparison">
-      <p class="comparison-title">Comparación con las diferencias progresiva y regresiva</p>
+      <p class="comparison-title">
+        {{ result.comparison_title ?? 'Comparación con las diferencias progresiva y regresiva' }}
+      </p>
       <p v-for="line in result.comparison" :key="line.k" class="comparison-line">{{ line.text }}</p>
     </div>
     <div v-for="(w, idx) in result.warnings" :key="'w' + idx" class="alert alert-warning">⚠ {{ w }}</div>
@@ -205,7 +213,14 @@ function handleExportPdf() {
     <section class="result-section">
       <h4>{{ isTable ? 'Derivada en cada punto' : 'Tabla de refinamiento' }}</h4>
       <p class="section-text">
-        <template v-if="isTable && hasRecommended">
+        <template v-if="isTable && isFivePoint">
+          En cada xᵢ, cada fórmula usa los datos vecinos que necesita; donde faltan se muestra «—».
+          El punto medio de 3 puntos se muestra como referencia. La columna «Recomendada» toma el
+          punto medio de 5 puntos donde existe; si no, el extremo de 5 puntos (hacia adelante si
+          existe; si no, hacia atrás), y el punto medio de 3 puntos sólo donde no aplica ninguna
+          fórmula de 5 puntos. Despliega una fila para ver el cálculo.
+        </template>
+        <template v-else-if="isTable && hasRecommended">
           En cada xᵢ, cada fórmula usa los datos vecinos que necesita; donde faltan se muestra «—».
           La columna «Recomendada» toma el punto medio donde existe (es la más precisa) y, en los
           extremos de la tabla, la fórmula de extremo. Despliega una fila para ver el cálculo.
@@ -243,7 +258,7 @@ function handleExportPdf() {
         {{ 2 ** order }}.
       </p>
       <p v-if="fn" class="section-text">
-        La cota usa M, el máximo de |{{ derivativeName(formulas[0].bound_derivative).replace(/'/g, '′') }}(x)|
+        La cota usa M, el máximo de {{ boundNames }}
         en el intervalo de cada {{ isTable ? 'fórmula' : 'fila' }}, estimado por muestreo con
         {{ result.sampling_points }} puntos equiespaciados. La marca <sup>R</sup> indica que el error
         real supera la cota sólo por el redondeo de la computadora ({{ roundingText }}).

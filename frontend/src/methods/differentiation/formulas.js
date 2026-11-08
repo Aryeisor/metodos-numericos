@@ -22,6 +22,13 @@ export function derivativeName(n, style = LATEX_STYLE) {
   return isLatex(style) ? `f^{(${n})}` : `f^(${n})`
 }
 
+const SUPERSCRIPTS = '⁰¹²³⁴⁵⁶⁷⁸⁹'
+/** Nombre de f⁽ⁿ⁾ en un texto: f′, f′′, f′′′, f⁽⁴⁾, f⁽⁵⁾. */
+export function derivativeText(n) {
+  if (n <= 3) return `f${'′'.repeat(n)}`
+  return `f⁽${[...String(n)].map((d) => SUPERSCRIPTS[d]).join('')}⁾`
+}
+
 /** Símbolo de la fórmula en la fila k: D^{+}_{3}. */
 export const symbolAt = (formula, k) => `${formula.symbol_latex}_{${k}}`
 
@@ -217,6 +224,8 @@ export function substitutionText(substitution) {
  */
 export function identityLatex(item, formula) {
   const n = (value) => latexNumber(value)
+  const symbol = formula?.symbol_latex ?? 'D'
+  if (item.kind === 'romberg') return rombergLatex(item, symbol)
   let lhs
   if (item.kind === 'average') {
     lhs =
@@ -225,13 +234,36 @@ export function identityLatex(item, formula) {
     const d = `D^{${item.direction}}`
     lhs = `2${d}(h) - ${d}(2h) = 2\\left(${n(item.base)}\\right) - ${paren(n(item.double))}`
   }
-  const symbol = formula?.symbol_latex ?? 'D'
   const rhs = item.ok ? `= ${symbol}` : `\\ne ${symbol} = ${n(item.D)}`
   return `${lhs} = ${n(item.value)} ${rhs}`
 }
 
+/**
+ * Identidad de Richardson del punto medio de 5 puntos, con los valores que se
+ * ven (el backend calcula el resultado con ellos):
+ *   (4D₃(h) − D₃(2h))/3 = (4(28.958315) − 29.193778)/3 = 28.879827 ≈ D₅ = 28.879828 (diferencia por redondeo)
+ */
+function rombergEnd(item, symbol, approx, note) {
+  if (!item.ok) return `\\ne ${symbol} = ${item.D_display}`
+  if (item.value_display === item.D_display) return `= ${symbol}`
+  return `${approx} ${symbol} = ${item.D_display}${item.rounding_difference ? ` ${note}` : ''}`
+}
+
+function rombergLatex(item, symbol) {
+  const lhs =
+    `\\frac{4D_{3}(h) - D_{3}(2h)}{3} = ` +
+    `\\frac{4\\left(${item.base_display}\\right) - ${paren(item.double_display)}}{3}`
+  return `${lhs} = ${item.value_display} ${rombergEnd(item, symbol, '\\approx', '\\;\\text{(diferencia por redondeo)}')}`
+}
+
 /** Identidad en texto plano (PDF). */
 export function identityText(item) {
+  if (item.kind === 'romberg') {
+    const double = item.double_display.startsWith('-') ? `(${item.double_display})` : item.double_display
+    const end = rombergEnd(item, 'D5', '~', '(diferencia por redondeo)')
+    return `(4D3(h) - D3(2h))/3 = (4(${item.base_display}) - ${double})/3 = ${item.value_display} ${end}` +
+      (item.ok ? ' OK' : ' (!)')
+  }
   const n = (value) => formatNumber(value)
   const p = (value) => (value < 0 ? `(${n(value)})` : n(value))
   const lhs =

@@ -70,6 +70,7 @@ class MethodsEndpointTests(APITestCase):
                 ("bairstow", "Polinomios"),
                 ("diferencias-finitas", "Diferenciación numérica"),
                 ("tres-puntos", "Diferenciación numérica"),
+                ("cinco-puntos", "Diferenciación numérica"),
             ],
         )
 
