@@ -708,7 +708,12 @@ secciones).
   `h_k = (b − a)/n_k`. Columnas: `k`, `n`, `h` (exacto con hasta 12 decimales;
   si no, `(b − a)/n` con su aproximación), `T`, error estimado
   `|T_k − T_(k−1)|`, `Eₜ`, `εₜ`, `Eₐ`, cota, razón `Eₜ,k/Eₜ,(k−1)` (→ 0.25) y
-  «`|Eₜ| ≤ cota + R_k`», con `R_k = 2ε·Σ|wᵢ·f(xᵢ)|·(h/2)`. Se detiene cuando
+  «`|Eₜ| ≤ cota`». **Marca R:** `|Eₜ| ≤ cota·(1 + 10⁻⁹)` es ✔ normal (si además
+  `|Eₜ|` y la cota difieren menos de `10⁻⁹` relativo, se escribe
+  «|Eₜ| = cota ✔», con «la igualdad ocurre porque f'' es constante» cuando lo
+  es, como en `x²`); la marca ✔ᴿ y su nota aparecen sólo si `|Eₜ|` supera ese
+  margen y el ✔ depende del redondeo `R_k = 2ε·Σ|wᵢ·f(xᵢ)|·(h/2)`. Ningún
+  ejemplo precargado la necesita. Se detiene cuando
   el error estimado es `≤` tolerancia con al menos 6 filas; si se agota el
   máximo, `converged = false` con una advertencia.
 - **Errores:**
@@ -724,13 +729,46 @@ secciones).
   sólo se evalúan los puntos nuevos (la base de Romberg). Ejemplo 1:
   `T₂ = 0.1728/2 + 0.4·f(0.4) = 1.0688` y
   `T₃ = 1.0688/2 + 0.2·[f(0.2) + f(0.6)] = 1.4848`.
-- **Paso a paso:** fila 1 con `h`, la tabla de `xᵢ`, `f(xᵢ)` y su peso (con
-  más de 17 puntos, los 8 primeros y los 8 últimos) y la sustitución en la
-  fórmula; filas siguientes con `h_k`, los puntos nuevos en verde (plegados
-  si son más de 16), `T_(k−1)` en azul y la recurrencia; después, error
-  estimado, `Eₜ`, `εₜ`, `Eₐ` con `f̄''` sustituido, la cota con `M₂` y la
-  razón. Los valores usan 6 decimales y se agregan decimales (hasta 15) si
-  hiciera falta para que el resultado visible sea coherente con ellos.
+- **Derivadas de f(x)** (en «Datos del problema»): para qué sirve cada una
+  (`f'` para `Eₐ`, `f''` para la cota) y su desglose **término a término con
+  la regla aplicada**, el mismo de Newton y diferenciación
+  (`derivative_steps.entry_steps`): `d/dx(x²) = 2·x = 2x`,
+  `d/dx(−200x²) = (−200)·2·x = −400x`, `d/dx(eˣ) = eˣ`; `f''` se obtiene
+  derivando `f'` igual. Un término que el desglose no sabe separar muestra el
+  resultado con «derivada calculada simbólicamente». La integral se escribe
+  `∫₀² x² dx`: el integrando lleva paréntesis sólo si es una suma o resta.
+- **Glosarios** (`methods/integration/glossary.js`, componentes
+  `GlossaryBlock` e `InfoTip`): debajo de cada fórmula (regla compuesta, `Eₐ`
+  y cota) un bloque plegable «¿Qué significa cada símbolo?» (visible por
+  defecto) explica cada símbolo en una línea (`I`, `≈`, `a, b`, `n`, `h`,
+  `xᵢ`, `f(xᵢ)`, `Σ`, el 2, `h/2`; `Eₐ`, `f̄''`, el signo menos, el 12; `|Eₜ|`,
+  `≤`, `M₂`, `h²`). Cada encabezado de la tabla de refinamiento, de la de
+  segmentos y de la de comparación tiene un tooltip (se abre también al
+  tocarlo) y debajo de cada tabla va la leyenda «¿Qué significa cada
+  columna?». Con valor de referencia, las leyendas de `Eₜ` y `εₜ` lo dicen.
+- **Paso a paso explicado** (`methods/integration/explain.js`): cada paso
+  tiene título, una o dos frases, la fórmula sustituida y el resultado.
+  Fila 1: ancho `h₁ = (2 − 0)/1 = 2`; puntos `xᵢ = a + i·h`; tabla con la
+  **sustitución** de cada `f(xᵢ)` término a término, el peso y `peso × f(xᵢ)`;
+  suma ponderada `1·0 + 1·4 = 0 + 4 = 4` y área `T₁ = (2/2)·4 = 1·4 = 4`.
+  Filas siguientes: `n` y `h` nuevos, por qué sólo se evalúan los puntos
+  nuevos, cada punto nuevo con su cálculo y su sustitución (en verde), su suma
+  (`f(0.5) + f(1.5) = 0.25 + 2.25 = 2.5`), la recurrencia con `T_(k−1)` en azul
+  (`T₃ = 3/2 + 0.5·2.5 = 1.5 + 1.25 = 2.75`) y el error estimado comparado con
+  la tolerancia. En todas: `Eₜ` y `εₜ` con una frase según el signo; `Eₐ`
+  evaluando `f'(b)` y `f'(a)` término a término, `f̄''` y
+  `−[(2)(2)²/12]·2 = −(8/12)·2 = −1.333333`; la cota con `f''` y `M₂` (si
+  `f''` no es constante, `M₂ = |f''(x)|` sustituida donde se alcanzó, por
+  ejemplo `f''(0) = −400` en Chapra), la comparación con la cota y la razón.
+  Con más de 16 puntos se pliegan (8 primeros y 8 últimos); con 1024 o menos
+  el botón «Mostrar todos los puntos» los muestra todos, y con más se indica
+  «Se muestran 16 de N puntos; la suma usa todos». Los valores usan 6
+  decimales y se agregan decimales (hasta 15) si hiciera falta para que el
+  resultado visible sea coherente con ellos. En modo tabla, cada segmento:
+  ancho, alturas, área y área acumulada.
+- **Nota de `Eₜ` que se ve 0:** si `|Eₜ| < 0.0000005` y `εₜ` no se ve 0, se
+  aclara debajo de la tabla, en el paso a paso y en la comprobación (ejemplo
+  6: «… en porcentaje del valor exacto es 0.000008 %»).
 - **Integral exacta o de referencia** (`solvers/integration/exact.py`, común a
   todas las reglas): `sympy.integrate` da la antiderivada `F` (los decimales
   de `f` se pasan antes a racionales, así `F` sale con fracciones exactas
@@ -765,13 +803,25 @@ secciones).
   con `h`. Con función para comparar: integral exacta o de referencia en
   `[x₀, xₙ]`, `Eₜ`, `εₜ`, la cota por segmentos `Σ hᵢ³/12·máx|f''|` (401
   puntos por segmento) y la comprobación de los datos.
-- **Comprobación:** con valor exacto, `F(x)` en LaTeX (coeficientes racionales
-  como fracciones, `\frac{200}{3}x^3`), `F(b)` y `F(a)` término a término
+- **Comprobación:** una frase de introducción y, con valor exacto, la
+  **antiderivada paso a paso**: `∫ f dx` término a término con la regla
+  (potencia `∫xⁿ dx = xⁿ⁺¹/(n + 1)`, constante, `eˣ`, `sin`, `cos`, `1/x`):
+  `∫x² dx = x^(2+1)/(2+1) = (1/3)x³`; en Chapra, `0.2x`, `12.5x²`,
+  `−(200/3)x³`, `168.75x⁴`, `−180x⁵` y `(200/3)x⁶`. Si sympy obtuvo `F` con
+  otra técnica (sustitución, partes…), se muestra `F` con «antiderivada
+  obtenida con integración simbólica; la técnica no se detalla aquí». Luego la
+  **verificación `F' = f`**: se deriva `F` término a término con las mismas
+  reglas y se marca «= f(x) ✔». Después, el teorema fundamental del cálculo
+  («la integral de a a b es F(b) − F(a)»), `F(x)` en LaTeX (coeficientes
+  racionales como fracciones, `\frac{200}{3}x^3`), `F(b)` y `F(a)` término a término
   (`F(0.8) = 0.2(0.8) + 12.5(0.8)² − (200/3)(0.8)³ + … ≈ 0.16 + 8 −
   34.133333 + 69.12 − 58.9824 + 17.476267 ≈ 1.640533`; `F(0) = 0`, «todos sus
-  términos se anulan»), la comparación `T`, `I`, `Eₜ`, `εₜ`, cota con ✔/⚠ y
-  una línea sobre todas las filas. Con valor de referencia, se indica que no
-  hay antiderivada elemental y se compara con la referencia. En modo tabla:
+  términos se anulan»), la comparación `T`, `I`, `Eₜ`, `εₜ`, cota con ✔/⚠
+  (encabezados con tooltip y leyenda), una frase de conclusión («Con n = 4096
+  trapecios el resultado coincide con la integral exacta en 6 decimales») y
+  una línea sobre todas las filas. Con valor de referencia, se explica en
+  palabras que la antiderivada no se puede escribir con funciones elementales
+  y qué es el valor de referencia. En modo tabla:
   la suma de las áreas es el total (con `≈` si las áreas a 6 decimales no
   suman exacto), la fórmula compuesta es igual a esa suma (si es uniforme),
   los datos contra `f` (`|yᵢ − f(xᵢ)| ≤ 10⁻⁶·máx(1, |f(xᵢ)|)`) y la
@@ -995,20 +1045,28 @@ Campos propios de cada categoría:
 
 - **Método del trapecio:** `mode`, `rule` (la regla como datos: `factor`,
   `ends`, `interior`, `formula_latex`, `bound_latex`, `expected_ratio`…),
-  `function` (`latex`, `text`, `uses_trigonometry`, `first` y `second` con
-  `f'` y `f''`; `null` en modo tabla sin función), `integral` (`kind` —
+  `function` (`latex`, `text`, `is_sum`, `uses_trigonometry`,
+  `substitution_terms` —las plantillas de `f` para sustituir cada punto—,
+  `first` y `second` con `f'` y `f''` y su desglose `steps`, y
+  `second.constant`; `null` en modo tabla sin función), `integral` (`kind` —
   `exact`, `reference` o `null`—, `value`, `label`, `special`, `timed_out`,
-  `antiderivative`), `curve` (300 puntos de `f`), `chart_rows` (los puntos de
+  `antiderivative` con `latex`, `text`, `steps` —`detailed` y los términos
+  con su regla— y `check` —`F'` término a término, `sum_latex`, `ok`—),
+  `mean_second` (`fa`, `fb`, `value` y `fa_substitution`/`fb_substitution`),
+  `M2` (`value`, `x`, `x_display` y `substitution`, `f''` sustituida donde se
+  alcanzó o `null` si es constante), `min_rows`, `curve` (300 puntos de `f`), `chart_rows` (los puntos de
   cada fila con `n ≤ 64`), `notes`, `a_display`, `b_display`,
   `sampling_points` y `verification` (`upper` y `lower` con `F(b)` y `F(a)`
   término a término, `final`, `failed_rows`, `all_within`; en modo tabla,
   `areas`, `areas_sum`, `total_display` y `data`). En modo función, además,
-  `n0`, `tolerance`, `max_iterations`, `width_display`, `mean_second`
-  (`f'(a)`, `f'(b)` y `f̄''`) y `M2` (valor y `x`); cada `extra` de
+  `n0`, `tolerance`, `max_iterations` y `width_display`; cada `extra` de
   `iterations` lleva `n`, `h`, `T`, `previous_T`, `estimated_error`,
-  `true_error`, `relative_error`, `approx_error`, `bound`, `rounding`,
-  `within_bound`, `by_rounding`, `ratio` y `step` (el paso a paso con sus
-  textos). En modo tabla, `points`, `total`, `uniform` y `composite`; cada
+  `below_tolerance`, `true_error`, `relative_error`, `approx_error`,
+  `coefficient_numerator` (`(b − a)·h²`), `bound`, `rounding`,
+  `within_bound`, `by_rounding`, `equals_bound`, `ratio` y `step` (el paso a
+  paso con sus textos; cada punto con `x`, `f`, los valores de cada término
+  en `terms` y, en la fila 1, `weight` y `product`; llegan todos si son 1024
+  o menos, si no los 8 primeros y los 8 últimos). En modo tabla, `points`, `total`, `uniform` y `composite`; cada
   `extra` es un segmento (`width`, `y`, `pair_sum`, `area`, `area_display`,
   `cumulative`, `bound`).
 
@@ -1081,16 +1139,20 @@ metodos/
         │                            # resultado, tablas de refinamiento, paso a paso, comprobación, PDF
         │                            # y teoría (theory/, con las respuestas del solver en JSON)
         │   └── integration/         # Trapecio: vista de resultado, tabla de refinamiento con paso a
-        │                            # paso, tabla de segmentos, comprobación y PDF
+        │                            # paso explicado (explain.js), glosarios (glossary.js), tabla de
+        │                            # segmentos, comprobación y PDF
         ├── components/              # ResultsTable, ConvergenceChart, MathFormula, MatrixInput,
         │   │                        # MathSymbolToolbar, MathSyntaxHelp, NavMenu,
         │   │                        # NumericFieldsInput (x0, r0/s0, coeficientes), EquationPreview,
         │   │                        # FunctionTableInput (formulario función/tabla de diferenciación e
-        │   │                        # integración), TrapezoidChart (gráfico de una regla de integración)
+        │   │                        # integración), TrapezoidChart (gráfico de una regla de integración),
+        │   │                        # GlossaryBlock (glosario plegable), InfoTip (tooltip que se abre
+        │   │                        # al tocar), DerivationSteps (desglose término a término con su regla)
         │   └── theory/              # Piezas comunes de las páginas de teoría
         ├── composables/             # useExpressionPreviews (vista previa en vivo),
         │                            # useTheme (tema claro/oscuro, preferencia del sistema y elección guardada)
-        └── utils/                   # PDF, formato numérico, fórmulas LaTeX, entrada con fracciones
+        └── utils/                   # PDF, formato numérico, fórmulas LaTeX, LaTeX → texto (PDF),
+                                     # entrada con fracciones
 ```
 
 ---
@@ -1209,7 +1271,7 @@ cd backend
 python manage.py test numeric_methods
 ```
 
-**400 tests**, todos en verde:
+**410 tests**, todos en verde:
 
 | Archivo | Tests | Qué cubre |
 | --- | --- | --- |
@@ -1226,7 +1288,7 @@ python manage.py test numeric_methods
 | `test_differentiation.py` | 30 | Diferencias progresiva y regresiva: fórmulas exactas con `x²`, cúbica, Burden y Faires (filas 1, 2 y parada), respuestas guardadas para la teoría iguales a las del solver, filas de parada de los ejemplos, mínimo de 6 filas, no convergencia, razón ≈ 0.5, error real ≤ cota, h exacto, errores 400, modo tabla (secante común, datos, espaciado no uniforme), comprobación término a término, `abs(x)` y endpoint |
 | `test_three_point.py` | 27 | Fórmula de 3 puntos: fracciones exactas (cúbica y `x²`), Burden y Faires (filas 1, 2, parada 11 y comparación con diferencias), filas de parada y primeras filas de los ejemplos, cuadrática exacta, razón ≈ 0.25, error real ≤ cota + R, identidades, productos del paso a paso, modo tabla (valores, «—», recomendada, identidades por punto, `x³` con errores iguales a la cota, dato alterado), errores 400 (tabla no uniforme, 2 puntos, dominio en «x₀ − 2h», tolerancia, máximo), respuestas guardadas para la teoría (filas 1 y 2, identidades e iguales a las del solver) y endpoint |
 | `test_five_point.py` | 28 | Fórmula de 5 puntos: fracciones exactas (`x⁵` y cuártica), Burden y Faires (filas 1 y 2, parada en 6, comparación, identidad de Richardson y productos del paso a paso), filas de parada de los ejemplos, `x⁵` con error = cota, cuártica exacta, razón ≈ 0.0625, error real ≤ cota + R, `f⁽⁵⁾` término a término, modo tabla (valores, «—», punto medio de 3 puntos, recomendada, identidad por punto con el caso de redondeo de `x = 2.2`, `x⁴` con función, una sola fórmula, 5 datos, dato alterado), errores 400 (tabla no uniforme, 4 puntos, dominio en «x₀ − 4h», tolerancia, máximo) y endpoint |
-| `test_trapezoid.py` | 31 | Método del trapecio: fracciones exactas (`x²` en [0, 2] con `Eₜ = Eₐ`, polinomio de Chapra), ejemplo 1 (filas 1 a 3, parada en 13, razón ≈ 0.25, comprobación término a término, paso a paso de la fila 1), recurrencia igual a la fórmula directa (ejemplos 1 y 6, filas 2 a 8, y a mano), filas de parada de los ejemplos, recta exacta, `\|Eₜ\| ≤ cota + R`, `x²` con error = cota, integral exacta o de referencia (erf, `sin`, `1/x`), límite de tiempo (simulado y real), notas de concavidad, modo tabla (uniforme, no uniforme, dato alterado, sin función), singularidad interior, errores 400 y endpoint |
+| `test_trapezoid.py` | 41 | Método del trapecio: fracciones exactas (`x²` en [0, 2] con `Eₜ = Eₐ`, polinomio de Chapra), ejemplo 1 (filas 1 a 3, parada en 13, razón ≈ 0.25, comprobación término a término, paso a paso de la fila 1), recurrencia igual a la fórmula directa (ejemplos 1 y 6, filas 2 a 8, y a mano), filas de parada de los ejemplos, recta exacta, `\|Eₜ\| ≤ cota + R`, `x²` con error = cota, integral exacta o de referencia (erf, `sin`, `1/x`), límite de tiempo (simulado y real), notas de concavidad, modo tabla (uniforme, no uniforme, dato alterado, sin función), singularidad interior, errores 400 y endpoint. Explicaciones: ejemplo 4 fila 1 (sustituciones, suma ponderada, `f'(a)`, `f'(b)`, `f̄''`, `Eₐ`, `M₂`, cota, igualdad sin R) y filas 2 y 3 (puntos nuevos, sumas, `T`), desglose de `f'` y `f''` (`x²`, Chapra, `eˣ`), `M₂` sustituida en Chapra, antiderivada por términos y `F' = f` (`x²`, Chapra, `x·eˣ` sin desglose), nota de `Eₜ` que se ve 0 (ejemplo 6), ninguna R con `\|Eₜ\| ≤ cota·(1 + 10⁻⁹)`, paréntesis de la integral y puntos enviados (1024 o 16) |
 | `test_bairstow.py` | 30 | Bairstow: divisiones sintéticas, primera iteración de Chapra calculada a mano, ejemplos, raíces nulas, raíz doble, cierres directos, fallos, endpoint y comprobación de raíces (sustitución término a término, potencias faltantes, par complejo, raíz nula y residuo) |
 
 ---
