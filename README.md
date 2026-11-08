@@ -3,7 +3,7 @@
 Aplicación web full-stack para resolver, paso a paso, sistemas de ecuaciones
 **lineales** y **no lineales**, las **raíces de polinomios** con métodos
 iterativos, la **derivada numérica** con fórmulas de diferencias finitas y la
-**integral numérica** con reglas de integración (métodos del trapecio y de Simpson), y para
+**integral numérica** con reglas de integración (métodos del trapecio y de Simpson e integración de Romberg), y para
 estudiar la teoría de cada método.
 
 | Categoría | Método | Qué resuelve |
@@ -18,6 +18,7 @@ estudiar la teoría de cada método.
 | Diferenciación numérica | **Fórmula de 5 puntos** | `f'(x₀)` con el punto medio y los extremos de 5 puntos, de orden `O(h⁴)`; desde `f(x)` o desde una tabla igualmente espaciada (de 5 a 20 puntos) |
 | Integración numérica | **Método del trapecio** | `∫ₐᵇ f(x) dx` con la regla simple y la compuesta, refinando `n` (con la recurrencia que aprovecha los puntos ya evaluados), o desde una tabla de datos con espaciado no uniforme (de 2 a 30 puntos) |
 | Integración numérica | **Método de Simpson** | `∫ₐᵇ f(x) dx` con las reglas 1/3 (`n` par) y 3/8 (`n` múltiplo de 3), simples y compuestas, refinando `n`, o desde una tabla igualmente espaciada (de 3 a 30 puntos; con `n` impar, la combinación 1/3 + 3/8) |
+| Integración numérica | **Integración de Romberg** | `∫ₐᵇ f(x) dx` con la **tabla triangular**: trapecios con `n = 1, 2, 4, …` (columna 1) mejorados con la extrapolación de Richardson (Simpson 1/3, Boole, …); desde `f(x)` (de 6 a 20 filas) o desde una tabla igualmente espaciada de `2ᵐ + 1` puntos (3, 5, 9, 17 o 33) |
 
 - **Backend:** Django + Django REST Framework (API REST) y sympy para el
   manejo simbólico de las ecuaciones.
@@ -46,13 +47,13 @@ estudiar la teoría de cada método.
 
 ### Vista «Resolver» (`/resolver/<método>`)
 
-- **Ejemplos precargados** por método (62 en total: 6 lineales compartidos por
+- **Ejemplos precargados** por método (70 en total: 6 lineales compartidos por
   Jacobi y Gauss-Seidel, 4 de Punto Fijo, 3 de Newton, 9 de Bairstow, 8 de
   diferencias finitas, 8 de la fórmula de 3 puntos, 8 de la de 5 puntos, 8
-  del método del trapecio y 8 del método de Simpson),
+  del método del trapecio, 8 del método de Simpson y 8 de Romberg),
   que se cargan en el
   formulario con un clic.
-- **Botón «Limpiar»** al lado de «Resolver», en los diez métodos: deja la
+- **Botón «Limpiar»** al lado de «Resolver», en los once métodos: deja la
   vista como al abrir el método (formulario con su tamaño y valores
   iniciales, tolerancia, máximo de iteraciones y opciones por defecto del
   método) y borra el resultado, los errores, las advertencias, las vistas
@@ -97,6 +98,9 @@ estudiar la teoría de cada método.
     visible (1/3: par, de 2 a 1000, por defecto 2; 3/8: múltiplo de 3, de 3
     a 999, por defecto 3). En modo tabla, de 3 a 30 puntos **igualmente
     espaciados**.
+  - Integración de Romberg: el mismo formulario sin `n₀` (siempre empieza con
+    `n = 1`), con **máximo de filas** de 6 a 20 (por defecto 15). En modo
+    tabla, `2ᵐ + 1` puntos igualmente espaciados (3, 5, 9, 17 o 33).
 - **Barra de símbolos matemáticos** (√, xⁿ, log, ln, exp, sin, cos, tan, π, e,
   |x|, paréntesis y un desplegable «Más funciones» con trigonométricas
   inversas e hiperbólicas). Inserta en la posición del cursor del campo activo
@@ -149,6 +153,16 @@ estudiar la teoría de cada método.
   `n`), una tabla de refinamiento por regla con sus glosarios y su paso a
   paso, el gráfico de convergencia y la «Comprobación» con la **identidad con
   el trapecio** (ver su [detalle](#método-de-simpson)).
+- En la **integración de Romberg**, la **tabla triangular** como resultado
+  central: columnas con nombre y orden del error (Trapecio `O(h²)`, Simpson
+  1/3 `O(h⁴)`, Boole `O(h⁶)`, Nivel k…) y tooltip, diagonal resaltada,
+  resaltado de las dos celdas de las que sale cada `Rᵢ,ₖ` al pasar el cursor
+  o tocarla, leyenda «¿Cómo se lee esta tabla?» y botón «Ver tabla de
+  errores» (`Eₜ = I − Rᵢ,ₖ` en cada celda); la tabla de convergencia de la
+  diagonal, el gráfico de convergencia (`|Eₜ|` de las columnas 1 y 2 y de la
+  diagonal, error estimado y tolerancia), el paso a paso plegable de cada
+  fila y la «Comprobación» con las identidades y la comparación de costo
+  (ver su [detalle](#integración-de-romberg)).
 
 ### Vista «Teoría» (`/teoria/<método>`)
 
@@ -966,6 +980,77 @@ secciones).
   | 7 | Tabla de Chapra con h = 0.1 (n = 8) + función | Ambas | sólo 1/3; suma ponderada 49.184; S = 1.639467; Eₜ = 0.001067 (0.065 %); identidad ✔ (T₈ = 1.6008, T₄ = 1.4848) |
   | 8 | Tabla de Chapra con n = 5 + función | Ambas | combinación: 1/3 en [0, 0.32] = 0.380324, 3/8 en [0.32, 0.8] = 1.264753; total 1.645077; Eₜ = −0.004544 (0.277 %) |
 
+### Integración de Romberg
+
+- **Columna 1 (trapecio):** `Rᵢ,₁ = T(2^(i−1))`, calculada con la
+  recurrencia del trapecio (`Rᵢ,₁ = Rᵢ₋₁,₁/2 + hᵢ·Σ f(nuevos)`; la fila 1 es
+  el trapecio simple). `solvers/integration/romberg.py` reutiliza de
+  `trapezoid.py` la recurrencia y su paso a paso (`_first_step`,
+  `_recurrence_step`), la integral exacta o de referencia y la comprobación
+  de los datos.
+- **Columnas siguientes (Richardson),** para `k = 2, …, i`:
+  `Rᵢ,ₖ = (4^(k−1)·Rᵢ,ₖ₋₁ − Rᵢ₋₁,ₖ₋₁)/(4^(k−1) − 1)`. Al reducir `h` a la
+  mitad, `h²` se divide entre 4, `h⁴` entre 16 y `h⁶` entre 64: con esos
+  factores se cancela el término del error que se quiere eliminar.
+
+  | Columna | Nombre | Orden del error | Exacta para grado |
+  | --- | --- | --- | --- |
+  | 1 | Trapecio | `O(h²)` | ≤ 1 |
+  | 2 | Simpson 1/3 | `O(h⁴)` | ≤ 3 |
+  | 3 | Boole | `O(h⁶)` | ≤ 5 |
+  | k ≥ 4 | Nivel k | `O(h^(2k))` | ≤ 2k − 1 |
+
+- **Mejor valor de cada fila:** la diagonal `Rᵢ,ᵢ`. **Error estimado**
+  `|Rᵢ,ᵢ − Rᵢ₋₁,ᵢ₋₁|` («—» en la fila 1) y, como columna informativa, el
+  error aproximado de Chapra `εₐ = |(Rᵢ,ᵢ − Rᵢ₋₁,ᵢ₋₁)/Rᵢ,ᵢ|·100 %` («—» si
+  `|Rᵢ,ᵢ| < 10⁻¹²`).
+- **Criterio de parada:** error estimado `≤` tolerancia y al menos 6 filas.
+  Si se llega al máximo de filas (de 6 a 20, por defecto 15) sin cumplirlo,
+  `converged = false` con una advertencia. Las validaciones son las del
+  trapecio (`a < b`, dominio en `a` y `b`, una sola variable `x`); una
+  singularidad interior detiene el método con advertencia.
+- **Coherencia de decimales del paso a paso:** cada extrapolación se
+  sustituye con los valores visibles a 6 decimales; si el resultado no
+  coincide con el valor guardado (redondeado a 6), ese paso usa 8, 10 o 12
+  decimales (el mínimo que haga coincidir). Chapra, `R₃,₃`:
+  `(16(1.62346667) − 1.36746667)/15 = 24.60800005/15 = 1.64053334 ≈ 1.640533`
+  (con 6 decimales daría 1.640534).
+- **Modo tabla:** `2ᵐ + 1` puntos igualmente espaciados (3, 5, 9, 17 o 33);
+  si no, un 400 sugiere el trapecio o Simpson. Hay `m + 1` filas: la fila
+  `i` usa uno de cada `2^(m−i+1)` datos (fila 1: los extremos; fila 2: 0,
+  mitad y final…) y el paso a paso indica qué datos usa. Aquí no aplica el
+  mínimo de 6 filas (con 9 puntos sólo se pueden armar 4).
+- **Identidades** (siempre, también sin valor exacto): `Rᵢ,₁` es el trapecio
+  con `n = 2^(i−1)` calculado con la fórmula directa de pesos y `Rᵢ,₂` es
+  Simpson 1/3 con el mismo `n` calculado con su motor (`rules.apply`); ✔ si
+  la diferencia es `≤ 10⁻¹²·máx(1, |valor|)`.
+- **Comparación de costo** (con exacta o referencia): evaluaciones de `f` de
+  Romberg (`2^(filas−1) + 1`), la primera fila en que la diagonal tuvo
+  `|Eₜ| ≤ tolerancia` y cuántas habrían necesitado el trapecio y Simpson 1/3
+  duplicando `n` desde 1 y desde 2 (hasta `n = 2²²`; si no llegan, «más de
+  4 194 305»). Ejemplo 1: «Romberg llegó a |Eₜ| ≤ 0.000001 en la fila 3, con
+  5 evaluaciones; el trapecio habría necesitado 2049 y Simpson 65. Por el
+  mínimo de 6 filas, el sistema usó 33». El mínimo de 6 filas es un
+  requisito del curso, no del método.
+- **Advertencia de función poco suave:** si en las últimas 3 filas la razón
+  entre errores estimados consecutivos de la diagonal es mayor que 0.1. Sólo
+  cuentan las razones en que los dos errores son mayores que
+  `1000·ε·máx(1, |Rᵢ,ᵢ|)` (más chicos son ruido de redondeo, como las filas 4
+  a 6 del ejemplo 1) y hacen falta al menos 2 que cuenten.
+- **Teoría:** todavía no tiene página; Romberg no aparece en «Teoría ▾».
+- **Ejemplos** (tolerancia `0.000001`, máximo 15):
+
+  | # | Datos | Resultado |
+  | --- | --- | --- |
+  | 1 | Chapra en `[0, 0.8]` | exacta 1.640533; filas 1 a 3: [0.1728], [1.0688, 1.367467], [1.4848, 1.623467, 1.640533] (R₃,₃ ya es exacto); para en la fila 6 (33 evaluaciones); costo: fila 3 con 5, trapecio 2049, Simpson 65 |
+  | 2 | `exp(-x^2)` en `[0, 1]` | referencia 0.746824; diagonal 0.68394, 0.74718, 0.746834, 0.746824; fila 6; costo: fila 4 con 9, trapecio 257, Simpson 17 |
+  | 3 | `sin(x)` en `[0, π]` | exacta 2; diagonal 0, 2.094395, 1.998571, 2.000006, 2; fila 6; costo: fila 5 con 17, trapecio 2049, Simpson 65 |
+  | 4 | `x^5` en `[0, 2]` | exacta 32/3; filas 1 a 3: [32], [17, 12], [12.3125, 10.75, 10.666667]; fila 6; costo: fila 3 con 5, trapecio 8193, Simpson 129 |
+  | 5 | `sqrt(x)` en `[0, 1]` | exacta 2/3; la diagonal mejora lentamente (advertencia de función poco suave); fila 13 (4097 evaluaciones); costo: fila 12 con 2049, trapecio 4097, Simpson 2049 |
+  | 6 | `1/x` en `[1, 2]` | exacta ln 2; diagonal 0.75, 0.694444, 0.693175, 0.693147; fila 6; costo: fila 4 con 9, trapecio 257, Simpson 17 |
+  | 7 | Tabla de Chapra con h = 0.1 (9 puntos) + función | 4 filas: [0.1728], [1.0688, 1.367467], [1.4848, 1.623467, 1.640533], [1.6008, 1.639467, 1.640533, 1.640533]; Eₜ = 0 |
+  | 8 | Tabla de `e^(−x²)` en x = 0, 0.25, …, 1 (5 puntos) | 3 filas: [0.68394], [0.73137, 0.74718], [0.742984, 0.746855, 0.746834]; mejor valor 0.746834 |
+
 ---
 
 ## API
@@ -986,6 +1071,7 @@ Todas las rutas cuelgan de `/api/`.
 | POST | `/api/solve/cinco-puntos/` | Aproxima `f'(x)` con la fórmula de 5 puntos (punto medio y extremos) |
 | POST | `/api/solve/trapecio/` | Aproxima `∫ₐᵇ f(x) dx` con el método del trapecio |
 | POST | `/api/solve/simpson/` | Aproxima `∫ₐᵇ f(x) dx` con el método de Simpson (reglas 1/3 y 3/8) |
+| POST | `/api/solve/romberg/` | Aproxima `∫ₐᵇ f(x) dx` con la integración de Romberg (tabla triangular) |
 | POST | `/api/expressions/preview` | Valida una ecuación y devuelve su LaTeX (no resuelve nada) |
 
 ### Cuerpo de la petición
@@ -1104,6 +1190,23 @@ La respuesta de Simpson trae `rules` (modo función: por regla, `rule`, `n0`,
 las `pieces` del gráfico y `verification`), `mean_fourth` y `M4`; en modo
 tabla, `applications` (cada regla aplicada con sus `parts`, `points`, `total`,
 `final` e `identity`).
+
+Integración de Romberg: el mismo cuerpo que el trapecio sin `n0`, con
+`max_iterations` = máximo de filas (de 6 a 20, por defecto 15). En modo
+tabla, `2ᵐ + 1` puntos igualmente espaciados (3, 5, 9, 17 o 33):
+
+```json
+{ "mode": "function", "function": "0.2 + 25x - 200x^2 + 675x^3 - 900x^4 + 400x^5", "a": 0, "b": 0.8, "tolerance": 0.000001, "max_iterations": 15 }
+```
+
+Cada `iterations[i].extra` es una fila de la tabla triangular: `values`
+(`Rᵢ,₁ … Rᵢ,ᵢ`), `best` (la diagonal), `errors` (`Eₜ` de cada celda),
+`estimated_error`, `approx_error` (`εₐ` %), `true_error`, `relative_error`,
+`trapezoid` (la fila del trapecio con su `step`), `extrapolations` (cada
+`Rᵢ,ₖ` con los textos coherentes del paso a paso) y, en modo tabla,
+`data_points` y `new_points`. La respuesta trae además `columns` (nombre y
+orden de cada columna), `evaluations`, `cost` (comparación de costo y su
+texto) y `verification` (`identities`, `final` y, en modo tabla, `data`).
 
 Vista previa de una ecuación:
 
@@ -1262,7 +1365,8 @@ metodos/
 │       │   └── integration/         #   rules.py (cada regla compuesta como datos: pesos y factor),
 │       │                            #   exact.py (integral exacta o de referencia, con límite de
 │       │                            #   tiempo), trapezoid.py (modos función y tabla, recurrencia),
-│       │                            #   simpson.py (reglas 1/3 y 3/8, combinación y tabla)
+│       │                            #   simpson.py (reglas 1/3 y 3/8, combinación y tabla),
+│       │                            #   romberg.py (tabla triangular, identidades y costo)
 │       └── tests/                   # Tests unitarios y de API
 └── frontend/
     ├── Dockerfile                   # Compila con Node y sirve dist/ con nginx
@@ -1283,7 +1387,8 @@ metodos/
         │   └── differentiation/     # Diferencias, 3 y 5 puntos: formulario (función o tabla), vista de
         │                            # resultado, tablas de refinamiento, paso a paso, comprobación, PDF
         │                            # y teoría (theory/, con las respuestas del solver en JSON)
-        │   └── integration/         # Trapecio y Simpson: vistas de resultado, tabla de refinamiento con
+        │   └── integration/         # Trapecio, Simpson y Romberg (Romberg*.vue, romberg*.js: tabla
+        │                            # triangular, convergencia, paso a paso por fila y PDF). Vistas de resultado, tabla de refinamiento con
         │                            # paso a paso explicado (explain.js, simpsonExplain.js), glosarios
         │                            # (glossary.js, simpsonGlossary.js), tabla de segmentos o de puntos,
         │                            # comprobación (AntiderivativeCheck compartida), PDF (pdf.js exporta
@@ -1434,7 +1539,7 @@ cd backend
 python manage.py test numeric_methods
 ```
 
-**447 tests**, todos en verde:
+**476 tests**, todos en verde:
 
 | Archivo | Tests | Qué cubre |
 | --- | --- | --- |
@@ -1453,6 +1558,7 @@ python manage.py test numeric_methods
 | `test_five_point.py` | 28 | Fórmula de 5 puntos: fracciones exactas (`x⁵` y cuártica), Burden y Faires (filas 1 y 2, parada en 6, comparación, identidad de Richardson y productos del paso a paso), filas de parada de los ejemplos, `x⁵` con error = cota, cuártica exacta, razón ≈ 0.0625, error real ≤ cota + R, `f⁽⁵⁾` término a término, modo tabla (valores, «—», punto medio de 3 puntos, recomendada, identidad por punto con el caso de redondeo de `x = 2.2`, `x⁴` con función, una sola fórmula, 5 datos, dato alterado), errores 400 (tabla no uniforme, 4 puntos, dominio en «x₀ − 4h», tolerancia, máximo) y endpoint |
 | `test_trapezoid.py` | 43 | Método del trapecio: fracciones exactas (`x²` en [0, 2] con `Eₜ = Eₐ`, polinomio de Chapra), ejemplo 1 (filas 1 a 3, parada en 13, razón ≈ 0.25, comprobación término a término, paso a paso de la fila 1), recurrencia igual a la fórmula directa (ejemplos 1 y 6, filas 2 a 8, y a mano), filas de parada de los ejemplos, recta exacta, `\|Eₜ\| ≤ cota + R`, `x²` con error = cota, integral exacta o de referencia (erf, `sin`, `1/x`), límite de tiempo (simulado y real), notas de concavidad, modo tabla (uniforme, no uniforme, dato alterado, sin función), singularidad interior, errores 400 y endpoint. Explicaciones: ejemplo 4 fila 1 (sustituciones, suma ponderada, `f'(a)`, `f'(b)`, `f̄''`, `Eₐ`, `M₂`, cota, igualdad sin R) y filas 2 y 3 (puntos nuevos, sumas, `T`), desglose de `f'` y `f''` (`x²`, Chapra, `eˣ`), `M₂` sustituida en Chapra, antiderivada por términos y `F' = f` (`x²`, Chapra, `x·eˣ` sin desglose), nota de `Eₜ` que se ve 0 (ejemplo 6), ninguna R con `\|Eₜ\| ≤ cota·(1 + 10⁻⁹)`, paréntesis de la integral y puntos enviados (1024 o 16). Teoría: filas 1 a 3 del ejemplo 1 y respuestas guardadas iguales a las del solver |
 | `test_simpson.py` | 35 | Método de Simpson: fracciones exactas (`x⁴` con 1/3 y 3/8, Chapra con n = 2, 3 y 4), exactitud para cúbicas, ejemplo 1 (filas 1 a 3 de las dos reglas, `Eₐ = Eₜ`, `f̄⁽⁴⁾ = −2400`, `M₄ = 21600` en x = 0, parada en la fila 7, comparación con el trapecio 2.1 y 149.8 veces, identidad `(4T₂ − T₁)/3`, razón ≈ 0.0625, pesos del paso a paso), identidad en fracciones para n = 2, 4 y 8, reutilización de evaluaciones igual a la fórmula de pesos (ejemplos 1 y 6, filas 1 a 8), filas de parada de los ejemplos, `x⁴` con `\|Eₜ\|` = cota sin R, `\|Eₜ\| ≤ cota + R`, notas de concavidad, modo tabla (ejemplos 7 y 8 con pesos, suma, partes y punto de unión; `x⁴` en x = 0..6 con 1556 y 1557; n = 3 sólo 3/8; dato alterado), derivadas `f'''` y `f⁽⁴⁾`, errores 400 (n₀ impar, n₀ no múltiplo de 3, tabla no uniforme con la sugerencia, n impar con 1/3, n no múltiplo de 3 con 3/8, 2 puntos, a ≥ b, `1/x` en a = 0), endpoint y piezas del gráfico. Teoría: fila 1 de las dos reglas del ejemplo 1 y respuestas guardadas iguales a las del solver |
+| `test_romberg.py` | 29 | Integración de Romberg: fracciones exactas (Chapra en [0, 4/5] filas 1 a 3; `x⁵` en [0, 2] filas 1 a 4), ejemplo 1 (filas 1 a 3, `R₃,₃` mostrado con 8 decimales por la coherencia, parada en la fila 6 con 33 evaluaciones, error estimado 0.273067 y `εₐ` = 16.644993 % en la fila 3, comparación de costo, tabla de errores), identidades columna 1 = trapecio directo y columna 2 = motor de Simpson (filas 1 a 8 de los ejemplos 1, 2 y 6), filas de parada y diagonales de los ejemplos 2 a 6, advertencia de función poco suave (sólo el ejemplo 5; el 1 es el caso del ruido de redondeo), comparación de costo de los ejemplos 2 a 6 y el texto «más de …», modo tabla (ejemplos 7 y 8 con todas sus celdas, 7 puntos y espaciado no uniforme con 400 y la sugerencia, 3 y 33 puntos, dato alterado), errores 400 (a ≥ b, `1/x` en a = 0, otra variable, máximo de filas fuera de 6..20), singularidad interior y endpoint |
 | `test_bairstow.py` | 30 | Bairstow: divisiones sintéticas, primera iteración de Chapra calculada a mano, ejemplos, raíces nulas, raíz doble, cierres directos, fallos, endpoint y comprobación de raíces (sustitución término a término, potencias faltantes, par complejo, raíz nula y residuo) |
 
 ---
@@ -1486,3 +1592,11 @@ python manage.py test numeric_methods
   su Resolver). Con una regla exacta (cúbicas) y cota 0, un residuo de punto
   flotante en `Eₜ` puede mostrar la marca ✔ᴿ, que es lo que dice el criterio
   de redondeo.
+- En la integración de Romberg no hay cota del error (ni marca R): la
+  comprobación compara con la integral, revisa las identidades de las
+  columnas 1 y 2 y la comparación de costo. Esta última calcula el trapecio
+  hasta `n = 2²²` (unos 4 millones de evaluaciones de `f` en el peor caso,
+  varios segundos) y obtiene Simpson con `S_n = (4T_n − T_(n/2))/3`, que es
+  la misma fórmula que el motor de Simpson salvo el redondeo. En modo tabla
+  no hay comparación de costo (no hay `f` que evaluar con más puntos). Los
+  límites `a` y `b` tienen las mismas limitaciones que el trapecio.
