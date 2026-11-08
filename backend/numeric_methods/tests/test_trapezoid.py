@@ -301,3 +301,112 @@ class EndpointTests(APITestCase):
         self.assertEqual(method["name"], "Método del trapecio")
         examples = self.client.get("/api/examples/?method=trapecio").json()
         self.assertEqual(len(examples), 8)
+
+
+class ExplanationTests(SimpleTestCase):
+    """Datos que el backend envía para el paso a paso explicado (ejemplo 4: x² en [0, 2])."""
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.square = example(4)
+        cls.chapra = example(1)
+
+    def test_square_first_row(self):
+        row = rows(self.square)[0]
+        points = row["step"]["points"]
+        self.assertEqual([p["f_display"] for p in points], ["0", "4"])
+        self.assertEqual([p["terms"] for p in points], [[0], [4]])
+        self.assertEqual([p["product"] for p in points], ["0", "4"])
+        self.assertEqual(row["step"]["bracket"], "4")
+        self.assertEqual(row["T"], 4)
+        mean = self.square["mean_second"]
+        self.assertEqual((mean["fb_substitution"]["value"], mean["fa_substitution"]["value"]), (4, 0))
+        self.assertEqual(mean["value"], 2)
+        self.assertAlmostEqual(row["approx_error"], -1.333333, places=6)
+        self.assertEqual(self.square["M2"]["value"], 2)
+        self.assertIsNone(self.square["M2"]["substitution"])
+        self.assertAlmostEqual(row["bound"], 1.333333, places=6)
+        self.assertEqual(row["coefficient_numerator"]["text"], "8")
+        self.assertTrue(row["equals_bound"])
+        self.assertTrue(row["within_bound"])
+        self.assertFalse(row["by_rounding"])
+
+    def test_square_rows_two_and_three(self):
+        second, third = rows(self.square)[1:3]
+        self.assertEqual([p["x_display"]["text"] for p in second["step"]["points"]], ["1"])
+        self.assertEqual([p["x_display"]["text"] for p in third["step"]["points"]], ["0.5", "1.5"])
+        self.assertEqual((second["step"]["sum"], third["step"]["sum"]), ("1", "2.5"))
+        self.assertEqual((second["T"], third["T"]), (3, 2.75))
+        self.assertFalse(second["below_tolerance"])
+
+    def test_derivative_steps(self):
+        first, second = self.square["function"]["first"], self.square["function"]["second"]
+        self.assertTrue(first["steps"]["terms"][0]["latex"].endswith("= 2 x"))
+        self.assertIn("potencia", first["steps"]["terms"][0]["rule"])
+        self.assertTrue(second["steps"]["terms"][0]["latex"].endswith("= 2"))
+        self.assertTrue(second["constant"])
+        chapra = self.chapra["function"]
+        self.assertEqual(len(chapra["first"]["steps"]["terms"]), 6)
+        self.assertIn(r"\left(- 200 x^{2}\right) = \left(-200\right) \cdot 2 \cdot x = - 400 x",
+                      chapra["first"]["steps"]["terms"][3]["latex"])
+        self.assertTrue(chapra["first"]["steps"]["sum_latex"].endswith("- 400 x + 25"))
+        self.assertTrue(chapra["second"]["steps"]["sum_latex"].endswith("4050 x - 400"))
+        self.assertFalse(chapra["second"]["constant"])
+        exponential = example(6)["function"]["first"]["steps"]["terms"][0]
+        self.assertEqual(exponential["latex"], r"\frac{d}{d x}\left(e^{x}\right) = e^{x}")
+        self.assertIn("exponencial", exponential["rule"])
+
+    def test_chapra_M2_substitution(self):
+        M2 = self.chapra["M2"]
+        self.assertEqual(M2["value"], 400)
+        self.assertEqual(M2["substitution"]["value"], -400)
+        self.assertEqual(len(M2["substitution"]["terms"]), 4)
+
+    def test_antiderivative_steps(self):
+        square = self.square["integral"]["antiderivative"]
+        self.assertTrue(square["steps"]["detailed"])
+        self.assertEqual(square["steps"]["terms"][0]["latex"],
+                         r"\int x^{2}\,dx = \frac{x^{2 + 1}}{2 + 1} = \frac{1}{3} x^{3}")
+        self.assertTrue(square["check"]["ok"])
+        self.assertEqual(square["check"]["sum_latex"], "F'(x) = x^{2}")
+        chapra = self.chapra["integral"]["antiderivative"]
+        results = [t["latex"].rsplit(" = ", 1)[1] for t in chapra["steps"]["terms"]]
+        self.assertEqual(results, ["0.2 x", "12.5 x^{2}", r"- \frac{200}{3} x^{3}", "168.75 x^{4}",
+                                   "- 180 x^{5}", r"\frac{200}{3} x^{6}"])
+        self.assertTrue(chapra["check"]["ok"])
+        self.assertEqual(chapra["check"]["sum_latex"],
+                         "F'(x) = 0.2 + 25 x - 200 x^{2} + 675 x^{3} - 900 x^{4} + 400 x^{5}")
+
+    def test_not_detailed_antiderivative(self):
+        result = solve(function="x*exp(x)", a=0, b=1)
+        antiderivative = result["integral"]["antiderivative"]
+        self.assertFalse(antiderivative["steps"]["detailed"])
+        self.assertTrue(antiderivative["check"]["ok"])
+
+    def test_true_error_shown_as_zero(self):
+        # La vista agrega la nota cuando |Eₜ| < 0.0000005 y εₜ no se ve 0.
+        final = example(6)["verification"]["final"]
+        self.assertLess(abs(final["true_error"]), 5e-7)
+        self.assertEqual(round(final["relative_error"], 6), 0.000008)
+
+    def test_no_rounding_mark_within_bound(self):
+        for number in range(1, 7):
+            for row in rows(example(number)):
+                if row["bound"] is None or row["true_error"] is None:
+                    continue
+                with self.subTest(example=number, n=row["n"]):
+                    if abs(row["true_error"]) <= row["bound"] * (1 + 1e-9):
+                        self.assertFalse(row["by_rounding"])
+
+    def test_integral_parentheses_only_for_sums(self):
+        self.assertFalse(self.square["function"]["is_sum"])
+        self.assertTrue(self.chapra["function"]["is_sum"])
+
+    def test_large_rows_send_sixteen_points(self):
+        last = rows(self.chapra)[-1]
+        self.assertEqual(last["step"]["count"], 2048)
+        self.assertEqual(len(last["step"]["points"]), 16)
+        row_12 = rows(self.chapra)[11]
+        self.assertEqual(row_12["step"]["count"], 1024)
+        self.assertEqual(len(row_12["step"]["points"]), 1024)

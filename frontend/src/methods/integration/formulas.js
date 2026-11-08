@@ -21,9 +21,11 @@ export function boundMark(item) {
   return item.within_bound ? '✔' : '⚠'
 }
 
-/** ∫_a^b f(x) dx con la función escrita. */
+/** ∫_a^b f(x) dx; el integrando va entre paréntesis sólo si es una suma o resta. */
 export function integralLatex(result) {
-  return `\\int_{${result.a_display.latex}}^{${result.b_display.latex}} \\left(${result.function.latex}\\right)\\,dx`
+  const f = result.function
+  const body = f.is_sum ? `\\left(${f.latex}\\right)` : f.latex
+  return `\\int_{${result.a_display.latex}}^{${result.b_display.latex}} ${body}\\,dx`
 }
 
 /** h_k = (b − a)/n_k = … */
@@ -36,31 +38,7 @@ export function stepSizeLatex(result, row, k) {
 }
 
 /** xᵢ exacto, o «≈ aproximado». */
-export const pointLatex = (shown) => (shown.exact ? shown.latex : `\approx ${shown.approx}`)
-
-/** T_1 = (h/2)[f(x₀) + 2(Σ) + f(xₙ)] = … con los valores del paso a paso. */
-export function firstRowLatex(row) {
-  const step = row.step
-  const [first, last] = step.ends.map(paren)
-  const sums = step.sums.map((s) => `${s.weight}\\left(${s.display}\\right)`)
-  const bracket = [first, ...sums, last].join(' + ')
-  const half = step.factor_h.exact ? step.factor_h.latex : step.factor_h.approx
-  const symbolic =
-    row.n === 1
-      ? '\\frac{h}{2}\\Big[f(x_0) + f(x_1)\\Big]'
-      : `\\frac{h}{2}\\Big[f(x_0) + 2\\sum_{i=1}^{${row.n - 1}} f(x_i) + f(x_{${row.n}})\\Big]`
-  return (
-    `T_{1} = ${symbolic} = ${half}\\,\\Big[${bracket}\\Big] = ${half} \\cdot ${paren(step.bracket)}` +
-    ` = \\mathbf{${latexNumber(row.T)}}`
-  )
-}
-
-/** Σ de los puntos interiores (fila 1), si hay. */
-export function interiorSumLatex(row) {
-  const sum = row.step.sums[0]
-  if (!sum) return null
-  return `\\sum_{i=1}^{${row.n - 1}} f(x_i) = ${sum.display}`
-}
+export const pointLatex = (shown) => (shown.exact ? shown.latex : `\\approx ${shown.approx}`)
 
 /** T_k = T_(k−1)/2 + h_k·Σ nuevos, con T_(k−1) en azul y los nuevos en verde. */
 export function recurrenceLatex(row, k) {
@@ -72,11 +50,6 @@ export function recurrenceLatex(row, k) {
     `\\frac{${previous}}{2} + ${inline(row.h)} \\cdot ${sum} =${step.half} + ${paren(step.product)}` +
     ` = \\mathbf{${latexNumber(row.T)}}`
   )
-}
-
-/** Σ de los puntos nuevos, en verde. */
-export function newSumLatex(row) {
-  return `\\sum_{\\text{nuevos}} f(x_i) = ${colorize(paren(row.step.sum), CURRENT_COLOR)}`
 }
 
 /** |T_k − T_(k−1)|, con T_(k−1) en azul y T_k en verde. */
@@ -110,34 +83,30 @@ export function meanSecondLatex(result) {
   )
 }
 
-/** (b − a)·h²/12 con la h de la fila. */
-const coefficientLatex = (result, row) =>
-  `\\frac{(${result.width_display.latex})\\left(${row.h.latex}\\right)^{2}}{12}`
+/** (b − a)·h²/12 con la h de la fila y luego con (b − a)·h² ya multiplicado: «(2)(2)²/12 = 8/12». */
+function coefficientLatex(result, row, factor, sign = '') {
+  const product = row.coefficient_numerator
+  const relation = product.exact ? '=' : '\\approx'
+  return (
+    `${sign}\\frac{(${result.width_display.latex})\\left(${row.h.latex}\\right)^{2}}{12} \\cdot ${factor} ${relation} ` +
+    `${sign}\\frac{${product.exact ? product.latex : product.approx}}{12} \\cdot ${factor}`
+  )
+}
 
 /** Eₐ = −(b − a)h²/12 · f̄''. */
 export function approxErrorLatex(result, row) {
   return (
-    `E_a = -\\frac{(b - a)\\,h^{2}}{12}\\,\\bar{f''} = -${coefficientLatex(result, row)}` +
-    `\\,${paren(latexNumber(result.mean_second.value))} = ${latexNumber(row.approx_error)}`
+    `E_a = -\\frac{(b - a)\\,h^{2}}{12}\\,\\bar{f''} = ` +
+    `${coefficientLatex(result, row, paren(latexNumber(result.mean_second.value)), '-')} = ${latexNumber(row.approx_error)}`
   )
 }
 
 /** Cota (b − a)h²/12 · M₂. */
 export function boundLatex(result, row) {
   return (
-    `\\frac{(b - a)\\,h^{2}}{12}\\,M_2 = ${coefficientLatex(result, row)} \\cdot ${latexNumber(result.M2.value)}` +
+    `\\frac{(b - a)\\,h^{2}}{12}\\,M_2 = ${coefficientLatex(result, row, latexNumber(result.M2.value))}` +
     ` = ${latexNumber(row.bound)}`
   )
-}
-
-/** |Eₜ| ≤ cota (+ R). */
-export function criterionLatex(row) {
-  if (row.within_bound === null || row.within_bound === undefined) return null
-  const relation = row.within_bound ? '\\le' : '>'
-  const right = row.by_rounding
-    ? `${latexNumber(row.bound)} + R \\quad (R = ${latexNumber(row.rounding)})`
-    : latexNumber(row.bound)
-  return `|E_t| = ${latexNumber(Math.abs(row.true_error))} ${relation} ${right}`
 }
 
 /** Eₜ,k / Eₜ,(k−1). */
@@ -145,17 +114,6 @@ export function ratioLatex(row, previous, k) {
   return (
     `\\frac{E_{t,${k}}}{E_{t,${k - 1}}} = \\frac{${latexNumber(row.true_error)}}{${latexNumber(previous.true_error)}}` +
     ` = ${latexNumber(row.ratio)}`
-  )
-}
-
-/** Área de un segmento: hᵢ·(yᵢ + yᵢ₊₁)/2 = … */
-export function segmentLatex(segment) {
-  const [y0, y1] = segment.y_display.map((y) => paren(y.exact ? y.latex : y.approx))
-  const width = segment.width.exact ? segment.width.latex : segment.width.approx
-  return (
-    `A_{${segment.i}} = h_{${segment.i}}\\,\\frac{y_{${segment.i}} + y_{${segment.i + 1}}}{2} = ` +
-    `${width} \\cdot \\frac{${y0} + ${y1}}{2} = ${width} \\cdot \\frac{${paren(segment.pair_sum)}}{2} = ` +
-    `${segment.area_display}`
   )
 }
 

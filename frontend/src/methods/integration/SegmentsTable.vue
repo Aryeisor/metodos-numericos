@@ -2,9 +2,13 @@
 // Tabla de segmentos del modo «Tabla de datos»: cada segmento es un trapecio
 // con su propio ancho. Despliega una fila para ver hᵢ·(yᵢ + yᵢ₊₁)/2.
 import { computed, ref, watch } from 'vue'
+import GlossaryBlock from '../../components/GlossaryBlock.vue'
+import InfoTip from '../../components/InfoTip.vue'
 import MathFormula from '../../components/MathFormula.vue'
 import { formatNumber } from '../../utils/iterationSteps'
-import { cell, segmentLatex } from './formulas'
+import { segmentSteps } from './explain'
+import { cell } from './formulas'
+import { segmentColumns } from './glossary'
 
 const props = defineProps({
   result: { type: Object, required: true },
@@ -12,6 +16,7 @@ const props = defineProps({
 
 const segments = computed(() => props.result.iterations.map((step) => step.extra))
 const hasBound = computed(() => Boolean(props.result.function))
+const headers = computed(() => segmentColumns(hasBound.value))
 const shown = (d) => (d.exact ? d.text : d.approx)
 
 const expanded = ref(new Set())
@@ -30,19 +35,14 @@ function toggle(i) {
 </script>
 
 <template>
-  <div class="table-scroll">
+  <div class="table-scroll detail-scroll">
     <table class="iterations-table">
       <thead>
         <tr>
           <th class="expand-col"></th>
-          <th>i</th>
-          <th>[xᵢ, xᵢ₊₁]</th>
-          <th>hᵢ</th>
-          <th>yᵢ</th>
-          <th>yᵢ₊₁</th>
-          <th>Área</th>
-          <th>Acumulada</th>
-          <th v-if="hasBound">Cota hᵢ³/12·M</th>
+          <th v-for="col in headers" :key="col.key">
+            <InfoTip :text="col.text">{{ col.label }}</InfoTip>
+          </th>
         </tr>
       </thead>
       <tbody>
@@ -70,17 +70,31 @@ function toggle(i) {
           </tr>
           <tr v-if="expanded.has(s.i)" class="detail-row">
             <td :colspan="hasBound ? 9 : 8">
-              <div class="step-formula"><MathFormula :expression="segmentLatex(s)" /></div>
+              <div class="detail-inner">
+              <ol class="steps">
+                <li v-for="(st, idx) in segmentSteps(s, s.i > 0 ? segments[s.i - 1] : null)" :key="idx">
+                  <span class="step-name">{{ st.title }}</span>
+                  <template v-for="(block, b) in st.blocks" :key="b">
+                    <p v-if="block.kind === 'text'" class="step-text">{{ block.text }}</p>
+                    <div v-else class="step-formula"><MathFormula :expression="block.latex" /></div>
+                  </template>
+                </li>
+              </ol>
               <small v-if="s.M !== null && s.M !== undefined" class="step-note">
                 Cota del segmento: <MathFormula :expression="`\\frac{h_{${s.i}}^{3}}{12} M = \\frac{(${shown(s.width)})^{3}}{12} \\cdot ${formatNumber(s.M)} = ${formatNumber(s.bound)}`" />,
                 con M = máx|f′′(x)| en el segmento (muestreo con {{ result.sampling_points }} puntos).
               </small>
+              </div>
             </td>
           </tr>
         </template>
       </tbody>
     </table>
   </div>
+  <GlossaryBlock
+    title="¿Qué significa cada columna?"
+    :items="headers.map((col) => ({ symbol: col.symbol, text: col.text }))"
+  />
 </template>
 
 <style scoped>
@@ -117,6 +131,38 @@ function toggle(i) {
   padding: var(--space-4);
   font-size: 0.9rem;
   white-space: normal;
+}
+
+/* El paso a paso ocupa el ancho visible, no el de la tabla. */
+.detail-scroll {
+  container-type: inline-size;
+}
+
+.detail-inner {
+  position: sticky;
+  left: var(--space-4);
+  width: calc(100cqw - 2 * var(--space-4));
+}
+
+.steps {
+  margin: 0;
+  padding-left: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.step-name {
+  display: block;
+  font-size: var(--text-small);
+  font-weight: var(--weight-semibold);
+  color: var(--color-ink);
+}
+
+.step-text {
+  margin: var(--space-1) 0;
+  font-size: var(--text-small);
+  color: var(--color-ink-muted);
 }
 
 .step-formula {

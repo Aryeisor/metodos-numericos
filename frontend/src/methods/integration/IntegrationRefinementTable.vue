@@ -2,9 +2,13 @@
 // Tabla de refinamiento del modo función, paginada como ResultsTable, con el
 // paso a paso expandible de cada fila.
 import { computed, ref, watch } from 'vue'
+import GlossaryBlock from '../../components/GlossaryBlock.vue'
+import InfoTip from '../../components/InfoTip.vue'
 import MathFormula from '../../components/MathFormula.vue'
 import TrapezoidStepDetail from './TrapezoidStepDetail.vue'
+import { tinyErrorNote } from './explain'
 import { boundMark, cell, percent } from './formulas'
+import { refinementColumns } from './glossary'
 
 const PAGE_SIZE = 10
 
@@ -21,6 +25,18 @@ const rows = computed(() =>
 )
 const showTrue = computed(() => props.result.integral.value !== null)
 const showApprox = computed(() => props.result.mean_second !== null)
+const reference = computed(() => props.result.integral.kind === 'reference')
+const headers = computed(() =>
+  refinementColumns({ showTrue: showTrue.value, showApprox: showApprox.value, reference: reference.value })
+)
+// Filas donde Eₜ se ve 0 pero εₜ no: una nota debajo de la tabla.
+const tinyRows = computed(() =>
+  rows.value.filter((r) => tinyErrorNote(r.item, reference.value)).map((r) => r.k)
+)
+const tinyExample = computed(() => {
+  const k = tinyRows.value[0]
+  return k ? tinyErrorNote(rows.value[k - 1].item, reference.value) : null
+})
 
 const expanded = ref(new Set())
 const page = ref(1)
@@ -44,22 +60,14 @@ function toggle(k) {
 </script>
 
 <template>
-  <div class="table-scroll">
+  <div class="table-scroll detail-scroll">
     <table class="iterations-table">
       <thead>
         <tr>
           <th class="expand-col"></th>
-          <th>k</th>
-          <th>n</th>
-          <th>h</th>
-          <th>T</th>
-          <th>Error estimado</th>
-          <th v-if="showTrue">Eₜ</th>
-          <th v-if="showTrue">εₜ</th>
-          <th v-if="showApprox">Eₐ</th>
-          <th>Cota</th>
-          <th v-if="showTrue">Razón</th>
-          <th v-if="showTrue" title="|Eₜ| ≤ cota + R">≤ cota</th>
+          <th v-for="col in headers" :key="col.key">
+            <InfoTip :text="col.text">{{ col.label }}</InfoTip>
+          </th>
         </tr>
       </thead>
       <tbody>
@@ -91,18 +99,24 @@ function toggle(k) {
             <td v-if="showTrue">{{ cell(row.item.ratio) }}</td>
             <td v-if="showTrue" class="mark-cell">
               <span :class="row.item.within_bound ? 'mark mark-ok' : 'mark mark-warn'">{{ boundMark(row.item) }}</span>
-              <sup v-if="row.item.by_rounding" class="rounding-mark" title="Sólo gracias al redondeo R">R</sup>
+              <sup v-if="row.item.by_rounding" class="rounding-mark" title="Sólo dentro del margen de redondeo R">R</sup>
             </td>
           </tr>
           <tr v-if="expanded.has(row.k)" class="detail-row">
             <td :colspan="columns">
-              <TrapezoidStepDetail :result="result" :row="row.item" :k="row.k" :previous="row.previous" />
+              <div class="detail-inner">
+                <TrapezoidStepDetail :result="result" :row="row.item" :k="row.k" :previous="row.previous" />
+              </div>
             </td>
           </tr>
         </template>
       </tbody>
     </table>
   </div>
+
+  <small v-if="tinyExample" class="table-note">
+    Filas {{ tinyRows.join(', ') }}: {{ tinyExample }}
+  </small>
 
   <div v-if="pages > 1" class="pagination">
     <button type="button" class="btn btn-secondary page-btn" :disabled="page === 1" @click="page -= 1">
@@ -113,6 +127,11 @@ function toggle(k) {
       Siguiente ›
     </button>
   </div>
+
+  <GlossaryBlock
+    title="¿Qué significa cada columna?"
+    :items="headers.map((col) => ({ symbol: col.symbol, text: col.text }))"
+  />
 </template>
 
 <style scoped>
@@ -158,6 +177,24 @@ function toggle(k) {
   padding: var(--space-4);
   font-size: 0.9rem;
   white-space: normal;
+}
+
+/* El paso a paso ocupa el ancho visible, no el de la tabla: se lee sin desplazarse a 390 px. */
+.detail-scroll {
+  container-type: inline-size;
+}
+
+.detail-inner {
+  position: sticky;
+  left: var(--space-4);
+  width: calc(100cqw - 2 * var(--space-4));
+}
+
+.table-note {
+  display: block;
+  margin-top: var(--space-2);
+  font-size: var(--text-small);
+  color: var(--color-ink-muted);
 }
 
 .pagination {

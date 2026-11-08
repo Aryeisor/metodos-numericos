@@ -204,29 +204,42 @@ def _term(term, symbol):
     return {"sign": "-" if negative else "+", "latex": latex, "template": template, "text": text, "plain": plain}
 
 
+def _joined(parts, key="latex"):
+    return " ".join(
+        (("- " if p["sign"] == "-" else "") if i == 0 else f"{p['sign']} ") + p[key]
+        for i, p in enumerate(parts)
+    )
+
+
 def antiderivative_info(F, symbol):
     """F(x) en LaTeX y texto, con coeficientes racionales como fracciones."""
     parts = [_term(t, symbol) for t in _ordered_terms(F, symbol)]
-    def joined(key):
-        return " ".join(
-            (("- " if p["sign"] == "-" else "") if i == 0 else f"{p['sign']} ") + p[key]
-            for i, p in enumerate(parts)
-        )
-    return {"latex": joined("latex"), "text": joined("plain")}
+    return {"latex": _joined(parts), "text": _joined(parts, "plain")}
 
 
-def substitution(F, symbol, x, x_display):
-    """F(x) término a término (mismo formato que la comprobación de Newton)."""
-    terms = []
-    for t in _ordered_terms(F, symbol):
-        evaluator = sp.lambdify([symbol], t, modules=["math", "mpmath"])
-        try:
-            value = to_real(evaluator(float(x)))
-        except (ArithmeticError, ValueError, TypeError):
-            value = None
+def substituter(expr, symbol):
+    """(términos de expr, función x → valor de cada término). Las plantillas y
+    los evaluadores se arman una vez y sirven para muchos puntos."""
+    parts, evaluators = [], []
+    for t in _ordered_terms(expr, symbol):
         part = _term(t, symbol)
-        terms.append({"sign": part["sign"], "template": part["template"], "text": part["text"], "value": value})
-    values = [t["value"] for t in terms]
+        parts.append({"sign": part["sign"], "template": part["template"], "text": part["text"]})
+        evaluators.append(sp.lambdify([symbol], t, modules=["math", "mpmath"]))
+
+    def values(x):
+        out = []
+        for evaluator in evaluators:
+            try:
+                out.append(to_real(evaluator(float(x))))
+            except (ArithmeticError, ValueError, TypeError):
+                out.append(None)
+        return out
+
+    return parts, values
+
+
+def substitution_from(parts, values, x, x_display):
+    terms = [{**part, "value": value} for part, value in zip(parts, values)]
     total = None if None in values else math.fsum(values) + 0.0
     return {
         "x": float(x),
@@ -235,3 +248,100 @@ def substitution(F, symbol, x, x_display):
         "value": total,
         "all_zero": total is not None and all(v == 0 for v in values),
     }
+
+
+def substitution(F, symbol, x, x_display):
+    """F(x) término a término (mismo formato que la comprobación de Newton)."""
+    parts, values = substituter(F, symbol)
+    return substitution_from(parts, values(x), x, x_display)
+
+
+# --- Antiderivada y su verificación, término a término ---------------------------
+
+def _shown(expr, symbol):
+    """Un término con los coeficientes como en F (12.5, \\frac{200}{3}), con su signo."""
+    part = _term(expr, symbol)
+    return f"- {part['latex']}" if part["sign"] == "-" else part["latex"]
+
+
+def _times(coeff, symbol):
+    """«c \\cdot » delante de un paso intermedio («» si c = 1, «-» si c = −1)."""
+    if coeff == 1:
+        return ""
+    if coeff == -1:
+        return "-"
+    return f"{_shown(coeff, symbol)} \\cdot "
+
+
+def symbolic_rule(rule):
+    """term_step escribe «derivada directa» cuando no desglosa el término."""
+    return "derivada calculada simbólicamente" if rule == "derivada directa" else rule
+
+
+_POWER_RULE = "regla de la potencia: ∫xⁿ dx = xⁿ⁺¹/(n + 1)"
+
+
+def _integral_term(term, symbol):
+    """(∫ término dx, paso intermedio o None, regla); None si no es una forma simple."""
+    coeff, rest = term.as_independent(symbol, as_Add=False)
+    if rest == 1:
+        return term * symbol, None, "integral de una constante: ∫c dx = c·x"
+    if rest == symbol:
+        rest = sp.Pow(symbol, 1, evaluate=False)
+    if isinstance(rest, sp.Pow) and rest.base == symbol and rest.exp.is_number:
+        n = rest.exp
+        if n == -1:
+            return coeff * sp.log(symbol), None, "∫1/x dx = ln|x|; en [a, b] x > 0, así que ln|x| = ln x"
+        n_latex = sp.latex(n)
+        middle = rf"{_times(coeff, symbol)}\frac{{x^{{{n_latex} + 1}}}}{{{n_latex} + 1}}"
+        return coeff * symbol ** (n + 1) / (n + 1), middle, _POWER_RULE
+    if rest == sp.exp(symbol):
+        return term, None, "la integral de la exponencial es ella misma: ∫eˣ dx = eˣ"
+    if rest == sp.sin(symbol):
+        return -coeff * sp.cos(symbol), None, "∫sin x dx = −cos x"
+    if rest == sp.cos(symbol):
+        return coeff * sp.sin(symbol), None, "∫cos x dx = sin x"
+    return None
+
+
+def antiderivative_steps(expr, F, symbol):
+    """∫ f dx término a término con la regla de cada uno.
+
+    {"detailed": False} si algún término no es una forma simple o la suma de
+    los resultados no es la F de sympy (sustitución, partes…).
+    """
+    rows, results = [], []
+    for t in _ordered_terms(_rational(expr), symbol):
+        item = _integral_term(t, symbol)
+        if item is None:
+            return {"detailed": False, "terms": []}
+        result, middle, rule = item
+        results.append(result)
+        integrand = _shown(t, symbol)
+        if integrand.startswith("-"):
+            integrand = rf"\left({integrand}\right)"
+        chain = [rf"\int {integrand}\,dx", middle, _shown(result, symbol)]
+        rows.append({"latex": " = ".join(c for c in chain if c), "rule": rule})
+    if sp.simplify(sp.Add(*results) - F) != 0:
+        return {"detailed": False, "terms": []}
+    return {"detailed": True, "terms": rows}
+
+
+def derivative_check(expr, F, symbol):
+    """F'(x) término a término (mismas reglas que las derivadas de f) y si da f."""
+    from ..nonlinear.derivative_steps import term_step
+
+    rows, results = [], []
+    for t in _ordered_terms(F, symbol):
+        d = sp.diff(t, symbol)
+        results.append(_term(d, symbol))
+        coeff, rest = t.as_independent(symbol, as_Add=False)
+        middle = None
+        if isinstance(rest, sp.Pow) and rest.base == symbol and rest.exp.is_number:
+            n = rest.exp
+            middle = rf"{_times(coeff, symbol)}{sp.latex(n)} \cdot {sp.latex(symbol ** (n - 1))}"
+        chain = [rf"\frac{{d}}{{dx}}\left({_shown(t, symbol)}\right)", middle, _shown(d, symbol)]
+        rows.append({"latex": " = ".join(c for c in chain if c),
+                     "rule": symbolic_rule(term_step(t, symbol, ordinary=True)["rule"])})
+    ok = sp.simplify(sp.diff(F, symbol) - _rational(expr)) == 0
+    return {"terms": rows, "sum_latex": f"F'(x) = {_joined(results)}", "ok": bool(ok)}

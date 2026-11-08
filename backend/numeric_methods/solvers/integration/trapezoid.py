@@ -25,6 +25,8 @@ No depende de Django: puede usarse y testearse de forma aislada.
 import math
 from decimal import Decimal
 
+import sympy as sp
+
 from ...expressions.to_latex import expression_to_latex
 from ...expressions.to_text import expression_to_text
 from ..base import IterationStep, SolverResult
@@ -39,6 +41,7 @@ from ..differentiation.finite_differences import (
     _uses_trigonometry,
     parse_function_of_x,
 )
+from ..nonlinear.derivative_steps import entry_steps
 from ..validation import MIN_ITERATIONS, InputValidationError
 from . import exact as integral_module
 from .rules import TRAPEZOID, apply, public_rule
@@ -70,6 +73,12 @@ ZERO_INTEGRAL = 1e-12
 FOLD_FIRST_ROW = 17
 FOLD_NEW_POINTS = 16
 FOLD_KEEP = 8
+# Hasta esta cantidad de puntos llegan todos (botón «Mostrar todos los puntos»);
+# con más sólo los 8 primeros y los 8 últimos.
+FULL_POINTS = 1024
+# |Eₜ| ≤ cota·(1 + 10⁻⁹) es «dentro de la cota» sin redondeo; |Eₜ| y la cota
+# con diferencia relativa ≤ 10⁻⁹ son iguales.
+EQUAL_RELATIVE = 1e-9
 MAX_DECIMALS = 15
 
 REFERENCE_LABEL = "valor de referencia (cálculo numérico de alta precisión)"
@@ -122,7 +131,7 @@ def _undefined(shown, a, b):
 
 
 def _shown_indices(count, limit):
-    if count <= limit:
+    if count <= max(limit, FULL_POINTS):
         return list(range(count))
     return list(range(FOLD_KEEP)) + list(range(count - FOLD_KEEP, count))
 
@@ -205,15 +214,30 @@ def _concavity_note(values):
     return None
 
 
+def _derivative_steps(expr, symbol, name):
+    """Desglose término a término de Newton y diferenciación (d/dx de `expr`)."""
+    steps = entry_steps(expr, symbol, name, ordinary=True)
+    for term in steps["terms"]:
+        term["rule"] = integral_module.symbolic_rule(term["rule"])
+    return steps
+
+
 def _info(function):
     second = function.derivatives[2]
+    x = function.symbol
     return {
         "latex": expression_to_latex(function.typed),
         "text": expression_to_text(function.expr),
+        # ∫ f dx lleva paréntesis sólo si f es una suma o resta.
+        "is_sum": isinstance(function.expr, sp.Add),
         "uses_trigonometry": _uses_trigonometry(function.expr),
         "first": {"latex": expression_to_latex(function.first, order=None),
-                  "text": expression_to_text(function.first)},
-        "second": {"latex": expression_to_latex(second, order=None), "text": expression_to_text(second)},
+                  "text": expression_to_text(function.first),
+                  "steps": _derivative_steps(function.expr, x, "f")},
+        "second": {"latex": expression_to_latex(second, order=None), "text": expression_to_text(second),
+                   "steps": _derivative_steps(function.first, x, "f'"),
+                   "constant": not second.has(x)},
+        "substitution_terms": integral_module.substituter(function.expr, x)[0],
     }
 
 
@@ -245,7 +269,11 @@ def _integral(function, a, b):
     check = None
     if result["kind"] == "exact":
         F, x = result["F"], function.symbol
-        info["antiderivative"] = integral_module.antiderivative_info(F, x)
+        info["antiderivative"] = {
+            **integral_module.antiderivative_info(F, x),
+            "steps": integral_module.antiderivative_steps(function.expr, F, x),
+            "check": integral_module.derivative_check(function.expr, F, x),
+        }
         check = {
             "upper": integral_module.substitution(F, x, b, display.data_value(b)),
             "lower": integral_module.substitution(F, x, a, display.data_value(a)),
@@ -254,12 +282,20 @@ def _integral(function, a, b):
 
 
 def _errors(I, T, bound, rounding):
-    """Eₜ, εₜ y |Eₜ| ≤ cota + R (None donde falta un dato)."""
+    """Eₜ, εₜ, |Eₜ| ≤ cota (+ R), si hizo falta R y si |Eₜ| = cota (None donde falta un dato).
+
+    R sólo cuenta cuando |Eₜ| > cota·(1 + 10⁻⁹): una diferencia menor es la
+    misma cota escrita en punto flotante (x² en [0, 2]: |Eₜ| = cota).
+    """
     true = None if I is None else I - T + 0.0
     relative = None if true is None or abs(I) < ZERO_INTEGRAL else abs(true) / abs(I) * 100
-    within = None if true is None or bound is None else abs(true) <= bound + rounding
-    by_rounding = bool(within) and abs(true) > bound
-    return true, relative, within, by_rounding
+    if true is None or bound is None:
+        return true, relative, None, False, False
+    size, margin = abs(true), bound * EQUAL_RELATIVE
+    within = size <= bound + margin or size <= bound + rounding
+    by_rounding = within and size > bound + margin
+    equals = abs(size - bound) <= margin
+    return true, relative, within, by_rounding, equals
 
 
 # --- Modo función -----------------------------------------------------------------
@@ -297,6 +333,8 @@ def _function_mode(data, rule=TRAPEZOID):
     fa, fb = _evaluate(function.evaluators[1], a), _evaluate(function.evaluators[1], b)
     mean_second = None if fa is None or fb is None else (fb - fa) / (b - a)
     width = b - a
+    width_number = display.exact(b) - display.exact(a)
+    _, f_terms = integral_module.substituter(function.expr, function.symbol)
 
     iterations, chart_rows = [], []
     previous = None
@@ -319,11 +357,15 @@ def _function_mode(data, rule=TRAPEZOID):
             step = _first_row_display(rule, values, h_number, T)
             weights = rule.weights(n)
             step["count"] = n + 1
-            step["points"] = [
-                {"i": i, "x_display": _x_display(a, b, i, n), "f": values[i],
-                 "f_display": display.fixed(values[i], step["decimals"]), "weight": weights[i]}
-                for i in _shown_indices(n + 1, FOLD_FIRST_ROW)
-            ]
+            step["fold"] = FOLD_FIRST_ROW
+            step["points"] = []
+            for i in _shown_indices(n + 1, FOLD_FIRST_ROW):
+                f_display = display.fixed(values[i], step["decimals"])
+                step["points"].append({
+                    "i": i, "x": _x(a, b, i, n), "x_display": _x_display(a, b, i, n), "f": values[i],
+                    "f_display": f_display, "terms": f_terms(_x(a, b, i, n)), "weight": weights[i],
+                    "product": display.product(weights[i], f_display),
+                })
         else:
             new_values = [function(a + (2 * j - 1) * width / n) for j in range(1, n // 2 + 1)]
             if None in new_values:
@@ -337,9 +379,11 @@ def _function_mode(data, rule=TRAPEZOID):
             abs_sum += 2 * sum(abs(v) for v in new_values)
             step = _recurrence_display(previous["T"], new_values, h_number, T)
             step["count"] = len(new_values)
+            step["fold"] = FOLD_NEW_POINTS
             step["points"] = [
-                {"i": 2 * j + 1, "x_display": _x_display(a, b, 2 * j + 1, n), "f": new_values[j],
-                 "f_display": display.fixed(new_values[j], step["decimals"])}
+                {"i": 2 * j + 1, "x": a + (2 * j + 1) * width / n, "x_display": _x_display(a, b, 2 * j + 1, n),
+                 "f": new_values[j], "f_display": display.fixed(new_values[j], step["decimals"]),
+                 "terms": f_terms(a + (2 * j + 1) * width / n)}
                 for j in _shown_indices(len(new_values), FOLD_NEW_POINTS)
             ]
             if grid is not None and n <= CHART_MAX_N:
@@ -352,7 +396,7 @@ def _function_mode(data, rule=TRAPEZOID):
         coefficient = width * h * h / 12
         bound = None if M2 is None else coefficient * M2
         rounding = 2 * MACHINE_EPSILON * float(rule.factor) * h * abs_sum
-        true, relative, within, by_rounding = _errors(I, T, bound, rounding)
+        true, relative, within, by_rounding, equals = _errors(I, T, bound, rounding)
         previous_true = previous["true_error"] if previous else None
         estimated = None if previous is None else abs(T - previous["T"])
         row = {
@@ -368,6 +412,10 @@ def _function_mode(data, rule=TRAPEZOID):
             "rounding": rounding,
             "within_bound": within,
             "by_rounding": by_rounding,
+            "equals_bound": equals,
+            "below_tolerance": None if estimated is None else estimated <= tolerance,
+            # (b − a)·h², el numerador de Eₐ y de la cota.
+            "coefficient_numerator": display.decimal(width_number * h_number * h_number),
             "ratio": true / previous_true if true is not None and previous_true else None,
             "step": step,
         }
@@ -405,7 +453,7 @@ def _function_mode(data, rule=TRAPEZOID):
         **(check or {}),
         "kind": integral["kind"],
         "final": {key: last[key] for key in ("T", "true_error", "relative_error", "bound", "rounding",
-                                              "within_bound", "by_rounding")},
+                                              "within_bound", "by_rounding", "equals_bound")},
         "failed_rows": failed,
         "all_within": I is not None and M2 is not None and not failed,
     }
@@ -421,8 +469,19 @@ def _function_mode(data, rule=TRAPEZOID):
         "max_iterations": max_rows,
         "function": _info(function),
         "integral": integral,
-        "mean_second": None if mean_second is None else {"fa": fa, "fb": fb, "value": mean_second},
-        "M2": None if M2 is None else {"value": M2, "x": x_M, "x_display": display.data_value(x_M)},
+        "min_rows": MIN_REFINEMENTS,
+        "mean_second": None if mean_second is None else {
+            "fa": fa, "fb": fb, "value": mean_second,
+            # f'(a) y f'(b) sustituidas término a término.
+            "fa_substitution": integral_module.substitution(function.first, function.symbol, a, display.data_value(a)),
+            "fb_substitution": integral_module.substitution(function.first, function.symbol, b, display.data_value(b)),
+        },
+        "M2": None if M2 is None else {
+            "value": M2, "x": x_M, "x_display": display.data_value(x_M),
+            # f''(x) donde se alcanzó M₂, término a término (None si f'' es constante).
+            "substitution": None if not function.derivatives[2].has(function.symbol) else
+            integral_module.substitution(function.derivatives[2], function.symbol, x_M, display.data_value(x_M)),
+        },
         "curve": _curve(function, a, b),
         "chart_rows": chart_rows,
         "notes": notes,
@@ -523,9 +582,10 @@ def _table_mode(data, rule=TRAPEZOID):
             warnings.append("f''(x) no es finita en algún segmento: no se muestra la cota del error.")
         rounding = 2 * MACHINE_EPSILON * math.fsum(abs(s) * (abs(ys[i]) + abs(ys[i + 1])) / 2
                                                     for i, s in enumerate(steps))
-        true, relative, within, by_rounding = _errors(integral["value"], total, bound, rounding)
+        true, relative, within, by_rounding, equals = _errors(integral["value"], total, bound, rounding)
         final = {"T": total, "I": integral["value"], "true_error": true, "relative_error": relative,
-                 "bound": bound, "rounding": rounding, "within_bound": within, "by_rounding": by_rounding}
+                 "bound": bound, "rounding": rounding, "within_bound": within, "by_rounding": by_rounding,
+                 "equals_bound": equals}
 
     verification = {
         **(check or {}),

@@ -7,11 +7,16 @@
 //  - modo tabla: la suma de las áreas es el total, la fórmula compuesta (si el
 //    espaciado es uniforme) y, con función para comparar, los datos y la integral.
 import { computed } from 'vue'
+import DerivationSteps from '../../components/DerivationSteps.vue'
+import GlossaryBlock from '../../components/GlossaryBlock.vue'
+import InfoTip from '../../components/InfoTip.vue'
 import MathFormula from '../../components/MathFormula.vue'
 import { formatNumber } from '../../utils/iterationSteps'
 import { latexNumber } from '../../utils/latexFormulas'
 import { substitutionLatex } from '../differentiation/formulas'
+import { conclusionText, referenceExplanation, tinyErrorNote } from './explain'
 import { areasSumLatex, boundMark, cell, compositeLatex, percent } from './formulas'
+import { comparisonColumns } from './glossary'
 
 const props = defineProps({
   result: { type: Object, required: true },
@@ -39,20 +44,29 @@ const differenceLatex = computed(() => {
   )
 })
 const referenceLabel = computed(() => (integral.value?.kind === 'reference' ? ' (respecto al valor de referencia)' : ''))
-const reason = computed(() => {
-  const i = integral.value
-  if (i.special) return `${i.special}.`
-  if (i.timed_out) return 'La integración simbólica superó el límite de tiempo.'
-  return 'sympy no encontró una antiderivada utilizable en [a, b].'
-})
+const reference = computed(() => integral.value?.kind === 'reference')
+const reason = computed(() => referenceExplanation(integral.value))
+const antiderivative = computed(() => integral.value?.antiderivative)
+const headers = computed(() => comparisonColumns({ reference: reference.value, isTable: isTable.value }))
+const tiny = computed(() => tinyErrorNote(final.value, reference.value))
+const conclusion = computed(() => conclusionText(props.result, final.value))
 </script>
 
 <template>
   <section class="verification">
     <h4>Comprobación</h4>
 
+    <p v-if="!isTable" class="section-text intro">
+      La comprobación calcula la integral {{ hasExact ? 'exacta por otro camino (con la antiderivada)' : 'por otro camino' }}
+      y la compara con el resultado del trapecio.
+    </p>
+
     <!-- Modo tabla: suma de las áreas y fórmula compuesta -->
     <template v-if="isTable">
+      <p class="section-text intro">
+        Con datos, el área total es la suma de las áreas de los trapecios de cada segmento. Se comprueba que esa suma
+        da el total{{ result.function ? ', que cada dato coincide con la función para comparar y cuánto se aleja el total de su integral' : '' }}.
+      </p>
       <p class="section-text">La suma de las áreas de los trapecios individuales es el total:</p>
       <div class="check-line table-scroll">
         <MathFormula :expression="areasSumLatex(check)" />
@@ -112,10 +126,33 @@ const reason = computed(() => {
     <!-- Integral exacta: F(b) − F(a) término a término -->
     <template v-if="hasExact">
       <p class="section-text">
-        Antiderivada de f{{ isTable ? ' (la función para comparar)' : '' }}:
+        Antiderivada de f{{ isTable ? ' (la función para comparar)' : '' }}: una función F cuya derivada es f.
+        <template v-if="antiderivative.steps.detailed">Se integra f término a término, con la regla de cada término:</template>
       </p>
-      <div class="formula-box"><MathFormula :expression="`F(x) = ${integral.antiderivative.latex}`" display-mode /></div>
-      <p class="section-text">Se evalúa F en los límites, término a término:</p>
+      <DerivationSteps
+        v-if="antiderivative.steps.detailed"
+        :steps="antiderivative.steps"
+        :result="`F(x) = ${antiderivative.latex}`"
+      />
+      <template v-else>
+        <div class="formula-box"><MathFormula :expression="`F(x) = ${antiderivative.latex}`" display-mode /></div>
+        <p class="section-text note">
+          Antiderivada obtenida con integración simbólica; la técnica no se detalla aquí.
+        </p>
+      </template>
+      <p class="section-text">Verificación de la antiderivada: al derivar F debe salir f.</p>
+      <DerivationSteps :steps="antiderivative.check">
+        <template #after-sum>
+          <MathFormula :expression="antiderivative.check.ok ? `= f(x)` : `\\ne f(x)`" />
+          <span :class="antiderivative.check.ok ? 'mark mark-ok' : 'mark mark-warn'">
+            {{ antiderivative.check.ok ? '✔' : '⚠' }}
+          </span>
+        </template>
+      </DerivationSteps>
+      <p class="section-text">
+        Teorema fundamental del cálculo: la integral de a a b es F(b) − F(a). Se evalúa F en los límites, término a
+        término:
+      </p>
       <div class="check-list table-scroll">
         <div class="check-line"><MathFormula :expression="substitutionLatex(check.upper, 'F')" /></div>
         <div class="check-line">
@@ -129,8 +166,7 @@ const reason = computed(() => {
       </p>
     </template>
     <p v-else-if="integral && integral.kind === 'reference'" class="section-text">
-      No hay una antiderivada elemental: {{ reason }} Se compara con el {{ integral.label }},
-      I ≈ {{ formatNumber(integral.value) }}.
+      {{ reason }} Se compara con el {{ integral.label }}, I ≈ {{ formatNumber(integral.value) }}.
     </p>
     <p v-else-if="integral" class="section-text note">
       No se pudo calcular la integral exacta ni un valor de referencia: no hay con qué comparar.
@@ -145,12 +181,9 @@ const reason = computed(() => {
         <table class="check-table">
           <thead>
             <tr>
-              <th>T</th>
-              <th>I</th>
-              <th>Eₜ = I − T</th>
-              <th>εₜ</th>
-              <th>Cota</th>
-              <th>|Eₜ| ≤ cota</th>
+              <th v-for="col in headers" :key="col.key">
+                <InfoTip :text="col.text">{{ col.label }}</InfoTip>
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -168,6 +201,12 @@ const reason = computed(() => {
           </tbody>
         </table>
       </div>
+      <small v-if="tiny" class="table-note">{{ tiny }}</small>
+      <GlossaryBlock
+        title="¿Qué significa cada columna?"
+        :items="headers.map((col) => ({ symbol: col.symbol, text: col.text }))"
+      />
+      <p v-if="conclusion" class="section-text final-line">{{ conclusion }}</p>
     </template>
 
     <!-- Línea final (modo función) -->
@@ -245,6 +284,17 @@ const reason = computed(() => {
 }
 
 .zero-note {
+  font-size: var(--text-small);
+  color: var(--color-ink-muted);
+}
+
+.intro {
+  color: var(--color-ink);
+}
+
+.table-note {
+  display: block;
+  margin-top: var(--space-2);
   font-size: var(--text-small);
   color: var(--color-ink-muted);
 }

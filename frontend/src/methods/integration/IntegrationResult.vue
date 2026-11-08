@@ -7,6 +7,8 @@
 // paso) → comprobación.
 import { computed, ref, watch } from 'vue'
 import ConvergenceChart from '../../components/ConvergenceChart.vue'
+import DerivationSteps from '../../components/DerivationSteps.vue'
+import GlossaryBlock from '../../components/GlossaryBlock.vue'
 import MathFormula from '../../components/MathFormula.vue'
 import TrapezoidChart from '../../components/TrapezoidChart.vue'
 import { formatNumber } from '../../utils/iterationSteps'
@@ -15,6 +17,7 @@ import IntegrationRefinementTable from './IntegrationRefinementTable.vue'
 import IntegrationVerification from './IntegrationVerification.vue'
 import SegmentsTable from './SegmentsTable.vue'
 import { integralLatex, percent } from './formulas'
+import { APPROX_GLOSSARY, BOUND_GLOSSARY, COMPOSITE_GLOSSARY } from './glossary'
 import { exportIntegrationPdf } from './pdf'
 
 const props = defineProps({
@@ -160,11 +163,16 @@ function handleExportPdf() {
       <div v-else class="formula-box">
         <MathFormula :expression="`f(x) = ${fn.latex} \\quad \\text{(función para comparar)}`" display-mode />
       </div>
-      <p class="section-text">Derivadas que usan el error aproximado y la cota:</p>
-      <div class="formula-box">
-        <MathFormula :expression="`f'(x) = ${fn.first.latex}`" display-mode />
-        <MathFormula :expression="`f''(x) = ${fn.second.latex}`" display-mode />
-      </div>
+      <h5 class="subheading">Derivadas de f(x)</h5>
+      <p class="section-text">
+        Para qué se necesitan: f′(x) se usa en el error aproximado de Chapra (con ella se obtiene el promedio de f′′),
+        y f′′(x) en la cota del error, porque mide qué tan curva es la función: mientras más curva, más se separan los
+        trapecios de la curva.
+      </p>
+      <p class="section-text">Primera derivada: se deriva f término a término, con la regla de cada término.</p>
+      <DerivationSteps :steps="fn.first.steps" :result="`f'(x) = ${fn.first.latex}`" />
+      <p class="section-text">Segunda derivada: se deriva f′(x) con el mismo desglose.</p>
+      <DerivationSteps :steps="fn.second.steps" :result="`f''(x) = ${fn.second.latex}`" />
       <p v-if="fn.uses_trigonometry" class="section-text note">Las funciones trigonométricas se evalúan en radianes.</p>
     </section>
 
@@ -225,11 +233,17 @@ function handleExportPdf() {
           para ver el cálculo paso a paso.
         </p>
         <div class="formula-list">
+          <p class="formula-caption">Regla compuesta del trapecio</p>
           <div class="formula-box"><MathFormula :expression="result.rule.formula_latex" /></div>
+          <GlossaryBlock :items="COMPOSITE_GLOSSARY.items" :summary="COMPOSITE_GLOSSARY.summary" />
+          <p class="formula-caption">Error aproximado (Chapra)</p>
           <div class="formula-box">
             <MathFormula expression="E_a = -\frac{(b - a)\,h^{2}}{12}\,\bar{f''},\quad \bar{f''} = \frac{f'(b) - f'(a)}{b - a}" />
           </div>
+          <GlossaryBlock :items="APPROX_GLOSSARY.items" />
+          <p class="formula-caption">Cota del error</p>
           <div class="formula-box"><MathFormula :expression="result.rule.bound_latex" /></div>
+          <GlossaryBlock :items="BOUND_GLOSSARY.items" />
         </div>
         <IntegrationRefinementTable :result="result" />
         <p v-if="integral.value !== null" class="section-text">
@@ -239,8 +253,8 @@ function handleExportPdf() {
         </p>
         <p v-if="result.M2" class="section-text">
           La cota usa M₂, el máximo de |f′′(x)| en [a, b], estimado por muestreo con {{ result.sampling_points }}
-          puntos. La marca <sup>R</sup> indica que |Eₜ| supera la cota sólo por el redondeo de la computadora
-          (R = 2ε·Σ|wᵢ·f(xᵢ)|·h/2).
+          puntos. La marca <sup>R</sup> aparece sólo cuando |Eₜ| supera la cota (más allá de una diferencia relativa
+          de 10⁻⁹) y el ✔ depende del margen de redondeo de la computadora, R = 2ε·Σ|wᵢ·f(xᵢ)|·h/2.
         </p>
       </template>
     </section>
@@ -353,6 +367,19 @@ function handleExportPdf() {
 .formula-list {
   display: flex;
   flex-direction: column;
+}
+
+.formula-caption {
+  margin: var(--space-3) 0 var(--space-1);
+  font-size: var(--text-small);
+  font-weight: var(--weight-semibold);
+  color: var(--color-ink);
+}
+
+.subheading {
+  margin: var(--space-4) 0 var(--space-2);
+  font-size: var(--text-body);
+  color: var(--color-ink);
 }
 
 .row-picker {
