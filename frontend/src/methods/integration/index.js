@@ -8,12 +8,12 @@
 // El formulario de dos modos es el de diferenciación (components/FunctionTableInput.vue);
 // la regla de integración es un dato del resultado (result.rule).
 //
-// Sin teoría todavía: theorySections vacío, así que el método no aparece en
-// "Teoría ▾" (igual que se hizo con los métodos nuevos antes de su página).
+// Los métodos con entrada en THEORY_SECTIONS aparecen en "Teoría ▾".
 import FunctionTableInput from '../../components/FunctionTableInput.vue'
 import IntegrationConfigFields from './IntegrationConfigFields.vue'
 import IntegrationResult from './IntegrationResult.vue'
 import { MODES, createIntegrationStore } from './store'
+import IntegrationTheoryPage, { THEORY_SECTIONS } from './theory/IntegrationTheoryPage.vue'
 
 export default {
   createStore: createIntegrationStore,
@@ -41,6 +41,6 @@ export default {
   iterationDetail: null,
   pdfReport: null,
 
-  theoryPage: null,
-  theorySections: {},
+  theoryPage: IntegrationTheoryPage,
+  theorySections: THEORY_SECTIONS,
 }

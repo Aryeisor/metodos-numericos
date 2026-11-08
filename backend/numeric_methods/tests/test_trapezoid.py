@@ -1,8 +1,10 @@
 """Método del trapecio: valores de referencia verificados con un script
 independiente (fracciones exactas y los ejemplos precargados)."""
 
+import json
 import math
 from fractions import Fraction
+from pathlib import Path
 from unittest import mock
 
 from django.test import SimpleTestCase
@@ -13,6 +15,10 @@ from numeric_methods.serializers.integration import IntegrationSerializer
 from numeric_methods.solvers.integration import exact
 from numeric_methods.solvers.integration.rules import TRAPEZOID, apply
 from numeric_methods.solvers.integration.trapezoid import solve_trapezoid
+
+# Respuestas del solver guardadas para la página de teoría (frontend).
+THEORY_EXAMPLE = (Path(__file__).resolve().parents[3] / "frontend" / "src" / "methods"
+                  / "integration" / "theory" / "trapezoidExample.json")
 
 CHAPRA = "0.2 + 25x - 200x^2 + 675x^3 - 900x^4 + 400x^5"
 
@@ -410,3 +416,45 @@ class ExplanationTests(SimpleTestCase):
         row_12 = rows(self.chapra)[11]
         self.assertEqual(row_12["step"]["count"], 1024)
         self.assertEqual(len(row_12["step"]["points"]), 1024)
+
+
+def trimmed(result):
+    """Como se guarda para la teoría: las filas con más puntos que `fold` sólo
+    con los 8 primeros y los 8 últimos (lo mismo que hace el solver con más de
+    1024), para que el JSON no pese 1.4 MB."""
+    result = json.loads(json.dumps(result))
+    for step in result["iterations"]:
+        shown = step["extra"].get("step")
+        if shown and len(shown["points"]) > shown["fold"]:
+            shown["points"] = shown["points"][:8] + shown["points"][-8:]
+    return result
+
+
+class TheoryExampleTests(SimpleTestCase):
+    """La página de teoría usa respuestas guardadas del solver: deben ser las
+    que el solver devuelve hoy y mostrar los valores de Chapra."""
+
+    def setUp(self):
+        self.saved = json.loads(THEORY_EXAMPLE.read_text(encoding="utf-8"))
+
+    def test_rows_one_to_three(self):
+        saved = self.saved["function"]
+        expected = [
+            # T, Eₜ, εₜ, Eₐ, cota
+            ("0.1728", "1.467733", "89.46684", "2.56", "17.066667"),
+            ("1.0688", "0.571733", "34.850455", "0.64", "4.266667"),
+            ("1.4848", "0.155733", "9.492848", "0.16", "1.066667"),
+        ]
+        for row, values in zip(rows(saved), expected):
+            shown = tuple(f"{row[key]:.6f}".rstrip("0").rstrip(".")
+                          for key in ("T", "true_error", "relative_error", "approx_error", "bound"))
+            self.assertEqual(shown, values)
+        self.assertEqual(saved["iterations_used"], 13)
+        self.assertEqual(rows(saved)[-1]["n"], 4096)
+        self.assertEqual(f"{self.saved['table']['total']:.6f}", "1.594801")
+
+    def test_saved_responses_match_solver(self):
+        for key, number in (("function", 1), ("table", 8)):
+            with self.subTest(example=number):
+                stored = self.saved[key]
+                self.assertEqual(trimmed(example(number)), {k: v for k, v in stored.items() if k != "request"})
