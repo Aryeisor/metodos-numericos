@@ -3,7 +3,7 @@
 Aplicación web full-stack para resolver, paso a paso, sistemas de ecuaciones
 **lineales** y **no lineales**, las **raíces de polinomios** con métodos
 iterativos, la **derivada numérica** con fórmulas de diferencias finitas y la
-**integral numérica** con reglas de integración (método del trapecio), y para
+**integral numérica** con reglas de integración (métodos del trapecio y de Simpson), y para
 estudiar la teoría de cada método.
 
 | Categoría | Método | Qué resuelve |
@@ -17,6 +17,7 @@ estudiar la teoría de cada método.
 | Diferenciación numérica | **Fórmula de 3 puntos** | `f'(x₀)` con el punto medio y los extremos hacia adelante y hacia atrás, de orden `O(h²)`; desde `f(x)` o desde una tabla igualmente espaciada |
 | Diferenciación numérica | **Fórmula de 5 puntos** | `f'(x₀)` con el punto medio y los extremos de 5 puntos, de orden `O(h⁴)`; desde `f(x)` o desde una tabla igualmente espaciada (de 5 a 20 puntos) |
 | Integración numérica | **Método del trapecio** | `∫ₐᵇ f(x) dx` con la regla simple y la compuesta, refinando `n` (con la recurrencia que aprovecha los puntos ya evaluados), o desde una tabla de datos con espaciado no uniforme (de 2 a 30 puntos) |
+| Integración numérica | **Método de Simpson** | `∫ₐᵇ f(x) dx` con las reglas 1/3 (`n` par) y 3/8 (`n` múltiplo de 3), simples y compuestas, refinando `n`, o desde una tabla igualmente espaciada (de 3 a 30 puntos; con `n` impar, la combinación 1/3 + 3/8) |
 
 - **Backend:** Django + Django REST Framework (API REST) y sympy para el
   manejo simbólico de las ecuaciones.
@@ -45,13 +46,13 @@ estudiar la teoría de cada método.
 
 ### Vista «Resolver» (`/resolver/<método>`)
 
-- **Ejemplos precargados** por método (54 en total: 6 lineales compartidos por
+- **Ejemplos precargados** por método (62 en total: 6 lineales compartidos por
   Jacobi y Gauss-Seidel, 4 de Punto Fijo, 3 de Newton, 9 de Bairstow, 8 de
-  diferencias finitas, 8 de la fórmula de 3 puntos, 8 de la de 5 puntos y 8
-  del método del trapecio),
+  diferencias finitas, 8 de la fórmula de 3 puntos, 8 de la de 5 puntos, 8
+  del método del trapecio y 8 del método de Simpson),
   que se cargan en el
   formulario con un clic.
-- **Botón «Limpiar»** al lado de «Resolver», en los nueve métodos: deja la
+- **Botón «Limpiar»** al lado de «Resolver», en los diez métodos: deja la
   vista como al abrir el método (formulario con su tamaño y valores
   iniciales, tolerancia, máximo de iteraciones y opciones por defecto del
   método) y borra el resultado, los errores, las advertencias, las vistas
@@ -91,6 +92,11 @@ estudiar la teoría de cada método.
     puntos `(xᵢ, yᵢ)` con `x` estrictamente creciente y **espaciado libre**
     (9 filas vacías al empezar o al limpiar) y una función opcional para
     comparar; se ocultan `n₀`, la tolerancia y el máximo.
+  - Método de Simpson: el mismo formulario, con el selector **Regla**
+    («Simpson 1/3», «Simpson 3/8» o «Ambas», por defecto) y un `n₀` por regla
+    visible (1/3: par, de 2 a 1000, por defecto 2; 3/8: múltiplo de 3, de 3
+    a 999, por defecto 3). En modo tabla, de 3 a 30 puntos **igualmente
+    espaciados**.
 - **Barra de símbolos matemáticos** (√, xⁿ, log, ln, exp, sin, cos, tan, π, e,
   |x|, paréntesis y un desplegable «Más funciones» con trigonométricas
   inversas e hiperbólicas). Inserta en la posición del cursor del campo activo
@@ -135,7 +141,14 @@ estudiar la teoría de cada método.
   refinamiento (o la de segmentos) con paso a paso, el gráfico de
   convergencia y la «Comprobación» (ver su [detalle](#método-del-trapecio)).
   El gráfico de trapecios (`components/TrapezoidChart.vue`) es genérico: lo
-  reutilizarán Simpson y las demás reglas.
+  reutilizan Simpson (con el **gráfico de parábolas y cúbicas**) y lo
+  reutilizarán las demás reglas.
+- En el **método de Simpson**, la misma organización: resumen por regla con
+  la **comparación con el trapecio** (mismo `n`, filas 1 y última), derivadas
+  hasta `f⁽⁴⁾`, el **gráfico de parábolas y cúbicas** (selector de regla y de
+  `n`), una tabla de refinamiento por regla con sus glosarios y su paso a
+  paso, el gráfico de convergencia y la «Comprobación» con la **identidad con
+  el trapecio** (ver su [detalle](#método-de-simpson)).
 
 ### Vista «Teoría» (`/teoria/<método>`)
 
@@ -716,8 +729,8 @@ secciones).
   - compuesta: `I ≈ (h/2)·[f(x₀) + 2·Σᵢ₌₁ⁿ⁻¹ f(xᵢ) + f(xₙ)]`.
 
   En el motor es una **regla compuesta con pesos** (`solvers/integration/rules.py`):
-  pesos `1, 2, …, 2, 1` multiplicados por `h/2`. Simpson se declarará con
-  `1, 4, 2, …, 4, 1` y `h/3`.
+  pesos `1, 2, …, 2, 1` multiplicados por `h/2`. Simpson se declara igual,
+  con `1, 4, 2, …, 4, 1` y `h/3` (ver [Método de Simpson](#método-de-simpson)).
 - **Tabla de refinamiento:** la fila `k` usa `n_k = n₀·2^(k−1)` y
   `h_k = (b − a)/n_k`. Columnas: `k`, `n`, `h` (exacto con hasta 12 decimales;
   si no, `(b − a)/n` con su aproximación), `T`, error estimado
@@ -853,6 +866,90 @@ secciones).
   | 7 | Tabla de Chapra con h = 0.1 + función | total 1.6008 = fórmula compuesta; Eₜ = 0.039733 (2.422 %) |
   | 8 | Tabla de Chapra con segmentos desiguales + función | total 1.594801; Eₜ = 0.045732 (2.7877 %); datos ✔ |
 
+### Método de Simpson
+
+- **Reglas** (notación de Chapra y Canale), declaradas como datos en
+  `solvers/integration/rules.py` (`SIMPSON_13` y `SIMPSON_38`), con
+  `h = (b − a)/n` y `xᵢ = a + i·h`:
+
+  | Regla | Condición sobre n | Pesos | Factor | Error compuesto | Error simple |
+  | --- | --- | --- | --- | --- | --- |
+  | Simpson 1/3 | par, ≥ 2 | `1, 4, 2, 4, …, 2, 4, 1` | `h/3` | `−(b − a)h⁴/180 · f⁽⁴⁾(ξ)` | `−(b − a)⁵/2880 · f⁽⁴⁾(ξ)` (n = 2) |
+  | Simpson 3/8 | múltiplo de 3, ≥ 3 | `1, 3, 3, 2, 3, 3, 2, …, 3, 3, 1` | `3h/8` | `−(b − a)h⁴/80 · f⁽⁴⁾(ξ)` | `−(b − a)⁵/6480 · f⁽⁴⁾(ξ)` (n = 3) |
+
+  Cada parábola usa 3 puntos seguidos (pesos 1, 4, 1) y cada cúbica 4 (1, 3,
+  3, 1); donde dos piezas se tocan el punto se cuenta en las dos (1 + 1 = 2).
+- **Refinamiento (modo función):** la fila `k` usa `n_k = n₀·2^(k−1)` en
+  cada regla (al duplicar, la condición sobre `n` se mantiene) y se calcula
+  con la **fórmula de pesos**; las alturas de la fila anterior se reutilizan
+  (son los `xᵢ` con `i` par) y sólo se evalúan los puntos nuevos. Un test
+  comprueba que coincide con la fórmula de pesos directa
+  (`≤ 10⁻¹²·máx(1, |S|)`). Mínimo 6 filas; **para cuando todas las reglas
+  pedidas** cumplen la tolerancia del error estimado en la misma fila. Con
+  «Ambas», una tabla por regla, apiladas.
+- **Errores** por fila: `Eₜ = I − S` y `εₜ`, como en el trapecio; el error
+  aproximado de Chapra `Eₐ = −[(b − a)h⁴/C]·f̄⁽⁴⁾` con `C = 180` o `80` y
+  `f̄⁽⁴⁾ = [f'''(b) − f'''(a)]/(b − a)` (el promedio exacto de `f⁽⁴⁾`); la cota
+  `[(b − a)h⁴/C]·M₄`, con `M₄ = máx |f⁽⁴⁾|` estimado con 2001 puntos (y el `x`
+  donde se alcanzó); la razón entre errores verdaderos consecutivos, que se
+  acerca a **0.0625** (el error es `O(h⁴)`), y la marca R con el mismo
+  criterio del trapecio (`R_k = 2ε·Σ|wᵢ·f(xᵢ)|·factor·h`). Si `f⁽⁴⁾` tiene un
+  solo signo, se indica que Simpson sobreestima (`f⁽⁴⁾ > 0`) o subestima
+  (`f⁽⁴⁾ < 0`): `Eₜ = −k·f⁽⁴⁾(ξ)` con `k > 0`.
+- **Derivadas:** `f'`, `f''`, `f'''` y `f⁽⁴⁾` término a término con la regla
+  aplicada (`f'''` para `Eₐ`, `f⁽⁴⁾` para la cota; `f'` y `f''` son pasos
+  intermedios). En Chapra, `f⁽⁴⁾ = 48000x − 21600`, `f'''(0) = 4050` y
+  `f'''(0.8) = 2130`.
+- **Paso a paso de cada fila:** ancho `h`, puntos `xᵢ = a + i·h`, tabla de
+  evaluaciones con la sustitución, el peso y **por qué** («extremo → 1»,
+  «impar → 4», «par interior → 2»; en 3/8, «no múltiplo de 3 → 3» y
+  «múltiplo de 3 → 2») y `peso × f(xᵢ)`, la suma ponderada, `S = (h/3)·suma`
+  (o `(3h/8)·suma`), el error estimado, `Eₜ`, `εₜ`, `Eₐ` (con `f'''(b)` y
+  `f'''(a)` sustituidas), la cota (con `f⁽⁴⁾` y `M₄` sustituida) y la razón.
+  Mismo plegado y botón «Mostrar todos los puntos» que el trapecio.
+- **Comparación con el trapecio** (debajo del resumen, por regla, filas 1 y
+  última): lo que da el trapecio con el mismo `n`, su `Eₜ` y cuántas veces
+  menor es el error de Simpson. Chapra, `n = 2`: trapecio 1.0688
+  (`Eₜ = 0.571733`), Simpson 1/3 1.367467 (`Eₜ = 0.273067`), 2.1 veces menor;
+  con `n = 16`, 149.8 veces.
+- **Gráfico de parábolas y cúbicas** (`TrapezoidChart` con `row.pieces`): el
+  backend muestrea la parábola (3 puntos) o la cúbica (4 puntos) de cada
+  pieza; cada pieza alterna dos tonos de `theme.css`. Selector de `n`
+  (filas con `n ≤ 64`) y, con «Ambas», de regla. En la combinación del modo
+  tabla, la parte 1/3 y la 3/8 llevan colores distintos y su leyenda.
+- **Modo tabla** (de 3 a 30 puntos, **espaciado uniforme obligatorio**; si
+  no, un 400 que sugiere el método del trapecio). Con `n` segmentos:
+  «Simpson 1/3» exige `n` par y «Simpson 3/8» `n` múltiplo de 3 (si no, un
+  400 que sugiere otra opción); con «Ambas», 1/3 si `n` es par, 3/8 si `n` es
+  múltiplo de 3 (con `n = 6`, las dos por separado) y, si `n` es impar y
+  mayor que 3, la **combinación de Chapra**: 1/3 en los primeros `n − 3`
+  segmentos y 3/8 en los últimos 3. Tabla de puntos con `i`, `xᵢ`, `yᵢ`, peso,
+  `peso × yᵢ` y regla; el punto de unión pertenece a las dos partes (peso
+  «1 + 1»). Resultado por partes y su suma; con función para comparar, `Eₐ` y
+  la cota por partes, sumadas.
+- **Comprobación:** la del trapecio (antiderivada paso a paso, `F' = f`,
+  `F(b) − F(a)`, tabla de comparación por regla con leyenda, conclusión,
+  modo referencia, datos contra la función) y la **identidad con el
+  trapecio** (sólo Simpson 1/3, filas 1 y última):
+  `S_n = (4T_n − T_(n/2))/3`, «Simpson 1/3 es el trapecio mejorado con la
+  extrapolación de Richardson». El ✔ se decide sin redondeo
+  (`≤ 10⁻⁹·máx(1, |S|)`); la sustitución usa los valores visibles. Chapra:
+  `(4(1.0688) − 0.1728)/3 = 1.367467 ✔`. En modo tabla aplica sólo con 1/3 en
+  todos los segmentos. Para 3/8 no hay una identidad tan simple.
+- **Teoría:** todavía no tiene página; Simpson no aparece en «Teoría ▾».
+- **Ejemplos** (tolerancia `0.000001`, máximo 20):
+
+  | # | Datos | Regla | Resultado |
+  | --- | --- | --- | --- |
+  | 1 | Chapra en `[0, 0.8]` | Ambas | exacta 1.640533; 1/3: 1.367467, 1.623467, 1.639467 (fila 1: Eₜ = Eₐ = 0.273067, cota 2.4576 con M₄ = 21600 en x = 0); 3/8: 1.51917, 1.632948, 1.640059; para en la fila 7 (n = 128 y 192) |
+  | 2 | `exp(-x^2)` en `[0, 1]` | Ambas | referencia 0.746824; 1/3: 0.74718, 0.746855, 0.746826; 3/8: 0.746992, 0.746838, 0.746825; fila 6 |
+  | 3 | `sin(x)` en `[0, π]` | 1/3 | exacta 2; 2.094395, 2.00456, 2.000269; sobreestima; fila 6 |
+  | 4 | `x^3` en `[0, 2]` | Ambas | exacta 4 en todas las filas, error y cota 0; fila 6 |
+  | 5 | `x^4` en `[0, 2]` | Ambas | exacta 6.4; 1/3: 6.666667, 6.416667, 6.401042; 3/8: 6.518519, 6.407407, 6.400463; `\|Eₜ\|` = cota = `\|Eₐ\|`, sin R; fila 7 |
+  | 6 | `1/x` en `[1, 2]` | 3/8 | exacta ln 2; 0.69375, 0.693195, 0.69315; fila 6 |
+  | 7 | Tabla de Chapra con h = 0.1 (n = 8) + función | Ambas | sólo 1/3; suma ponderada 49.184; S = 1.639467; Eₜ = 0.001067 (0.065 %); identidad ✔ (T₈ = 1.6008, T₄ = 1.4848) |
+  | 8 | Tabla de Chapra con n = 5 + función | Ambas | combinación: 1/3 en [0, 0.32] = 0.380324, 3/8 en [0.32, 0.8] = 1.264753; total 1.645077; Eₜ = −0.004544 (0.277 %) |
+
 ---
 
 ## API
@@ -872,6 +969,7 @@ Todas las rutas cuelgan de `/api/`.
 | POST | `/api/solve/tres-puntos/` | Aproxima `f'(x)` con la fórmula de 3 puntos (punto medio y extremos) |
 | POST | `/api/solve/cinco-puntos/` | Aproxima `f'(x)` con la fórmula de 5 puntos (punto medio y extremos) |
 | POST | `/api/solve/trapecio/` | Aproxima `∫ₐᵇ f(x) dx` con el método del trapecio |
+| POST | `/api/solve/simpson/` | Aproxima `∫ₐᵇ f(x) dx` con el método de Simpson (reglas 1/3 y 3/8) |
 | POST | `/api/expressions/preview` | Valida una ecuación y devuelve su LaTeX (no resuelve nada) |
 
 ### Cuerpo de la petición
@@ -974,6 +1072,22 @@ Modo tabla (de 2 a 30 puntos con x estrictamente creciente, espaciado libre;
 ```json
 { "mode": "table", "points": [[0, 0.2], [0.12, 1.309729], [0.22, 1.305241]], "compare_function": "" }
 ```
+
+Método de Simpson: el mismo cuerpo que el trapecio, con `rule` =
+`simpson13`, `simpson38` o `both` (por defecto) y, en modo función, `n0_13`
+(par, de 2 a 1000, por defecto 2) y `n0_38` (múltiplo de 3, de 3 a 999, por
+defecto 3) en lugar de `n0`. En modo tabla, de 3 a 30 puntos igualmente
+espaciados:
+
+```json
+{ "mode": "function", "function": "exp(-x^2)", "a": 0, "b": 1, "rule": "both", "n0_13": 2, "n0_38": 3 }
+```
+
+La respuesta de Simpson trae `rules` (modo función: por regla, `rule`, `n0`,
+`rows` con `S`, errores, `trapezoid`, `identity` y `step`, `chart_rows` con
+las `pieces` del gráfico y `verification`), `mean_fourth` y `M4`; en modo
+tabla, `applications` (cada regla aplicada con sus `parts`, `points`, `total`,
+`final` e `identity`).
 
 Vista previa de una ecuación:
 
@@ -1131,7 +1245,8 @@ metodos/
 │       │                            #   (h exacto y decimales del paso a paso)
 │       │   └── integration/         #   rules.py (cada regla compuesta como datos: pesos y factor),
 │       │                            #   exact.py (integral exacta o de referencia, con límite de
-│       │                            #   tiempo), trapezoid.py (modos función y tabla, recurrencia)
+│       │                            #   tiempo), trapezoid.py (modos función y tabla, recurrencia),
+│       │                            #   simpson.py (reglas 1/3 y 3/8, combinación y tabla)
 │       └── tests/                   # Tests unitarios y de API
 └── frontend/
     ├── Dockerfile                   # Compila con Node y sirve dist/ con nginx
@@ -1152,9 +1267,11 @@ metodos/
         │   └── differentiation/     # Diferencias, 3 y 5 puntos: formulario (función o tabla), vista de
         │                            # resultado, tablas de refinamiento, paso a paso, comprobación, PDF
         │                            # y teoría (theory/, con las respuestas del solver en JSON)
-        │   └── integration/         # Trapecio: vista de resultado, tabla de refinamiento con paso a
-        │                            # paso explicado (explain.js), glosarios (glossary.js), tabla de
-        │                            # segmentos, comprobación, PDF y teoría (theory/, con las respuestas del solver en JSON)
+        │   └── integration/         # Trapecio y Simpson: vistas de resultado, tabla de refinamiento con
+        │                            # paso a paso explicado (explain.js, simpsonExplain.js), glosarios
+        │                            # (glossary.js, simpsonGlossary.js), tabla de segmentos o de puntos,
+        │                            # comprobación (AntiderivativeCheck compartida), PDF (pdf.js exporta
+        │                            # pdfTools; simpsonPdf.js) y teoría (theory/, con las respuestas del solver en JSON)
         ├── components/              # ResultsTable, ConvergenceChart, MathFormula, MatrixInput,
         │   │                        # MathSymbolToolbar, MathSyntaxHelp, NavMenu,
         │   │                        # NumericFieldsInput (x0, r0/s0, coeficientes), EquationPreview,
@@ -1236,24 +1353,40 @@ No hace falta tocar `App.vue`, el router ni `NavMenu.vue`.
    (`products_display`, `comparison`, `identities`, `recommended`,
    `rounding_text`).
 
-### Agregar una regla de integración (por ejemplo, Simpson 1/3)
+### Agregar una regla de integración (como Simpson; después Romberg y Gauss)
 
 1. **Regla** en `solvers/integration/rules.py`: una `CompositeRule` con
-   `factor` (`1/3`), `ends` (`1`), `interior` (`(4, 2)`: el patrón de pesos
-   interiores), `segments_multiple` (`2`: n par), `order`,
-   `bound_derivative`, `bound_divisor` y los textos LaTeX. `apply(rule,
-   valores, h)` ya calcula la regla compuesta y el paso a paso de la fila 1
-   (`_first_row_display`) agrupa los interiores por peso.
-2. **Solver**: el modo función y el modo tabla de `trapezoid.py` reciben la
-   regla como parámetro; la recurrencia `T_k = T_(k−1)/2 + h·Σ nuevos` es
-   propia del trapecio (y la base de Romberg). La integral exacta o de
-   referencia sale de `exact.definite_integral` para cualquier regla.
-3. **Serializer, registro y ejemplos**: `IntegrationSerializer` sirve tal
-   cual (o una subclase con validaciones extra, como `n` par).
-4. **Frontend**: la categoría `integration` ya tiene formulario, gráfico de
-   trapecios (`TrapezoidChart`, que recibe los puntos de cada fila), tablas,
-   comprobación y PDF; un método nuevo sólo necesita su entrada en
-   `methods[slug]` si cambia algo.
+   `factor`, `ends`, `interior` (el patrón de pesos interiores: `(2,)` en el
+   trapecio, `(4, 2)` en 1/3, `(3, 3, 2)` en 3/8), `segments_multiple`
+   (2: n par; 3: múltiplo de 3), `order`, `bound_derivative`,
+   `bound_divisor` y los textos LaTeX (fórmula, cota y, opcionales,
+   `error_latex`, `simple_error_latex`, `approx_latex`, `simple_divisor` y
+   `piece`). `apply(rule, valores, h)` calcula la regla compuesta.
+2. **Solver**, como `simpson.py`: reutiliza de `trapezoid.py` la integral
+   exacta o de referencia (`_integral`, con el límite de tiempo de
+   `exact.py`), el criterio de la marca R (`_errors`), el formato de `h` y de
+   los puntos (`_step`, `_x_display`), la suma ponderada del paso a paso
+   (`_first_row_display`, que agrupa los interiores por peso), el máximo de
+   una derivada por muestreo (`_second_derivative(…, order=d)`), el desglose
+   de las derivadas (`_derivative_steps`) y la comprobación de los datos
+   (`_data_checks`). La recurrencia `T_k = T_(k−1)/2 + h·Σ nuevos` es propia
+   del trapecio (la base de Romberg); `simpson.py` muestra cómo reutilizar
+   las evaluaciones de la fila anterior sin dejar la fórmula de pesos.
+3. **Serializer, registro y ejemplos**: una subclase de
+   `IntegrationSerializer` (como `SimpsonSerializer`, con sus campos y
+   validaciones; `min_points` fija el mínimo de puntos), `registry.py` y
+   `examples_data.py`.
+4. **Frontend**: en `methods/integration/index.js`, una entrada en
+   `methods[slug]` con su `createStore` (`createIntegrationStore({ minPoints })`
+   extendido, como `createSimpsonStore`), sus `configFields` y, si su
+   resultado cambia de forma, su `resultView`. Se reutilizan
+   `IntegrationRefinementTable` (con `block`: filas de una regla y la palabra
+   del valor, ver `simpsonWords` en `glossary.js`), `TrapezoidStepDetail`
+   (con `customSteps` y `weightReason`), `TrapezoidChart` (con `row.pieces`
+   y `partLabels`), `AntiderivativeCheck` (antiderivada, `F' = f` y
+   `F(b) − F(a)`), `criterionCheck` y `tinyErrorNote` de `explain.js`, y
+   `pdfTools` de `pdf.js` (escritura, glosarios, paso a paso, tabla de puntos
+   e integral por otro camino) para el PDF.
 
 ---
 
@@ -1285,7 +1418,7 @@ cd backend
 python manage.py test numeric_methods
 ```
 
-**412 tests**, todos en verde:
+**445 tests**, todos en verde:
 
 | Archivo | Tests | Qué cubre |
 | --- | --- | --- |
@@ -1303,6 +1436,7 @@ python manage.py test numeric_methods
 | `test_three_point.py` | 27 | Fórmula de 3 puntos: fracciones exactas (cúbica y `x²`), Burden y Faires (filas 1, 2, parada 11 y comparación con diferencias), filas de parada y primeras filas de los ejemplos, cuadrática exacta, razón ≈ 0.25, error real ≤ cota + R, identidades, productos del paso a paso, modo tabla (valores, «—», recomendada, identidades por punto, `x³` con errores iguales a la cota, dato alterado), errores 400 (tabla no uniforme, 2 puntos, dominio en «x₀ − 2h», tolerancia, máximo), respuestas guardadas para la teoría (filas 1 y 2, identidades e iguales a las del solver) y endpoint |
 | `test_five_point.py` | 28 | Fórmula de 5 puntos: fracciones exactas (`x⁵` y cuártica), Burden y Faires (filas 1 y 2, parada en 6, comparación, identidad de Richardson y productos del paso a paso), filas de parada de los ejemplos, `x⁵` con error = cota, cuártica exacta, razón ≈ 0.0625, error real ≤ cota + R, `f⁽⁵⁾` término a término, modo tabla (valores, «—», punto medio de 3 puntos, recomendada, identidad por punto con el caso de redondeo de `x = 2.2`, `x⁴` con función, una sola fórmula, 5 datos, dato alterado), errores 400 (tabla no uniforme, 4 puntos, dominio en «x₀ − 4h», tolerancia, máximo) y endpoint |
 | `test_trapezoid.py` | 43 | Método del trapecio: fracciones exactas (`x²` en [0, 2] con `Eₜ = Eₐ`, polinomio de Chapra), ejemplo 1 (filas 1 a 3, parada en 13, razón ≈ 0.25, comprobación término a término, paso a paso de la fila 1), recurrencia igual a la fórmula directa (ejemplos 1 y 6, filas 2 a 8, y a mano), filas de parada de los ejemplos, recta exacta, `\|Eₜ\| ≤ cota + R`, `x²` con error = cota, integral exacta o de referencia (erf, `sin`, `1/x`), límite de tiempo (simulado y real), notas de concavidad, modo tabla (uniforme, no uniforme, dato alterado, sin función), singularidad interior, errores 400 y endpoint. Explicaciones: ejemplo 4 fila 1 (sustituciones, suma ponderada, `f'(a)`, `f'(b)`, `f̄''`, `Eₐ`, `M₂`, cota, igualdad sin R) y filas 2 y 3 (puntos nuevos, sumas, `T`), desglose de `f'` y `f''` (`x²`, Chapra, `eˣ`), `M₂` sustituida en Chapra, antiderivada por términos y `F' = f` (`x²`, Chapra, `x·eˣ` sin desglose), nota de `Eₜ` que se ve 0 (ejemplo 6), ninguna R con `\|Eₜ\| ≤ cota·(1 + 10⁻⁹)`, paréntesis de la integral y puntos enviados (1024 o 16). Teoría: filas 1 a 3 del ejemplo 1 y respuestas guardadas iguales a las del solver |
+| `test_simpson.py` | 33 | Método de Simpson: fracciones exactas (`x⁴` con 1/3 y 3/8, Chapra con n = 2, 3 y 4), exactitud para cúbicas, ejemplo 1 (filas 1 a 3 de las dos reglas, `Eₐ = Eₜ`, `f̄⁽⁴⁾ = −2400`, `M₄ = 21600` en x = 0, parada en la fila 7, comparación con el trapecio 2.1 y 149.8 veces, identidad `(4T₂ − T₁)/3`, razón ≈ 0.0625, pesos del paso a paso), identidad en fracciones para n = 2, 4 y 8, reutilización de evaluaciones igual a la fórmula de pesos (ejemplos 1 y 6, filas 1 a 8), filas de parada de los ejemplos, `x⁴` con `\|Eₜ\|` = cota sin R, `\|Eₜ\| ≤ cota + R`, notas de concavidad, modo tabla (ejemplos 7 y 8 con pesos, suma, partes y punto de unión; `x⁴` en x = 0..6 con 1556 y 1557; n = 3 sólo 3/8; dato alterado), derivadas `f'''` y `f⁽⁴⁾`, errores 400 (n₀ impar, n₀ no múltiplo de 3, tabla no uniforme con la sugerencia, n impar con 1/3, n no múltiplo de 3 con 3/8, 2 puntos, a ≥ b, `1/x` en a = 0), endpoint y piezas del gráfico |
 | `test_bairstow.py` | 30 | Bairstow: divisiones sintéticas, primera iteración de Chapra calculada a mano, ejemplos, raíces nulas, raíz doble, cierres directos, fallos, endpoint y comprobación de raíces (sustitución término a término, potencias faltantes, par complejo, raíz nula y residuo) |
 
 ---
@@ -1326,3 +1460,13 @@ python manage.py test numeric_methods
   diferenciación no las admite): el ejemplo de `sin(x)` usa
   `b = 3.141592653589793`. `n_k` se limita a 2²¹ segmentos (con `n₀` grande
   y muchas filas se detiene con una advertencia).
+- En el método de Simpson, `M₄ = máx |f⁽⁴⁾|` se estima con 2001 puntos (en
+  todo `[a, b]` o en cada parte de la combinación), con las mismas
+  limitaciones de los límites `a` y `b` y el mismo tope de 2²¹ segmentos que
+  el trapecio. La parada exige que todas las reglas pedidas cumplan la
+  tolerancia en la misma fila. El modo tabla exige espaciado uniforme
+  (`|hᵢ − h₁| ≤ 10⁻⁹·máx(1, |h₁|)`); con datos desiguales hay que usar el
+  trapecio (el mensaje lo sugiere; no hay un enlace que cargue los datos en
+  su Resolver). Con una regla exacta (cúbicas) y cota 0, un residuo de punto
+  flotante en `Eₜ` puede mostrar la marca ✔ᴿ, que es lo que dice el criterio
+  de redondeo. Todavía no tiene página de Teoría.
