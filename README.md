@@ -305,8 +305,32 @@ reales del solver, tabla comparativa y referencias bibliográficas (APA).
   «Chapra con 3 evaluaciones». Todas las fórmulas importantes llevan su
   glosario «¿Qué significa cada símbolo?».
 
-Los menús «Resolver ▾» y «Teoría ▾» se generan automáticamente a partir del
-catálogo de métodos del backend, agrupados por categoría.
+### Menú de navegación
+
+- **Panel con todas las categorías a la vez.** «Resolver ▾» y «Teoría ▾»
+  abren, bajo la barra superior, un panel del ancho del contenido con las 5
+  categorías en columnas (3 columnas y una segunda fila entre 1024 y 1279 px).
+  Cada categoría se reconoce por su expresión característica (`Ax = b`,
+  `F(x) = 0`, `P(x) = 0`, `f′(x₀)`, `∫ f dx`) y cada método lleva una línea
+  que dice qué resuelve. El método actual queda marcado.
+- **Resolver | Teoría.** Un control dentro del panel cambia a dónde llevan los
+  enlaces sin cerrarlo: útil para pasar de resolver un método a leer su teoría.
+- **Buscador.** Filtra en vivo por nombre, línea descriptiva, categoría y
+  sinónimos («derivada», «integral», «área»…), sin distinguir mayúsculas ni
+  tildes, y resalta la coincidencia en el nombre. `↓` pasa al primer
+  resultado y `Enter` lo abre.
+- **Atajos.** `/` abre el panel con el buscador enfocado (salvo mientras se
+  escribe en un campo) y `Esc` lo cierra. En el panel, las flechas recorren
+  los métodos por columnas.
+- **Celular y tablet (< 1024 px).** Un botón «Métodos» abre el panel a
+  pantalla completa, con las categorías como acordeones (la del método actual
+  empieza abierta).
+- **Accesible.** Botones con `aria-expanded`, enlaces dentro de
+  `<nav aria-label="Métodos">`, foco atrapado en la versión móvil, enlace
+  «Saltar al contenido» y barra superior fija que no tapa el elemento
+  enfocado. Respeta `prefers-reduced-motion`.
+- Todo sale del catálogo del backend: un método o una categoría nuevos
+  aparecen solos en el menú.
 
 ### Modo claro y modo oscuro
 
@@ -1224,7 +1248,7 @@ Todas las rutas cuelgan de `/api/`.
 
 | Método | Endpoint | Descripción |
 | --- | --- | --- |
-| GET | `/api/methods/` | Catálogo de métodos: `slug`, `name`, `category`, `category_label` |
+| GET | `/api/methods/` | Catálogo de métodos: `slug`, `name`, `category`, `category_label`, `summary`, `keywords` y los datos de la categoría (`category_description`, `category_latex`, `category_order`), ordenado por categoría |
 | GET | `/api/examples/?method=<slug>` | Ejemplos precargados de un método (sin `method`, todos sin repetir) |
 | POST | `/api/solve/jacobi/` | Resuelve un sistema lineal con Jacobi |
 | POST | `/api/solve/gauss-seidel/` | Resuelve un sistema lineal con Gauss-Seidel |
@@ -1606,7 +1630,12 @@ La aplicación está pensada para crecer por **categorías** de métodos.
    devuelve un `SolverResult` (`solvers/base.py`).
 2. Escribir o reutilizar el serializer en `serializers/`.
 3. Registrar el método en `registry.py` (`slug`, nombre, categoría,
-   serializer, solver).
+   serializer, solver) con su `summary`: la línea corta que aparece bajo el
+   nombre en el menú (sin ella el menú muestra sólo el nombre). Opcionalmente,
+   `keywords`: sinónimos para el buscador del menú («derivada», «área»…).
+   Una categoría nueva se declara en `CATEGORIES` con `label`, `description`,
+   `latex` (su expresión característica; sin ella el menú muestra sólo el
+   nombre) y `order` (su posición en el menú).
 4. Agregar sus ejemplos en `examples_data.py`.
 
 La ruta `/api/solve/<slug>/` y su entrada en `/api/methods/` aparecen solas,
@@ -1616,7 +1645,8 @@ sin tocar `views.py` ni `urls.py`.
 
 - Un método de una categoría existente cuyo formulario y paso a paso sean los
   mismos (como Gauss-Seidel respecto a Jacobi) no requiere cambios: aparece
-  solo en el menú «Resolver ▾» y en el selector de método.
+  solo en el menú de navegación (en su categoría, con su línea) y en el
+  selector de método.
 - Si necesita una interfaz distinta dentro de la misma categoría (como Newton
   respecto a Punto Fijo), se declara en `methods[slug]` dentro de la interfaz
   de la categoría (`methods/<categoría>/index.js`).
