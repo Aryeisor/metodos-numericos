@@ -733,6 +733,67 @@ secciones).
      Si aun así el cociente de los valores mostrados no coincide con `D` a 6
      decimales, se agregan decimales (hasta 15) hasta que coincida. Las
      tablas, el resumen y el cociente `D` siguen con 6 decimales.
+- **Explicaciones para quien no conoce el método** (la misma estructura y los
+  mismos componentes que integración: `GlossaryBlock`, `InfoTip`,
+  `DerivationSteps` y el paso a paso de `TrapezoidStepDetail` con
+  `customSteps`). Están en `differenceGlossary.js` y `differenceExplain.js` y
+  se activan sólo para `diferencias-finitas` (prop `explained`): las fórmulas
+  de 3 y 5 puntos se ven como antes.
+  - **Derivadas paso a paso:** para qué se necesita cada una (`f'` es la
+    exacta, sólo para comparar y calcular el error real; `f''` mide la
+    curvatura y se usa en la cota), `f'` término a término con la regla de cada
+    término (`d/dx sin(x) = cos(x)`, «derivada de la función seno») y `f''`
+    derivando `f'` con el mismo desglose.
+  - **Glosarios** «¿Qué significa cada símbolo?» (visibles por defecto y
+    plegables) debajo de cada fórmula: `D⁺(h)`/`D⁻(h)`, `x₀`, `h`, `x₀ ± h`,
+    las alturas, el numerador («cuánto sube o baja la función»), dividir entre
+    `h` («subida entre avance») y la idea clave (la pendiente de la secante
+    aproxima la de la tangente). Una tercera fórmula, **errores y cota**, con
+    el error estimado, el error real, la cota `(h/2)·M` (de dónde sale `h/2` y
+    por qué `h`) y la razón (→ 0.5).
+  - **Tablas:** cada encabezado tiene un tooltip (se abre también al tocarlo en
+    el celular) y debajo de cada tabla va la leyenda «¿Qué significa cada
+    columna?»: tabla de refinamiento, modo tabla de datos y comparación de la
+    comprobación.
+  - **Leyenda de colores** sobre el paso a paso: **azul**, el valor en el punto
+    base `x₀` o el de la fila anterior; **verde**, el valor nuevo (punto vecino
+    o fila actual).
+  - **Paso a paso explicado** de cada fila (y de cada fórmula con «Ambas»):
+    cada paso tiene título, una o dos frases, la sustitución completa y el
+    resultado. 1) el paso `h` (`h₂ = h₀/2¹ = 0.1/2 = 0.05`); 2) los puntos
+    (`x₀ − h = 1 − 0.1 = 0.9`); 3) la altura de la curva en cada punto
+    (`f(0.9) = sin(0.9) = 0.7833269`, con la regla de decimales en palabras);
+    4) el cambio de la función; 5) la pendiente de la secante; 6) el error
+    estimado (desde la fila 2) con la comparación con la tolerancia en
+    palabras; 7) el error real con `f'(x₀)` sustituida, si la aproximación
+    quedó por encima o por debajo y, cuando la curvatura lo explica, por qué
+    (con `f'' < 0` la progresiva subestima y la regresiva sobreestima; con
+    `f'' > 0`, al revés); 8) la cota con `f''`, `M` (dónde se alcanzó, con
+    `f''` sustituida) y `(h/2)·M`; 9) la razón (desde la fila 2). En modo
+    tabla: vecino de la derecha o de la izquierda, `h = x_(i+1) − xᵢ`,
+    alturas (los datos), cambio y pendiente; con función, también la derivada
+    exacta, el error real y la cota.
+  - **Marca R** (el mismo criterio de integración): ✔ sin marca si
+    `error real ≤ cota·(1 + 10⁻⁹)`; «= cota» si coinciden en ese margen (la
+    función lineal: error 0 = cota 0); la marca `R` sólo cuando el error supera
+    ese margen y se cumple gracias al redondeo `R`. Las fórmulas de 3 y 5 puntos
+    conservan su criterio (`error ≤ cota + R`).
+  - **Comprobación explicada:** una frase de introducción, la sustitución
+    término a término, la leyenda de la tabla, la conclusión con los datos
+    reales («Con h = 0.0001953125 (fila 10), la regresiva coincide con la
+    derivada exacta en 3 decimales») y, si el error real se ve 0 sin serlo, una
+    nota con su valor (`1.2×10⁻⁸`).
+  - **PDF:** las derivadas paso a paso, los glosarios de las fórmulas y de las
+    columnas como texto, el paso a paso explicado de las filas 1, 2 y la última
+    de cada fórmula (en modo tabla, de los puntos 1, 2 y el último) con la nota
+    «el resto de las filas sigue el mismo procedimiento», la comprobación
+    explicada y las tablas completas.
+  - **Datos que envía el backend** para esto (sólo en este método): en cada
+    fila `side` (`over`/`under`/`equal`, dónde quedó `D` respecto a
+    `f'(x₀)`), `predicted_side` (lo que predice el signo de `f''`),
+    `half_h` (`h/2` exacto), `equals_bound` y, en modo función,
+    `below_tolerance`; en la respuesta, `min_rows`, `curvature` (`f''(x₀)` y
+    su signo) y, en la comprobación, `matching_decimals`.
 
 ### Fórmula de 3 puntos
 
@@ -1756,23 +1817,23 @@ cd backend
 python manage.py test numeric_methods
 ```
 
-**510 tests**, todos en verde:
+**520 tests**, todos en verde:
 
 | Archivo | Tests | Qué cubre |
 | --- | --- | --- |
 | `test_solvers.py` | 23 | Jacobi y Gauss-Seidel, y su comprobación (términos y residuos exactos, solución que se ve entera, coeficiente 0, solución decimal, orden original tras reordenar, no convergencia) |
 | `test_dominance.py` | 8 | Dominancia diagonal y reordenamiento de filas |
 | `test_api.py` | 13 | Endpoints de los métodos lineales y de ejemplos |
-| `test_registry.py` | 13 | Registro de métodos, catálogo (con Gauss después de Romberg) y ejemplos por método |
+| `test_registry.py` | 15 | Registro de métodos, catálogo (con Gauss después de Romberg) y ejemplos por método |
 | `test_expressions.py` | 49 | Parser seguro, derivación y LaTeX |
 | `test_preview.py` | 31 | Endpoint de vista previa, logaritmos y límites de seguridad |
 | `test_fixed_point.py` | 41 | Punto Fijo: despeje automático, rechazos, actualización secuencial, endpoint y comprobación (soluciones enteras, decimales con funciones, «lado = lado», no convergencia) |
 | `test_isolation_steps.py` | 20 | Despeje paso a paso de Punto Fijo |
 | `test_newton.py` | 38 | Newton y regla de Cramer: iteraciones calculadas a mano, Jacobiana singular, endpoint y comprobación (tres ejercicios con solución entera, ejemplo decimal, funciones trigonométricas, no convergencia) |
 | `test_newton_steps.py` | 16 | Derivadas parciales paso a paso y sustitución en F |
-| `test_differentiation.py` | 30 | Diferencias progresiva y regresiva: fórmulas exactas con `x²`, cúbica, Burden y Faires (filas 1, 2 y parada), respuestas guardadas para la teoría iguales a las del solver, filas de parada de los ejemplos, mínimo de 6 filas, no convergencia, razón ≈ 0.5, error real ≤ cota, h exacto, errores 400, modo tabla (secante común, datos, espaciado no uniforme), comprobación término a término, `abs(x)` y endpoint |
+| `test_differentiation.py` | 38 | Diferencias progresiva y regresiva: fórmulas exactas con `x²`, cúbica, Burden y Faires (filas 1, 2 y parada), respuestas guardadas para la teoría iguales a las del solver, filas de parada de los ejemplos, mínimo de 6 filas, no convergencia, razón ≈ 0.5, error real ≤ cota, h exacto, errores 400, modo tabla (secante común, datos, espaciado no uniforme), comprobación término a término, `abs(x)` y endpoint. Explicaciones: ejemplo 3 fila 1 (punto `1 − 0.1 = 0.9`, `sin(1)` y `sin(0.9)` con 7 decimales, diferencia y `D`, `f'(1)`, error real, `M` en x = 1 con `f''(1)`, cota sin R, sobreestima) y fila 2 (`h₂`, punto 0.95, error estimado, razón 0.5058), ejemplo 1 progresiva (diferencia y subestima), regla del lado según `f''` y la fórmula, desglose de `f'` y `f''` (`sin`, `ln`, cúbica), función lineal con error = cota = 0 sin R, decimales de la conclusión y 3 y 5 puntos sin los datos nuevos |
 | `test_three_point.py` | 27 | Fórmula de 3 puntos: fracciones exactas (cúbica y `x²`), Burden y Faires (filas 1, 2, parada 11 y comparación con diferencias), filas de parada y primeras filas de los ejemplos, cuadrática exacta, razón ≈ 0.25, error real ≤ cota + R, identidades, productos del paso a paso, modo tabla (valores, «—», recomendada, identidades por punto, `x³` con errores iguales a la cota, dato alterado), errores 400 (tabla no uniforme, 2 puntos, dominio en «x₀ − 2h», tolerancia, máximo), respuestas guardadas para la teoría (filas 1 y 2, identidades e iguales a las del solver) y endpoint |
-| `test_five_point.py` | 28 | Fórmula de 5 puntos: fracciones exactas (`x⁵` y cuártica), Burden y Faires (filas 1 y 2, parada en 6, comparación, identidad de Richardson y productos del paso a paso), filas de parada de los ejemplos, `x⁵` con error = cota, cuártica exacta, razón ≈ 0.0625, error real ≤ cota + R, `f⁽⁵⁾` término a término, modo tabla (valores, «—», punto medio de 3 puntos, recomendada, identidad por punto con el caso de redondeo de `x = 2.2`, `x⁴` con función, una sola fórmula, 5 datos, dato alterado), errores 400 (tabla no uniforme, 4 puntos, dominio en «x₀ − 4h», tolerancia, máximo) y endpoint |
+| `test_five_point.py` | 30 | Fórmula de 5 puntos: fracciones exactas (`x⁵` y cuártica), Burden y Faires (filas 1 y 2, parada en 6, comparación, identidad de Richardson y productos del paso a paso), filas de parada de los ejemplos, `x⁵` con error = cota, cuártica exacta, razón ≈ 0.0625, error real ≤ cota + R, `f⁽⁵⁾` término a término, modo tabla (valores, «—», punto medio de 3 puntos, recomendada, identidad por punto con el caso de redondeo de `x = 2.2`, `x⁴` con función, una sola fórmula, 5 datos, dato alterado), errores 400 (tabla no uniforme, 4 puntos, dominio en «x₀ − 4h», tolerancia, máximo) y endpoint |
 | `test_trapezoid.py` | 43 | Método del trapecio: fracciones exactas (`x²` en [0, 2] con `Eₜ = Eₐ`, polinomio de Chapra), ejemplo 1 (filas 1 a 3, parada en 13, razón ≈ 0.25, comprobación término a término, paso a paso de la fila 1), recurrencia igual a la fórmula directa (ejemplos 1 y 6, filas 2 a 8, y a mano), filas de parada de los ejemplos, recta exacta, `\|Eₜ\| ≤ cota + R`, `x²` con error = cota, integral exacta o de referencia (erf, `sin`, `1/x`), límite de tiempo (simulado y real), notas de concavidad, modo tabla (uniforme, no uniforme, dato alterado, sin función), singularidad interior, errores 400 y endpoint. Explicaciones: ejemplo 4 fila 1 (sustituciones, suma ponderada, `f'(a)`, `f'(b)`, `f̄''`, `Eₐ`, `M₂`, cota, igualdad sin R) y filas 2 y 3 (puntos nuevos, sumas, `T`), desglose de `f'` y `f''` (`x²`, Chapra, `eˣ`), `M₂` sustituida en Chapra, antiderivada por términos y `F' = f` (`x²`, Chapra, `x·eˣ` sin desglose), nota de `Eₜ` que se ve 0 (ejemplo 6), ninguna R con `\|Eₜ\| ≤ cota·(1 + 10⁻⁹)`, paréntesis de la integral y puntos enviados (1024 o 16). Teoría: filas 1 a 3 del ejemplo 1 y respuestas guardadas iguales a las del solver |
 | `test_simpson.py` | 35 | Método de Simpson: fracciones exactas (`x⁴` con 1/3 y 3/8, Chapra con n = 2, 3 y 4), exactitud para cúbicas, ejemplo 1 (filas 1 a 3 de las dos reglas, `Eₐ = Eₜ`, `f̄⁽⁴⁾ = −2400`, `M₄ = 21600` en x = 0, parada en la fila 7, comparación con el trapecio 2.1 y 149.8 veces, identidad `(4T₂ − T₁)/3`, razón ≈ 0.0625, pesos del paso a paso), identidad en fracciones para n = 2, 4 y 8, reutilización de evaluaciones igual a la fórmula de pesos (ejemplos 1 y 6, filas 1 a 8), filas de parada de los ejemplos, `x⁴` con `\|Eₜ\|` = cota sin R, `\|Eₜ\| ≤ cota + R`, notas de concavidad, modo tabla (ejemplos 7 y 8 con pesos, suma, partes y punto de unión; `x⁴` en x = 0..6 con 1556 y 1557; n = 3 sólo 3/8; dato alterado), derivadas `f'''` y `f⁽⁴⁾`, errores 400 (n₀ impar, n₀ no múltiplo de 3, tabla no uniforme con la sugerencia, n impar con 1/3, n no múltiplo de 3 con 3/8, 2 puntos, a ≥ b, `1/x` en a = 0), endpoint y piezas del gráfico. Teoría: fila 1 de las dos reglas del ejemplo 1 y respuestas guardadas iguales a las del solver |
 | `test_romberg.py` | 35 | Integración de Romberg: gráfico de segmentos (área de las piezas = `Rᵢ,ₖ` en las columnas 1 a 3 de los ejemplos 1, 2 y 7, valores de control, sólo `n ≤ 64` y columnas ≤ 3, modo tabla); fracciones exactas (Chapra en [0, 4/5] filas 1 a 3; `x⁵` en [0, 2] filas 1 a 4), ejemplo 1 (filas 1 a 3, `R₃,₃` mostrado con 8 decimales por la coherencia, parada en la fila 6 con 33 evaluaciones, error estimado 0.273067 y `εₐ` = 16.644993 % en la fila 3, comparación de costo, tabla de errores), identidades columna 1 = trapecio directo y columna 2 = motor de Simpson (filas 1 a 8 de los ejemplos 1, 2 y 6), filas de parada y diagonales de los ejemplos 2 a 6, advertencia de función poco suave (sólo el ejemplo 5; el 1 es el caso del ruido de redondeo), comparación de costo de los ejemplos 2 a 6 y el texto «más de …», modo tabla (ejemplos 7 y 8 con todas sus celdas, 7 puntos y espaciado no uniforme con 400 y la sugerencia, 3 y 33 puntos, dato alterado), errores 400 (a ≥ b, `1/x` en a = 0, otra variable, máximo de filas fuera de 6..20), singularidad interior y endpoint. Teoría: filas 1 a 3 del ejemplo 1 y respuestas guardadas (ejemplos 1, 2 y 5) iguales a las del solver |
