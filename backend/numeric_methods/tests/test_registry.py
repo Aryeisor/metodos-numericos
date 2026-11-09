@@ -80,7 +80,45 @@ class MethodsEndpointTests(APITestCase):
 
     def test_catalog_does_not_expose_internals(self):
         for method in self.client.get("/api/methods/").json():
-            self.assertEqual(set(method), {"slug", "name", "category", "category_label"})
+            self.assertEqual(
+                set(method),
+                {
+                    "slug", "name", "category", "category_label", "summary", "keywords",
+                    "category_description", "category_latex", "category_order",
+                },
+            )
+
+    def test_every_method_has_a_summary_and_keywords(self):
+        catalog = self.client.get("/api/methods/").json()
+        self.assertEqual(len(catalog), 12)
+        for method in catalog:
+            with self.subTest(method=method["slug"]):
+                self.assertTrue(method["summary"].strip())
+                self.assertIsInstance(method["keywords"], list)
+        keywords = {m["slug"]: m["keywords"] for m in catalog}
+        self.assertIn("derivada", keywords["tres-puntos"])
+        self.assertIn("integral", keywords["simpson"])
+        self.assertIn("área", keywords["gauss"])
+
+    def test_categories_metadata_in_order(self):
+        categories = []
+        for method in self.client.get("/api/methods/").json():
+            entry = (
+                method["category"], method["category_label"], method["category_description"],
+                method["category_latex"], method["category_order"],
+            )
+            if entry not in categories:
+                categories.append(entry)
+        self.assertEqual(
+            [(c[0], c[4]) for c in categories],
+            [("linear_system", 1), ("nonlinear_system", 2), ("polynomial", 3),
+             ("differentiation", 4), ("integration", 5)],
+        )
+        for category, label, description, latex, _ in categories:
+            with self.subTest(category=category):
+                self.assertEqual(label, CATEGORIES[category].label)
+                self.assertTrue(description)
+                self.assertTrue(latex)
 
 
 class ExamplesByMethodTests(APITestCase):

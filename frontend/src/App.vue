@@ -3,14 +3,7 @@ import { computed } from 'vue'
 import { RouterView, useRoute } from 'vue-router'
 import NavMenu from './components/NavMenu.vue'
 import { useTheme } from './composables/useTheme'
-import {
-  getMethod,
-  hasTheory,
-  methodRegistry,
-  methodsByCategory,
-  solveRouteName,
-  theoryRouteName,
-} from './methods/registry'
+import { getMethod } from './methods/registry'
 
 const route = useRoute()
 const { theme, toggleTheme } = useTheme()
@@ -20,53 +13,22 @@ const themeToggleLabel = computed(() =>
   theme.value === 'dark' ? 'Activar modo claro' : 'Activar modo oscuro'
 )
 
-const REGISTRY_ERROR = 'No fue posible cargar los métodos.'
 const DEFAULT_FOOTER = 'Métodos numéricos iterativos'
-
-// Ambos menús salen del registro, agrupados por categoría. Una categoría
-// nueva aparece sola; en "Teoría" sólo entran los métodos con teoría escrita,
-// así que una categoría sin ninguno no se muestra.
-const solveGroups = computed(() => methodsByCategory())
-const theoryGroups = computed(() => methodsByCategory(hasTheory))
-
-const solveSlug = computed(() => route.meta.method ?? null)
-const theorySlug = computed(() => route.meta.theoryMethod ?? null)
-
-const emptyMessage = computed(() => (methodRegistry.status === 'error' ? REGISTRY_ERROR : ''))
-
-const solveLink = (slug) => ({ name: solveRouteName(slug) })
-const theoryLink = (slug) => ({ name: theoryRouteName(slug) })
 
 // Pie de página: categoría y nombre del método que se está resolviendo.
 const footerText = computed(() => {
-  const method = getMethod(solveSlug.value)
+  const method = getMethod(route.meta.method ?? null)
   return method ? `${method.categoryLabel} · ${method.name}` : DEFAULT_FOOTER
 })
 </script>
 
 <template>
   <header class="app-header">
+    <a class="skip-link" href="#contenido">Saltar al contenido</a>
     <div class="container header-inner">
       <span class="brand">Métodos Iterativos</span>
-      <nav class="nav" aria-label="Principal">
-        <NavMenu
-          label="Resolver"
-          menu-id="solve-menu"
-          :groups="solveGroups"
-          :link-to="solveLink"
-          :active-slug="solveSlug"
-          :active="Boolean(solveSlug) || route.name === 'home'"
-          :empty-message="emptyMessage"
-        />
-        <NavMenu
-          label="Teoría"
-          menu-id="theory-menu"
-          :groups="theoryGroups"
-          :link-to="theoryLink"
-          :active-slug="theorySlug"
-          :active="Boolean(theorySlug) || route.name === 'theory'"
-          :empty-message="emptyMessage"
-        />
+      <div class="nav">
+        <NavMenu />
         <button
           type="button"
           class="theme-toggle"
@@ -82,11 +44,11 @@ const footerText = computed(() => {
             <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
           </svg>
         </button>
-      </nav>
+      </div>
     </div>
   </header>
 
-  <main class="container">
+  <main id="contenido" class="container" tabindex="-1">
     <RouterView />
   </main>
 
@@ -96,9 +58,42 @@ const footerText = computed(() => {
 </template>
 
 <style scoped>
+/* Barra fija: el menú de métodos y el atajo «/» deben estar a mano en
+   cualquier punto de la página (scroll-padding-top en style.css evita que
+   tape el elemento enfocado). */
 .app-header {
+  position: sticky;
+  top: 0;
+  z-index: 30;
   background: var(--color-surface);
   border-bottom: 1px solid var(--color-line);
+}
+
+.skip-link {
+  position: absolute;
+  left: var(--space-4);
+  top: var(--space-2);
+  z-index: 60;
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+  border-radius: var(--radius-control);
+  font-weight: var(--weight-semibold);
+  text-decoration: none;
+  transform: translateY(-200%);
+}
+
+.skip-link:focus {
+  transform: none;
+  outline: 2px solid var(--color-ink);
+  outline-offset: 2px;
+}
+
+/* Destino del enlace de salto y del foco tras navegar desde el menú: no
+   necesita anillo, el foco sólo marca dónde sigue la lectura. */
+main:focus {
+  outline: none;
+  box-shadow: none;
 }
 
 /* La cabecera ocupa su propia banda: sin el padding vertical del contenedor. */

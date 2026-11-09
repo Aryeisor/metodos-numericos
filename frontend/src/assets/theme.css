@@ -84,6 +84,13 @@
   --shadow-interactive: 0 1px 2px rgba(30, 41, 59, 0.06), 0 1px 3px rgba(30, 41, 59, 0.08);
   --shadow-interactive-hover: 0 2px 4px rgba(30, 41, 59, 0.06), 0 6px 16px rgba(30, 41, 59, 0.1);
 
+  /* ---- Menú de métodos --------------------------------------------------- */
+  --nav-panel-bg: #f8fafc;
+  --nav-item-hover: #e8edf3;
+  --nav-item-active: #dceaee;
+  --nav-backdrop: rgba(15, 23, 42, 0.28);
+  --nav-glyph: #0e5a6d;           /* 7.4:1 sobre el panel                   */
+
   color-scheme: light;
 }
 
@@ -149,6 +156,12 @@
   --shadow-card: none;
   --shadow-interactive: 0 1px 2px rgba(0, 0, 0, 0.2);
   --shadow-interactive-hover: 0 4px 12px rgba(0, 0, 0, 0.35);
+
+  --nav-panel-bg: #1c2638;
+  --nav-item-hover: #263247;
+  --nav-item-active: #1d3d4a;
+  --nav-backdrop: rgba(2, 6, 23, 0.55);
+  --nav-glyph: #5ec4d6;           /* 7:1 sobre el panel                     */
 
   color-scheme: dark;
 }

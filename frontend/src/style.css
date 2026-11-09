@@ -51,6 +51,10 @@
   /* ---- Movimiento: sólo hover/focus de elementos interactivos ----------- */
   --transition-fast: 120ms ease;
 
+  /* ---- Layout ------------------------------------------------------------ */
+  --container-width: 1100px;
+  --header-height: 61px;          /* barra superior fija (60 + borde)       */
+
   font-family: var(--font-sans);
 }
 
@@ -60,6 +64,11 @@
 
 * {
   box-sizing: border-box;
+}
+
+/* La barra superior es fija: lo enfocado o enlazado por ancla no queda debajo. */
+html {
+  scroll-padding-top: calc(var(--header-height) + var(--space-4));
 }
 
 html,
@@ -134,7 +143,7 @@ select {
    ========================================================================== */
 
 .container {
-  max-width: 1100px;
+  max-width: var(--container-width);
   margin: 0 auto;
   padding: var(--space-6) var(--space-4) var(--space-7);
   width: 100%;

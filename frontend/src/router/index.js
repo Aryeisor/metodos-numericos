@@ -36,7 +36,8 @@ const router = createRouter({
     { path: '/:pathMatch(.*)*', redirect: '/' },
   ],
   scrollBehavior(to, from) {
-    if (to.hash) return { el: to.hash, top: 16 }
+    // 77 = alto de la barra fija (--header-height) + 16 de aire.
+    if (to.hash) return { el: to.hash, top: 77 }
     // Al pasar a la teoría de otro método, empezar desde arriba. Entre
     // métodos de Resolver se conserva la posición (el formulario es el mismo).
     if (to.meta.theoryMethod && to.path !== from.path) return { top: 0 }

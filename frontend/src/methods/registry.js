@@ -36,7 +36,9 @@ function methodUi(category, slug) {
 
 const state = reactive({
   status: 'idle', // idle | loading | ready | error
-  methods: [], // [{ slug, name, category, categoryLabel, ui }]
+  // [{ slug, name, summary, keywords, category, categoryLabel,
+  //    categoryDescription, categoryLatex, categoryOrder, ui }]
+  methods: [],
 })
 
 let loading = null
@@ -60,6 +62,12 @@ export function loadMethodRegistry() {
             name: method.name,
             category: method.category,
             categoryLabel: method.category_label,
+            // Opcionales: sin ellos el menú muestra sólo el nombre.
+            summary: method.summary ?? '',
+            keywords: method.keywords ?? [],
+            categoryDescription: method.category_description ?? '',
+            categoryLatex: method.category_latex ?? '',
+            categoryOrder: method.category_order ?? Infinity,
             ui: methodUi(method.category, method.slug),
           }))
         state.status = 'ready'
@@ -83,21 +91,28 @@ export function hasTheory(method) {
 }
 
 /**
- * Métodos agrupados por categoría, en el orden en que los entrega el backend.
- * Con `filter`, sólo los que lo cumplen; una categoría que se queda sin
- * métodos no aparece.
+ * Métodos agrupados por categoría, en el orden de la categoría (`order` del
+ * backend) y, dentro de ella, en el que los entrega el backend. Con `filter`,
+ * sólo los que lo cumplen; una categoría que se queda sin métodos no aparece.
  */
 export function methodsByCategory(filter = () => true) {
   const groups = []
   for (const method of state.methods.filter(filter)) {
     let group = groups.find((g) => g.category === method.category)
     if (!group) {
-      group = { category: method.category, label: method.categoryLabel, methods: [] }
+      group = {
+        category: method.category,
+        label: method.categoryLabel,
+        description: method.categoryDescription,
+        latex: method.categoryLatex,
+        order: method.categoryOrder,
+        methods: [],
+      }
       groups.push(group)
     }
     group.methods.push(method)
   }
-  return groups
+  return groups.sort((a, b) => a.order - b.order || 0) // || 0: Infinity − Infinity es NaN
 }
 
 /** Métodos de la misma categoría (comparten formulario y datos de entrada). */
