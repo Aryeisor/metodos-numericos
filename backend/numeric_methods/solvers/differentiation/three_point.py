@@ -16,7 +16,17 @@ No depende de Django: puede usarse y testearse de forma aislada.
 """
 
 from . import display
-from .finite_differences import MACHINE_EPSILON, _evaluate, _function_mode, _table_points, build_result
+from .finite_differences import (
+    MACHINE_EPSILON,
+    MIN_REFINEMENTS,
+    _evaluate,
+    _function_mode,
+    _side,
+    _table_points,
+    bound_check_equal,
+    build_result,
+    matching_decimals,
+)
 from .formulas import (
     BACKWARD,
     BACKWARD_ENDPOINT,
@@ -181,11 +191,71 @@ def _comparison(function, formulas, x0, iterations, exact, references=DIFFERENCE
     return lines
 
 
+# --- Explicaciones del paso a paso (sólo este método) --------------------------
+
+def predicted_side(formula, sign):
+    """Lado que predice f''' (Taylor): punto medio D − f' ≈ +(h²/6)·f''' y
+    extremos D − f' ≈ −(h²/3)·f'''. Con f''' > 0 el punto medio sobreestima y
+    los extremos subestiman; con f''' < 0, al revés. None si f'''(x) = 0."""
+    if not sign:
+        return None
+    direction = 1 if formula.key == MIDPOINT.key else -1
+    return "over" if direction * sign > 0 else "under"
+
+
+def _third_derivative(function, x):
+    """f'''(x) y su signo, o None si no está definida."""
+    value = _evaluate(function.evaluators[3], x)
+    if value is None:
+        return None
+    return {"value": value, "sign": (value > 0) - (value < 0)}
+
+
+def _h_number(row, formula):
+    """h exacto de una fila del modo tabla: el ancho de sus datos entre el de sus nodos."""
+    offsets = [o for o, _ in formula.nodes]
+    xs = [display.exact(p["x"]) for p in row["points"]]
+    return (max(xs) - min(xs)) / (max(offsets) - min(offsets))
+
+
+def _explain(function, formulas, iterations, meta, data):
+    """h², lado de la aproximación, lado que predice f''' y «= cota» en cada fila."""
+    table = data["mode"] == "table"
+    meta["min_rows"] = MIN_REFINEMENTS
+    for step in iterations:
+        extra = step.extra
+        x = extra["x"] if table else data["x0"]
+        exact = extra["exact"] if table else meta["exact"]
+        third = _third_derivative(function, x) if function else None
+        if table:
+            extra["third_derivative"] = third
+        for formula in THREE_POINT:
+            row = extra.get(formula.key)
+            if not row:
+                continue
+            if table:
+                h_number = _h_number(row, formula)
+            else:
+                h_number = display.step_size(data["h0"], step.iteration)[0]
+                estimated = row["estimated_error"]
+                row["below_tolerance"] = None if estimated is None else estimated <= data["tolerance"]
+            # h² exacto, para la cota (h²/6)·M o (h²/3)·M.
+            row["h_squared"] = display.decimal(h_number * h_number)
+            row["side"] = _side(row["D"], exact)
+            row["predicted_side"] = None if third is None else predicted_side(formula, third["sign"])
+    if not table:
+        meta["third_derivative"] = _third_derivative(function, data["x0"])
+        last = iterations[-1].extra if iterations else {}
+        for key, final in meta["verification"]["final"].items():
+            final["equals_bound"] = last[key]["equals_bound"]
+            final["matching_decimals"] = None if meta["exact"] is None else matching_decimals(final["D"], meta["exact"])
+
+
 # --- Modos ---------------------------------------------------------------------
 
 def _function(data):
     function, formulas, converged, iterations, warnings, meta = _function_mode(
-        data, THREE_POINT_CHOICES, rounding, derivative_orders=(2,)
+        data, THREE_POINT_CHOICES, rounding, derivative_orders=(2,), bound_check=bound_check_equal
     )
     for step in iterations:
         for formula in formulas:
@@ -203,6 +273,7 @@ def _function(data):
     meta["verification"]["identities"] = identities
     meta["comparison"] = _comparison(function, formulas, x0, iterations, meta["exact"]) if iterations else []
     meta["rounding_text"] = ROUNDING_TEXT["function"]
+    _explain(function, formulas, iterations, meta, data)
     return function, formulas, converged, iterations, warnings, meta
 
 
@@ -216,7 +287,7 @@ def _recommended(extra, i):
 def _table(data):
     # Se calculan las tres fórmulas siempre: la columna «Recomendada» las usa.
     function, formulas, xs, iterations, warnings, verification = _table_points(
-        data, THREE_POINT_CHOICES, THREE_POINT, rounding, derivative_orders=(2,)
+        data, THREE_POINT_CHOICES, THREE_POINT, rounding, derivative_orders=(2,), bound_check=bound_check_equal
     )
     ys = [float(y) for _, y in data["points"]]
     identities = []
@@ -241,6 +312,7 @@ def _table(data):
         "verification": {**verification, "identities": identities},
         "rounding_text": ROUNDING_TEXT["table"],
     }
+    _explain(function, formulas, iterations, meta, data)
     return function, formulas, True, iterations, warnings, meta
 
 

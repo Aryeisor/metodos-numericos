@@ -59,6 +59,7 @@ export function functionContext(result, k) {
     name: (p) => p.role,
     symbol: (formula) => `${formula.symbol_latex}_{${k}}`,
     template: result.function.template,
+    x0: result.x0_display,
     exact: result.exact,
     exactSource: result.verification.substitution,
     curvature: result.curvature,
@@ -85,7 +86,7 @@ export function tableContext(result, formula, i) {
 
 // --- Pasos ------------------------------------------------------------------------
 
-function stepSizeStep(formula, item, ctx) {
+export function stepSizeStep(formula, item, ctx) {
   if (!ctx.table) {
     const blocks = [
       text('Distancia entre x₀ y el punto vecino. En cada fila se divide entre 2 para acercar el punto vecino.'),
@@ -136,7 +137,7 @@ function pointsStep(formula, item, ctx) {
   }
 }
 
-function heightsStep(item, ctx) {
+export function heightsStep(item, ctx, why = 'al restar dos valores muy parecidos y dividir entre h') {
   const blocks = []
   if (ctx.table) {
     blocks.push(text('Las alturas son los datos de la tabla.'))
@@ -148,8 +149,8 @@ function heightsStep(item, ctx) {
   if (item.decimals > 6) {
     blocks.push(
       note(
-        `Se muestran ${item.decimals} decimales porque al restar dos valores muy parecidos y dividir entre h, con 6 ` +
-          'decimales el resultado no coincidiría con el que se ve.'
+        `Se muestran ${item.decimals} decimales porque ${why}, con 6 decimales el resultado no coincidiría con el ` +
+          'que se ve.'
       )
     )
   }
@@ -157,7 +158,7 @@ function heightsStep(item, ctx) {
 }
 
 /** f(x₀) − f(x₀ − h) en el orden del numerador, con los colores de los nodos. */
-function changeLatex(item, ctx) {
+export function changeLatex(item, ctx) {
   const symbolic = signedSum(item.points.map((p) => ({ negative: p.weight < 0, body: `f(${ctx.name(p)})` })))
   const values = signedSum(item.points.map((p) => ({ negative: p.weight < 0, body: nodeValueLatex(p) })))
   return `${symbolic} = ${values} = ${item.numerator_display}`
@@ -177,7 +178,7 @@ function slopeStep(formula, item, ctx) {
   }
 }
 
-function estimatedStep(result, formula, item, ctx) {
+export function estimatedStep(result, formula, item, ctx) {
   const k = ctx.label
   const tolerance = formatNumber(result.tolerance)
   const value = formatNumber(item.estimated_error)
@@ -188,7 +189,7 @@ function estimatedStep(result, formula, item, ctx) {
   if (!item.below_tolerance) verdict = `${value} > ${tolerance}: se sigue refinando.`
   else if (stops) verdict = `${value} ≤ ${tolerance} y ya hay ${k} filas: el método se detiene.`
   else if (k < min) verdict = `${value} ≤ ${tolerance}, pero todavía no hay ${min} filas: se sigue refinando.`
-  else verdict = `${value} ≤ ${tolerance}, pero la otra fórmula todavía no llega a la tolerancia: se sigue refinando.`
+  else verdict = `${value} ≤ ${tolerance}, pero ${result.formulas.length > 2 ? 'otra de las fórmulas' : 'la otra fórmula'} todavía no llega a la tolerancia: se sigue refinando.`
   return {
     title: 'Error estimado',
     blocks: [
@@ -220,7 +221,7 @@ export function sideTexts(formula, item, ctx) {
   return out
 }
 
-function realErrorStep(result, formula, item, ctx) {
+export function realErrorStep(result, formula, item, ctx, sides = sideTexts) {
   const blocks = [
     text('Se compara con la derivada exacta para ver qué tan buena es la aproximación.'),
     text('La derivada exacta (ver la sección «Derivada exacta») es:'),
@@ -233,14 +234,14 @@ function realErrorStep(result, formula, item, ctx) {
         `\\left|${latexNumber(item.D)} - ${paren(latexNumber(ctx.exact))}\\right| = ${latexNumber(item.real_error)}`
     )
   )
-  for (const t of sideTexts(formula, item, ctx)) blocks.push(text(t))
+  for (const t of sides(formula, item, ctx)) blocks.push(text(t))
   const tiny = tinyRealErrorNote(item)
   if (tiny) blocks.push(note(tiny))
   return { title: 'Error real', blocks }
 }
 
 /** error real ≤ cota con el criterio de integración: «= cota» y R sólo si hace falta. */
-export function boundCheck(item, roundingText, constant) {
+export function boundCheck(item, roundingText, constant, name = "f''") {
   const real = latexNumber(item.real_error)
   const bound = latexNumber(item.bound)
   if (!item.within_bound) {
@@ -257,7 +258,7 @@ export function boundCheck(item, roundingText, constant) {
       ok: true,
       latex: `\\text{error real} = ${real} = ${bound} = \\text{cota}`,
       text: constant
-        ? "El error real es igual a la cota (pasa porque f'' es constante): se cumple."
+        ? `El error real es igual a la cota (pasa porque ${name} es constante): se cumple.`
         : 'El error real es igual a la cota: se cumple.',
     }
   }
@@ -361,7 +362,9 @@ export function conclusionText(result, formula) {
   if (!final || final.real_error === null || final.real_error === undefined) return null
   const last = result.iterations.at(-1)
   const h = last.extra.h
-  const who = `Con h = ${h.exact ? h.text : `${h.text} ≈ ${h.approx}`} (fila ${last.iteration}), la ${formula.name.toLowerCase()}`
+  // «la progresiva», pero «el punto medio» y «el extremo…» (3 puntos).
+  const article = ['forward', 'backward'].includes(formula.key) ? 'la' : 'el'
+  const who = `Con h = ${h.exact ? h.text : `${h.text} ≈ ${h.approx}`} (fila ${last.iteration}), ${article} ${formula.name.toLowerCase()}`
   const d = final.matching_decimals
   if (d === 6) return `${who} coincide con la derivada exacta en los 6 decimales que se muestran.`
   if (d === null || d === undefined || d === 0) {

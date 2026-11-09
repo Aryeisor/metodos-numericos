@@ -11,9 +11,11 @@ import InfoTip from '../../components/InfoTip.vue'
 import MathFormula from '../../components/MathFormula.vue'
 import TrapezoidStepDetail from '../integration/TrapezoidStepDetail.vue'
 import DifferenceStepDetail from './DifferenceStepDetail.vue'
-import { differenceSteps, functionContext, tinyRealErrorNote } from './differenceExplain'
+import { functionContext, tinyRealErrorNote } from './differenceExplain'
 import { refinementColumns } from './differenceGlossary'
 import { boundMark, cell, stepSizeLatex, stepText } from './formulas'
+import { explainSteps } from './threePointExplain'
+import { formatNumber } from '../../utils/iterationSteps'
 
 const PAGE_SIZE = 10
 
@@ -33,9 +35,9 @@ const rows = computed(() =>
 )
 const h0 = computed(() => props.result.iterations[0].extra.h)
 const showReal = computed(() => props.result.differentiable)
-const headers = computed(() => refinementColumns(showReal.value))
+const headers = computed(() => refinementColumns(showReal.value, formatNumber(props.formula.expected_ratio)))
 const explainedSteps = (row) =>
-  differenceSteps(props.result, props.formula, row.item, functionContext(props.result, row.k), row.previous)
+  explainSteps(props.result, props.formula, row.item, functionContext(props.result, row.k), row.previous)
 // Filas donde el error real se ve 0 pero no lo es: una nota debajo de la tabla.
 const tinyRows = computed(() => (props.explained ? rows.value.filter((r) => tinyRealErrorNote(r.item)) : []))
 

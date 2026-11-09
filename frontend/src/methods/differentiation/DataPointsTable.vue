@@ -9,9 +9,10 @@ import GlossaryBlock from '../../components/GlossaryBlock.vue'
 import InfoTip from '../../components/InfoTip.vue'
 import TrapezoidStepDetail from '../integration/TrapezoidStepDetail.vue'
 import DifferenceStepDetail from './DifferenceStepDetail.vue'
-import { differenceSteps, tableContext } from './differenceExplain'
+import { tableContext } from './differenceExplain'
 import { tableColumns } from './differenceGlossary'
 import { boundMark, cell } from './formulas'
+import { explainSteps } from './threePointExplain'
 
 const props = defineProps({
   result: { type: Object, required: true },
@@ -42,9 +43,9 @@ function toggle(i) {
   expanded.value = next
 }
 
-const headers = computed(() => tableColumns(formulas.value, hasFunction.value))
+const headers = computed(() => tableColumns(formulas.value, hasFunction.value, hasRecommended.value))
 const explainedSteps = (f, i) =>
-  differenceSteps(props.result, f, props.result.iterations[i - 1].extra[f.key], tableContext(props.result, f, i))
+  explainSteps(props.result, f, props.result.iterations[i - 1].extra[f.key], tableContext(props.result, f, i))
 
 const pointName = (p) => `x_{${p.index + 1}}`
 const marks = (extra) =>

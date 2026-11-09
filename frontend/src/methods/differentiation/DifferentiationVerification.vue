@@ -17,8 +17,9 @@ import MathFormula from '../../components/MathFormula.vue'
 import { formatNumber } from '../../utils/iterationSteps'
 import { latexNumber } from '../../utils/latexFormulas'
 import { conclusionText, tinyRealErrorNote } from './differenceExplain'
-import { COMPARISON_COLUMNS } from './differenceGlossary'
+import { comparisonColumns } from './differenceGlossary'
 import { boundMark, cell, identityLatex, substitutionLatex } from './formulas'
+import { IDENTITY_TEXTS, isThreePoint } from './threePointExplain'
 
 const props = defineProps({
   result: { type: Object, required: true },
@@ -26,6 +27,14 @@ const props = defineProps({
 })
 
 const check = computed(() => props.result.verification)
+const COMPARISON_COLUMNS = computed(() => comparisonColumns(isThreePoint(props.result)))
+// Identidades explicadas (3 puntos): una frase por cada tipo que aparece.
+const identityTexts = computed(() => {
+  if (!props.explained || !check.value.identities) return []
+  const groups = isTable.value ? check.value.identities : [{ items: check.value.identities }]
+  const kinds = new Set(groups.flatMap((g) => g.items.map((item) => item.kind)))
+  return ['average', 'richardson'].filter((k) => kinds.has(k)).map((k) => IDENTITY_TEXTS[k])
+})
 const isTable = computed(() => props.result.mode === 'table')
 const formulas = computed(() => props.result.formulas)
 const lastRow = computed(() => props.result.iterations.at(-1)?.iteration)
@@ -113,6 +122,20 @@ const substitutions = computed(() =>
         <MathFormula :expression="rombergFormula" />. El ✔ se decide con los valores sin redondear; la
         sustitución se muestra con los valores que se ven.
       </p>
+      <template v-else-if="identityTexts.length">
+        <p class="section-text">
+          Las identidades comprueban el resultado por otro camino, con las diferencias progresiva
+          <MathFormula expression="D^{+}" /> y regresiva <MathFormula expression="D^{-}" />
+          ({{ isTable ? 'en cada punto, con los datos' : 'en la fila 1, con los valores sin redondear' }}):
+        </p>
+        <ul class="identity-texts">
+          <li v-for="t in identityTexts" :key="t">{{ t }}</li>
+        </ul>
+        <p class="section-text">
+          Cada línea sustituye los valores y marca ✔ si da la misma aproximación de la tabla
+          (<MathFormula expression="D(2h)" /> usa el punto a distancia 2h).
+        </p>
+      </template>
       <p v-else class="section-text">
         {{ isTable ? 'En cada punto, con los datos' : 'En la fila 1, con los valores sin redondear' }}:
         el punto medio es el promedio de la progresiva y la regresiva,
@@ -344,6 +367,13 @@ const substitutions = computed(() =>
 }
 
 .intro {
+  color: var(--color-ink);
+}
+
+.identity-texts {
+  margin: 0 0 var(--space-3);
+  padding-left: var(--space-5);
+  font-size: var(--text-small);
   color: var(--color-ink);
 }
 

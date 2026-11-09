@@ -11,7 +11,7 @@ from numeric_methods.serializers.differentiation import DifferentiationSerialize
 from numeric_methods.solvers.differentiation import display
 from numeric_methods.solvers.differentiation.finite_differences import predicted_side, solve_finite_differences
 from numeric_methods.solvers.differentiation.formulas import BACKWARD, FORWARD
-from numeric_methods.tests import test_five_point, test_three_point
+from numeric_methods.tests import test_five_point
 
 URL = "/api/solve/diferencias-finitas/"
 EXAMPLE = {example["id"]: example for example in EXAMPLES["diferencias-finitas"]}
@@ -464,9 +464,10 @@ class ExplanationTests(SimpleTestCase):
         final = example("dif-seno")["verification"]["final"]["backward"]
         self.assertEqual(final["matching_decimals"], 3)
 
-    def test_three_and_five_point_unchanged(self):
-        # Los datos del paso a paso explicado no llegan a 3 y 5 puntos.
-        for module in (test_three_point, test_five_point):
+    def test_five_point_unchanged(self):
+        # Los datos del paso a paso explicado no llegan a 5 puntos (3 puntos
+        # tiene los suyos: ver test_three_point.ExplanationTests).
+        for module in (test_five_point,):
             for example_id in module.EXAMPLE:
                 with self.subTest(example=example_id):
                     result = module.example(example_id)

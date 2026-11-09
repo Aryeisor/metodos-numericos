@@ -1,4 +1,5 @@
 import json
+from decimal import Decimal
 from pathlib import Path
 from unittest import skipUnless
 
@@ -8,7 +9,8 @@ from rest_framework.test import APITestCase
 from numeric_methods.examples_data import EXAMPLES
 from numeric_methods.serializers.differentiation import ThreePointSerializer
 from numeric_methods.solvers.differentiation.display import fixed
-from numeric_methods.solvers.differentiation.three_point import solve_three_point
+from numeric_methods.solvers.differentiation.formulas import FORMULAS
+from numeric_methods.solvers.differentiation.three_point import predicted_side, solve_three_point
 
 URL = "/api/solve/tres-puntos/"
 EXAMPLE = {example["id"]: example for example in EXAMPLES["tres-puntos"]}
@@ -330,3 +332,145 @@ class EndpointTests(APITestCase):
         self.assert_400(self.post(function="x^2", x0=1, max_iterations=5), "entre 6 y 30")
         self.assert_400(self.post(function="x^2", x0=1, max_iterations=31), "entre 6 y 30")
         self.assert_400(self.post(function="x^2", x0=1, formula="both"), "La fórmula debe ser")
+
+
+class ExplanationTests(SimpleTestCase):
+    """Datos del paso a paso explicado de la fórmula de 3 puntos (ejemplo 1)."""
+
+    def setUp(self):
+        self.result = example("tp-burden-xexp")
+
+    def points(self, item):
+        return [(p["role"], p["display"]["text"], p["f_display"]) for p in item["points"]]
+
+    def test_row_one_midpoint(self):
+        item = row(self.result, 1, MID)
+        self.assertEqual(self.result["x0_display"]["text"], "2")
+        self.assertEqual(self.points(item), [("x_0 + h", "2.1", "17.1489568"), ("x_0 - h", "1.9", "12.7031994")])
+        # Cambio de un lado al otro, y D = cambio / 2h.
+        self.assertEqual(item["numerator_display"], "4.4457574")
+        self.assertEqual(item["denominator_display"], "0.2")
+        self.assertEqual(fixed(item["D"]), "22.228787")
+        self.assertEqual(fixed(item["real_error"]), "0.061619")
+        # M = f'''(2.1) en [1.9, 2.1] y cota (0.01/6)·M.
+        self.assertEqual([p["text"] for p in item["interval_display"]], ["1.9", "2.1"])
+        self.assertEqual(item["M_substitution"]["function_text"], "x*exp(x) + 3*exp(x)")
+        self.assertEqual(item["M_substitution"]["x_display"]["text"], "2.1")
+        self.assertEqual(fixed(item["M"]), "41.647467")
+        self.assertEqual(item["h_squared"]["text"], "0.01")
+        self.assertEqual(fixed(item["bound"]), "0.069412")
+        self.assertEqual((item["within_bound"], item["equals_bound"], item["by_rounding"]), (True, False, False))
+
+    def test_row_one_endpoints(self):
+        ahead = row(self.result, 1, AHEAD)
+        self.assertEqual(self.points(ahead), [("x_0", "2", "14.7781122"), ("x_0 + h", "2.1", "17.14895682"),
+                                              ("x_0 + 2h", "2.2", "19.8550297")])
+        self.assertEqual(ahead["products_display"], ["-44.3343366", "68.59582728", "-19.8550297"])
+        self.assertEqual(ahead["numerator_display"], "4.40646098")
+        self.assertEqual(fixed(ahead["D"]), "22.032305")
+        self.assertEqual(fixed(ahead["real_error"]), "0.134863")
+        self.assertEqual((ahead["x_M"], fixed(ahead["M"])), (2.2, "46.93007"))
+        self.assertEqual(fixed(ahead["bound"]), "0.156434")
+
+        behind = row(self.result, 1, BEHIND)
+        self.assertEqual(self.points(behind), [("x_0", "2", "14.7781122"), ("x_0 - h", "1.9", "12.70319944"),
+                                               ("x_0 - 2h", "1.8", "10.88936544")])
+        self.assertEqual(behind["products_display"], ["44.3343366", "-50.81279776", "10.88936544"])
+        self.assertEqual(fixed(behind["D"]), "22.054521")
+        self.assertEqual(fixed(behind["real_error"]), "0.112647")
+        self.assertEqual((behind["x_M"], fixed(behind["M"])), (2.0, "36.94528"))
+        self.assertEqual(fixed(behind["bound"]), "0.123151")
+        for item in (ahead, behind):
+            self.assertTrue(item["within_bound"])
+            self.assertFalse(item["by_rounding"])
+
+    def test_sign_midpoint_over_endpoints_under(self):
+        # f''' > 0: el punto medio sobreestima (+h²/6·f''') y los extremos subestiman (−h²/3·f''').
+        self.assertEqual(self.result["third_derivative"]["sign"], 1)
+        exact = self.result["exact"]
+        D = {key: row(self.result, 1, key)["D"] for key in (MID, AHEAD, BEHIND)}
+        self.assertTrue(D[AHEAD] < D[BEHIND] < exact < D[MID])
+        for key, side in ((MID, "over"), (AHEAD, "under"), (BEHIND, "under")):
+            item = row(self.result, 1, key)
+            self.assertEqual((item["side"], item["predicted_side"]), (side, side))
+        self.assertEqual(predicted_side(FORMULAS[MID], -1), "under")
+        self.assertEqual(predicted_side(FORMULAS[AHEAD], -1), "over")
+        self.assertIsNone(predicted_side(FORMULAS[BEHIND], 0))
+
+    def test_backward_endpoint_decimal_coherence(self):
+        behind = row(self.result, 1, BEHIND)
+        # Con 7 decimales: 4.4109044/0.2 = 22.054522 ≠ 22.054521; el paso usa 8.
+        self.assertEqual(fixed(4.4109044 / 0.2), "22.054522")
+        self.assertEqual(behind["decimals"], 8)
+        self.assertEqual(behind["numerator_display"], "4.41090428")
+        quotient = Decimal(behind["numerator_display"]) / Decimal(behind["denominator_display"])
+        self.assertEqual(fixed(quotient), fixed(behind["D"]))
+
+    def test_row_two_midpoint(self):
+        item = row(self.result, 2, MID)
+        self.assertEqual(row(self.result, 2, "h")["text"], "0.05")
+        self.assertEqual(self.points(item), [("x_0 + h", "2.05", "15.9241973"), ("x_0 - h", "1.95", "13.7059408")])
+        self.assertEqual(fixed(item["D"]), "22.182565")
+        self.assertEqual(fixed(item["estimated_error"]), "0.046222")
+        self.assertFalse(item["below_tolerance"])
+        self.assertEqual(fixed(item["real_error"]), "0.015397")
+        self.assertEqual(item["h_squared"]["text"], "0.0025")
+        self.assertEqual(fixed(item["ratio"], 4), "0.2499")
+        self.assertEqual(self.result["min_rows"], 6)
+
+    def test_identities_with_substitution(self):
+        identities = {i["key"]: i for i in self.result["verification"]["identities"]}
+        mid = identities[MID]
+        self.assertEqual([fixed(mid[k]) for k in ("forward", "backward", "value", "D")],
+                         ["23.708446", "20.749128", "22.228787", "22.228787"])
+        ahead = identities[AHEAD]
+        self.assertEqual(ahead["direction"], "+")
+        self.assertEqual([fixed(ahead[k]) for k in ("base", "double", "value")], ["23.708446", "25.384588", "22.032305"])
+        self.assertEqual(fixed(2 * ahead["base"] - ahead["double"]), "22.032305")
+        self.assertTrue(all(i["ok"] for i in identities.values()))
+
+    def test_derivative_breakdown(self):
+        product, exponential = "regla del producto: (u·v)′ = u′·v + u·v′", "derivada de la función exponencial"
+        power, x_rule, constant = "regla de la potencia", "la derivada de x respecto a x es 1", "derivada de una constante"
+        cases = {
+            "tp-burden-xexp": ([product], [product, exponential], [product, exponential],
+                               ("x*exp(x) + exp(x)", "x*exp(x) + 2*exp(x)", "x*exp(x) + 3*exp(x)")),
+            "tp-cubica": ([power, power, x_rule], [power, x_rule, constant], [x_rule, constant],
+                          ("3*x^2 - 4*x + 1", "6*x - 4", "6")),
+        }
+        for example_id, (rules1, rules2, rules3, texts) in cases.items():
+            with self.subTest(example=example_id):
+                fn = example(example_id)["function"]
+                second, third = fn["higher_derivatives"]["2"], fn["higher_derivatives"]["3"]
+                self.assertEqual([t["rule"] for t in fn["derivative"]["steps"]["terms"]], rules1)
+                self.assertEqual([t["rule"] for t in second["steps"]["terms"]], rules2)
+                self.assertEqual([t["rule"] for t in third["steps"]["terms"]], rules3)
+                self.assertEqual((fn["derivative"]["text"], second["text"], third["text"]), texts)
+        first = example("tp-burden-xexp")["function"]["higher_derivatives"]["2"]["steps"]["terms"][0]["latex"]
+        self.assertIn(r"1 \cdot e^{x} + x \cdot e^{x}", first)
+
+    def test_quadratic_error_equals_bound_zero_without_R(self):
+        result = example("tp-cuadratica")
+        for step in result["iterations"]:
+            for key in (MID, AHEAD, BEHIND):
+                item = step["extra"][key]
+                self.assertEqual((item["real_error"], item["bound"]), (0.0, 0.0))
+                self.assertTrue(item["within_bound"])
+                self.assertTrue(item["equals_bound"])
+                self.assertFalse(item["by_rounding"])
+                self.assertEqual(item["side"], "equal")
+        final = result["verification"]["final"][MID]
+        self.assertTrue(final["equals_bound"])
+        self.assertEqual(final["matching_decimals"], 6)
+
+    def test_table_mode_explanation(self):
+        result = example("tp-tabla-burden")
+        extra = result["iterations"][2]["extra"]
+        self.assertEqual(extra["third_derivative"]["sign"], 1)
+        self.assertEqual(extra[MID]["h_squared"]["text"], "0.01")
+        self.assertEqual((extra[MID]["side"], extra[AHEAD]["side"], extra[BEHIND]["side"]), ("over", "under", "under"))
+        self.assertTrue(all("equals_bound" in extra[key] for key in (MID, AHEAD, BEHIND)))
+        # Sin función para comparar no hay lado ni f'''.
+        cubes = example("tp-tabla-cubos")["iterations"][2]["extra"]
+        self.assertIsNone(cubes["third_derivative"])
+        self.assertIsNone(cubes[MID]["side"])

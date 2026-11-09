@@ -85,6 +85,7 @@
             "rounding": 2.661275661275316e-13,
             "within_bound": true,
             "by_rounding": false,
+            "equals_bound": false,
             "points": [
               {
                 "offset": 1,
@@ -121,7 +122,16 @@
               "17.1489568",
               "-12.7031994"
             ],
-            "denominator_display": "0.2"
+            "denominator_display": "0.2",
+            "below_tolerance": null,
+            "h_squared": {
+              "exact": true,
+              "text": "0.01",
+              "latex": "0.01",
+              "approx": null
+            },
+            "side": "over",
+            "predicted_side": "over"
           },
           "extremo_adelante": {
             "D": 22.03230486614645,
@@ -179,6 +189,7 @@
             "rounding": 1.2034181715535315e-12,
             "within_bound": true,
             "by_rounding": false,
+            "equals_bound": false,
             "points": [
               {
                 "offset": 0,
@@ -230,7 +241,16 @@
               "68.59582728",
               "-19.8550297"
             ],
-            "denominator_display": "0.2"
+            "denominator_display": "0.2",
+            "below_tolerance": null,
+            "h_squared": {
+              "exact": true,
+              "text": "0.01",
+              "latex": "0.01",
+              "approx": null
+            },
+            "side": "under",
+            "predicted_side": "under"
           },
           "extremo_atras": {
             "D": 22.054521341023836,
@@ -288,6 +308,7 @@
             "rounding": 9.2567475085143e-13,
             "within_bound": true,
             "by_rounding": false,
+            "equals_bound": false,
             "points": [
               {
                 "offset": 0,
@@ -339,7 +360,16 @@
               "-50.81279776",
               "10.88936544"
             ],
-            "denominator_display": "0.2"
+            "denominator_display": "0.2",
+            "below_tolerance": null,
+            "h_squared": {
+              "exact": true,
+              "text": "0.01",
+              "latex": "0.01",
+              "approx": null
+            },
+            "side": "under",
+            "predicted_side": "under"
           }
         }
       },
@@ -415,6 +445,7 @@
             "rounding": 5.268295356613038e-13,
             "within_bound": true,
             "by_rounding": false,
+            "equals_bound": false,
             "points": [
               {
                 "offset": 1,
@@ -451,7 +482,16 @@
               "15.9241973",
               "-13.7059408"
             ],
-            "denominator_display": "0.1"
+            "denominator_display": "0.1",
+            "below_tolerance": false,
+            "h_squared": {
+              "exact": true,
+              "text": "0.0025",
+              "latex": "0.0025",
+              "approx": null
+            },
+            "side": "over",
+            "predicted_side": "over"
           },
           "extremo_adelante": {
             "D": 22.134956617395503,
@@ -509,6 +549,7 @@
             "rounding": 2.2454041517771677e-12,
             "within_bound": true,
             "by_rounding": false,
+            "equals_bound": false,
             "points": [
               {
                 "offset": 0,
@@ -560,7 +601,16 @@
               "63.69678908",
               "-17.14895682"
             ],
-            "denominator_display": "0.1"
+            "denominator_display": "0.1",
+            "below_tolerance": false,
+            "h_squared": {
+              "exact": true,
+              "text": "0.0025",
+              "latex": "0.0025",
+              "approx": null
+            },
+            "side": "under",
+            "predicted_side": "under"
           },
           "extremo_atras": {
             "D": 22.137729053180255,
@@ -618,6 +668,7 @@
             "rounding": 1.969241163688822e-12,
             "within_bound": true,
             "by_rounding": false,
+            "equals_bound": false,
             "points": [
               {
                 "offset": 0,
@@ -669,7 +720,16 @@
               "-54.82376312",
               "12.70319944"
             ],
-            "denominator_display": "0.1"
+            "denominator_display": "0.1",
+            "below_tolerance": false,
+            "h_squared": {
+              "exact": true,
+              "text": "0.0025",
+              "latex": "0.0025",
+              "approx": null
+            },
+            "side": "under",
+            "predicted_side": "under"
           }
         }
       },
@@ -745,6 +805,7 @@
             "rounding": 1.0509505060687818e-12,
             "within_bound": true,
             "by_rounding": false,
+            "equals_bound": false,
             "points": [
               {
                 "offset": 1,
@@ -781,7 +842,16 @@
               "15.34162466",
               "-14.23307382"
             ],
-            "denominator_display": "0.05"
+            "denominator_display": "0.05",
+            "below_tolerance": false,
+            "h_squared": {
+              "exact": true,
+              "text": "0.000625",
+              "latex": "0.000625",
+              "approx": null
+            },
+            "side": "over",
+            "predicted_side": "over"
           },
           "extremo_adelante": {
             "D": 22.15929580091334,
@@ -839,6 +909,7 @@
             "rounding": 4.341687031068367e-12,
             "within_bound": true,
             "by_rounding": false,
+            "equals_bound": false,
             "points": [
               {
                 "offset": 0,
@@ -890,7 +961,16 @@
               "61.366498652",
               "-15.924197268"
             ],
-            "denominator_display": "0.05"
+            "denominator_display": "0.05",
+            "below_tolerance": false,
+            "h_squared": {
+              "exact": true,
+              "text": "0.000625",
+              "latex": "0.000625",
+              "approx": null
+            },
+            "side": "under",
+            "predicted_side": "under"
           },
           "extremo_atras": {
             "D": 22.15964221102638,
@@ -948,6 +1028,7 @@
             "rounding": 4.065918145660791e-12,
             "within_bound": true,
             "by_rounding": false,
+            "equals_bound": false,
             "points": [
               {
                 "offset": 0,
@@ -999,7 +1080,16 @@
               "-56.93229528",
               "13.70594078"
             ],
-            "denominator_display": "0.05"
+            "denominator_display": "0.05",
+            "below_tolerance": false,
+            "h_squared": {
+              "exact": true,
+              "text": "0.000625",
+              "latex": "0.000625",
+              "approx": null
+            },
+            "side": "under",
+            "predicted_side": "under"
           }
         }
       },
@@ -1075,6 +1165,7 @@
             "rounding": 2.1005472583491435e-12,
             "within_bound": true,
             "by_rounding": false,
+            "equals_bound": false,
             "points": [
               {
                 "offset": 1,
@@ -1111,7 +1202,16 @@
               "15.05752295",
               "-14.50331969"
             ],
-            "denominator_display": "0.025"
+            "denominator_display": "0.025",
+            "below_tolerance": false,
+            "h_squared": {
+              "exact": true,
+              "text": "0.00015625",
+              "latex": "0.00015625",
+              "approx": null
+            },
+            "side": "over",
+            "predicted_side": "over"
           },
           "extremo_adelante": {
             "D": 22.165222267729376,
@@ -1169,6 +1269,7 @@
             "rounding": 8.540024315145405e-12,
             "within_bound": true,
             "by_rounding": false,
+            "equals_bound": false,
             "points": [
               {
                 "offset": 0,
@@ -1220,7 +1321,16 @@
               "60.2300918",
               "-15.34162466"
             ],
-            "denominator_display": "0.025"
+            "denominator_display": "0.025",
+            "below_tolerance": false,
+            "h_squared": {
+              "exact": true,
+              "text": "0.00015625",
+              "latex": "0.00015625",
+              "approx": null
+            },
+            "side": "under",
+            "predicted_side": "under"
           },
           "extremo_atras": {
             "D": 22.165265564482652,
@@ -1278,6 +1388,7 @@
             "rounding": 8.264353892651576e-12,
             "within_bound": true,
             "by_rounding": false,
+            "equals_bound": false,
             "points": [
               {
                 "offset": 0,
@@ -1329,7 +1440,16 @@
               "-58.01327876",
               "14.23307382"
             ],
-            "denominator_display": "0.025"
+            "denominator_display": "0.025",
+            "below_tolerance": false,
+            "h_squared": {
+              "exact": true,
+              "text": "0.00015625",
+              "latex": "0.00015625",
+              "approx": null
+            },
+            "side": "under",
+            "predicted_side": "under"
           }
         }
       },
@@ -1405,6 +1525,7 @@
             "rounding": 4.200417705899769e-12,
             "within_bound": true,
             "by_rounding": false,
+            "equals_bound": false,
             "points": [
               {
                 "offset": 1,
@@ -1441,7 +1562,16 @@
               "14.91723578",
               "-14.64014317"
             ],
-            "denominator_display": "0.0125"
+            "denominator_display": "0.0125",
+            "below_tolerance": false,
+            "h_squared": {
+              "exact": true,
+              "text": "0.0000390625",
+              "latex": "0.0000390625",
+              "approx": null
+            },
+            "side": "over",
+            "predicted_side": "over"
           },
           "extremo_adelante": {
             "D": 22.166684523268287,
@@ -1499,6 +1629,7 @@
             "rounding": 1.6939493737754695e-11,
             "within_bound": true,
             "by_rounding": false,
+            "equals_bound": false,
             "points": [
               {
                 "offset": 0,
@@ -1550,7 +1681,16 @@
               "59.668943104",
               "-15.057522953"
             ],
-            "denominator_display": "0.0125"
+            "denominator_display": "0.0125",
+            "below_tolerance": false,
+            "h_squared": {
+              "exact": true,
+              "text": "0.0000390625",
+              "latex": "0.0000390625",
+              "approx": null
+            },
+            "side": "under",
+            "predicted_side": "under"
           },
           "extremo_atras": {
             "D": 22.1666899352212,
@@ -1608,6 +1748,7 @@
             "rounding": 1.666384792706836e-11,
             "within_bound": true,
             "by_rounding": false,
+            "equals_bound": false,
             "points": [
               {
                 "offset": 0,
@@ -1659,7 +1800,16 @@
               "-58.560572664",
               "14.503319693"
             ],
-            "denominator_display": "0.0125"
+            "denominator_display": "0.0125",
+            "below_tolerance": false,
+            "h_squared": {
+              "exact": true,
+              "text": "0.0000390625",
+              "latex": "0.0000390625",
+              "approx": null
+            },
+            "side": "under",
+            "predicted_side": "under"
           }
         }
       },
@@ -1735,6 +1885,7 @@
             "rounding": 8.400497014661955e-12,
             "within_bound": true,
             "by_rounding": false,
+            "equals_bound": false,
             "points": [
               {
                 "offset": 1,
@@ -1771,7 +1922,16 @@
               "14.847529104",
               "-14.708983927"
             ],
-            "denominator_display": "0.00625"
+            "denominator_display": "0.00625",
+            "below_tolerance": false,
+            "h_squared": {
+              "exact": true,
+              "text": "0.000009765625",
+              "latex": "0.000009765625",
+              "approx": null
+            },
+            "side": "over",
+            "predicted_side": "over"
           },
           "extremo_adelante": {
             "D": 22.16704769338321,
@@ -1829,6 +1989,7 @@
             "rounding": 3.373980788873911e-11,
             "within_bound": true,
             "by_rounding": false,
+            "equals_bound": false,
             "points": [
               {
                 "offset": 0,
@@ -1880,7 +2041,16 @@
               "59.3901164176",
               "-14.9172357759"
             ],
-            "denominator_display": "0.00625"
+            "denominator_display": "0.00625",
+            "below_tolerance": false,
+            "h_squared": {
+              "exact": true,
+              "text": "0.000009765625",
+              "latex": "0.000009765625",
+              "approx": null
+            },
+            "side": "under",
+            "predicted_side": "under"
           },
           "extremo_atras": {
             "D": 22.16704836987617,
@@ -1938,6 +2108,7 @@
             "rounding": 3.346416823075962e-11,
             "within_bound": true,
             "by_rounding": false,
+            "equals_bound": false,
             "points": [
               {
                 "offset": 0,
@@ -1989,7 +2160,16 @@
               "-58.835935708",
               "14.640143166"
             ],
-            "denominator_display": "0.00625"
+            "denominator_display": "0.00625",
+            "below_tolerance": false,
+            "h_squared": {
+              "exact": true,
+              "text": "0.000009765625",
+              "latex": "0.000009765625",
+              "approx": null
+            },
+            "side": "under",
+            "predicted_side": "under"
           }
         }
       },
@@ -2065,6 +2245,7 @@
             "rounding": 1.680082483178782e-11,
             "within_bound": true,
             "by_rounding": false,
+            "equals_bound": false,
             "points": [
               {
                 "offset": 1,
@@ -2101,7 +2282,16 @@
               "14.812784501",
               "-14.743512053"
             ],
-            "denominator_display": "0.003125"
+            "denominator_display": "0.003125",
+            "below_tolerance": false,
+            "h_squared": {
+              "exact": false,
+              "text": "0.000002",
+              "latex": "0.000002",
+              "approx": "0.000002"
+            },
+            "side": "over",
+            "predicted_side": "over"
           },
           "extremo_adelante": {
             "D": 22.167138188331137,
@@ -2159,6 +2349,7 @@
             "rounding": 6.734111838719802e-11,
             "within_bound": true,
             "by_rounding": false,
+            "equals_bound": false,
             "points": [
               {
                 "offset": 0,
@@ -2210,7 +2401,16 @@
               "59.251138004",
               "-14.847529104"
             ],
-            "denominator_display": "0.003125"
+            "denominator_display": "0.003125",
+            "below_tolerance": false,
+            "h_squared": {
+              "exact": false,
+              "text": "0.000002",
+              "latex": "0.000002",
+              "approx": "0.000002"
+            },
+            "side": "under",
+            "predicted_side": "under"
           },
           "extremo_atras": {
             "D": 22.167138272885722,
@@ -2268,6 +2468,7 @@
             "rounding": 6.706548026737993e-11,
             "within_bound": true,
             "by_rounding": false,
+            "equals_bound": false,
             "points": [
               {
                 "offset": 0,
@@ -2319,7 +2520,16 @@
               "-58.9740482132",
               "14.7089839267"
             ],
-            "denominator_display": "0.003125"
+            "denominator_display": "0.003125",
+            "below_tolerance": false,
+            "h_squared": {
+              "exact": false,
+              "text": "0.000002",
+              "latex": "0.000002",
+              "approx": "0.000002"
+            },
+            "side": "under",
+            "predicted_side": "under"
           }
         }
       },
@@ -2395,6 +2605,7 @@
             "rounding": 3.360156506493669e-11,
             "within_bound": true,
             "by_rounding": false,
+            "equals_bound": false,
             "points": [
               {
                 "offset": 1,
@@ -2431,7 +2642,16 @@
               "14.795439321",
               "-14.760803115"
             ],
-            "denominator_display": "0.0015625"
+            "denominator_display": "0.0015625",
+            "below_tolerance": false,
+            "h_squared": {
+              "exact": false,
+              "text": "0.000001",
+              "latex": "0.000001",
+              "approx": "0.000001"
+            },
+            "side": "over",
+            "predicted_side": "over"
           },
           "extremo_adelante": {
             "D": 22.167160774978356,
@@ -2489,6 +2709,7 @@
             "rounding": 1.3454407912740333e-10,
             "within_bound": true,
             "by_rounding": false,
+            "equals_bound": false,
             "points": [
               {
                 "offset": 0,
@@ -2540,7 +2761,16 @@
               "59.181757284",
               "-14.812784501"
             ],
-            "denominator_display": "0.0015625"
+            "denominator_display": "0.0015625",
+            "below_tolerance": false,
+            "h_squared": {
+              "exact": false,
+              "text": "0.000001",
+              "latex": "0.000001",
+              "approx": "0.000001"
+            },
+            "side": "under",
+            "predicted_side": "under"
           },
           "extremo_atras": {
             "D": 22.167160785538726,
@@ -2598,6 +2828,7 @@
             "rounding": 1.342684413921246e-10,
             "within_bound": true,
             "by_rounding": false,
+            "equals_bound": false,
             "points": [
               {
                 "offset": 0,
@@ -2649,7 +2880,16 @@
               "-59.043212458",
               "14.7435120533"
             ],
-            "denominator_display": "0.0015625"
+            "denominator_display": "0.0015625",
+            "below_tolerance": false,
+            "h_squared": {
+              "exact": false,
+              "text": "0.000001",
+              "latex": "0.000001",
+              "approx": "0.000001"
+            },
+            "side": "under",
+            "predicted_side": "under"
           }
         }
       },
@@ -2725,6 +2965,7 @@
             "rounding": 6.720308783057004e-11,
             "within_bound": true,
             "by_rounding": false,
+            "equals_bound": false,
             "points": [
               {
                 "offset": 1,
@@ -2761,7 +3002,16 @@
               "14.7867735033",
               "-14.7694554023"
             ],
-            "denominator_display": "0.00078125"
+            "denominator_display": "0.00078125",
+            "below_tolerance": false,
+            "h_squared": {
+              "exact": false,
+              "text": "0",
+              "latex": "0",
+              "approx": "0"
+            },
+            "side": "over",
+            "predicted_side": "over"
           },
           "extremo_adelante": {
             "D": 22.167166417007138,
@@ -2819,6 +3069,7 @@
             "rounding": 2.6895017014185426e-10,
             "within_bound": true,
             "by_rounding": false,
+            "equals_bound": false,
             "points": [
               {
                 "offset": 0,
@@ -2870,7 +3121,16 @@
               "59.1470940132",
               "-14.7954393209"
             ],
-            "denominator_display": "0.00078125"
+            "denominator_display": "0.00078125",
+            "below_tolerance": false,
+            "h_squared": {
+              "exact": false,
+              "text": "0",
+              "latex": "0",
+              "approx": "0"
+            },
+            "side": "under",
+            "predicted_side": "under"
           },
           "extremo_atras": {
             "D": 22.167166418330453,
@@ -2928,6 +3188,7 @@
             "rounding": 2.686745325027103e-10,
             "within_bound": true,
             "by_rounding": false,
+            "equals_bound": false,
             "points": [
               {
                 "offset": 0,
@@ -2979,7 +3240,16 @@
               "-59.07782160936",
               "14.76080311454"
             ],
-            "denominator_display": "0.00078125"
+            "denominator_display": "0.00078125",
+            "below_tolerance": false,
+            "h_squared": {
+              "exact": false,
+              "text": "0",
+              "latex": "0",
+              "approx": "0"
+            },
+            "side": "under",
+            "predicted_side": "under"
           }
         }
       },
@@ -3055,6 +3325,7 @@
             "rounding": 1.3440615451149036e-10,
             "within_bound": true,
             "by_rounding": false,
+            "equals_bound": false,
             "points": [
               {
                 "offset": 1,
@@ -3091,7 +3362,16 @@
               "14.7824422867",
               "-14.7737832365"
             ],
-            "denominator_display": "0.000390625"
+            "denominator_display": "0.000390625",
+            "below_tolerance": true,
+            "h_squared": {
+              "exact": false,
+              "text": "0",
+              "latex": "0",
+              "approx": "0"
+            },
+            "side": "over",
+            "predicted_side": "over"
           },
           "extremo_adelante": {
             "D": 22.167167826892182,
@@ -3149,6 +3429,7 @@
             "rounding": 5.37762436853517e-10,
             "within_bound": true,
             "by_rounding": false,
+            "equals_bound": false,
             "points": [
               {
                 "offset": 0,
@@ -3200,7 +3481,16 @@
               "59.12976914684",
               "-14.78677350331"
             ],
-            "denominator_display": "0.000390625"
+            "denominator_display": "0.000390625",
+            "below_tolerance": false,
+            "h_squared": {
+              "exact": false,
+              "text": "0",
+              "latex": "0",
+              "approx": "0"
+            },
+            "side": "under",
+            "predicted_side": "under"
           },
           "extremo_atras": {
             "D": 22.167167827087724,
@@ -3258,6 +3548,7 @@
             "rounding": 5.374867992384067e-10,
             "within_bound": true,
             "by_rounding": false,
+            "equals_bound": false,
             "points": [
               {
                 "offset": 0,
@@ -3309,7 +3600,16 @@
               "-59.095132946",
               "14.7694554023"
             ],
-            "denominator_display": "0.000390625"
+            "denominator_display": "0.000390625",
+            "below_tolerance": false,
+            "h_squared": {
+              "exact": false,
+              "text": "0",
+              "latex": "0",
+              "approx": "0"
+            },
+            "side": "under",
+            "predicted_side": "under"
           }
         }
       },
@@ -3385,6 +3685,7 @@
             "rounding": 2.688122984481562e-10,
             "within_bound": true,
             "by_rounding": false,
+            "equals_bound": false,
             "points": [
               {
                 "offset": 1,
@@ -3421,7 +3722,16 @@
               "14.7802771013",
               "-14.7759475763"
             ],
-            "denominator_display": "0.0001953125"
+            "denominator_display": "0.0001953125",
+            "below_tolerance": true,
+            "h_squared": {
+              "exact": false,
+              "text": "0",
+              "latex": "0",
+              "approx": "0"
+            },
+            "side": "over",
+            "predicted_side": "over"
           },
           "extremo_adelante": {
             "D": 22.167168179348664,
@@ -3479,6 +3789,7 @@
             "rounding": 1.0753870125971758e-09,
             "within_bound": true,
             "by_rounding": false,
+            "equals_bound": false,
             "points": [
               {
                 "offset": 0,
@@ -3530,7 +3841,16 @@
               "59.12110840532",
               "-14.78244228671"
             ],
-            "denominator_display": "0.0001953125"
+            "denominator_display": "0.0001953125",
+            "below_tolerance": true,
+            "h_squared": {
+              "exact": false,
+              "text": "0",
+              "latex": "0",
+              "approx": "0"
+            },
+            "side": "under",
+            "predicted_side": "under"
           },
           "extremo_atras": {
             "D": 22.167168179294094,
@@ -3588,6 +3908,7 @@
             "rounding": 1.075111374988074e-09,
             "within_bound": true,
             "by_rounding": true,
+            "equals_bound": false,
             "points": [
               {
                 "offset": 0,
@@ -3639,7 +3960,16 @@
               "-59.1037903052",
               "14.7737832365"
             ],
-            "denominator_display": "0.0001953125"
+            "denominator_display": "0.0001953125",
+            "below_tolerance": true,
+            "h_squared": {
+              "exact": false,
+              "text": "0",
+              "latex": "0",
+              "approx": "0"
+            },
+            "side": "under",
+            "predicted_side": "under"
           }
         }
       }
@@ -3703,7 +4033,9 @@
           "bound": 5.8729823853741895e-08,
           "rounding": 2.688122984481562e-10,
           "within_bound": true,
-          "by_rounding": false
+          "by_rounding": false,
+          "equals_bound": false,
+          "matching_decimals": 6
         },
         "extremo_adelante": {
           "D": 22.167168179348664,
@@ -3711,7 +4043,9 @@
           "bound": 1.1747341324929563e-07,
           "rounding": 1.0753870125971758e-09,
           "within_bound": true,
-          "by_rounding": false
+          "by_rounding": false,
+          "equals_bound": false,
+          "matching_decimals": 6
         },
         "extremo_atras": {
           "D": 22.167168179294094,
@@ -3719,7 +4053,9 @@
           "bound": 1.1744588373391868e-07,
           "rounding": 1.075111374988074e-09,
           "within_bound": true,
-          "by_rounding": true
+          "by_rounding": true,
+          "equals_bound": false,
+          "matching_decimals": 6
         }
       },
       "failed_rows": {
@@ -3804,6 +4140,11 @@
       }
     ],
     "rounding_text": "R = 2ε·Σ|cᵢ|·(|f(xᵢ)| + |xᵢ·f′(xᵢ)|) / (factor·h)",
+    "min_rows": 6,
+    "third_derivative": {
+      "value": 36.94528049465325,
+      "sign": 1
+    },
     "formula": "all",
     "formulas": [
       {
@@ -4099,18 +4440,31 @@
               ],
               "value": 36.94528049465325
             },
+            "equals_bound": false,
             "products_display": [
               "-32.668095",
               "50.812796",
               "-14.778112"
             ],
-            "denominator_display": "0.2"
+            "denominator_display": "0.2",
+            "h_squared": {
+              "exact": true,
+              "text": "0.01",
+              "latex": "0.01",
+              "approx": null
+            },
+            "side": "under",
+            "predicted_side": "under"
           },
           "extremo_atras": null,
           "recommended": {
             "key": "extremo_adelante",
             "name": "Extremo hacia adelante",
             "D": 16.83294500000001
+          },
+          "third_derivative": {
+            "value": 29.038307829182145,
+            "sign": 1
           }
         }
       },
@@ -4212,11 +4566,20 @@
               ],
               "value": 36.94528049465325
             },
+            "equals_bound": false,
             "products_display": [
               "14.778112",
               "-10.889365"
             ],
-            "denominator_display": "0.2"
+            "denominator_display": "0.2",
+            "h_squared": {
+              "exact": true,
+              "text": "0.01",
+              "latex": "0.01",
+              "approx": null
+            },
+            "side": "over",
+            "predicted_side": "over"
           },
           "extremo_adelante": {
             "D": 19.269469999999984,
@@ -4313,18 +4676,31 @@
               ],
               "value": 41.64746655409502
             },
+            "equals_bound": false,
             "products_display": [
               "-38.109597",
               "59.112448",
               "-17.148957"
             ],
-            "denominator_display": "0.2"
+            "denominator_display": "0.2",
+            "h_squared": {
+              "exact": true,
+              "text": "0.01",
+              "latex": "0.01",
+              "approx": null
+            },
+            "side": "under",
+            "predicted_side": "under"
           },
           "extremo_atras": null,
           "recommended": {
             "key": "punto_medio",
             "name": "Punto medio",
             "D": 19.443734999999986
+          },
+          "third_derivative": {
+            "value": 32.76088276716841,
+            "sign": 1
           }
         }
       },
@@ -4426,11 +4802,20 @@
               ],
               "value": 41.64746655409502
             },
+            "equals_bound": false,
             "products_display": [
               "17.148957",
               "-12.703199"
             ],
-            "denominator_display": "0.2"
+            "denominator_display": "0.2",
+            "h_squared": {
+              "exact": true,
+              "text": "0.01",
+              "latex": "0.01",
+              "approx": null
+            },
+            "side": "over",
+            "predicted_side": "over"
           },
           "extremo_adelante": {
             "D": 22.032309999999967,
@@ -4527,12 +4912,21 @@
               ],
               "value": 46.93007019705743
             },
+            "equals_bound": false,
             "products_display": [
               "-44.334336",
               "68.595828",
               "-19.85503"
             ],
-            "denominator_display": "0.2"
+            "denominator_display": "0.2",
+            "h_squared": {
+              "exact": true,
+              "text": "0.01",
+              "latex": "0.01",
+              "approx": null
+            },
+            "side": "under",
+            "predicted_side": "under"
           },
           "extremo_atras": {
             "D": 22.054524999999988,
@@ -4629,17 +5023,30 @@
               ],
               "value": 36.94528049465325
             },
+            "equals_bound": false,
             "products_display": [
               "44.334336",
               "-50.812796",
               "10.889365"
             ],
-            "denominator_display": "0.2"
+            "denominator_display": "0.2",
+            "h_squared": {
+              "exact": true,
+              "text": "0.01",
+              "latex": "0.01",
+              "approx": null
+            },
+            "side": "under",
+            "predicted_side": "under"
           },
           "recommended": {
             "key": "punto_medio",
             "name": "Punto medio",
             "D": 22.22878999999998
+          },
+          "third_derivative": {
+            "value": 36.94528049465325,
+            "sign": 1
           }
         }
       },
@@ -4741,11 +5148,20 @@
               ],
               "value": 46.93007019705743
             },
+            "equals_bound": false,
             "products_display": [
               "19.85503",
               "-14.778112"
             ],
-            "denominator_display": "0.2"
+            "denominator_display": "0.2",
+            "h_squared": {
+              "exact": true,
+              "text": "0.01",
+              "latex": "0.01",
+              "approx": null
+            },
+            "side": "over",
+            "predicted_side": "over"
           },
           "extremo_adelante": null,
           "extremo_atras": {
@@ -4843,17 +5259,30 @@
               ],
               "value": 41.64746655409502
             },
+            "equals_bound": false,
             "products_display": [
               "51.446871",
               "-59.112448",
               "12.703199"
             ],
-            "denominator_display": "0.2"
+            "denominator_display": "0.2",
+            "h_squared": {
+              "exact": true,
+              "text": "0.01",
+              "latex": "0.01",
+              "approx": null
+            },
+            "side": "under",
+            "predicted_side": "under"
           },
           "recommended": {
             "key": "punto_medio",
             "name": "Punto medio",
             "D": 25.384589999999974
+          },
+          "third_derivative": {
+            "value": 41.64746655409502,
+            "sign": 1
           }
         }
       },
@@ -4972,17 +5401,30 @@
               ],
               "value": 46.93007019705743
             },
+            "equals_bound": false,
             "products_display": [
               "59.56509",
               "-68.595828",
               "14.778112"
             ],
-            "denominator_display": "0.2"
+            "denominator_display": "0.2",
+            "h_squared": {
+              "exact": true,
+              "text": "0.01",
+              "latex": "0.01",
+              "approx": null
+            },
+            "side": "under",
+            "predicted_side": "under"
           },
           "recommended": {
             "key": "extremo_atras",
             "name": "Extremo hacia atrás",
             "D": 28.73686999999998
+          },
+          "third_derivative": {
+            "value": 46.93007019705743,
+            "sign": 1
           }
         }
       }
@@ -5350,6 +5792,7 @@
       ]
     },
     "rounding_text": "R = 2ε·Σ|cᵢ·f(xᵢ)| / (factor·h)",
+    "min_rows": 6,
     "formula": "all",
     "formulas": [
       {

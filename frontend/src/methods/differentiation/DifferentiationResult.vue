@@ -14,9 +14,16 @@ import { latexNumber } from '../../utils/latexFormulas'
 import DataPointsTable from './DataPointsTable.vue'
 import DifferentiationVerification from './DifferentiationVerification.vue'
 import RefinementTable from './RefinementTable.vue'
-import { ERRORS_GLOSSARY, ERRORS_LATEX, formulaGlossary } from './differenceGlossary'
+import {
+  ERRORS_GLOSSARY,
+  ERRORS_LATEX,
+  THREE_POINT_ERRORS_GLOSSARY,
+  THREE_POINT_ERRORS_LATEX,
+  formulaGlossary,
+} from './differenceGlossary'
 import { derivativeName, derivativeText, listNames } from './formulas'
 import { exportDifferentiationPdf } from './pdf'
+import { COMPARISON_LEGEND, UNIFORM_NOTE } from './threePointExplain'
 
 const props = defineProps({
   result: { type: Object, required: true },
@@ -26,9 +33,12 @@ const props = defineProps({
 
 const isTable = computed(() => props.result.mode === 'table')
 // Explicaciones para quien no conoce el método (glosarios, tooltips, paso a
-// paso explicado): por ahora sólo diferencias progresiva y regresiva; 3 y 5
-// puntos se ven como siempre.
-const explained = computed(() => props.result.method === 'diferencias-finitas')
+// paso explicado): diferencias progresiva y regresiva y fórmula de 3 puntos;
+// 5 puntos se ve como siempre.
+const explained = computed(() => ['diferencias-finitas', 'tres-puntos'].includes(props.result.method))
+const isThreePoint = computed(() => props.result.method === 'tres-puntos')
+const errorsLatex = computed(() => (isThreePoint.value ? THREE_POINT_ERRORS_LATEX : ERRORS_LATEX))
+const errorsGlossary = computed(() => (isThreePoint.value ? THREE_POINT_ERRORS_GLOSSARY : ERRORS_GLOSSARY))
 const formulas = computed(() => props.result.formulas)
 const fn = computed(() => props.result.function)
 const last = computed(() => props.result.iterations.at(-1)?.extra ?? null)
@@ -168,6 +178,7 @@ function handleExportPdf() {
       <p class="comparison-title">
         {{ result.comparison_title ?? 'Comparación con las diferencias progresiva y regresiva' }}
       </p>
+      <p v-if="explained" class="comparison-line">{{ COMPARISON_LEGEND }}</p>
       <p v-for="line in result.comparison" :key="line.k" class="comparison-line">{{ line.text }}</p>
     </div>
     <div v-for="(w, idx) in result.warnings" :key="'w' + idx" class="alert alert-warning">⚠ {{ w }}</div>
@@ -176,7 +187,12 @@ function handleExportPdf() {
     <section v-if="fn && explained" class="result-section">
       <h4>Derivada exacta</h4>
       <div class="formula-box"><MathFormula :expression="`f(x) = ${fn.latex}`" display-mode /></div>
-      <p class="section-text">
+      <p v-if="isThreePoint" class="section-text">
+        Para qué sirve cada una: f′(x) es la derivada <strong>exacta</strong>, sólo para comparar y calcular el error
+        real. f′′(x) es un paso intermedio para llegar a f′′′(x). f′′′(x) se usa en la cota del error, porque mide qué
+        tanto se aleja la función de una parábola.
+      </p>
+      <p v-else class="section-text">
         Para qué se necesitan: f′(x) es la derivada <strong>exacta</strong>; el sistema la usa sólo para comparar y
         calcular el error real (el método no la necesita para aproximar). f′′(x) mide qué tan curva es la función y se
         usa para la cota del error: mientras más curva, más se separa la recta secante de la tangente.
@@ -188,6 +204,13 @@ function handleExportPdf() {
         <DerivationSteps
           :steps="fn.higher_derivatives[2].steps"
           :result="`f''(x) = ${fn.higher_derivatives[2].latex}`"
+        />
+      </template>
+      <template v-if="isThreePoint && fn.higher_derivatives[3]">
+        <p class="section-text">Tercera derivada: se deriva f′′(x) con el mismo desglose.</p>
+        <DerivationSteps
+          :steps="fn.higher_derivatives[3].steps"
+          :result="`f'''(x) = ${fn.higher_derivatives[3].latex}`"
         />
       </template>
       <p v-if="fn.uses_trigonometry" class="section-text note">
@@ -251,6 +274,7 @@ function handleExportPdf() {
           fórmula de 5 puntos. Despliega una fila para ver el cálculo.
         </template>
         <template v-else-if="isTable && hasRecommended">
+          <template v-if="explained">{{ UNIFORM_NOTE }}</template>
           En cada xᵢ, cada fórmula usa los datos vecinos que necesita; donde faltan se muestra «—».
           La columna «Recomendada» toma el punto medio donde existe (es la más precisa) y, en los
           extremos de la tabla, la fórmula de extremo. Despliega una fila para ver el cálculo.
@@ -266,14 +290,14 @@ function handleExportPdf() {
       </p>
       <div v-if="explained" class="formula-column">
         <template v-for="f in formulas" :key="f.key">
-          <p class="formula-caption">Diferencia {{ f.name.toLowerCase() }}</p>
+          <p class="formula-caption">{{ isThreePoint ? f.name : `Diferencia ${f.name.toLowerCase()}` }}</p>
           <div class="formula-box"><MathFormula :expression="f.formula_latex" /></div>
           <GlossaryBlock :items="formulaGlossary(f.key).items" :summary="formulaGlossary(f.key).summary" />
         </template>
         <template v-if="fn">
           <p class="formula-caption">Errores y cota</p>
-          <div class="formula-box"><MathFormula :expression="ERRORS_LATEX" /></div>
-          <GlossaryBlock :items="ERRORS_GLOSSARY.items" />
+          <div class="formula-box"><MathFormula :expression="errorsLatex" /></div>
+          <GlossaryBlock :items="errorsGlossary.items" />
         </template>
         <p class="color-legend">
           Colores del paso a paso: <span class="legend-prev">■ azul</span>: el valor en el punto base x₀, o el valor de
@@ -305,7 +329,7 @@ function handleExportPdf() {
         {{ 2 ** order }}.
       </p>
       <p v-if="fn && explained" class="section-text">
-        La cota usa M, el máximo de |f′′(x)| en el intervalo de cada {{ isTable ? 'fórmula' : 'fila' }}, estimado por
+        La cota usa M, el máximo de {{ boundNames }} en el intervalo de cada {{ isTable ? 'fórmula' : 'fila' }}, estimado por
         muestreo con {{ result.sampling_points }} puntos equiespaciados. La marca <sup>R</sup> aparece sólo cuando el
         error real supera la cota (más allá de una diferencia relativa de 10⁻⁹) y el ✔ depende del margen de redondeo
         de la computadora, {{ roundingText }}.
