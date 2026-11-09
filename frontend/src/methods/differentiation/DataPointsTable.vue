@@ -2,12 +2,20 @@
 // Tabla del modo «Tabla de datos»: en cada xᵢ, cada fórmula con sus vecinos y,
 // si hay función para comparar, la derivada exacta, el error real y la cota.
 // Cada punto tiene su paso a paso expandible.
+// Con `explained` (diferencias progresiva y regresiva): encabezados con
+// tooltip, leyenda de columnas y el paso a paso explicado de integración.
 import { computed, ref, watch } from 'vue'
+import GlossaryBlock from '../../components/GlossaryBlock.vue'
+import InfoTip from '../../components/InfoTip.vue'
+import TrapezoidStepDetail from '../integration/TrapezoidStepDetail.vue'
 import DifferenceStepDetail from './DifferenceStepDetail.vue'
+import { differenceSteps, tableContext } from './differenceExplain'
+import { tableColumns } from './differenceGlossary'
 import { boundMark, cell } from './formulas'
 
 const props = defineProps({
   result: { type: Object, required: true },
+  explained: { type: Boolean, default: false },
 })
 
 const formulas = computed(() => props.result.formulas)
@@ -34,6 +42,10 @@ function toggle(i) {
   expanded.value = next
 }
 
+const headers = computed(() => tableColumns(formulas.value, hasFunction.value))
+const explainedSteps = (f, i) =>
+  differenceSteps(props.result, f, props.result.iterations[i - 1].extra[f.key], tableContext(props.result, f, i))
+
 const pointName = (p) => `x_{${p.index + 1}}`
 const marks = (extra) =>
   formulas.value
@@ -56,10 +68,16 @@ function stepLine(item, extra, i) {
 </script>
 
 <template>
-  <div class="table-scroll">
+  <div class="table-scroll" :class="{ 'detail-scroll': explained }">
     <table class="iterations-table">
       <thead>
-        <tr>
+        <tr v-if="explained">
+          <th class="expand-col"></th>
+          <th v-for="col in headers" :key="col.key">
+            <InfoTip :text="col.text">{{ col.label }}</InfoTip>
+          </th>
+        </tr>
+        <tr v-else>
           <th class="expand-col"></th>
           <th>i</th>
           <th>xᵢ</th>
@@ -111,10 +129,19 @@ function stepLine(item, extra, i) {
           </tr>
           <tr v-if="expanded.has(step.iteration)" class="detail-row">
             <td :colspan="columns">
+              <div :class="{ 'detail-inner': explained }">
               <template v-for="f in formulas" :key="f.key">
                 <div v-if="step.extra[f.key]" class="detail-block">
                   <p class="detail-title">{{ f.name }} en x{{ step.iteration }}</p>
+                  <TrapezoidStepDetail
+                    v-if="explained"
+                    :result="result"
+                    :row="step.extra[f.key]"
+                    :k="step.iteration"
+                    :custom-steps="explainedSteps(f, step.iteration)"
+                  />
                   <DifferenceStepDetail
+                    v-else
                     :formula="f"
                     :item="step.extra[f.key]"
                     :label="step.iteration"
@@ -135,12 +162,19 @@ function stepLine(item, extra, i) {
                   {{ f.name }}: no existe en x{{ step.iteration }} (falta el punto vecino).
                 </p>
               </template>
+              </div>
             </td>
           </tr>
         </template>
       </tbody>
     </table>
   </div>
+
+  <GlossaryBlock
+    v-if="explained"
+    title="¿Qué significa cada columna?"
+    :items="headers.map((col) => ({ symbol: col.symbol, text: col.text }))"
+  />
 </template>
 
 <style scoped>
@@ -191,6 +225,17 @@ function stepLine(item, extra, i) {
   padding: var(--space-4);
   font-size: 0.9rem;
   white-space: normal;
+}
+
+/* El paso a paso ocupa el ancho visible, no el de la tabla (como en integración). */
+.detail-scroll {
+  container-type: inline-size;
+}
+
+.detail-inner {
+  position: sticky;
+  left: var(--space-4);
+  width: calc(100cqw - 2 * var(--space-4));
 }
 
 .detail-block + .detail-block,

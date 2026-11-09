@@ -216,11 +216,29 @@ def _rounding(formula, values, h, function=None, xs=None):
 
 
 def _bound_check(real_error, bound, rounding):
-    """(error real ≤ cota + R, sólo gracias a R); (None, False) si falta un dato."""
+    """{within_bound: error real ≤ cota + R, by_rounding: sólo gracias a R}."""
     if real_error is None or bound is None:
-        return None, False
+        return {"within_bound": None, "by_rounding": False}
     within = real_error <= bound + rounding
-    return within, within and real_error > bound
+    return {"within_bound": within, "by_rounding": within and real_error > bound}
+
+
+# |error| ≤ cota·(1 + 10⁻⁹) cumple sin R; con diferencia relativa ≤ 10⁻⁹ son iguales.
+EQUAL_RELATIVE = 1e-9
+
+
+def bound_check_equal(real_error, bound, rounding):
+    """Criterio de integración (trapezoid._errors): R sólo cuenta si el error
+    supera cota·(1 + 10⁻⁹), y «= cota» cuando coinciden en ese margen."""
+    if real_error is None or bound is None:
+        return {"within_bound": None, "by_rounding": False, "equals_bound": False}
+    margin = bound * EQUAL_RELATIVE
+    within = real_error <= bound + margin or real_error <= bound + rounding
+    return {
+        "within_bound": within,
+        "by_rounding": within and real_error > bound + margin,
+        "equals_bound": abs(real_error - bound) <= margin,
+    }
 
 
 def _point_role(offset):
@@ -270,7 +288,8 @@ def _check_domain(function, formulas, x0, h0):
         raise DifferentiationValidationError(errors)
 
 
-def _refinement_row(function, formula, x0, h, h_number, h_shown, k, exact, previous, rounding_rule=_rounding):
+def _refinement_row(function, formula, x0, h, h_number, h_shown, k, exact, previous, rounding_rule=_rounding,
+                    bound_check=_bound_check):
     points = []
     for offset, weight in formula.nodes:
         x = x0 + offset * h
@@ -293,7 +312,7 @@ def _refinement_row(function, formula, x0, h, h_number, h_shown, k, exact, previ
     bound = None if M is None else float(formula.bound_coefficient) * h ** formula.order * M
     real = None if exact is None else abs(D - exact)
     rounding = rounding_rule(formula, values, h, function, [p["x"] for p in points])
-    within, by_rounding = _bound_check(real, bound, rounding)
+    check = bound_check(real, bound, rounding)
 
     previous_D = previous["D"] if previous else None
     previous_real = previous["real_error"] if previous else None
@@ -318,19 +337,19 @@ def _refinement_row(function, formula, x0, h, h_number, h_shown, k, exact, previ
         ],
         "ratio": ratio,
         "rounding": rounding,
-        "within_bound": within,
-        "by_rounding": by_rounding,
+        **check,
         "points": points,
         "decimals": step["decimals"],
         "numerator_display": step["numerator"],
     }, None
 
 
-def _function_mode(data, choices=CHOICES, rounding_rule=_rounding, derivative_orders=()):
+def _function_mode(data, choices=CHOICES, rounding_rule=_rounding, derivative_orders=(), bound_check=_bound_check):
     """Tabla de refinamiento de las fórmulas `choices[data["formula"]]`.
 
-    `rounding_rule(formula, values, h, function, xs)` da el redondeo R de cada fila y
-    `derivative_orders`, derivadas que se calculan además de las de la cota.
+    `rounding_rule(formula, values, h, function, xs)` da el redondeo R de cada fila,
+    `derivative_orders`, derivadas que se calculan además de las de la cota, y
+    `bound_check`, el criterio «error real ≤ cota» (con o sin «= cota»).
     """
     formulas = choices[data["formula"]]
     x0, h0 = data["x0"], data["h0"]
@@ -350,7 +369,7 @@ def _function_mode(data, choices=CHOICES, rounding_rule=_rounding, derivative_or
         rows, stop = {}, None
         for formula in formulas:
             row, stop = _refinement_row(function, formula, x0, h, h_number, h_shown, k, exact,
-                                        previous[formula.key], rounding_rule)
+                                        previous[formula.key], rounding_rule, bound_check)
             if stop:
                 break
             rows[formula.key] = row
@@ -467,7 +486,7 @@ def _table_step(formula):
     return min(positive) if positive else max(offsets)
 
 
-def _table_estimate(function, formula, xs, ys, i, exact, rounding_rule=_rounding):
+def _table_estimate(function, formula, xs, ys, i, exact, rounding_rule=_rounding, bound_check=_bound_check):
     """Fórmula en xᵢ con sus vecinos: None si falta alguno."""
     indices = [i + o for o, _ in formula.nodes]
     if not all(0 <= j < len(xs) for j in indices):
@@ -497,14 +516,13 @@ def _table_estimate(function, formula, xs, ys, i, exact, rounding_rule=_rounding
         M, x_M = function.max_abs(formula.bound_derivative, a, b)
         bound = None if M is None else float(formula.bound_coefficient) * h ** formula.order * M
         real = None if exact is None else abs(D - exact)
-        within, by_rounding = _bound_check(real, bound, row["rounding"])
         row.update({"real_error": real, "bound": bound, "M": M, "x_M": x_M, "interval": [a, b],
                     "M_substitution": None if M is None else _substitution(function, x_M, formula.bound_derivative),
-                    "within_bound": within, "by_rounding": by_rounding})
+                    **bound_check(real, bound, row["rounding"])})
     return row
 
 
-def _table_points(data, choices, computed, rounding_rule=_rounding, derivative_orders=()):
+def _table_points(data, choices, computed, rounding_rule=_rounding, derivative_orders=(), bound_check=_bound_check):
     """Lo común del modo tabla: en cada xᵢ, las fórmulas `computed` (todas
     las que la comprobación necesita, aunque no se hayan pedido), los datos
     contra la función para comparar y error real ≤ cota.
@@ -522,7 +540,7 @@ def _table_points(data, choices, computed, rounding_rule=_rounding, derivative_o
         exact = function.exact_derivative(x) if function else None
         if function and exact is None:
             not_differentiable.append(i + 1)
-        rows = {f.key: _table_estimate(function, f, xs, ys, i, exact, rounding_rule) for f in computed}
+        rows = {f.key: _table_estimate(function, f, xs, ys, i, exact, rounding_rule, bound_check) for f in computed}
         for formula in formulas:
             row = rows[formula.key]
             if function and row and row["bound"] is None:
@@ -582,7 +600,9 @@ def _table_mode(data):
 
     # La secante entre xᵢ y xᵢ₊₁ es a la vez la progresiva en xᵢ y la regresiva
     # en xᵢ₊₁: se calculan las dos siempre, para la comprobación.
-    function, formulas, xs, iterations, warnings, verification = _table_points(data, CHOICES, (FORWARD, BACKWARD))
+    function, formulas, xs, iterations, warnings, verification = _table_points(
+        data, CHOICES, (FORWARD, BACKWARD), bound_check=bound_check_equal
+    )
     if not uniform:
         warnings.insert(0, "El espaciado de los datos no es uniforme: cada fórmula usa su propio h.")
 
@@ -629,7 +649,89 @@ def build_result(method, data, output):
     )
 
 
+# --- Explicaciones del paso a paso (sólo este método) --------------------------
+# Datos que el paso a paso explicado necesita y que 3 y 5 puntos no envían.
+
+def _side(D, exact):
+    """Dónde quedó la aproximación respecto a la derivada exacta."""
+    if exact is None:
+        return None
+    return "over" if D > exact else "under" if D < exact else "equal"
+
+
+def predicted_side(formula, sign):
+    """Lado que predice la curvatura (Taylor): D⁺ − f' ≈ (h/2)·f'' y
+    D⁻ − f' ≈ −(h/2)·f''. Con f'' > 0 la progresiva sobreestima y la
+    regresiva subestima; con f'' < 0, al revés. None si f''(x) = 0."""
+    if not sign:
+        return None
+    direction = 1 if formula.key == FORWARD.key else -1
+    return "over" if direction * sign > 0 else "under"
+
+
+def _curvature(function, x):
+    """f''(x) y su signo, o None si no está definida."""
+    value = _evaluate(function.evaluators[2], x)
+    if value is None:
+        return None
+    return {"value": value, "sign": (value > 0) - (value < 0)}
+
+
+def matching_decimals(D, exact):
+    """Cuántos decimales (hasta 6) coinciden D y f'(x₀) redondeados; None si ninguno."""
+    for decimals in range(display.DISPLAY_DECIMALS, -1, -1):
+        if display.fixed(D, decimals) == display.fixed(exact, decimals):
+            return decimals
+    return None
+
+
+def _explain(function, formulas, iterations, meta, data):
+    table = data["mode"] == "table"
+    meta["min_rows"] = MIN_REFINEMENTS
+    for step in iterations:
+        extra = step.extra
+        x = extra["x"] if table else data["x0"]
+        exact = extra["exact"] if table else meta["exact"]
+        curvature = _curvature(function, x) if function else None
+        if table:
+            extra["curvature"] = curvature
+        for formula in formulas:
+            row = extra.get(formula.key)
+            if not row:
+                continue
+            # h/2 exacto, para la cota (h/2)·M.
+            if table:
+                a, b = (p["x"] for p in row["points"])
+                row["half_h"] = display.decimal(abs(display.exact(a) - display.exact(b)) / 2)
+            else:
+                row["half_h"] = display.decimal(display.step_size(data["h0"], step.iteration)[0] / 2)
+                estimated = row["estimated_error"]
+                row["below_tolerance"] = None if estimated is None else estimated <= data["tolerance"]
+            row["side"] = _side(row["D"], exact)
+            row["predicted_side"] = None if curvature is None else predicted_side(formula, curvature["sign"])
+    if not table:
+        meta["curvature"] = _curvature(function, data["x0"])
+        last = iterations[-1].extra if iterations else {}
+        for key, final in meta["verification"]["final"].items():
+            final["equals_bound"] = last[key]["equals_bound"]
+            final["matching_decimals"] = None if meta["exact"] is None else matching_decimals(final["D"], meta["exact"])
+
+
+def _explained_function_mode(data):
+    output = _function_mode(data, bound_check=bound_check_equal)
+    function, formulas, _, iterations, _, meta = output
+    _explain(function, formulas, iterations, meta, data)
+    return output
+
+
+def _explained_table_mode(data):
+    output = _table_mode(data)
+    function, formulas, _, iterations, _, meta = output
+    _explain(function, formulas, iterations, meta, data)
+    return output
+
+
 def solve_finite_differences(data):
     """Punto de entrada del registro: datos ya validados -> SolverResult."""
-    mode = _table_mode if data["mode"] == "table" else _function_mode
+    mode = _explained_table_mode if data["mode"] == "table" else _explained_function_mode
     return build_result(METHOD, data, mode(data))

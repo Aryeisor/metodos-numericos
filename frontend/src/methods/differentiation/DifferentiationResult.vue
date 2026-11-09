@@ -6,12 +6,15 @@
 // (con paso a paso) → gráfico de aproximaciones → comprobación.
 import { computed, ref } from 'vue'
 import ConvergenceChart from '../../components/ConvergenceChart.vue'
+import DerivationSteps from '../../components/DerivationSteps.vue'
+import GlossaryBlock from '../../components/GlossaryBlock.vue'
 import MathFormula from '../../components/MathFormula.vue'
 import { formatNumber } from '../../utils/iterationSteps'
 import { latexNumber } from '../../utils/latexFormulas'
 import DataPointsTable from './DataPointsTable.vue'
 import DifferentiationVerification from './DifferentiationVerification.vue'
 import RefinementTable from './RefinementTable.vue'
+import { ERRORS_GLOSSARY, ERRORS_LATEX, formulaGlossary } from './differenceGlossary'
 import { derivativeName, derivativeText, listNames } from './formulas'
 import { exportDifferentiationPdf } from './pdf'
 
@@ -22,6 +25,10 @@ const props = defineProps({
 })
 
 const isTable = computed(() => props.result.mode === 'table')
+// Explicaciones para quien no conoce el método (glosarios, tooltips, paso a
+// paso explicado): por ahora sólo diferencias progresiva y regresiva; 3 y 5
+// puntos se ven como siempre.
+const explained = computed(() => props.result.method === 'diferencias-finitas')
 const formulas = computed(() => props.result.formulas)
 const fn = computed(() => props.result.function)
 const last = computed(() => props.result.iterations.at(-1)?.extra ?? null)
@@ -165,8 +172,31 @@ function handleExportPdf() {
     </div>
     <div v-for="(w, idx) in result.warnings" :key="'w' + idx" class="alert alert-warning">⚠ {{ w }}</div>
 
+    <!-- 2. Derivada exacta (explicada: como en integración) -->
+    <section v-if="fn && explained" class="result-section">
+      <h4>Derivada exacta</h4>
+      <div class="formula-box"><MathFormula :expression="`f(x) = ${fn.latex}`" display-mode /></div>
+      <p class="section-text">
+        Para qué se necesitan: f′(x) es la derivada <strong>exacta</strong>; el sistema la usa sólo para comparar y
+        calcular el error real (el método no la necesita para aproximar). f′′(x) mide qué tan curva es la función y se
+        usa para la cota del error: mientras más curva, más se separa la recta secante de la tangente.
+      </p>
+      <p class="section-text">Primera derivada: se deriva f término a término, con la regla de cada término.</p>
+      <DerivationSteps :steps="fn.derivative.steps" :result="`f'(x) = ${fn.derivative.latex}`" />
+      <template v-if="fn.higher_derivatives[2]">
+        <p class="section-text">Segunda derivada: se deriva f′(x) con el mismo desglose.</p>
+        <DerivationSteps
+          :steps="fn.higher_derivatives[2].steps"
+          :result="`f''(x) = ${fn.higher_derivatives[2].latex}`"
+        />
+      </template>
+      <p v-if="fn.uses_trigonometry" class="section-text note">
+        Las funciones trigonométricas se evalúan en radianes.
+      </p>
+    </section>
+
     <!-- 2. Derivada exacta -->
-    <section v-if="fn" class="result-section">
+    <section v-else-if="fn" class="result-section">
       <h4>Derivada exacta</h4>
       <div class="formula-box"><MathFormula :expression="`f(x) = ${fn.latex}`" display-mode /></div>
       <p class="section-text">Se deriva f término a término:</p>
@@ -234,16 +264,33 @@ function handleExportPdf() {
           el cálculo paso a paso.
         </template>
       </p>
-      <div class="formula-list">
+      <div v-if="explained" class="formula-column">
+        <template v-for="f in formulas" :key="f.key">
+          <p class="formula-caption">Diferencia {{ f.name.toLowerCase() }}</p>
+          <div class="formula-box"><MathFormula :expression="f.formula_latex" /></div>
+          <GlossaryBlock :items="formulaGlossary(f.key).items" :summary="formulaGlossary(f.key).summary" />
+        </template>
+        <template v-if="fn">
+          <p class="formula-caption">Errores y cota</p>
+          <div class="formula-box"><MathFormula :expression="ERRORS_LATEX" /></div>
+          <GlossaryBlock :items="ERRORS_GLOSSARY.items" />
+        </template>
+        <p class="color-legend">
+          Colores del paso a paso: <span class="legend-prev">■ azul</span>: el valor en el punto base x₀, o el valor de
+          la fila anterior · <span class="legend-current">■ verde</span>: el valor nuevo, en el punto vecino o en la fila
+          actual.
+        </p>
+      </div>
+      <div v-else class="formula-list">
         <div v-for="f in formulas" :key="f.key" class="formula-box">
           <MathFormula :expression="f.formula_latex" />
           <MathFormula :expression="f.bound_latex" />
         </div>
       </div>
 
-      <DataPointsTable v-if="isTable" :result="result" />
+      <DataPointsTable v-if="isTable" :result="result" :explained="explained" />
       <template v-else>
-        <RefinementTable v-for="f in formulas" :key="f.key" :result="result" :formula="f" />
+        <RefinementTable v-for="f in formulas" :key="f.key" :result="result" :formula="f" :explained="explained" />
       </template>
 
       <p v-if="!isTable && result.differentiable && order === 1" class="section-text">
@@ -257,7 +304,13 @@ function handleExportPdf() {
         <MathFormula :expression="`O(h^{${order}})`" />, así que dividir h entre 2 divide el error entre
         {{ 2 ** order }}.
       </p>
-      <p v-if="fn" class="section-text">
+      <p v-if="fn && explained" class="section-text">
+        La cota usa M, el máximo de |f′′(x)| en el intervalo de cada {{ isTable ? 'fórmula' : 'fila' }}, estimado por
+        muestreo con {{ result.sampling_points }} puntos equiespaciados. La marca <sup>R</sup> aparece sólo cuando el
+        error real supera la cota (más allá de una diferencia relativa de 10⁻⁹) y el ✔ depende del margen de redondeo
+        de la computadora, {{ roundingText }}.
+      </p>
+      <p v-else-if="fn" class="section-text">
         La cota usa M, el máximo de {{ boundNames }}
         en el intervalo de cada {{ isTable ? 'fórmula' : 'fila' }}, estimado por muestreo con
         {{ result.sampling_points }} puntos equiespaciados. La marca <sup>R</sup> indica que el error
@@ -281,7 +334,7 @@ function handleExportPdf() {
     />
 
     <!-- 5. Comprobación -->
-    <DifferentiationVerification :result="result" />
+    <DifferentiationVerification :result="result" :explained="explained" />
   </div>
 </template>
 
@@ -387,6 +440,34 @@ function handleExportPdf() {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
   gap: var(--space-3);
+}
+
+.formula-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.formula-caption {
+  margin: var(--space-3) 0 var(--space-1);
+  font-size: var(--text-small);
+  font-weight: var(--weight-semibold);
+  color: var(--color-ink);
+}
+
+.color-legend {
+  margin: var(--space-2) 0 var(--space-4);
+  font-size: var(--text-small);
+  color: var(--color-ink-muted);
+}
+
+.legend-prev {
+  color: var(--color-value-old);
+  font-weight: var(--weight-semibold);
+}
+
+.legend-current {
+  color: var(--color-value-new);
+  font-weight: var(--weight-semibold);
 }
 
 .formula-list .formula-box {

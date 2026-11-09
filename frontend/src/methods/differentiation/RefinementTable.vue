@@ -1,9 +1,18 @@
 <script setup>
 // Tabla de refinamiento de una fórmula (modo función), paginada como
 // ResultsTable, con el paso a paso expandible de cada fila.
+// Con `explained` (diferencias progresiva y regresiva): encabezados con
+// tooltip, leyenda «¿Qué significa cada columna?» y el paso a paso explicado
+// de integración (TrapezoidStepDetail con customSteps). Sin él (3 y 5 puntos),
+// la tabla de siempre.
 import { computed, ref, watch } from 'vue'
+import GlossaryBlock from '../../components/GlossaryBlock.vue'
+import InfoTip from '../../components/InfoTip.vue'
 import MathFormula from '../../components/MathFormula.vue'
+import TrapezoidStepDetail from '../integration/TrapezoidStepDetail.vue'
 import DifferenceStepDetail from './DifferenceStepDetail.vue'
+import { differenceSteps, functionContext, tinyRealErrorNote } from './differenceExplain'
+import { refinementColumns } from './differenceGlossary'
 import { boundMark, cell, stepSizeLatex, stepText } from './formulas'
 
 const PAGE_SIZE = 10
@@ -11,6 +20,7 @@ const PAGE_SIZE = 10
 const props = defineProps({
   result: { type: Object, required: true },
   formula: { type: Object, required: true },
+  explained: { type: Boolean, default: false },
 })
 
 const rows = computed(() =>
@@ -23,6 +33,11 @@ const rows = computed(() =>
 )
 const h0 = computed(() => props.result.iterations[0].extra.h)
 const showReal = computed(() => props.result.differentiable)
+const headers = computed(() => refinementColumns(showReal.value))
+const explainedSteps = (row) =>
+  differenceSteps(props.result, props.formula, row.item, functionContext(props.result, row.k), row.previous)
+// Filas donde el error real se ve 0 pero no lo es: una nota debajo de la tabla.
+const tinyRows = computed(() => (props.explained ? rows.value.filter((r) => tinyRealErrorNote(r.item)) : []))
 
 const expanded = ref(new Set())
 const page = ref(1)
@@ -50,10 +65,16 @@ function toggle(k) {
     <h5 class="table-title">
       {{ formula.name }}: <MathFormula :expression="formula.formula_latex" />
     </h5>
-    <div class="table-scroll">
+    <div class="table-scroll" :class="{ 'detail-scroll': explained }">
       <table class="iterations-table">
         <thead>
-          <tr>
+          <tr v-if="explained">
+            <th class="expand-col"></th>
+            <th v-for="col in headers" :key="col.key">
+              <InfoTip :text="col.text">{{ col.label }}</InfoTip>
+            </th>
+          </tr>
+          <tr v-else>
             <th class="expand-col"></th>
             <th>k</th>
             <th>h</th>
@@ -96,7 +117,11 @@ function toggle(k) {
             </tr>
             <tr v-if="expanded.has(row.k)" class="detail-row">
               <td :colspan="columns">
+                <div v-if="explained" class="detail-inner">
+                  <TrapezoidStepDetail :result="result" :row="row.item" :k="row.k" :custom-steps="explainedSteps(row)" />
+                </div>
                 <DifferenceStepDetail
+                  v-else
                   :formula="formula"
                   :item="row.item"
                   :label="row.k"
@@ -118,6 +143,10 @@ function toggle(k) {
       </table>
     </div>
 
+    <small v-if="tinyRows.length" class="table-note">
+      Filas {{ tinyRows.map((r) => r.k).join(', ') }}: {{ tinyRealErrorNote(tinyRows[0].item) }}
+    </small>
+
     <div v-if="pages > 1" class="pagination">
       <button type="button" class="btn btn-secondary page-btn" :disabled="page === 1" @click="page -= 1">
         ‹ Anterior
@@ -127,6 +156,12 @@ function toggle(k) {
         Siguiente ›
       </button>
     </div>
+
+    <GlossaryBlock
+      v-if="explained"
+      title="¿Qué significa cada columna?"
+      :items="headers.map((col) => ({ symbol: col.symbol, text: col.text }))"
+    />
   </div>
 </template>
 
@@ -187,6 +222,24 @@ function toggle(k) {
   padding: var(--space-4);
   font-size: 0.9rem;
   white-space: normal;
+}
+
+/* El paso a paso ocupa el ancho visible, no el de la tabla (como en integración). */
+.detail-scroll {
+  container-type: inline-size;
+}
+
+.detail-inner {
+  position: sticky;
+  left: var(--space-4);
+  width: calc(100cqw - 2 * var(--space-4));
+}
+
+.table-note {
+  display: block;
+  margin-top: var(--space-2);
+  font-size: var(--text-small);
+  color: var(--color-ink-muted);
 }
 
 .pagination {

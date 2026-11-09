@@ -7,14 +7,22 @@
 //    comparar, los datos contra f, f'(xᵢ) sustituida y error ≤ cota;
 //  - fórmula de 3 puntos: en lugar de la secante, las identidades punto medio
 //    = (D⁺ + D⁻)/2 y extremo = 2·D(h) − D(2h) (fila 1 o cada punto).
+// Con `explained` (diferencias progresiva y regresiva): introducción, tooltips
+// y leyenda de la tabla de comparación, frase de conclusión y nota del error
+// que se ve 0.
 import { computed } from 'vue'
+import GlossaryBlock from '../../components/GlossaryBlock.vue'
+import InfoTip from '../../components/InfoTip.vue'
 import MathFormula from '../../components/MathFormula.vue'
 import { formatNumber } from '../../utils/iterationSteps'
 import { latexNumber } from '../../utils/latexFormulas'
+import { conclusionText, tinyRealErrorNote } from './differenceExplain'
+import { COMPARISON_COLUMNS } from './differenceGlossary'
 import { boundMark, cell, identityLatex, substitutionLatex } from './formulas'
 
 const props = defineProps({
   result: { type: Object, required: true },
+  explained: { type: Boolean, default: false },
 })
 
 const check = computed(() => props.result.verification)
@@ -68,6 +76,17 @@ const secantLines = computed(() =>
   }))
 )
 
+const conclusions = computed(() =>
+  props.explained ? formulas.value.map((f) => conclusionText(props.result, f)).filter(Boolean) : []
+)
+const tinyNotes = computed(() =>
+  props.explained
+    ? formulas.value
+        .map((f) => ({ name: f.name, text: tinyRealErrorNote(check.value.final?.[f.key]) }))
+        .filter((n) => n.text)
+    : []
+)
+
 const substitutions = computed(() =>
   isTable.value
     ? (check.value.substitutions ?? []).map((s, i) => ({ key: i, s })).filter((row) => row.s)
@@ -80,6 +99,10 @@ const substitutions = computed(() =>
 <template>
   <section class="verification">
     <h4>Comprobación</h4>
+    <p v-if="explained && !isTable && result.differentiable" class="section-text intro">
+      La comprobación calcula la derivada exacta en x₀ por otro camino (sustituyendo en f′(x)) y la compara con la
+      aproximación.
+    </p>
 
     <!-- Fórmulas de 3 y 5 puntos: identidades -->
     <template v-if="identityGroups.length">
@@ -115,7 +138,11 @@ const substitutions = computed(() =>
 
     <!-- Modo tabla: secante común (diferencias) -->
     <template v-if="isTable">
-      <p v-if="secantLines.length" class="section-text">
+      <p v-if="secantLines.length && explained" class="section-text">
+        La progresiva en <MathFormula expression="x_i" /> y la regresiva en <MathFormula expression="x_{i+1}" /> usan
+        la misma recta (la que une los dos puntos), por eso deben dar lo mismo:
+      </p>
+      <p v-else-if="secantLines.length" class="section-text">
         La progresiva en <MathFormula expression="x_i" /> y la regresiva en
         <MathFormula expression="x_{i+1}" /> usan la misma recta secante entre los dos puntos, así
         que deben ser iguales:
@@ -182,7 +209,12 @@ const substitutions = computed(() =>
       <div class="table-scroll">
         <table class="check-table">
           <thead>
-            <tr>
+            <tr v-if="explained">
+              <th v-for="col in COMPARISON_COLUMNS" :key="col.key">
+                <InfoTip :text="col.text">{{ col.label }}</InfoTip>
+              </th>
+            </tr>
+            <tr v-else>
               <th>Fórmula</th>
               <th>Aproximación</th>
               <th>Exacta f′(x₀)</th>
@@ -208,6 +240,13 @@ const substitutions = computed(() =>
           </tbody>
         </table>
       </div>
+      <small v-for="n in tinyNotes" :key="n.name" class="table-note">{{ n.name }}: {{ n.text }}</small>
+      <GlossaryBlock
+        v-if="explained"
+        title="¿Qué significa cada columna?"
+        :items="COMPARISON_COLUMNS.map((col) => ({ symbol: col.symbol, text: col.text }))"
+      />
+      <p v-for="line in conclusions" :key="line" class="section-text final-line">{{ line }}</p>
     </template>
 
     <!-- Línea final -->
@@ -300,6 +339,17 @@ const substitutions = computed(() =>
 }
 
 .identity-name {
+  font-size: var(--text-small);
+  color: var(--color-ink-muted);
+}
+
+.intro {
+  color: var(--color-ink);
+}
+
+.table-note {
+  display: block;
+  margin-top: var(--space-2);
   font-size: var(--text-small);
   color: var(--color-ink-muted);
 }

@@ -9,7 +9,9 @@ from rest_framework.test import APITestCase
 from numeric_methods.examples_data import EXAMPLES
 from numeric_methods.serializers.differentiation import DifferentiationSerializer
 from numeric_methods.solvers.differentiation import display
-from numeric_methods.solvers.differentiation.finite_differences import solve_finite_differences
+from numeric_methods.solvers.differentiation.finite_differences import predicted_side, solve_finite_differences
+from numeric_methods.solvers.differentiation.formulas import BACKWARD, FORWARD
+from numeric_methods.tests import test_five_point, test_three_point
 
 URL = "/api/solve/diferencias-finitas/"
 EXAMPLE = {example["id"]: example for example in EXAMPLES["diferencias-finitas"]}
@@ -356,3 +358,122 @@ class EndpointTests(APITestCase):
         self.assert_400(self.post(mode="table", points=[[0, 0], [0, 1]]), "estrictamente crecientes")
         self.assert_400(self.post(mode="table", points=[[0, 0]]), "entre 2 y 20 puntos")
         self.assert_400(self.post(mode="table", points=[[0, 0], [1, None]]), "Fila 2: falta el valor de y")
+
+
+class ExplanationTests(SimpleTestCase):
+    """Datos del paso a paso explicado (sólo diferencias progresiva y regresiva)."""
+
+    def test_sine_backward_first_row(self):
+        result = example("dif-seno")
+        item = row(result, 1, "backward")
+        x0, neighbor = sorted(item["points"], key=lambda p: abs(p["offset"]))
+        # Punto: 1 − 0.1 = 0.9, exacto.
+        self.assertEqual(result["x0_display"]["text"], "1")
+        self.assertEqual(row(result, 1, "h")["text"], "0.1")
+        self.assertEqual(neighbor["display"]["text"], "0.9")
+        # Sustituciones sin(1) y sin(0.9), con 7 decimales (regla de coherencia).
+        self.assertEqual(result["function"]["template"], r"\sin{\left(@@0@@ \right)}")
+        self.assertEqual((x0["f_display"], neighbor["f_display"]), ("0.841471", "0.7833269"))
+        self.assertEqual(item["decimals"], 7)
+        self.assertEqual(item["numerator_display"], "0.0581441")
+        self.assertEqual(display.fixed(item["D"]), "0.581441")
+        # f'(1) = cos(1) y error real.
+        exact = result["verification"]["substitution"]
+        self.assertEqual(exact["function_text"], "cos(x)")
+        self.assertEqual(display.fixed(exact["value"]), "0.540302")
+        self.assertEqual(display.fixed(item["real_error"]), "0.041138")
+        # M = |f''(1)| = |−sin(1)|, en x = 1.
+        self.assertEqual(item["x_M"], 1.0)
+        self.assertEqual(item["M_substitution"]["function_text"], "-sin(x)")
+        self.assertEqual(display.fixed(item["M_substitution"]["value"]), "-0.841471")
+        self.assertEqual(display.fixed(item["M"]), "0.841471")
+        # Cota (0.1/2)·M = 0.05·M, sin marca R.
+        self.assertEqual(item["half_h"]["text"], "0.05")
+        self.assertEqual(display.fixed(item["bound"]), "0.042074")
+        self.assertTrue(item["within_bound"])
+        self.assertFalse(item["by_rounding"])
+        self.assertFalse(item["equals_bound"])
+        # Sobreestima, como predice f'' < 0 con la regresiva.
+        self.assertEqual(item["side"], "over")
+        self.assertEqual(item["predicted_side"], "over")
+        self.assertEqual(result["curvature"]["sign"], -1)
+
+    def test_sine_backward_second_row(self):
+        result = example("dif-seno")
+        item = row(result, 2, "backward")
+        self.assertEqual(row(result, 2, "h")["text"], "0.05")
+        neighbor = next(p for p in item["points"] if p["offset"] == -1)
+        self.assertEqual(neighbor["display"]["text"], "0.95")
+        self.assertEqual(item["decimals"], 8)
+        self.assertEqual(display.fixed(item["D"]), "0.56111")
+        self.assertEqual(display.fixed(item["estimated_error"]), "0.020331")
+        self.assertFalse(item["below_tolerance"])
+        self.assertEqual(display.fixed(item["real_error"]), "0.020807")
+        self.assertEqual(display.fixed(item["bound"]), "0.021037")
+        self.assertEqual(display.fixed(item["ratio"], 4), "0.5058")
+        self.assertEqual(result["min_rows"], 6)
+
+    def test_ln_forward_underestimates(self):
+        result = example("dif-burden-ln")
+        forward = row(result, 1, "forward")
+        self.assertEqual(forward["numerator_display"], "0.0540672")
+        # ln x es cóncava: la progresiva queda por debajo y la regresiva por encima.
+        self.assertEqual((forward["side"], forward["predicted_side"]), ("under", "under"))
+        backward = row(result, 1, "backward")
+        self.assertEqual((backward["side"], backward["predicted_side"]), ("over", "over"))
+        self.assertEqual(result["curvature"]["sign"], -1)
+
+    def test_predicted_side_rule(self):
+        self.assertEqual(predicted_side(FORWARD, 1), "over")
+        self.assertEqual(predicted_side(FORWARD, -1), "under")
+        self.assertEqual(predicted_side(BACKWARD, 1), "under")
+        self.assertEqual(predicted_side(BACKWARD, -1), "over")
+        self.assertIsNone(predicted_side(FORWARD, 0))
+
+    def test_derivative_breakdown(self):
+        power, x_rule, constant = "regla de la potencia", "la derivada de x respecto a x es 1", "derivada de una constante"
+        cases = {
+            "dif-seno": (["derivada de la función seno"], "cos(x)", ["derivada de la función coseno"], "-sin(x)"),
+            "dif-burden-ln": (["derivada de la función logaritmo natural"], "1/x", [power], "-1/x^2"),
+            "dif-cubica": ([power, power, x_rule], "3*x^2 - 4*x + 1", [power, x_rule, constant], "6*x - 4"),
+        }
+        for example_id, (rules1, text1, rules2, text2) in cases.items():
+            with self.subTest(example=example_id):
+                fn = example(example_id)["function"]
+                self.assertEqual([t["rule"] for t in fn["derivative"]["steps"]["terms"]], rules1)
+                self.assertEqual(fn["derivative"]["text"], text1)
+                second = fn["higher_derivatives"]["2"]
+                self.assertEqual([t["rule"] for t in second["steps"]["terms"]], rules2)
+                self.assertEqual(second["text"], text2)
+
+    def test_linear_error_equals_bound_without_R(self):
+        result = example("dif-lineal")
+        for k in range(1, len(result["iterations"]) + 1):
+            for key in ("forward", "backward"):
+                item = row(result, k, key)
+                self.assertEqual((item["real_error"], item["bound"]), (0.0, 0.0))
+                self.assertTrue(item["within_bound"])
+                self.assertTrue(item["equals_bound"])
+                self.assertFalse(item["by_rounding"])
+                self.assertEqual(item["side"], "equal")
+        final = result["verification"]["final"]["forward"]
+        self.assertTrue(final["equals_bound"])
+        self.assertEqual(final["matching_decimals"], 6)
+
+    def test_conclusion_decimals(self):
+        final = example("dif-seno")["verification"]["final"]["backward"]
+        self.assertEqual(final["matching_decimals"], 3)
+
+    def test_three_and_five_point_unchanged(self):
+        # Los datos del paso a paso explicado no llegan a 3 y 5 puntos.
+        for module in (test_three_point, test_five_point):
+            for example_id in module.EXAMPLE:
+                with self.subTest(example=example_id):
+                    result = module.example(example_id)
+                    self.assertNotIn("min_rows", result)
+                    self.assertNotIn("curvature", result)
+                    for step in result["iterations"]:
+                        for item in step["extra"].values():
+                            if isinstance(item, dict) and "points" in item:
+                                for key in ("side", "half_h", "equals_bound", "below_tolerance"):
+                                    self.assertNotIn(key, item)
