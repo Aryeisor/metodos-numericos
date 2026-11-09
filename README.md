@@ -3,7 +3,7 @@
 Aplicación web full-stack para resolver, paso a paso, sistemas de ecuaciones
 **lineales** y **no lineales**, las **raíces de polinomios** con métodos
 iterativos, la **derivada numérica** con fórmulas de diferencias finitas y la
-**integral numérica** con reglas de integración (métodos del trapecio y de Simpson e integración de Romberg), y para
+**integral numérica** con reglas de integración (métodos del trapecio y de Simpson, integración de Romberg y cuadratura gaussiana), y para
 estudiar la teoría de cada método.
 
 | Categoría | Método | Qué resuelve |
@@ -19,6 +19,7 @@ estudiar la teoría de cada método.
 | Integración numérica | **Método del trapecio** | `∫ₐᵇ f(x) dx` con la regla simple y la compuesta, refinando `n` (con la recurrencia que aprovecha los puntos ya evaluados), o desde una tabla de datos con espaciado no uniforme (de 2 a 30 puntos) |
 | Integración numérica | **Método de Simpson** | `∫ₐᵇ f(x) dx` con las reglas 1/3 (`n` par) y 3/8 (`n` múltiplo de 3), simples y compuestas, refinando `n`, o desde una tabla igualmente espaciada (de 3 a 30 puntos; con `n` impar, la combinación 1/3 + 3/8) |
 | Integración numérica | **Integración de Romberg** | `∫ₐᵇ f(x) dx` con la **tabla triangular**: trapecios con `n = 1, 2, 4, …` (columna 1) mejorados con la extrapolación de Richardson (Simpson 1/3, Boole, …); desde `f(x)` (de 6 a 20 filas) o desde una tabla igualmente espaciada de `2ᵐ + 1` puntos (3, 5, 9, 17 o 33) |
+| Integración numérica | **Cuadratura gaussiana** | `∫ₐᵇ f(x) dx` con Gauss-Legendre de `m` puntos (simple, `N = 1`, o compuesta en `N` subintervalos), agregando un punto por fila; sólo desde `f(x)` (los nodos son irracionales: no hay modo tabla) y sin evaluar `f` en los extremos |
 
 - **Backend:** Django + Django REST Framework (API REST) y sympy para el
   manejo simbólico de las ecuaciones.
@@ -47,13 +48,14 @@ estudiar la teoría de cada método.
 
 ### Vista «Resolver» (`/resolver/<método>`)
 
-- **Ejemplos precargados** por método (70 en total: 6 lineales compartidos por
+- **Ejemplos precargados** por método (78 en total: 6 lineales compartidos por
   Jacobi y Gauss-Seidel, 4 de Punto Fijo, 3 de Newton, 9 de Bairstow, 8 de
   diferencias finitas, 8 de la fórmula de 3 puntos, 8 de la de 5 puntos, 8
-  del método del trapecio, 8 del método de Simpson y 8 de Romberg),
+  del método del trapecio, 8 del método de Simpson, 8 de Romberg y 8 de la
+  cuadratura gaussiana),
   que se cargan en el
   formulario con un clic.
-- **Botón «Limpiar»** al lado de «Resolver», en los once métodos: deja la
+- **Botón «Limpiar»** al lado de «Resolver», en los doce métodos: deja la
   vista como al abrir el método (formulario con su tamaño y valores
   iniciales, tolerancia, máximo de iteraciones y opciones por defecto del
   método) y borra el resultado, los errores, las advertencias, las vistas
@@ -101,6 +103,12 @@ estudiar la teoría de cada método.
   - Integración de Romberg: el mismo formulario sin `n₀` (siempre empieza con
     `n = 1`), con **máximo de filas** de 6 a 20 (por defecto 15). En modo
     tabla, `2ᵐ + 1` puntos igualmente espaciados (3, 5, 9, 17 o 33).
+  - Cuadratura gaussiana: sólo el modo **Función**. En lugar del selector de
+    modo, una nota explica por qué no hay modo tabla (los nodos son
+    irracionales) con enlaces al Resolver del trapecio, Simpson y Romberg. En
+    la configuración, los **subintervalos `N`** (de 1 a 50, por defecto 1, con
+    su explicación), la tolerancia (`0.000001`) y el **máximo de puntos** (12,
+    de 6 a 20). «Limpiar» deja `f`, `a` y `b` vacíos, `N = 1`, `0.000001` y 12.
 - **Barra de símbolos matemáticos** (√, xⁿ, log, ln, exp, sin, cos, tan, π, e,
   |x|, paréntesis y un desplegable «Más funciones» con trigonométricas
   inversas e hiperbólicas). Inserta en la posición del cursor del campo activo
@@ -145,8 +153,9 @@ estudiar la teoría de cada método.
   refinamiento (o la de segmentos) con paso a paso, el gráfico de
   convergencia y la «Comprobación» (ver su [detalle](#método-del-trapecio)).
   El gráfico de trapecios (`components/TrapezoidChart.vue`) es genérico: lo
-  reutilizan Simpson (con el **gráfico de parábolas y cúbicas**) y Romberg
-  (con el **gráfico de segmentos** de las columnas 1 a 3).
+  reutilizan Simpson (con el **gráfico de parábolas y cúbicas**), Romberg
+  (con el **gráfico de segmentos** de las columnas 1 a 3) y la cuadratura
+  gaussiana (con el **gráfico de rectángulos**).
 - En el **método de Simpson**, la misma organización: resumen por regla con
   la **comparación con el trapecio** (mismo `n`, filas 1 y última), derivadas
   hasta `f⁽⁴⁾`, el **gráfico de parábolas y cúbicas** (selector de regla y de
@@ -164,6 +173,14 @@ estudiar la teoría de cada método.
   diagonal, error estimado y tolerancia), el paso a paso plegable de cada
   fila y la «Comprobación» con las identidades y la comparación de costo
   (ver su [detalle](#integración-de-romberg)).
+- En la **cuadratura gaussiana**: resumen (`G` de la última fila con `m` y
+  `N`, la integral con su rótulo, `Eₜ`, `εₜ`, evaluaciones totales y de la
+  última fila), datos con el **cambio de variable** a `[−1, 1]` y su glosario,
+  las derivadas pares para la cota (plegadas si son largas), las fórmulas con
+  sus glosarios, el **gráfico de rectángulos** (selector de `m`), la tabla de
+  refinamiento con tooltips y leyenda, el gráfico de convergencia, el paso a
+  paso de cada fila y la «Comprobación» con los **momentos** y la comparación
+  de costo (ver su [detalle](#cuadratura-gaussiana)).
 
 ### Vista «Teoría» (`/teoria/<método>`)
 
@@ -1093,6 +1110,87 @@ secciones).
   | 7 | Tabla de Chapra con h = 0.1 (9 puntos) + función | 4 filas: [0.1728], [1.0688, 1.367467], [1.4848, 1.623467, 1.640533], [1.6008, 1.639467, 1.640533, 1.640533]; Eₜ = 0 |
   | 8 | Tabla de `e^(−x²)` en x = 0, 0.25, …, 1 (5 puntos) | 3 filas: [0.68394], [0.73137, 0.74718], [0.742984, 0.746855, 0.746834]; mejor valor 0.746834 |
 
+### Cuadratura gaussiana
+
+- **Fórmula** (Gauss-Legendre, notación de Chapra). Simple (`N = 1`), con `m`
+  puntos: `I ≈ (b − a)/2 · Σ wᵢ·f(xᵢ)` con el **cambio de variable**
+  `xᵢ = (b + a)/2 + (b − a)/2·tᵢ` (`dx = (b − a)/2·dt`: lleva `[a, b]` a
+  `[−1, 1]`, donde están calculados los nodos y pesos). **Compuesta:** `[a, b]`
+  en `N` subintervalos de ancho `H = (b − a)/N`, centros
+  `c_j = a + (j − ½)H` y la fórmula simple en cada uno:
+  `I ≈ Σⱼ H/2 · Σᵢ wᵢ·f(c_j + H/2·tᵢ)`.
+- **Nodos y pesos** (`solvers/integration/gauss.py`, `nodes_and_weights`):
+  los nodos son las raíces del polinomio de Legendre `P_m(t)`, calculadas con
+  el método de Newton sobre la recurrencia
+  `(k + 1)P_(k+1) = (2k + 1)·t·P_k − k·P_(k−1)` desde `cos(π(i − ¼)/(m + ½))`
+  hasta que el cambio sea menor que `10⁻¹⁵`; las negativas son el reflejo de
+  las positivas (y 0 si `m` es impar). Pesos `wᵢ = 2/[(1 − tᵢ²)·P'_m(tᵢ)²]`.
+  Para `m ≤ 4` se envía además la forma exacta en LaTeX (`±1/√3`;
+  `0, ±√(3/5)` con `8/9, 5/9`; `±√(3/7 ∓ (2/7)√(6/5))` con `(18 ± √30)/36`).
+  Los tests comparan con esas formas (`≤ 10⁻¹⁴`) y, para `m = 1..20`,
+  revisan que los pesos sumen 2 y los nodos sean simétricos.
+- **Refinamiento por `m`:** la fila `k` usa `m = k` puntos con el `N` elegido
+  fijo: `G_m`, error estimado `|G_m − G_(m−1)|` («—» en la fila 1), `Eₜ`,
+  `εₜ`, la cota y las evaluaciones `m·N` (Gauss no reutiliza nodos). No hay
+  columna razón: el error no baja en una proporción fija (como 0.25 en el
+  trapecio) sino cada vez más rápido; la leyenda lo explica. **Parada:**
+  error estimado `≤` tolerancia y al menos 6 filas; si se llega al máximo de
+  puntos (de 6 a 20, por defecto 12), `converged = false` con advertencia.
+- **Cota** (hasta `m = 5`):
+  `|Eₜ| ≤ (b − a)·H^(2m)·(m!)⁴/((2m + 1)[(2m)!]³)·M₂ₘ`, con `M₂ₘ = máx|f⁽²ᵐ⁾|`
+  muestreado en 2001 puntos (con `N = 1` es la de Chapra,
+  `(b − a)^(2m+1)·…`). Las derivadas hasta `f⁽¹⁰⁾` se calculan en un proceso
+  hijo con el mismo límite de 3 s que la antiderivada (`exact.derivatives`,
+  que conserva las ya terminadas). Con `m > 5`, tiempo agotado o `f⁽²ᵐ⁾` no
+  finita en una muestra (por ejemplo `1/√x` en 0), la cota es «no disponible»
+  con una nota. Criterio ✔/⚠/R como en los otros métodos, con
+  `R = 2ε·[(H/2)·Σ wᵢ·Σₖ|términoₖ(xᵢ)| + |G|]`: se suman los valores
+  absolutos de los términos de `f` porque en el polinomio de Chapra se cancelan
+  y el redondeo de `f(xᵢ)` es mayor que `ε·|f(xᵢ)|`.
+- **Sin modo tabla:** los nodos son irracionales; el formulario lo explica y
+  enlaza al trapecio, Simpson y Romberg (y el API responde 400 a `mode: table`).
+- **No evalúa los extremos:** no se exige que `f` esté definida en `a` ni en
+  `b`; si no lo está, una nota lo dice («Gauss no evalúa los extremos, así que
+  puede calcular la integral, pero la convergencia puede ser lenta»), como una
+  ventaja frente a los otros métodos. Sí se exige (400) que `f` sea real y
+  finita en todos los nodos de la fila 1 (el mensaje dice el nodo y su `x`); un
+  nodo no finito en una fila posterior detiene el método con advertencia.
+- **Paso a paso de cada fila:** nodos y pesos (forma exacta y decimal), cada
+  nodo llevado a `[a, b]` (`x₁ = 0.4 + 0.4(−0.57735) = 0.16906`; con `N > 1`,
+  por subintervalo con `c_j` y `H/2`), `f(xᵢ)` sustituida en verde, `wᵢ·f(xᵢ)`
+  y su suma, el factor `(b − a)/2` (o `H/2` y la suma de subintervalos), el
+  error estimado en azul y verde, `Eₜ` y `εₜ`, y la cota con `f⁽²ᵐ⁾`, `M₂ₘ`
+  sustituida y la constante. Los nodos y productos usan la regla de coherencia
+  de decimales de los otros métodos; con `m·N > 16` las tablas se pliegan.
+- **Gráfico de rectángulos** (`TrapezoidChart` con `row.rects`): en cada nodo,
+  un rectángulo de altura `f(xᵢ)` y ancho `wᵢ·H/2` centrado en el nodo, con dos
+  tonos alternos semitransparentes (se ve dónde se superponen), los nodos
+  marcados, líneas tenues en los bordes de los subintervalos y selector de `m`.
+  Test: la suma de las áreas es `G_m` (`≤ 10⁻¹²·máx(1, |G|)`) y la de los
+  anchos, `b − a`.
+- **Momentos** (comprobación, con el `m` de la última fila): `Σ wᵢtᵢᵏ` frente a
+  `∫₋₁¹ tᵏ dt` (2/(k + 1) si `k` es par, 0 si es impar) para `k = 0, …, 2m − 1`
+  (✔) y la fila `k = 2m`, que ya no coincide (`m = 3`, `k = 6`: 0.24 frente a
+  2/7). Con `m` grande se muestran los 4 primeros, los 3 últimos y la fila `2m`.
+- **Comparación de costo** (con exacta o referencia): la primera fila de Gauss
+  con `|Eₜ| ≤ tolerancia` (`m·N` evaluaciones) frente al trapecio y Simpson
+  1/3 duplicando `n` y Romberg (primera fila de la diagonal), hasta `n = 2²²`.
+  Si `f` no está definida en `a` o en `b`, esos tres son «no aplicable
+  (evalúan los extremos)».
+- **Teoría:** todavía no tiene página; no aparece en «Teoría ▾».
+- **Ejemplos** (tolerancia `0.000001`, máximo 12):
+
+  | # | Datos | N | Resultado |
+  | --- | --- | --- | --- |
+  | 1 | Chapra en `[0, 0.8]` | 1 | exacta 1.640533; `x = 0.4 + 0.4t`; m = 1, 2, 3: 1.9648 (Eₜ = −0.324267, 19.7659 %, cota 8.533333), 1.822578 (Eₜ = −0.182044, 11.0967 %, cota 1.6384), 1.640533 (cota 0); m = 2: x = 0.16906 y 0.63094, f = 1.291851 y 3.264593, 0.4·4.556444 = 1.822578; fila 6; costo: Gauss 3, Romberg 5, Simpson 65, trapecio 2049 |
+  | 2 | `exp(-x^2)` en `[0, 1]` | 1 | referencia 0.746824; 0.778801, 0.746595, 0.746815, 0.746824; fila 6; costo: Gauss 4, Romberg 9, Simpson 17, trapecio 257 |
+  | 3 | `sin(x)` en `[0, π]` | 1 | exacta 2; 3.141593, 1.93582, 2.001389, 1.999984, 2; cotas 1.291928, 0.070838, 0.001498, 0.000017, 0; fila 6; costo: Gauss 5, Romberg 17, Simpson 65, trapecio 2049 |
+  | 4 | `x^6` en `[−1, 1]` | 1 | exacta 2/7; 0, 0.074074, 0.24, 0.285714 (exacta desde m = 4); m = 3: Eₜ = cota = 0.045714 sin R; fila 6 |
+  | 5 | `1/sqrt(x)` en `[0, 1]` | 1 | exacta 2; nota de ventaja (f no definida en 0); 1.414214, 1.65068, 1.750863, 1.806343, 1.8416, 1.865992, …, 1.930337; no converge con 12; cota no disponible; costo de los otros «no aplicable» |
+  | 6 | `sin(x)/x` en `[0, π]` | 1 | referencia 1.851937 (Si(x)); nota (f no definida en 0); 2, 1.848572, 1.851976, 1.851937; fila 6 |
+  | 7 | Chapra compuesta | 2 | exacta 1.640533; H = 0.4; 1.9008, 1.651911 (Eₜ = −0.011378, cota 0.1024), 1.640533; m = 2: x = 0.08453, 0.31547, 0.48453, 0.71547; fila 6 (12 evaluaciones en la última) |
+  | 8 | `exp(x)` en `[0, 4]` | 4 | exacta e⁴ − 1; 51.428356, 53.586127, 53.598124, 53.59815; fila 6 |
+
 ---
 
 ## API
@@ -1114,6 +1212,7 @@ Todas las rutas cuelgan de `/api/`.
 | POST | `/api/solve/trapecio/` | Aproxima `∫ₐᵇ f(x) dx` con el método del trapecio |
 | POST | `/api/solve/simpson/` | Aproxima `∫ₐᵇ f(x) dx` con el método de Simpson (reglas 1/3 y 3/8) |
 | POST | `/api/solve/romberg/` | Aproxima `∫ₐᵇ f(x) dx` con la integración de Romberg (tabla triangular) |
+| POST | `/api/solve/gauss/` | Aproxima `∫ₐᵇ f(x) dx` con la cuadratura gaussiana (Gauss-Legendre) |
 | POST | `/api/expressions/preview` | Valida una ecuación y devuelve su LaTeX (no resuelve nada) |
 
 ### Cuerpo de la petición
@@ -1249,6 +1348,25 @@ Cada `iterations[i].extra` es una fila de la tabla triangular: `values`
 `data_points` y `new_points`. La respuesta trae además `columns` (nombre y
 orden de cada columna), `evaluations`, `cost` (comparación de costo y su
 texto) y `verification` (`identities`, `final` y, en modo tabla, `data`).
+
+Cuadratura gaussiana: sólo modo función (`mode: "table"` responde 400), sin
+`n0`, con `subintervals` = `N` (de 1 a 50, por defecto 1) y `max_iterations`
+= máximo de puntos (de 6 a 20, por defecto 12):
+
+```json
+{ "function": "exp(-x^2)", "a": 0, "b": 1, "subintervals": 1, "tolerance": 0.000001, "max_iterations": 12 }
+```
+
+Cada `iterations[i].extra` es una fila (`m`, `evaluations`, `G`,
+`estimated_error`, `true_error`, `relative_error`, `bound`, `bound_reason`
+—`order`, `timeout` o `not_finite` si no hay cota—, `bound_info` con la
+constante, `(b − a)·H^(2m)` y `M`, `rounding`, la marca y `step`: nodos y
+pesos con su forma exacta y, por subintervalo, los puntos con su sustitución y
+productos). La respuesta trae además el cambio de variable (`center_display`,
+`half_width_display`, `H_display`, `half_display`, `centers`),
+`undefined_ends`, `function.derivatives`, `evaluations`, `cost`, `curve`,
+`chart_rows` (los rectángulos de cada `m`) y `verification` (`final`,
+`moments` y, si hay exacta, la antiderivada).
 
 Vista previa de una ecuación:
 
@@ -1408,7 +1526,8 @@ metodos/
 │       │                            #   exact.py (integral exacta o de referencia, con límite de
 │       │                            #   tiempo), trapezoid.py (modos función y tabla, recurrencia),
 │       │                            #   simpson.py (reglas 1/3 y 3/8, combinación y tabla),
-│       │                            #   romberg.py (tabla triangular, identidades y costo)
+│       │                            #   romberg.py (tabla triangular, identidades y costo),
+│       │                            #   gauss.py (nodos y pesos, filas por m, cota, momentos y costo)
 │       └── tests/                   # Tests unitarios y de API
 └── frontend/
     ├── Dockerfile                   # Compila con Node y sirve dist/ con nginx
@@ -1429,8 +1548,9 @@ metodos/
         │   └── differentiation/     # Diferencias, 3 y 5 puntos: formulario (función o tabla), vista de
         │                            # resultado, tablas de refinamiento, paso a paso, comprobación, PDF
         │                            # y teoría (theory/, con las respuestas del solver en JSON)
-        │   └── integration/         # Trapecio, Simpson y Romberg (Romberg*.vue, romberg*.js: tabla
-        │                            # triangular, convergencia, paso a paso por fila y PDF). Vistas de resultado, tabla de refinamiento con
+        │   └── integration/         # Trapecio, Simpson, Romberg (Romberg*.vue, romberg*.js: tabla
+        │                            # triangular, convergencia, paso a paso por fila y PDF) y Gauss
+        │                            # (Gauss*.vue, gauss*.js: vista, paso a paso, comprobación y PDF). Vistas de resultado, tabla de refinamiento con
         │                            # paso a paso explicado (explain.js, simpsonExplain.js), glosarios
         │                            # (glossary.js, simpsonGlossary.js), tabla de segmentos o de puntos,
         │                            # comprobación (AntiderivativeCheck compartida), PDF (pdf.js exporta
@@ -1581,14 +1701,14 @@ cd backend
 python manage.py test numeric_methods
 ```
 
-**482 tests**, todos en verde:
+**508 tests**, todos en verde:
 
 | Archivo | Tests | Qué cubre |
 | --- | --- | --- |
 | `test_solvers.py` | 23 | Jacobi y Gauss-Seidel, y su comprobación (términos y residuos exactos, solución que se ve entera, coeficiente 0, solución decimal, orden original tras reordenar, no convergencia) |
 | `test_dominance.py` | 8 | Dominancia diagonal y reordenamiento de filas |
 | `test_api.py` | 13 | Endpoints de los métodos lineales y de ejemplos |
-| `test_registry.py` | 13 | Registro de métodos, catálogo y ejemplos por método |
+| `test_registry.py` | 13 | Registro de métodos, catálogo (con Gauss después de Romberg) y ejemplos por método |
 | `test_expressions.py` | 49 | Parser seguro, derivación y LaTeX |
 | `test_preview.py` | 31 | Endpoint de vista previa, logaritmos y límites de seguridad |
 | `test_fixed_point.py` | 41 | Punto Fijo: despeje automático, rechazos, actualización secuencial, endpoint y comprobación (soluciones enteras, decimales con funciones, «lado = lado», no convergencia) |
@@ -1601,6 +1721,7 @@ python manage.py test numeric_methods
 | `test_trapezoid.py` | 43 | Método del trapecio: fracciones exactas (`x²` en [0, 2] con `Eₜ = Eₐ`, polinomio de Chapra), ejemplo 1 (filas 1 a 3, parada en 13, razón ≈ 0.25, comprobación término a término, paso a paso de la fila 1), recurrencia igual a la fórmula directa (ejemplos 1 y 6, filas 2 a 8, y a mano), filas de parada de los ejemplos, recta exacta, `\|Eₜ\| ≤ cota + R`, `x²` con error = cota, integral exacta o de referencia (erf, `sin`, `1/x`), límite de tiempo (simulado y real), notas de concavidad, modo tabla (uniforme, no uniforme, dato alterado, sin función), singularidad interior, errores 400 y endpoint. Explicaciones: ejemplo 4 fila 1 (sustituciones, suma ponderada, `f'(a)`, `f'(b)`, `f̄''`, `Eₐ`, `M₂`, cota, igualdad sin R) y filas 2 y 3 (puntos nuevos, sumas, `T`), desglose de `f'` y `f''` (`x²`, Chapra, `eˣ`), `M₂` sustituida en Chapra, antiderivada por términos y `F' = f` (`x²`, Chapra, `x·eˣ` sin desglose), nota de `Eₜ` que se ve 0 (ejemplo 6), ninguna R con `\|Eₜ\| ≤ cota·(1 + 10⁻⁹)`, paréntesis de la integral y puntos enviados (1024 o 16). Teoría: filas 1 a 3 del ejemplo 1 y respuestas guardadas iguales a las del solver |
 | `test_simpson.py` | 35 | Método de Simpson: fracciones exactas (`x⁴` con 1/3 y 3/8, Chapra con n = 2, 3 y 4), exactitud para cúbicas, ejemplo 1 (filas 1 a 3 de las dos reglas, `Eₐ = Eₜ`, `f̄⁽⁴⁾ = −2400`, `M₄ = 21600` en x = 0, parada en la fila 7, comparación con el trapecio 2.1 y 149.8 veces, identidad `(4T₂ − T₁)/3`, razón ≈ 0.0625, pesos del paso a paso), identidad en fracciones para n = 2, 4 y 8, reutilización de evaluaciones igual a la fórmula de pesos (ejemplos 1 y 6, filas 1 a 8), filas de parada de los ejemplos, `x⁴` con `\|Eₜ\|` = cota sin R, `\|Eₜ\| ≤ cota + R`, notas de concavidad, modo tabla (ejemplos 7 y 8 con pesos, suma, partes y punto de unión; `x⁴` en x = 0..6 con 1556 y 1557; n = 3 sólo 3/8; dato alterado), derivadas `f'''` y `f⁽⁴⁾`, errores 400 (n₀ impar, n₀ no múltiplo de 3, tabla no uniforme con la sugerencia, n impar con 1/3, n no múltiplo de 3 con 3/8, 2 puntos, a ≥ b, `1/x` en a = 0), endpoint y piezas del gráfico. Teoría: fila 1 de las dos reglas del ejemplo 1 y respuestas guardadas iguales a las del solver |
 | `test_romberg.py` | 35 | Integración de Romberg: gráfico de segmentos (área de las piezas = `Rᵢ,ₖ` en las columnas 1 a 3 de los ejemplos 1, 2 y 7, valores de control, sólo `n ≤ 64` y columnas ≤ 3, modo tabla); fracciones exactas (Chapra en [0, 4/5] filas 1 a 3; `x⁵` en [0, 2] filas 1 a 4), ejemplo 1 (filas 1 a 3, `R₃,₃` mostrado con 8 decimales por la coherencia, parada en la fila 6 con 33 evaluaciones, error estimado 0.273067 y `εₐ` = 16.644993 % en la fila 3, comparación de costo, tabla de errores), identidades columna 1 = trapecio directo y columna 2 = motor de Simpson (filas 1 a 8 de los ejemplos 1, 2 y 6), filas de parada y diagonales de los ejemplos 2 a 6, advertencia de función poco suave (sólo el ejemplo 5; el 1 es el caso del ruido de redondeo), comparación de costo de los ejemplos 2 a 6 y el texto «más de …», modo tabla (ejemplos 7 y 8 con todas sus celdas, 7 puntos y espaciado no uniforme con 400 y la sugerencia, 3 y 33 puntos, dato alterado), errores 400 (a ≥ b, `1/x` en a = 0, otra variable, máximo de filas fuera de 6..20), singularidad interior y endpoint. Teoría: filas 1 a 3 del ejemplo 1 y respuestas guardadas (ejemplos 1, 2 y 5) iguales a las del solver |
+| `test_gauss.py` | 26 | Cuadratura gaussiana: nodos y pesos iguales a las formas exactas (m = 1 a 4, `≤ 10⁻¹⁴`), pesos que suman 2 y nodos simétricos (m = 1 a 20), exactitud para `tᵏ` con `k ≤ 2m − 1` y no con `k = 2m` (m = 1 a 6; 0.24 con m = 3), ejemplo 1 (filas 1 a 3 con G, Eₜ, εₜ y cota; detalle de m = 2; parada en la fila 6; costo 3, 5, 65 y 2049; momentos), ejemplo 4 (Eₜ = cota sin R con m = 3, exacto desde m = 4), filas de parada y valores de los ejemplos 2, 3, 6, 7 y 8, ejemplo 5 (200 sin `f(0)`, nota, no converge, cota no disponible, costo «no aplicable»), compuesta (nodos del ejemplo 7, N = 1 igual a la simple, área de los rectángulos = G y anchos = b − a), `\|Eₜ\| ≤ cota + R` en todas las filas, límite de tiempo de las derivadas (simulado y real), errores 400 (a ≥ b, otra variable, N fuera de 1..50, máximo fuera de 6..20, modo tabla, `1/(x − 0.4)` en el nodo de m = 1) y endpoint |
 | `test_bairstow.py` | 30 | Bairstow: divisiones sintéticas, primera iteración de Chapra calculada a mano, ejemplos, raíces nulas, raíz doble, cierres directos, fallos, endpoint y comprobación de raíces (sustitución término a término, potencias faltantes, par complejo, raíz nula y residuo) |
 
 ---
@@ -1642,3 +1763,12 @@ python manage.py test numeric_methods
   la misma fórmula que el motor de Simpson salvo el redondeo. En modo tabla
   no hay comparación de costo (no hay `f` que evaluar con más puntos). Los
   límites `a` y `b` tienen las mismas limitaciones que el trapecio.
+- En la cuadratura gaussiana, la cota sólo se calcula hasta `m = 5` (necesita
+  `f⁽¹⁰⁾`) y `M₂ₘ` se estima con 2001 puntos, extremos incluidos: si `f` no
+  está definida en un extremo, la cota no está disponible aunque la integral
+  sí se calcule (ejemplos 5 y 6). Las derivadas se calculan en un proceso hijo
+  (en Windows su arranque suma unos 2 s la primera vez que se resuelve cada
+  función; luego quedan en caché). La comparación de costo calcula el
+  trapecio, Simpson y Romberg igual que la de Romberg (hasta `n = 2²²`). Con
+  `N = 50` y 20 puntos la respuesta lleva todos los nodos de todas las filas
+  (más de 10 000 puntos con su sustitución): es pesada pero funciona.
