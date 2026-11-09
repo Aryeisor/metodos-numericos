@@ -24,6 +24,11 @@ defineProps({
           el error aproximado con el promedio de f⁽⁴⁾, la combinación para un número impar de segmentos y el
           ejemplo del polinomio en [0, 0.8].)
         </template>
+        <template v-else-if="method === 'romberg'">
+          (Capítulo 22: integración de Romberg. Presenta la extrapolación de Richardson aplicada al trapecio, la
+          tabla triangular con la notación R<sub>i,k</sub>, el criterio de parada con εₐ y el ejemplo del
+          polinomio en [0, 0.8].)
+        </template>
       </li>
       <li>
         Burden, R. L., Faires, J. D., &amp; Burden, A. M. (2016).
@@ -37,10 +42,18 @@ defineProps({
           (Capítulo 4: la sección 4.3 deduce la regla de Simpson del polinomio de interpolación, su error con
           f⁽⁴⁾ y su exactitud para cúbicas; la sección 4.4, la regla compuesta y su cota de error.)
         </template>
+        <template v-else-if="method === 'romberg'">
+          (Sección 4.5: integración de Romberg, con la misma fórmula escrita como R<sub>k,j</sub>; la sección
+          4.2 presenta la extrapolación de Richardson.)
+        </template>
       </li>
       <li>
         Mathews, J. H., &amp; Fink, K. D. (2000). <em>Métodos numéricos con MATLAB</em> (3.ª ed.).
         Prentice Hall.
+      </li>
+      <li v-if="method === 'romberg'">
+        Romberg, W. (1955). Vereinfachte numerische Integration.
+        <em>Det Kongelige Norske Videnskabers Selskabs Forhandlinger, 28</em>(7), 30–36.
       </li>
     </ul>
   </div>

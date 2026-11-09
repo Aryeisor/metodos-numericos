@@ -1,7 +1,9 @@
 """Integración de Romberg: valores de referencia verificados con un script
 independiente (fracciones exactas y los ejemplos precargados)."""
 
+import json
 from fractions import Fraction
+from pathlib import Path
 
 from django.test import SimpleTestCase
 from rest_framework.test import APITestCase
@@ -11,6 +13,13 @@ from numeric_methods.serializers.integration import RombergSerializer
 from numeric_methods.solvers.integration import romberg as romberg_module
 from numeric_methods.solvers.integration.rules import SIMPSON_13, TRAPEZOID, apply
 from numeric_methods.solvers.integration.romberg import NOT_SMOOTH, solve_romberg
+
+# Respuestas del solver guardadas para la página de teoría (frontend).
+THEORY_EXAMPLE = (Path(__file__).resolve().parents[3] / "frontend" / "src" / "methods"
+                  / "integration" / "theory" / "rombergExample.json")
+# Ejemplos que usa la teoría: 1 (Chapra, con su gráfico de segmentos), 2
+# (e^(−x²): tabla de errores y razones) y 5 (√x: el caso lento).
+THEORY_KEYS = {"function": 1, "gauss": 2, "sqrt": 5}
 
 
 def chapra_exact(x):
@@ -412,3 +421,45 @@ class SegmentChartTests(SimpleTestCase):
         self.assertEqual(chart["x"], [0, 0.4, 0.8])
         self.assertIsNotNone(result["curve"])
         self.assertIsNone(example(8)["curve"])
+
+
+def theory_trimmed(result, chart):
+    """Como se guarda para la teoría: sin `request`; sin `chart_rows` ni
+    `curve` salvo en el ejemplo del gráfico; y los trapecios con más puntos
+    nuevos que `fold`, sólo con los 8 primeros y los 8 últimos (como el
+    trapecio y Simpson)."""
+    result = json.loads(json.dumps(result))
+    result.pop("request", None)
+    if not chart:
+        result.pop("chart_rows")
+        result.pop("curve")
+    for step in result["iterations"]:
+        trap = step["extra"]["trapezoid"]["step"]
+        if len(trap.get("points", [])) > trap["fold"]:
+            trap["points"] = trap["points"][:8] + trap["points"][-8:]
+    return result
+
+
+class TheoryExampleTests(SimpleTestCase):
+    """La página de teoría usa respuestas guardadas del solver: deben ser las
+    que el solver devuelve hoy y mostrar los valores de Chapra."""
+
+    def setUp(self):
+        self.saved = json.loads(THEORY_EXAMPLE.read_text(encoding="utf-8"))
+
+    def test_rows_one_to_three_of_example_one(self):
+        saved = rows(self.saved["function"])
+        shown = [[f"{v:.6f}".rstrip("0").rstrip(".") for v in row["values"]] for row in saved[:3]]
+        self.assertEqual(shown, [["0.1728"], ["1.0688", "1.367467"], ["1.4848", "1.623467", "1.640533"]])
+        self.assertEqual(f"{saved[1]['estimated_error']:.6f}", "1.194667")
+        self.assertEqual(f"{saved[2]['estimated_error']:.6f}", "0.273067")
+        self.assertEqual(f"{saved[2]['approx_error']:.6f}", "16.644993")
+        last = saved[2]["extrapolations"][-1]
+        self.assertEqual((last["same"], last["previous"], last["numerator"]), ("1.62346667", "1.36746667", "24.60800005"))
+        self.assertEqual(self.saved["function"]["cost"]["first_evaluations"], 5)
+
+    def test_saved_responses_match_solver(self):
+        for key, number in THEORY_KEYS.items():
+            with self.subTest(example=number):
+                stored = {k: v for k, v in self.saved[key].items() if k != "request"}
+                self.assertEqual(theory_trimmed(example(number), key == "function"), stored)

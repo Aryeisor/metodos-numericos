@@ -11,7 +11,7 @@ import GlossaryBlock from '../../../components/GlossaryBlock.vue'
 import MathFormula from '../../../components/MathFormula.vue'
 import TrapezoidChart from '../../../components/TrapezoidChart.vue'
 import AlgorithmSteps from '../../../components/theory/AlgorithmSteps.vue'
-import { solveRouteName } from '../../routeNames'
+import { solveRouteName, theoryRouteName } from '../../routeNames'
 import IntegrationRefinementTable from '../IntegrationRefinementTable.vue'
 import SimpsonPointsTable from '../SimpsonPointsTable.vue'
 import SimpsonVerification from '../SimpsonVerification.vue'
@@ -19,6 +19,7 @@ import TrapezoidStepDetail from '../TrapezoidStepDetail.vue'
 import { cell } from '../formulas'
 import { simpsonRowSteps, weightReason } from '../simpsonExplain'
 import { SIMPSON_GLOSSARIES } from '../simpsonGlossary'
+import IntegrationComparisonSection from './IntegrationComparisonSection.vue'
 import TrapezoidFigure from './TrapezoidFigure.vue'
 import { chapra } from './trapezoidContent'
 import {
@@ -289,7 +290,7 @@ const reason38 = (i, count) => weightReason(BLOCK_38.rule, i, count)
       </li>
     </ul>
 
-    <h4 class="table-caption">Simpson como trapecio mejorado (Richardson)</h4>
+    <h4 id="simpson-richardson" class="table-caption">Simpson como trapecio mejorado (Richardson)</h4>
     <p>
       Es el puente que se anunció en la teoría del trapecio. Por Euler-Maclaurin, el error del trapecio es
       aproximadamente <MathFormula expression="c\,h^2" />. Línea por línea: el trapecio con
@@ -311,7 +312,9 @@ const reason38 = (i, count) => weightReason(BLOCK_38.rule, i, count)
     </div>
     <p>
       Si se repite la combinación con los resultados de Simpson se obtiene <MathFormula expression="O(h^6)" />, y
-      así sucesivamente: eso es la <strong>integración de Romberg</strong>, la próxima página.
+      así sucesivamente: eso es la
+      <RouterLink :to="{ name: theoryRouteName('romberg') }"><strong>integración de Romberg</strong></RouterLink>, la
+      próxima página.
     </p>
 
     <!-- 5. Error y convergencia -->
@@ -514,106 +517,8 @@ const reason38 = (i, count) => weightReason(BLOCK_38.rule, i, count)
     </p>
   </div>
 
-  <!-- 9. Tabla comparativa -->
-  <div class="card">
-    <h2>Integración numérica: comparación de la categoría</h2>
-    <p>
-      El trapecio y las dos reglas de Simpson, frente a lo que vendrá. Romberg y Gauss se detallan en su página.
-    </p>
-    <div class="table-scroll">
-      <table class="comparison-table">
-        <thead>
-          <tr>
-            <th>Aspecto</th>
-            <th>Trapecio</th>
-            <th>Simpson 1/3</th>
-            <th>Simpson 3/8</th>
-            <th>Romberg</th>
-            <th>Gauss</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <th scope="row">Aproxima f con</th>
-            <td>Rectas</td>
-            <td>Parábolas (3 puntos)</td>
-            <td>Cúbicas (4 puntos)</td>
-            <td>Se detalla en su página</td>
-            <td>Se detalla en su página</td>
-          </tr>
-          <tr>
-            <th scope="row">Pesos</th>
-            <td><MathFormula expression="1, 2, \dots, 2, 1 \cdot \tfrac{h}{2}" /></td>
-            <td><MathFormula expression="1, 4, 2, \dots, 4, 1 \cdot \tfrac{h}{3}" /></td>
-            <td><MathFormula expression="1, 3, 3, 2, \dots, 3, 3, 1 \cdot \tfrac{3h}{8}" /></td>
-            <td>—</td>
-            <td>—</td>
-          </tr>
-          <tr>
-            <th scope="row">Condición sobre n</th>
-            <td>Cualquiera</td>
-            <td>Par</td>
-            <td>Múltiplo de 3</td>
-            <td>—</td>
-            <td>—</td>
-          </tr>
-          <tr>
-            <th scope="row">Error compuesto</th>
-            <td><MathFormula expression="-\frac{(b - a)h^2}{12} f''" /></td>
-            <td><MathFormula expression="-\frac{(b - a)h^4}{180} f^{(4)}" /></td>
-            <td><MathFormula expression="-\frac{(b - a)h^4}{80} f^{(4)}" /></td>
-            <td>—</td>
-            <td>—</td>
-          </tr>
-          <tr>
-            <th scope="row">Orden</th>
-            <td><MathFormula expression="O(h^2)" /></td>
-            <td><MathFormula expression="O(h^4)" /></td>
-            <td><MathFormula expression="O(h^4)" /></td>
-            <td>—</td>
-            <td>—</td>
-          </tr>
-          <tr>
-            <th scope="row">Exacta para grado</th>
-            <td><MathFormula expression="\le 1" /></td>
-            <td><MathFormula expression="\le 3" /></td>
-            <td><MathFormula expression="\le 3" /></td>
-            <td>—</td>
-            <td>—</td>
-          </tr>
-          <tr>
-            <th scope="row">Espaciado desigual</th>
-            <td>Sí</td>
-            <td>No</td>
-            <td>No</td>
-            <td>—</td>
-            <td>—</td>
-          </tr>
-          <tr>
-            <th scope="row">Chapra, menor n</th>
-            <td>{{ example.T1 }} (<MathFormula expression="n = 1" />)</td>
-            <td>{{ example.S13(1) }} (<MathFormula expression="n = 2" />)</td>
-            <td>{{ example.S38(1) }} (<MathFormula expression="n = 3" />)</td>
-            <td>—</td>
-            <td>—</td>
-          </tr>
-          <tr>
-            <th scope="row">
-              Evaluaciones para <MathFormula expression="|E_t| \le 0.000001" /> en Chapra
-            </th>
-            <td>1601</td>
-            <td>47</td>
-            <td>58</td>
-            <td>—</td>
-            <td>—</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-    <p class="table-note">
-      La próxima página (Romberg) repite la combinación de Richardson en escalera, a partir de los trapecios.
-    </p>
-  </div>
+  <!-- 9. Tabla comparativa (compartida por la categoría) -->
+  <IntegrationComparisonSection />
 </template>
 
 <style scoped>

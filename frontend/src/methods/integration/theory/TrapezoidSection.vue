@@ -17,6 +17,7 @@ import IntegrationVerification from '../IntegrationVerification.vue'
 import SegmentsTable from '../SegmentsTable.vue'
 import TrapezoidStepDetail from '../TrapezoidStepDetail.vue'
 import { cell, percent } from '../formulas'
+import IntegrationComparisonSection from './IntegrationComparisonSection.vue'
 import TrapezoidFigure from './TrapezoidFigure.vue'
 import {
   ALGORITHM_STEPS,
@@ -265,7 +266,7 @@ const SQUARE_TICKS = [0, 1, 2].map((x) => ({ x, label: String(x) }))
       el promedio no la representa bien. Con 2 segmentos ya se parecen más.
     </p>
 
-    <div class="more-card">
+    <div id="euler-maclaurin" class="more-card">
       <p class="more-title">Para saber más: fórmula de Euler-Maclaurin (por qué Romberg funciona)</p>
       <p>Con sus primeros términos, el error del trapecio compuesto es</p>
       <div class="formula-box theory-formula"><MathFormula :expression="tex.eulerMaclaurin" display-mode /></div>
@@ -304,7 +305,7 @@ const SQUARE_TICKS = [0, 1, 2].map((x) => ({ x, label: String(x) }))
     </p>
     <div class="formula-box theory-formula"><MathFormula :expression="recurrenceCheck" display-mode /></div>
 
-    <h4 class="table-caption">Puente a Simpson y Romberg (Richardson)</h4>
+    <h4 id="richardson-trapecio" class="table-caption">Puente a Simpson y Romberg (Richardson)</h4>
     <p>
       Como el error es aproximadamente <MathFormula expression="c\,h^2" />, combinar dos resultados
       elimina ese término. Línea por línea: el error con <MathFormula expression="n" />; el error con
@@ -505,75 +506,8 @@ const SQUARE_TICKS = [0, 1, 2].map((x) => ({ x, label: String(x) }))
     </p>
   </div>
 
-  <!-- 9. Tabla comparativa -->
-  <div class="card">
-    <h2>Integración numérica: comparación de la categoría</h2>
-    <p>
-      Por ahora, el trapecio frente a lo que vendrá. Cada método se detalla en su página; cuando estén sus
-      teorías, esta tabla se completará.
-    </p>
-    <div class="table-scroll">
-      <table class="comparison-table">
-        <thead>
-          <tr>
-            <th>Aspecto</th>
-            <th>Trapecio</th>
-            <th>Simpson 1/3</th>
-            <th>Romberg</th>
-            <th>Gauss</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <th scope="row">Aproxima f con</th>
-            <td>Rectas (grado 1)</td>
-            <td>Parábolas (grado 2)</td>
-            <td>Trapecios + Richardson</td>
-            <td>Polinomio en nodos óptimos</td>
-          </tr>
-          <tr>
-            <th scope="row">Orden del error (compuesta)</th>
-            <td><MathFormula expression="O(h^2)" /></td>
-            <td><MathFormula expression="O(h^4)" /></td>
-            <td>Sube en cada nivel</td>
-            <td>Muy alto con pocos puntos</td>
-          </tr>
-          <tr>
-            <th scope="row">Exacta para grado</th>
-            <td><MathFormula expression="\le 1" /></td>
-            <td><MathFormula expression="\le 3" /></td>
-            <td>Aumenta por nivel</td>
-            <td><MathFormula expression="\le 2m - 1" /> con <MathFormula expression="m" /> puntos</td>
-          </tr>
-          <tr>
-            <th scope="row">Espaciado desigual</th>
-            <td>Sí</td>
-            <td>No</td>
-            <td>No</td>
-            <td>No (nodos fijos)</td>
-          </tr>
-          <tr>
-            <th scope="row">Sirve con datos tabulados</th>
-            <td>Sí</td>
-            <td>Sí, si es uniforme y <MathFormula expression="n" /> es par</td>
-            <td>Sólo si hay <MathFormula expression="n" /> en potencias de 2</td>
-            <td>No</td>
-          </tr>
-          <tr>
-            <th scope="row">Resultado en Chapra (<MathFormula expression="n = 2" />)</th>
-            <td>{{ example.T(2) }}</td>
-            <td>{{ simpsonN2 }}</td>
-            <td>—</td>
-            <td>—</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-    <p class="table-note">
-      La próxima página (Simpson) mejora el orden a <MathFormula expression="O(h^4)" /> usando parábolas.
-      Los detalles de Simpson, Romberg y Gauss se desarrollan en su página.
-    </p>
-  </div>
+  <!-- 9. Tabla comparativa (compartida por la categoría) -->
+  <IntegrationComparisonSection />
 </template>
 
 <style scoped>
