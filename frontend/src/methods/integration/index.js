@@ -66,7 +66,6 @@ export default {
       resultView: RombergResult,
     },
     // Cuadratura gaussiana: sólo modo función, con N subintervalos y máximo de puntos.
-    // Sin entrada en THEORY_SECTIONS hasta que tenga su teoría.
     gauss: {
       createStore: createGaussStore,
       configFields: GaussConfigFields,

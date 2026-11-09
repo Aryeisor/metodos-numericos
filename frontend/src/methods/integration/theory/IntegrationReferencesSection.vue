@@ -29,6 +29,11 @@ defineProps({
           tabla triangular con la notación R<sub>i,k</sub>, el criterio de parada con εₐ y el ejemplo del
           polinomio en [0, 0.8].)
         </template>
+        <template v-else-if="method === 'gauss'">
+          (Capítulo 22: cuadratura de Gauss. Deduce la fórmula de 2 puntos por coeficientes indeterminados, presenta
+          el cambio de variable a [a, b], la tabla de nodos y pesos de Gauss-Legendre, el error con f⁽²ᵐ⁾ y el
+          ejemplo del polinomio en [0, 0.8].)
+        </template>
       </li>
       <li>
         Burden, R. L., Faires, J. D., &amp; Burden, A. M. (2016).
@@ -45,6 +50,10 @@ defineProps({
         <template v-else-if="method === 'romberg'">
           (Sección 4.5: integración de Romberg, con la misma fórmula escrita como R<sub>k,j</sub>; la sección
           4.2 presenta la extrapolación de Richardson.)
+        </template>
+        <template v-else-if="method === 'gauss'">
+          (Sección 4.7: cuadratura gaussiana, con los polinomios de Legendre, sus raíces como nodos, los pesos y el
+          cambio de variable a [a, b].)
         </template>
       </li>
       <li>

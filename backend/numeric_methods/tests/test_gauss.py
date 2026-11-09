@@ -1,7 +1,9 @@
 """Cuadratura gaussiana: valores de referencia verificados con un script
 independiente (formas exactas de los nodos y los ejemplos precargados)."""
 
+import json
 import math
+from pathlib import Path
 from unittest import mock
 
 from django.test import SimpleTestCase
@@ -12,6 +14,15 @@ from numeric_methods.serializers.integration import GaussSerializer
 from numeric_methods.solvers.integration import exact as exact_module
 from numeric_methods.solvers.integration import gauss as gauss_module
 from numeric_methods.solvers.integration.gauss import moments, nodes_and_weights, solve_gauss
+
+
+# Respuestas del solver guardadas para la página de teoría (frontend): ejemplos
+# 1 (Chapra, con su gráfico), 2 (e^(−x²)), 4 (x⁶), 5 (1/√x, con su gráfico) y
+# 7 (Chapra con N = 2).
+THEORY_EXAMPLE = (Path(__file__).resolve().parents[3] / "frontend" / "src" / "methods"
+                  / "integration" / "theory" / "gaussExample.json")
+THEORY_KEYS = {"function": 1, "gauss": 2, "sixth": 4, "root": 5, "composite": 7}
+THEORY_CHARTS = {"function", "root"}
 
 
 def solve(**data):
@@ -319,3 +330,34 @@ class EndpointTests(APITestCase):
         self.assertEqual(len(examples), 8)
         self.assertTrue(all(e["max_iterations"] == 12 and e["mode"] == "function" for e in examples))
         self.assertEqual([e["subintervals"] for e in examples], [1, 1, 1, 1, 1, 1, 2, 4])
+
+
+class TheoryExampleTests(SimpleTestCase):
+    """La página de teoría usa respuestas guardadas del solver: deben ser las
+    que el solver devuelve hoy y mostrar los valores de Chapra."""
+
+    def setUp(self):
+        self.saved = json.loads(THEORY_EXAMPLE.read_text(encoding="utf-8"))
+
+    def test_two_and_three_points_of_example_one(self):
+        saved = rows(self.saved["function"])
+        two, three = saved[1], saved[2]
+        self.assertEqual([p["x_display"] for p in two["step"]["groups"][0]["points"]], ["0.16906", "0.63094"])
+        self.assertEqual([p["f_display"] for p in two["step"]["groups"][0]["points"]], ["1.291851", "3.264593"])
+        self.assertEqual((f"{two['G']:.6f}", f"{two['true_error']:.6f}", f"{two['relative_error']:.4f}"),
+                         ("1.822578", "-0.182044", "11.0967"))
+        self.assertAlmostEqual(two["bound"], 1.6384, places=12)
+        self.assertEqual(f"{three['G']:.6f}", "1.640533")
+        self.assertLess(abs(three["true_error"]), 1e-12)
+        self.assertEqual(self.saved["function"]["cost"]["gauss_evaluations"], 3)
+
+    def test_saved_responses_match_solver(self):
+        for key, number in THEORY_KEYS.items():
+            with self.subTest(example=number):
+                result = json.loads(json.dumps(example(number)))
+                result.pop("request", None)
+                if key not in THEORY_CHARTS:
+                    result.pop("chart_rows")
+                    result.pop("curve")
+                stored = {k: v for k, v in self.saved[key].items() if k != "request"}
+                self.assertEqual(result, stored)
