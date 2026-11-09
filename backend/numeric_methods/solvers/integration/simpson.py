@@ -102,15 +102,16 @@ def _lagrange(xs, ys, x):
     return total
 
 
-def _pieces(xs, ys, parts):
+def _pieces(xs, ys, parts, samples=PIECE_SAMPLES):
     """Puntos muestreados del polinomio que pasa por cada grupo de puntos.
-    `parts`: [(regla, inicio, fin)] con índices de xs."""
+    `parts`: [(regla, inicio, fin)] con índices de xs (la regla sólo aporta
+    `key` y `segments_multiple`)."""
     pieces = []
     for rule, start, end in parts:
         m = rule.segments_multiple
         for s in range(start, end, m):
             px, py = xs[s:s + m + 1], ys[s:s + m + 1]
-            sample = [px[0] + (px[-1] - px[0]) * t / (PIECE_SAMPLES - 1) for t in range(PIECE_SAMPLES - 1)] + [px[-1]]
+            sample = [px[0] + (px[-1] - px[0]) * t / (samples - 1) for t in range(samples - 1)] + [px[-1]]
             pieces.append({"rule": rule.key, "x": sample, "y": [_lagrange(px, py, x) for x in sample]})
     return pieces
 

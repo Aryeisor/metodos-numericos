@@ -340,3 +340,75 @@ class EndpointTests(APITestCase):
         examples = self.client.get("/api/examples/?method=romberg").json()
         self.assertEqual(len(examples), 8)
         self.assertTrue(all(e["max_iterations"] == 15 and e["n0"] == 1 for e in examples))
+
+
+# --- Gráfico de segmentos ------------------------------------------------------------
+
+# Gauss-Legendre de 3 nodos: exacta para polinomios de grado ≤ 5.
+_GAUSS = ((-(3 / 5) ** 0.5, 5 / 9), (0.0, 8 / 9), ((3 / 5) ** 0.5, 5 / 9))
+
+
+def piece_area(piece, degree):
+    """∫ exacta del polinomio de grado `degree` que pasa por las muestras de la pieza:
+    se reconstruye por Lagrange con degree + 1 muestras repartidas y se integra con Gauss."""
+    last = len(piece["x"]) - 1
+    picks = sorted({round(j * last / degree) for j in range(degree + 1)})
+    px, py = [piece["x"][j] for j in picks], [piece["y"][j] for j in picks]
+
+    def p(x):
+        total = 0.0
+        for i, (xi, yi) in enumerate(zip(px, py)):
+            term = yi
+            for j, xj in enumerate(px):
+                if j != i:
+                    term *= (x - xj) / (xi - xj)
+            total += term
+        return total
+
+    lo, hi = px[0], px[-1]
+    half, mid = (hi - lo) / 2, (hi + lo) / 2
+    return half * sum(w * p(mid + half * t) for t, w in _GAUSS)
+
+
+class SegmentChartTests(SimpleTestCase):
+    def check_areas(self, result):
+        for chart in result["chart_rows"]:
+            values = rows(result)[chart["i"] - 1]["values"]
+            for k, pieces in enumerate(chart["columns"], start=1):
+                area = sum(piece_area(piece, (1, 2, 4)[k - 1]) for piece in pieces)
+                R = values[k - 1]
+                with self.subTest(i=chart["i"], k=k):
+                    self.assertLessEqual(abs(area - R), 1e-9 * max(1.0, abs(R)))
+
+    def test_areas_match_cells(self):
+        for number in (1, 2, 7):
+            with self.subTest(example=number):
+                self.check_areas(example(number))
+
+    def test_control_values(self):
+        cells = {(c["n"], k): sum(piece_area(p, (1, 2, 4)[k - 1]) for p in pieces)
+                 for c in example(1)["chart_rows"] for k, pieces in enumerate(c["columns"], start=1)}
+        expected = {(1, 1): 0.1728, (2, 1): 1.0688, (4, 1): 1.4848, (2, 2): 1.367467, (4, 2): 1.623467,
+                    (4, 3): 1.640533}
+        for key, value in expected.items():
+            self.assertEqual(round(cells[key], 6), value)
+        gauss = {c["n"]: sum(piece_area(p, 4) for p in c["columns"][2])
+                 for c in example(2)["chart_rows"] if len(c["columns"]) == 3}
+        self.assertEqual((round(gauss[4], 6), round(gauss[8], 6)), (0.746834, 0.746824))
+
+    def test_only_n_up_to_64_and_columns_up_to_3(self):
+        result = example(5)
+        self.assertEqual([c["n"] for c in result["chart_rows"]], [1, 2, 4, 8, 16, 32, 64])
+        self.assertTrue(len(rows(result)) > len(result["chart_rows"]))
+        for chart in result["chart_rows"]:
+            self.assertEqual(len(chart["columns"]), min(chart["i"], 3))
+            for k, pieces in enumerate(chart["columns"], start=1):
+                self.assertEqual(len(pieces), chart["n"] // (1, 2, 4)[k - 1])
+        self.assertIsNotNone(result["curve"])
+
+    def test_table_mode_uses_the_row_data(self):
+        result = example(7)
+        chart = result["chart_rows"][1]
+        self.assertEqual(chart["x"], [0, 0.4, 0.8])
+        self.assertIsNotNone(result["curve"])
+        self.assertIsNone(example(8)["curve"])

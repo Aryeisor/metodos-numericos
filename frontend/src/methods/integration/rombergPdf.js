@@ -23,6 +23,8 @@ import {
   rombergRowGroups,
 } from './rombergExplain'
 import {
+  CHART_GLOSSARY,
+  CHART_UNDRAWABLE,
   IDENTITY_COLUMNS,
   RECURRENCE_GLOSSARY,
   RICHARDSON_GLOSSARY,
@@ -48,7 +50,7 @@ function visibleColumns(count) {
   return count > MAX_COLUMNS ? [...all.slice(0, 4), null, ...all.slice(-3)] : all
 }
 
-export function exportRombergPdf({ result, methodName, convergenceImage }) {
+export function exportRombergPdf({ result, methodName, chartImage, chartTitle, convergenceImage }) {
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' })
   const isTable = result.mode === 'table'
   const fn = result.function
@@ -110,6 +112,13 @@ export function exportRombergPdf({ result, methodName, convergenceImage }) {
   if (hasI) y = write(y, `I = ${num(integral.value)} (${integral.label})`)
   for (const note of result.notes ?? []) y = write(y, `Nota: ${note}`)
   for (const warning of result.warnings ?? []) y = write(y, `Advertencia: ${warning}`)
+
+  // --- Gráfico de segmentos (la columna y la fila elegidas en pantalla) -------------
+  if (chartImage) {
+    y = addImage(doc, y, pdfSafe(sup(chartTitle ?? 'Gráfico de segmentos')), chartImage)
+    y = write(y, CHART_UNDRAWABLE)
+    y = glossary(y, '¿Cómo se lee este gráfico?', CHART_GLOSSARY)
+  }
 
   // --- Tabla triangular ---------------------------------------------------------
   const columns = visibleColumns(result.columns.length)

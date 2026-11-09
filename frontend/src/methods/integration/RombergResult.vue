@@ -1,7 +1,7 @@
 <script setup>
 // Vista completa del resultado de la integración de Romberg (`resultView`):
 // resumen → datos del problema (sólo la integral: Romberg no usa derivadas) →
-// tabla triangular (fórmulas y glosarios encima, leyenda debajo, tabla de
+// gráfico de segmentos (columnas 1 a 3) → tabla triangular (fórmulas y glosarios encima, leyenda debajo, tabla de
 // errores opcional) → tabla de convergencia de la diagonal → gráfico de
 // convergencia → paso a paso de cada fila → comprobación. Modo tabla: la
 // misma vista, con los datos que usa cada fila.
@@ -11,13 +11,20 @@ import GlossaryBlock from '../../components/GlossaryBlock.vue'
 import MathFormula from '../../components/MathFormula.vue'
 import { formatNumber } from '../../utils/iterationSteps'
 import { latexNumber } from '../../utils/latexFormulas'
+import TrapezoidChart from '../../components/TrapezoidChart.vue'
 import RombergConvergenceTable from './RombergConvergenceTable.vue'
 import RombergRowSteps from './RombergRowSteps.vue'
 import RombergTable from './RombergTable.vue'
 import RombergVerification from './RombergVerification.vue'
 import { integralLatex, percent } from './formulas'
 import { RECURRENCE_LATEX, RICHARDSON_LATEX, STOP_LATEX } from './rombergExplain'
-import { RECURRENCE_GLOSSARY, RICHARDSON_GLOSSARY, TABLE_LEGEND } from './rombergGlossary'
+import {
+  CHART_GLOSSARY,
+  CHART_UNDRAWABLE,
+  RECURRENCE_GLOSSARY,
+  RICHARDSON_GLOSSARY,
+  TABLE_LEGEND,
+} from './rombergGlossary'
 import { exportRombergPdf } from './rombergPdf'
 
 const props = defineProps({
@@ -47,6 +54,54 @@ watch(
   }
 )
 
+// --- Gráfico de segmentos: columnas 1 a 3 (Newton-Cotes), filas con n ≤ 64 -----------
+// Por defecto la columna 1 en la fila de mayor n ≤ 8 (la misma que va al PDF).
+const CHART_COLUMNS = [
+  { k: 1, label: 'Trapecio (columna 1)', shape: 'Rectas' },
+  { k: 2, label: 'Simpson 1/3 (columna 2)', shape: 'Parábolas' },
+  { k: 3, label: 'Boole (columna 3)', shape: 'Curvas de grado 4' },
+]
+const chartRows = computed(() => props.result.chart_rows ?? [])
+const rowsFor = (k) => chartRows.value.filter((r) => r.columns.length >= k)
+const chartColumns = computed(() => CHART_COLUMNS.filter((c) => rowsFor(c.k).length))
+const chartK = ref(1)
+const selectedI = ref(null)
+// Al cambiar de columna se conserva n si existe; si no, la de mayor n ≤ 8.
+function pickRow(k, n = null) {
+  const list = rowsFor(k)
+  return (list.find((r) => r.n === n) ?? list.filter((r) => r.n <= 8).at(-1) ?? list[0])?.i ?? null
+}
+function resetChart() {
+  chartK.value = 1
+  selectedI.value = pickRow(1)
+}
+resetChart()
+watch(() => props.result, resetChart)
+const columnRows = computed(() => rowsFor(chartK.value))
+const selectedRow = computed(() => {
+  const row = chartRows.value.find((r) => r.i === selectedI.value)
+  return row && row.columns.length >= chartK.value ? { ...row, pieces: row.columns[chartK.value - 1] } : null
+})
+function selectColumn(k) {
+  selectedI.value = pickRow(k, selectedRow.value?.n)
+  chartK.value = k
+}
+const areaLabel = computed(() => {
+  const row = selectedRow.value
+  if (!row) return ''
+  const k = chartK.value
+  const cell = rows.value[row.i - 1]
+  const error = cell.errors ? ` · Eₜ = ${formatNumber(cell.errors[k - 1])}` : ''
+  return `${CHART_COLUMNS[k - 1].shape} (n = ${row.n}): área R${row.i},${k} = ${formatNumber(cell.values[k - 1])}${error}`
+})
+const curveLabel = computed(() => {
+  const i = integral.value
+  if (!i || i.value === null) return 'f(x)'
+  return `f(x) · I = ${formatNumber(i.value)} (${i.kind === 'exact' ? 'exacta' : 'referencia'})`
+})
+const hasMoreRows = computed(() => chartRows.value.length < rows.value.length)
+const chartTitle = computed(() => `Gráfico de segmentos: ${CHART_COLUMNS[chartK.value - 1].label}`)
+
 // --- Gráfico de convergencia: |Eₜ| de las columnas 1 y 2 y de la diagonal, y el error estimado.
 const series = computed(() => {
   const about = reference.value ? ' (respecto a la referencia)' : ''
@@ -63,11 +118,14 @@ const series = computed(() => {
 })
 const toleranceLabel = computed(() => `Tolerancia (${formatNumber(props.result.tolerance)})`)
 
+const chartRef = ref(null)
 const convergenceRef = ref(null)
 function handleExportPdf() {
   exportRombergPdf({
     result: props.result,
     methodName: props.methodName,
+    chartImage: chartRef.value?.toImage() ?? null,
+    chartTitle: `${chartTitle.value} — ${areaLabel.value}`,
     convergenceImage: convergenceRef.value?.toImage() ?? null,
   })
 }
@@ -130,7 +188,59 @@ function handleExportPdf() {
       <p v-if="fn && fn.uses_trigonometry" class="section-text note">Las funciones trigonométricas se evalúan en radianes.</p>
     </section>
 
-    <!-- 3. Tabla triangular -->
+    <!-- 3. Gráfico de segmentos (columnas 1 a 3) -->
+    <TrapezoidChart
+      v-if="selectedRow"
+      ref="chartRef"
+      :curve="result.curve"
+      :row="selectedRow"
+      :title="chartTitle"
+      :area-label="areaLabel"
+      :curve-label="curveLabel"
+    >
+      <div v-if="chartColumns.length > 1" class="row-picker" role="radiogroup" aria-label="Columna del gráfico">
+        <span class="picker-label">Columna:</span>
+        <button
+          v-for="c in chartColumns"
+          :key="c.k"
+          type="button"
+          role="radio"
+          class="row-btn"
+          :class="{ 'is-active': c.k === chartK }"
+          :aria-checked="c.k === chartK"
+          @click="selectColumn(c.k)"
+        >
+          {{ c.label }}
+        </button>
+      </div>
+      <div v-if="columnRows.length > 1" class="row-picker" role="radiogroup" aria-label="Fila del gráfico">
+        <span class="picker-label">Segmentos:</span>
+        <button
+          v-for="r in columnRows"
+          :key="r.i"
+          type="button"
+          role="radio"
+          class="row-btn"
+          :class="{ 'is-active': r.i === selectedI }"
+          :aria-checked="r.i === selectedI"
+          @click="selectedI = r.i"
+        >
+          n = {{ r.n }}
+        </button>
+      </div>
+      <p class="section-text note">
+        Cada celda Rᵢ,ₖ de las columnas 1 a 3 es una regla de Newton-Cotes compuesta con n = 2^(i−1) segmentos: el área
+        sombreada es esa celda. Los dos tonos alternan para que se vea dónde empieza y termina cada pieza.
+        <template v-if="isTable">Las piezas pasan por los datos que usa la fila elegida.</template>
+      </p>
+      <p class="section-text note">{{ CHART_UNDRAWABLE }}</p>
+      <p v-if="hasMoreRows" class="section-text note">
+        Sólo se pueden ver las filas con n ≤ 64: con más segmentos las piezas ya no se distinguen de la curva.
+      </p>
+      <GlossaryBlock title="¿Cómo se lee este gráfico?" :items="CHART_GLOSSARY" />
+    </TrapezoidChart>
+
+    <!-- 4. Tabla triangular -->
     <section class="result-section">
       <h4>Tabla triangular de Romberg</h4>
       <p class="section-text">
@@ -174,13 +284,13 @@ function handleExportPdf() {
       </template>
     </section>
 
-    <!-- 4. Convergencia de la diagonal -->
+    <!-- 5. Convergencia de la diagonal -->
     <section class="result-section">
       <h4>Convergencia de la diagonal</h4>
       <RombergConvergenceTable :result="result" />
     </section>
 
-    <!-- 5. Gráfico de convergencia -->
+    <!-- 6. Gráfico de convergencia -->
     <ConvergenceChart
       ref="convergenceRef"
       :iterations="result.iterations"
@@ -197,7 +307,7 @@ function handleExportPdf() {
       <template v-if="!hasI">Sin valor exacto ni de referencia sólo se dibuja el error estimado.</template>
     </p>
 
-    <!-- 6. Paso a paso -->
+    <!-- 7. Paso a paso -->
     <section class="result-section">
       <h4>Paso a paso de cada fila</h4>
       <p class="section-text">
@@ -207,7 +317,7 @@ function handleExportPdf() {
       <RombergRowSteps :result="result" />
     </section>
 
-    <!-- 7. Comprobación -->
+    <!-- 8. Comprobación -->
     <RombergVerification :result="result" />
   </div>
 </template>
@@ -312,5 +422,44 @@ function handleExportPdf() {
 
 .errors-table {
   margin-top: var(--space-3);
+}
+
+.row-picker {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+}
+
+.picker-label {
+  font-size: var(--text-small);
+  color: var(--color-ink-muted);
+}
+
+.row-btn {
+  padding: var(--space-1) var(--space-3);
+  border: 1px solid var(--color-line-strong);
+  border-radius: var(--radius-control);
+  background: var(--color-surface);
+  color: var(--color-ink);
+  font-size: var(--text-small);
+  cursor: pointer;
+}
+
+.row-btn:hover {
+  background: var(--color-accent-soft);
+}
+
+.row-btn.is-active {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: var(--color-on-accent);
+  font-weight: var(--weight-semibold);
+}
+
+.row-btn:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
 }
 </style>

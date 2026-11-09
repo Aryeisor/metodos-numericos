@@ -139,3 +139,17 @@ export const IDENTITY_COLUMNS = [
   { symbol: 'S(n)', text: 'Simpson 1/3 con n segmentos, calculado aparte con el motor de Simpson (pesos 1, 4, 2, …, 4, 1).' },
   { symbol: '\\checkmark', text: '✔ si la diferencia es ≤ 10⁻¹²·máx(1, |valor|): son el mismo número salvo el redondeo.' },
 ]
+
+// Gráfico de segmentos: qué dibuja cada columna.
+export const CHART_GLOSSARY = [
+  { symbol: '\\text{Filas}', text: 'Cada fila duplica los segmentos (n = 1, 2, 4, 8, …).' },
+  {
+    symbol: '\\text{Columnas}',
+    text: 'La columna 1 une los puntos con rectas, la 2 con parábolas y la 3 con curvas de grado 4.',
+  },
+  { symbol: '\\text{Ajuste}', text: 'Mientras más alta la columna, mejor se pega la figura a la curva.' },
+]
+
+export const CHART_UNDRAWABLE =
+  'Desde la columna 4, Romberg combina resultados de forma algebraica; ya no equivale a reemplazar la curva por ' +
+  'piezas de un polinomio, así que no se puede dibujar.'

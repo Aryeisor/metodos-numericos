@@ -23,6 +23,7 @@ No depende de Django: puede usarse y testearse de forma aislada.
 
 import math
 from decimal import Decimal
+from types import SimpleNamespace
 
 import sympy as sp
 
@@ -34,14 +35,17 @@ from ..differentiation.display import _CONTEXT, _plain
 from ..differentiation.finite_differences import MACHINE_EPSILON, _Function, _uses_trigonometry, parse_function_of_x
 from . import exact as integral_module
 from .rules import SIMPSON_13, TRAPEZOID, apply
+from .simpson import _pieces
 from .trapezoid import (
     CATEGORY,
+    CHART_MAX_N,
     FOLD_FIRST_ROW,
     FOLD_NEW_POINTS,
     MIN_REFINEMENTS,
     SAMPLES,
     ZERO_INTEGRAL,
     IntegrationValidationError,
+    _curve,
     _data_checks,
     _first_row_display,
     _first_step,
@@ -51,6 +55,7 @@ from .trapezoid import (
     _step,
     _undefined,
     _where,
+    _x,
     _x_display,
 )
 
@@ -75,6 +80,11 @@ SMOOTH_ROWS = 3
 NOISE = 1000 * MACHINE_EPSILON
 # Decimales del paso a paso de Richardson (el mínimo que haga coincidir el resultado).
 STEP_DECIMALS = (6, 8, 10, 12)
+
+# Gráfico de segmentos: las columnas 1 a 3 son Newton-Cotes compuestas
+# (rectas, parábolas por 3 puntos, polinomios de grado 4 por 5 puntos); desde
+# la columna 4 ya no hay figura. Las rectas sólo necesitan sus 2 extremos.
+CHART_COLUMNS = ((TRAPEZOID, 2), (SIMPSON_13, 30), (SimpleNamespace(key="boole", segments_multiple=4), 30))
 
 NOT_SMOOTH = (
     "La diagonal mejora lentamente: f puede no ser suave en [a, b] (por ejemplo, una raíz cuadrada en 0 o un "
@@ -198,6 +208,13 @@ def _final(rows, I):
     return {"R": last["best"], "I": I, "true_error": last["true_error"], "relative_error": last["relative_error"]}
 
 
+def _chart_row(i, n, xs, ys):
+    """Fila del gráfico (n ≤ CHART_MAX_N): las piezas de las columnas 1 a min(i, 3)."""
+    return {"i": i, "n": n, "x": xs, "y": ys, "columns": [
+        _pieces(xs, ys, [(rule, 0, n)], samples) for rule, samples in CHART_COLUMNS[:min(i, 3)]
+    ]}
+
+
 # --- Comparación de costo ------------------------------------------------------------
 
 def _count(n):
@@ -297,7 +314,7 @@ def _function_mode(data):
     width = b - a
     _, f_terms = integral_module.substituter(function.expr, function.symbol)
     values = [function(a), function(b)]
-    rows, iterations, identities = [], [], []
+    rows, iterations, identities, chart_rows = [], [], [], []
     converged = stopped = False
     for i in range(1, max_rows + 1):
         n = 2 ** (i - 1)
@@ -323,6 +340,8 @@ def _function_mode(data):
         row = _row(i, n, h_shown, T, step, previous, I, tolerance)
         rows.append(row)
         identities.append(_identity(row, values, h))
+        if n <= CHART_MAX_N:
+            chart_rows.append(_chart_row(i, n, [_x(a, b, j, n) for j in range(n + 1)], list(values)))
         iterations.append(IterationStep(iteration=i, x=[row["best"]], error=row["estimated_error"], extra=row))
         if i >= MIN_ROWS and row["below_tolerance"]:
             converged = True
@@ -359,6 +378,8 @@ def _function_mode(data):
         "columns": [column(k) for k in range(1, len(rows) + 1)],
         "evaluations": rows[-1]["evaluations"],
         "cost": None if I is None else _cost(function, a, b, I, tolerance, rows),
+        "curve": _curve(function, a, b),
+        "chart_rows": chart_rows,
         "notes": notes,
         "verification": {**(check or {}), "kind": integral["kind"], "identities": identities,
                          "final": None if I is None else _final(rows, I)},
@@ -399,7 +420,7 @@ def _table_mode(data):
         data_checks = _data_checks(function, xs, ys, warnings)
 
     width = b - a
-    rows, iterations, identities = [], [], []
+    rows, iterations, identities, chart_rows = [], [], [], []
     for i in range(1, m + 2):
         n = 2 ** (i - 1)
         stride = (count - 1) // n
@@ -425,6 +446,7 @@ def _table_mode(data):
         row.update({"data_points": used, "new_points": new_points})
         rows.append(row)
         identities.append(_identity(row, ys[::stride], h))
+        chart_rows.append(_chart_row(i, n, xs[::stride], ys[::stride]))  # n ≤ 32 en el modo tabla
         iterations.append(IterationStep(iteration=i, x=[row["best"]], error=row["estimated_error"], extra=row))
 
     if _smoothness_warning(rows):
@@ -444,6 +466,8 @@ def _table_mode(data):
         "columns": [column(k) for k in range(1, len(rows) + 1)],
         "evaluations": count,
         "cost": None,
+        "curve": _curve(function, a, b) if function else None,
+        "chart_rows": chart_rows,
         "notes": notes,
         "verification": {**(check or {}), "kind": integral["kind"] if integral else None, "data": data_checks,
                          "identities": identities, "final": None if I is None else _final(rows, I)},
