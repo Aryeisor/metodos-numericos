@@ -184,10 +184,10 @@ estudiar la teoría de cada método.
 
 ### Vista «Teoría» (`/teoria/<método>`)
 
-Una página por método, con el mismo formato en las once (Jacobi,
+Una página por método, con el mismo formato en las doce (Jacobi,
 Gauss-Seidel, Punto Fijo, Newton, Bairstow, diferencias progresiva y
 regresiva, fórmulas de 3 y 5 puntos, método del trapecio, método de
-Simpson e integración de Romberg): fundamento común
+Simpson, integración de Romberg y cuadratura gaussiana): fundamento común
 de la categoría, definición formal en LaTeX, condición de convergencia,
 restricciones, algoritmo en tarjetas, ejemplo resuelto paso a paso con datos
 reales del solver, tabla comparativa y referencias bibliográficas (APA).
@@ -280,8 +280,30 @@ reales del solver, tabla comparativa y referencias bibliográficas (APA).
   categoría** es ahora un solo componente compartido por las tres páginas,
   con la columna de Romberg completa y las evaluaciones del trapecio y de
   Simpson contando cualquier `n` y duplicando `n` (1601 / 2049 y 47 / 65).
-  Todas las fórmulas importantes llevan su glosario «¿Qué significa cada
-  símbolo?».
+  La **cuadratura gaussiana** cierra la categoría con el mismo fundamento y
+  agrega: por qué elegir también los nodos da exactitud hasta grado `2m − 1`;
+  la definición en `[−1, 1]`, el **cambio de variable** a `[a, b]` y la
+  versión compuesta, con la tabla de nodos y pesos en forma exacta
+  (`m ≤ 4`); el **gráfico de rectángulos** del Resolver con selector
+  `m = 1` a 4 y el área, la exacta y el error en vivo; una figura de los 3
+  puntos de Simpson frente a los 3 nodos de Gauss con sus pesos; la
+  derivación de **Gauss de 2 puntos por coeficientes indeterminados** (y la
+  comprobación con `t⁴`), por qué `2m − 1` frente a Newton-Cotes, una tarjeta
+  de los **polinomios de Legendre** (recurrencia, ortogonalidad, por qué sus
+  raíces sirven y la fórmula de los pesos) y el **error** con sus constantes
+  hasta `m = 5` (comprobado con `x⁶`); la convergencia de `e^(−x²)` y la
+  **tabla de costo** de la categoría (Gauss 3, 4 y 5 evaluaciones); la
+  tarjeta de **funciones singulares** (`1/√x`, con su gráfico, la compuesta
+  y el cambio de variable `x = u²`; `sin(x)/x`); el ejemplo de Chapra con
+  `m = 2` y `m = 3` en el paso a paso del Resolver, la tabla de refinamiento,
+  los momentos de `m = 3`, la comprobación, la comparación con 3 y 2
+  evaluaciones, el mini-ejemplo compuesto (`N = 2`) y «Resolver este
+  ejemplo» (`/resolver/gauss?ejemplo=gauss-chapra`); y la guía **«¿Qué
+  método de integración usar?»**. La tabla comparativa compartida queda
+  completa en las cuatro páginas, con las filas nuevas «Dónde evalúa»,
+  «`f` no definida en un extremo», «Reutiliza evaluaciones al refinar» y
+  «Chapra con 3 evaluaciones». Todas las fórmulas importantes llevan su
+  glosario «¿Qué significa cada símbolo?».
 
 Los menús «Resolver ▾» y «Teoría ▾» se generan automáticamente a partir del
 catálogo de métodos del backend, agrupados por categoría.
@@ -1177,7 +1199,10 @@ secciones).
   1/3 duplicando `n` y Romberg (primera fila de la diagonal), hasta `n = 2²²`.
   Si `f` no está definida en `a` o en `b`, esos tres son «no aplicable
   (evalúan los extremos)».
-- **Teoría:** todavía no tiene página; no aparece en «Teoría ▾».
+- **Teoría:** `/teoria/gauss`, en «Teoría ▾» después de Romberg (ver la
+  sección «Vista Teoría»). Usa respuestas guardadas del solver
+  (`theory/gaussExample.json`: ejemplos 1, 2, 4, 5 y 7), que
+  `test_gauss.TheoryExampleTests` compara con el solver.
 - **Ejemplos** (tolerancia `0.000001`, máximo 12):
 
   | # | Datos | N | Resultado |
@@ -1701,7 +1726,7 @@ cd backend
 python manage.py test numeric_methods
 ```
 
-**508 tests**, todos en verde:
+**510 tests**, todos en verde:
 
 | Archivo | Tests | Qué cubre |
 | --- | --- | --- |
@@ -1721,7 +1746,7 @@ python manage.py test numeric_methods
 | `test_trapezoid.py` | 43 | Método del trapecio: fracciones exactas (`x²` en [0, 2] con `Eₜ = Eₐ`, polinomio de Chapra), ejemplo 1 (filas 1 a 3, parada en 13, razón ≈ 0.25, comprobación término a término, paso a paso de la fila 1), recurrencia igual a la fórmula directa (ejemplos 1 y 6, filas 2 a 8, y a mano), filas de parada de los ejemplos, recta exacta, `\|Eₜ\| ≤ cota + R`, `x²` con error = cota, integral exacta o de referencia (erf, `sin`, `1/x`), límite de tiempo (simulado y real), notas de concavidad, modo tabla (uniforme, no uniforme, dato alterado, sin función), singularidad interior, errores 400 y endpoint. Explicaciones: ejemplo 4 fila 1 (sustituciones, suma ponderada, `f'(a)`, `f'(b)`, `f̄''`, `Eₐ`, `M₂`, cota, igualdad sin R) y filas 2 y 3 (puntos nuevos, sumas, `T`), desglose de `f'` y `f''` (`x²`, Chapra, `eˣ`), `M₂` sustituida en Chapra, antiderivada por términos y `F' = f` (`x²`, Chapra, `x·eˣ` sin desglose), nota de `Eₜ` que se ve 0 (ejemplo 6), ninguna R con `\|Eₜ\| ≤ cota·(1 + 10⁻⁹)`, paréntesis de la integral y puntos enviados (1024 o 16). Teoría: filas 1 a 3 del ejemplo 1 y respuestas guardadas iguales a las del solver |
 | `test_simpson.py` | 35 | Método de Simpson: fracciones exactas (`x⁴` con 1/3 y 3/8, Chapra con n = 2, 3 y 4), exactitud para cúbicas, ejemplo 1 (filas 1 a 3 de las dos reglas, `Eₐ = Eₜ`, `f̄⁽⁴⁾ = −2400`, `M₄ = 21600` en x = 0, parada en la fila 7, comparación con el trapecio 2.1 y 149.8 veces, identidad `(4T₂ − T₁)/3`, razón ≈ 0.0625, pesos del paso a paso), identidad en fracciones para n = 2, 4 y 8, reutilización de evaluaciones igual a la fórmula de pesos (ejemplos 1 y 6, filas 1 a 8), filas de parada de los ejemplos, `x⁴` con `\|Eₜ\|` = cota sin R, `\|Eₜ\| ≤ cota + R`, notas de concavidad, modo tabla (ejemplos 7 y 8 con pesos, suma, partes y punto de unión; `x⁴` en x = 0..6 con 1556 y 1557; n = 3 sólo 3/8; dato alterado), derivadas `f'''` y `f⁽⁴⁾`, errores 400 (n₀ impar, n₀ no múltiplo de 3, tabla no uniforme con la sugerencia, n impar con 1/3, n no múltiplo de 3 con 3/8, 2 puntos, a ≥ b, `1/x` en a = 0), endpoint y piezas del gráfico. Teoría: fila 1 de las dos reglas del ejemplo 1 y respuestas guardadas iguales a las del solver |
 | `test_romberg.py` | 35 | Integración de Romberg: gráfico de segmentos (área de las piezas = `Rᵢ,ₖ` en las columnas 1 a 3 de los ejemplos 1, 2 y 7, valores de control, sólo `n ≤ 64` y columnas ≤ 3, modo tabla); fracciones exactas (Chapra en [0, 4/5] filas 1 a 3; `x⁵` en [0, 2] filas 1 a 4), ejemplo 1 (filas 1 a 3, `R₃,₃` mostrado con 8 decimales por la coherencia, parada en la fila 6 con 33 evaluaciones, error estimado 0.273067 y `εₐ` = 16.644993 % en la fila 3, comparación de costo, tabla de errores), identidades columna 1 = trapecio directo y columna 2 = motor de Simpson (filas 1 a 8 de los ejemplos 1, 2 y 6), filas de parada y diagonales de los ejemplos 2 a 6, advertencia de función poco suave (sólo el ejemplo 5; el 1 es el caso del ruido de redondeo), comparación de costo de los ejemplos 2 a 6 y el texto «más de …», modo tabla (ejemplos 7 y 8 con todas sus celdas, 7 puntos y espaciado no uniforme con 400 y la sugerencia, 3 y 33 puntos, dato alterado), errores 400 (a ≥ b, `1/x` en a = 0, otra variable, máximo de filas fuera de 6..20), singularidad interior y endpoint. Teoría: filas 1 a 3 del ejemplo 1 y respuestas guardadas (ejemplos 1, 2 y 5) iguales a las del solver |
-| `test_gauss.py` | 26 | Cuadratura gaussiana: nodos y pesos iguales a las formas exactas (m = 1 a 4, `≤ 10⁻¹⁴`), pesos que suman 2 y nodos simétricos (m = 1 a 20), exactitud para `tᵏ` con `k ≤ 2m − 1` y no con `k = 2m` (m = 1 a 6; 0.24 con m = 3), ejemplo 1 (filas 1 a 3 con G, Eₜ, εₜ y cota; detalle de m = 2; parada en la fila 6; costo 3, 5, 65 y 2049; momentos), ejemplo 4 (Eₜ = cota sin R con m = 3, exacto desde m = 4), filas de parada y valores de los ejemplos 2, 3, 6, 7 y 8, ejemplo 5 (200 sin `f(0)`, nota, no converge, cota no disponible, costo «no aplicable»), compuesta (nodos del ejemplo 7, N = 1 igual a la simple, área de los rectángulos = G y anchos = b − a), `\|Eₜ\| ≤ cota + R` en todas las filas, límite de tiempo de las derivadas (simulado y real), errores 400 (a ≥ b, otra variable, N fuera de 1..50, máximo fuera de 6..20, modo tabla, `1/(x − 0.4)` en el nodo de m = 1) y endpoint |
+| `test_gauss.py` | 28 | Cuadratura gaussiana: nodos y pesos iguales a las formas exactas (m = 1 a 4, `≤ 10⁻¹⁴`), pesos que suman 2 y nodos simétricos (m = 1 a 20), exactitud para `tᵏ` con `k ≤ 2m − 1` y no con `k = 2m` (m = 1 a 6; 0.24 con m = 3), ejemplo 1 (filas 1 a 3 con G, Eₜ, εₜ y cota; detalle de m = 2; parada en la fila 6; costo 3, 5, 65 y 2049; momentos), ejemplo 4 (Eₜ = cota sin R con m = 3, exacto desde m = 4), filas de parada y valores de los ejemplos 2, 3, 6, 7 y 8, ejemplo 5 (200 sin `f(0)`, nota, no converge, cota no disponible, costo «no aplicable»), compuesta (nodos del ejemplo 7, N = 1 igual a la simple, área de los rectángulos = G y anchos = b − a), `\|Eₜ\| ≤ cota + R` en todas las filas, límite de tiempo de las derivadas (simulado y real), errores 400 (a ≥ b, otra variable, N fuera de 1..50, máximo fuera de 6..20, modo tabla, `1/(x − 0.4)` en el nodo de m = 1) y endpoint. Teoría: m = 2 y m = 3 del ejemplo 1 y respuestas guardadas (ejemplos 1, 2, 4, 5 y 7) iguales a las del solver |
 | `test_bairstow.py` | 30 | Bairstow: divisiones sintéticas, primera iteración de Chapra calculada a mano, ejemplos, raíces nulas, raíz doble, cierres directos, fallos, endpoint y comprobación de raíces (sustitución término a término, potencias faltantes, par complejo, raíz nula y residuo) |
 
 ---
