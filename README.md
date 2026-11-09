@@ -145,8 +145,8 @@ estudiar la teoría de cada método.
   refinamiento (o la de segmentos) con paso a paso, el gráfico de
   convergencia y la «Comprobación» (ver su [detalle](#método-del-trapecio)).
   El gráfico de trapecios (`components/TrapezoidChart.vue`) es genérico: lo
-  reutilizan Simpson (con el **gráfico de parábolas y cúbicas**) y lo
-  reutilizarán las demás reglas.
+  reutilizan Simpson (con el **gráfico de parábolas y cúbicas**) y Romberg
+  (con el **gráfico de segmentos** de las columnas 1 a 3).
 - En el **método de Simpson**, la misma organización: resumen por regla con
   la **comparación con el trapecio** (mismo `n`, filas 1 y última), derivadas
   hasta `f⁽⁴⁾`, el **gráfico de parábolas y cúbicas** (selector de regla y de
@@ -158,7 +158,8 @@ estudiar la teoría de cada método.
   1/3 `O(h⁴)`, Boole `O(h⁶)`, Nivel k…) y tooltip, diagonal resaltada,
   resaltado de las dos celdas de las que sale cada `Rᵢ,ₖ` al pasar el cursor
   o tocarla, leyenda «¿Cómo se lee esta tabla?» y botón «Ver tabla de
-  errores» (`Eₜ = I − Rᵢ,ₖ` en cada celda); la tabla de convergencia de la
+  errores» (`Eₜ = I − Rᵢ,ₖ` en cada celda); antes de la tabla, el **gráfico
+  de segmentos** (columnas 1 a 3, selector de columna y de `n`); la tabla de convergencia de la
   diagonal, el gráfico de convergencia (`|Eₜ|` de las columnas 1 y 2 y de la
   diagonal, error estimado y tolerancia), el paso a paso plegable de cada
   fila y la «Comprobación» con las identidades y la comparación de costo
@@ -1037,6 +1038,24 @@ secciones).
   cuentan las razones en que los dos errores son mayores que
   `1000·ε·máx(1, |Rᵢ,ᵢ|)` (más chicos son ruido de redondeo, como las filas 4
   a 6 del ejemplo 1) y hacen falta al menos 2 que cuenten.
+- **Gráfico de segmentos** (`TrapezoidChart`, el mismo del trapecio y de
+  Simpson): cada celda `Rᵢ,ₖ` de las columnas 1 a 3 es una regla de
+  Newton-Cotes compuesta con `n = 2^(i−1)` segmentos, así que se dibuja: la
+  columna 1 con rectas (trapecios), la 2 con parábolas por 3 puntos (desde la
+  fila 2) y la 3 con polinomios de grado 4 por 5 puntos (Boole, desde la fila
+  3). Selector de columna (por defecto la 1) y de `n` (sólo las filas con
+  `n ≤ 64` en que existe la columna); la leyenda muestra `Rᵢ,ₖ`, la exacta o
+  de referencia y `Eₜ`, y el área sombreada es esa celda (test: la integral
+  exacta de las piezas coincide con `Rᵢ,ₖ` con diferencia
+  `≤ 10⁻⁹·máx(1, |R|)`). El backend manda `chart_rows` (`i`, `n`, `x`, `y`,
+  `columns`: las piezas de cada columna, 2 puntos por recta y 30 por
+  parábola o curva de grado 4) y `curve`. **Desde la columna 4 no hay
+  figura:** Romberg combina resultados de forma algebraica y el valor ya no
+  equivale a reemplazar la curva por piezas de un polinomio con esos puntos.
+  En el modo tabla las piezas pasan por los datos que usa cada fila y la
+  curva de `f` sólo aparece con función para comparar. El PDF incluye el
+  gráfico elegido en pantalla (por defecto, columna 1 con el mayor `n ≤ 8`).
+  Ejemplo 5 (√x, 13 filas): la respuesta pasa de ~466 KB a ~607 KB.
 - **Teoría:** todavía no tiene página; Romberg no aparece en «Teoría ▾».
 - **Ejemplos** (tolerancia `0.000001`, máximo 15):
 
@@ -1539,7 +1558,7 @@ cd backend
 python manage.py test numeric_methods
 ```
 
-**476 tests**, todos en verde:
+**480 tests**, todos en verde:
 
 | Archivo | Tests | Qué cubre |
 | --- | --- | --- |
@@ -1558,7 +1577,7 @@ python manage.py test numeric_methods
 | `test_five_point.py` | 28 | Fórmula de 5 puntos: fracciones exactas (`x⁵` y cuártica), Burden y Faires (filas 1 y 2, parada en 6, comparación, identidad de Richardson y productos del paso a paso), filas de parada de los ejemplos, `x⁵` con error = cota, cuártica exacta, razón ≈ 0.0625, error real ≤ cota + R, `f⁽⁵⁾` término a término, modo tabla (valores, «—», punto medio de 3 puntos, recomendada, identidad por punto con el caso de redondeo de `x = 2.2`, `x⁴` con función, una sola fórmula, 5 datos, dato alterado), errores 400 (tabla no uniforme, 4 puntos, dominio en «x₀ − 4h», tolerancia, máximo) y endpoint |
 | `test_trapezoid.py` | 43 | Método del trapecio: fracciones exactas (`x²` en [0, 2] con `Eₜ = Eₐ`, polinomio de Chapra), ejemplo 1 (filas 1 a 3, parada en 13, razón ≈ 0.25, comprobación término a término, paso a paso de la fila 1), recurrencia igual a la fórmula directa (ejemplos 1 y 6, filas 2 a 8, y a mano), filas de parada de los ejemplos, recta exacta, `\|Eₜ\| ≤ cota + R`, `x²` con error = cota, integral exacta o de referencia (erf, `sin`, `1/x`), límite de tiempo (simulado y real), notas de concavidad, modo tabla (uniforme, no uniforme, dato alterado, sin función), singularidad interior, errores 400 y endpoint. Explicaciones: ejemplo 4 fila 1 (sustituciones, suma ponderada, `f'(a)`, `f'(b)`, `f̄''`, `Eₐ`, `M₂`, cota, igualdad sin R) y filas 2 y 3 (puntos nuevos, sumas, `T`), desglose de `f'` y `f''` (`x²`, Chapra, `eˣ`), `M₂` sustituida en Chapra, antiderivada por términos y `F' = f` (`x²`, Chapra, `x·eˣ` sin desglose), nota de `Eₜ` que se ve 0 (ejemplo 6), ninguna R con `\|Eₜ\| ≤ cota·(1 + 10⁻⁹)`, paréntesis de la integral y puntos enviados (1024 o 16). Teoría: filas 1 a 3 del ejemplo 1 y respuestas guardadas iguales a las del solver |
 | `test_simpson.py` | 35 | Método de Simpson: fracciones exactas (`x⁴` con 1/3 y 3/8, Chapra con n = 2, 3 y 4), exactitud para cúbicas, ejemplo 1 (filas 1 a 3 de las dos reglas, `Eₐ = Eₜ`, `f̄⁽⁴⁾ = −2400`, `M₄ = 21600` en x = 0, parada en la fila 7, comparación con el trapecio 2.1 y 149.8 veces, identidad `(4T₂ − T₁)/3`, razón ≈ 0.0625, pesos del paso a paso), identidad en fracciones para n = 2, 4 y 8, reutilización de evaluaciones igual a la fórmula de pesos (ejemplos 1 y 6, filas 1 a 8), filas de parada de los ejemplos, `x⁴` con `\|Eₜ\|` = cota sin R, `\|Eₜ\| ≤ cota + R`, notas de concavidad, modo tabla (ejemplos 7 y 8 con pesos, suma, partes y punto de unión; `x⁴` en x = 0..6 con 1556 y 1557; n = 3 sólo 3/8; dato alterado), derivadas `f'''` y `f⁽⁴⁾`, errores 400 (n₀ impar, n₀ no múltiplo de 3, tabla no uniforme con la sugerencia, n impar con 1/3, n no múltiplo de 3 con 3/8, 2 puntos, a ≥ b, `1/x` en a = 0), endpoint y piezas del gráfico. Teoría: fila 1 de las dos reglas del ejemplo 1 y respuestas guardadas iguales a las del solver |
-| `test_romberg.py` | 29 | Integración de Romberg: fracciones exactas (Chapra en [0, 4/5] filas 1 a 3; `x⁵` en [0, 2] filas 1 a 4), ejemplo 1 (filas 1 a 3, `R₃,₃` mostrado con 8 decimales por la coherencia, parada en la fila 6 con 33 evaluaciones, error estimado 0.273067 y `εₐ` = 16.644993 % en la fila 3, comparación de costo, tabla de errores), identidades columna 1 = trapecio directo y columna 2 = motor de Simpson (filas 1 a 8 de los ejemplos 1, 2 y 6), filas de parada y diagonales de los ejemplos 2 a 6, advertencia de función poco suave (sólo el ejemplo 5; el 1 es el caso del ruido de redondeo), comparación de costo de los ejemplos 2 a 6 y el texto «más de …», modo tabla (ejemplos 7 y 8 con todas sus celdas, 7 puntos y espaciado no uniforme con 400 y la sugerencia, 3 y 33 puntos, dato alterado), errores 400 (a ≥ b, `1/x` en a = 0, otra variable, máximo de filas fuera de 6..20), singularidad interior y endpoint |
+| `test_romberg.py` | 33 | Integración de Romberg: gráfico de segmentos (área de las piezas = `Rᵢ,ₖ` en las columnas 1 a 3 de los ejemplos 1, 2 y 7, valores de control, sólo `n ≤ 64` y columnas ≤ 3, modo tabla); fracciones exactas (Chapra en [0, 4/5] filas 1 a 3; `x⁵` en [0, 2] filas 1 a 4), ejemplo 1 (filas 1 a 3, `R₃,₃` mostrado con 8 decimales por la coherencia, parada en la fila 6 con 33 evaluaciones, error estimado 0.273067 y `εₐ` = 16.644993 % en la fila 3, comparación de costo, tabla de errores), identidades columna 1 = trapecio directo y columna 2 = motor de Simpson (filas 1 a 8 de los ejemplos 1, 2 y 6), filas de parada y diagonales de los ejemplos 2 a 6, advertencia de función poco suave (sólo el ejemplo 5; el 1 es el caso del ruido de redondeo), comparación de costo de los ejemplos 2 a 6 y el texto «más de …», modo tabla (ejemplos 7 y 8 con todas sus celdas, 7 puntos y espaciado no uniforme con 400 y la sugerencia, 3 y 33 puntos, dato alterado), errores 400 (a ≥ b, `1/x` en a = 0, otra variable, máximo de filas fuera de 6..20), singularidad interior y endpoint |
 | `test_bairstow.py` | 30 | Bairstow: divisiones sintéticas, primera iteración de Chapra calculada a mano, ejemplos, raíces nulas, raíz doble, cierres directos, fallos, endpoint y comprobación de raíces (sustitución término a término, potencias faltantes, par complejo, raíz nula y residuo) |
 
 ---
