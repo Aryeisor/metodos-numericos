@@ -13,7 +13,7 @@ from ..solvers.integration.trapezoid import (
     MIN_REFINEMENTS,
 )
 from ..solvers.differentiation import display
-from ..solvers.integration import romberg, simpson
+from ..solvers.integration import gauss, romberg, simpson
 from ..solvers.validation import InputValidationError
 from .differentiation import UNIFORM_RELATIVE, _finite, validate_points
 
@@ -174,4 +174,30 @@ class RombergSerializer(IntegrationSerializer):
         data = super().validate(data)
         if data["mode"] == "table":
             SimpsonSerializer._validate_spacing([x for x, _ in data["points"]], "Romberg")
+        return data
+
+
+class GaussSerializer(IntegrationSerializer):
+    """Entrada de la cuadratura gaussiana: sólo el modo «Función» (los nodos son
+    irracionales: no hay modo tabla), con
+
+    - `subintervals`: N, de 1 a 50 (por defecto 1, la versión simple);
+    - `max_iterations`: el máximo de puntos m, de 6 a 20 (por defecto 12);
+    - sin `n0` (si llega, se ignora).
+    """
+
+    subintervals = serializers.IntegerField(default=gauss.DEFAULT_SUBINTERVALS)
+    max_iterations = serializers.IntegerField(default=gauss.DEFAULT_MAX_POINTS)
+
+    max_rows = gauss.MAX_MAX_POINTS
+    rows_error = "El máximo de puntos debe estar entre {low} y {high}."
+
+    def validate(self, data):
+        if data["mode"] == "table":
+            raise serializers.ValidationError({"mode": [gauss.TABLE_MESSAGE]})
+        data = super().validate(data)
+        if not gauss.MIN_SUBINTERVALS <= data["subintervals"] <= gauss.MAX_SUBINTERVALS:
+            raise serializers.ValidationError({"subintervals": [
+                f"Los subintervalos N deben ser un entero entre {gauss.MIN_SUBINTERVALS} y {gauss.MAX_SUBINTERVALS}."
+            ]})
         return data

@@ -16,7 +16,8 @@ principal (runserver atiende cada petición en un hilo). El proceso se crea con
 fork en Linux (gunicorn: casi instantáneo) y con spawn en Windows; el plazo
 empieza a contar cuando el hijo avisa que está listo, así que el arranque de
 spawn (≈ 2 s importando sympy) no se descuenta de los TIME_LIMIT segundos.
-Cada antiderivada se guarda en una caché por expresión.
+Cada antiderivada se guarda en una caché por expresión. Las derivadas de orden
+alto de la cota de Gauss (derivatives) usan el mismo proceso hijo y plazo.
 
 No depende de Django: puede usarse y testearse de forma aislada.
 """
@@ -25,6 +26,7 @@ import math
 import multiprocessing
 import os
 import queue as queue_module
+import time
 
 import mpmath
 import sympy as sp
@@ -73,6 +75,60 @@ def _integrate_with_timeout(expr, symbol, timeout=TIME_LIMIT):
             process.kill()
         process.join(1)
         channel.close()
+
+
+def _derivative_worker(expr, symbol, order, channel):
+    channel.put(("ready", None))
+    try:
+        for _ in range(order):
+            expr = sp.diff(expr, symbol)
+            channel.put(("ok", expr))
+    except Exception:  # sympy lanza tipos muy variados
+        pass
+    channel.put(("done", None))
+
+
+def _derive_with_timeout(expr, symbol, order, timeout):
+    """[f', f'', …] hasta `order` (las que alcanzaron) y si se agotó el tiempo.
+
+    Mismo proceso hijo que la antiderivada; el hijo manda cada derivada al
+    terminarla, así que al agotarse el plazo se conservan las ya calculadas.
+    """
+    context = multiprocessing.get_context("spawn" if os.name == "nt" else "fork")
+    channel = context.Queue()
+    process = context.Process(target=_derivative_worker, args=(expr, symbol, order, channel), daemon=True)
+    process.start()
+    found = []
+    try:
+        channel.get(timeout=STARTUP_LIMIT)
+        deadline = time.monotonic() + timeout
+        while len(found) < order:
+            status, result = channel.get(timeout=max(0.0, deadline - time.monotonic()))
+            if status != "ok":
+                break
+            found.append(result)
+        return found, False
+    except queue_module.Empty:
+        return found, True
+    finally:
+        if process.is_alive():
+            process.kill()
+        process.join(1)
+        channel.close()
+
+
+_DERIVATIVE_CACHE = {}
+
+
+def derivatives(expr, symbol, order, timeout=TIME_LIMIT):
+    """([f', …, f⁽ᵒʳᵈᵉʳ⁾] o menos, si se agotó el tiempo). Con caché por expresión."""
+    key = (sp.srepr(expr), order)
+    if key not in _DERIVATIVE_CACHE:
+        if len(_DERIVATIVE_CACHE) >= _CACHE_SIZE:
+            _DERIVATIVE_CACHE.clear()
+        _DERIVATIVE_CACHE[key] = _derive_with_timeout(expr, symbol, order, timeout)
+    found, timed_out = _DERIVATIVE_CACHE[key]
+    return list(found), timed_out
 
 
 def antiderivative(expr, symbol):

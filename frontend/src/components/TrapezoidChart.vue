@@ -6,7 +6,8 @@
 // el backend, alternando dos tonos para que se vea dónde empieza y termina.
 //
 //   curve   { x: [...], y: [...] } muestreada por el backend, o null (tabla sin función)
-//   row     { n, x: [...], y: [...], pieces?: [{ rule, x: [...], y: [...] }] }
+//   row     { n, x: [...], y: [...], pieces?: [{ rule, x: [...], y: [...] }] }, o con
+//           `rects` (Gauss): { rects: [{ x, left, right, height }], edges: [...] }
 //   partLabels  { [rule]: texto }: con más de una regla (combinación 1/3 + 3/8),
 //               cada parte con su color y su entrada en la leyenda
 //   areaLabel / curveLabel  textos de la leyenda (área de la fila, integral exacta)
@@ -128,9 +129,69 @@ function pieceDatasets(palette) {
   return datasets
 }
 
+// Cuadratura gaussiana (`row.rects`): un rectángulo por nodo, alternando dos tonos.
+// Cada tono es una sola serie con null entre rectángulos; los colores del tema ya
+// son semitransparentes, así que donde dos se superponen se ven los dos.
+function rectDatasets(palette) {
+  const { rects, edges } = props.row
+  const tone = (alt) => ({
+    label: alt ? '' : props.areaLabel,
+    data: rects
+      .filter((_, j) => j % 2 === (alt ? 1 : 0))
+      .flatMap((r) => [
+        { x: r.left, y: 0 },
+        { x: r.left, y: r.height },
+        { x: r.right, y: r.height },
+        { x: r.right, y: 0 },
+        { x: r.right, y: null },
+      ]),
+    borderColor: palette['--color-series-1'],
+    backgroundColor: palette[alt ? '--color-area-positive-alt' : '--color-area-positive'],
+    borderWidth: 1,
+    pointRadius: 0,
+    tension: 0,
+    spanGaps: false,
+    fill: {
+      target: 'origin',
+      above: palette[alt ? '--color-area-positive-alt' : '--color-area-positive'],
+      below: palette[alt ? '--color-area-negative-alt' : '--color-area-negative'],
+    },
+    order: 2,
+  })
+  const heights = rects.map((r) => r.height)
+  const low = Math.min(0, ...heights)
+  const high = Math.max(0, ...heights)
+  const datasets = [tone(false), tone(true)]
+  if (edges.length > 2) {
+    datasets.push({
+      // Bordes de los subintervalos (N > 1): líneas verticales tenues.
+      label: 'bordes',
+      data: edges.flatMap((xi) => [{ x: xi, y: low }, { x: xi, y: high }, { x: xi, y: null }]),
+      borderColor: palette['--color-ink-muted'],
+      borderWidth: 1,
+      borderDash: [4, 4],
+      pointRadius: 0,
+      spanGaps: false,
+      fill: false,
+      order: 1,
+    })
+  }
+  datasets.push({
+    label: 'puntos',
+    data: rects.map((r) => ({ x: r.x, y: r.height })),
+    borderColor: palette['--color-series-1'],
+    backgroundColor: palette['--color-series-1'],
+    showLine: false,
+    pointRadius: rects.length > 33 ? 1.5 : 3,
+    fill: false,
+    order: 1,
+  })
+  return datasets
+}
+
 function buildData(palette) {
   const { x, y } = props.row
-  const datasets = props.row.pieces ? pieceDatasets(palette) : [
+  const datasets = props.row.rects ? rectDatasets(palette) : props.row.pieces ? pieceDatasets(palette) : [
     {
       label: props.areaLabel,
       data: x.map((xi, i) => ({ x: xi, y: y[i] })),

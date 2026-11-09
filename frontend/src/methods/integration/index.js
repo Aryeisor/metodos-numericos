@@ -12,10 +12,12 @@
 import FunctionTableInput from '../../components/FunctionTableInput.vue'
 import IntegrationConfigFields from './IntegrationConfigFields.vue'
 import IntegrationResult from './IntegrationResult.vue'
+import GaussConfigFields from './GaussConfigFields.vue'
+import GaussResult from './GaussResult.vue'
 import SimpsonConfigFields from './SimpsonConfigFields.vue'
 import RombergResult from './RombergResult.vue'
 import SimpsonResult from './SimpsonResult.vue'
-import { MODES, createIntegrationStore, createRombergStore, createSimpsonStore } from './store'
+import { MODES, createGaussStore, createIntegrationStore, createRombergStore, createSimpsonStore } from './store'
 import IntegrationTheoryPage, { THEORY_SECTIONS } from './theory/IntegrationTheoryPage.vue'
 
 export default {
@@ -62,6 +64,16 @@ export default {
       maxIterationsLabel: 'Máximo de filas (de 6 a 20)',
       defaultMaxIterations: 15,
       resultView: RombergResult,
+    },
+    // Cuadratura gaussiana: sólo modo función, con N subintervalos y máximo de puntos.
+    // Sin entrada en THEORY_SECTIONS hasta que tenga su teoría.
+    gauss: {
+      createStore: createGaussStore,
+      configFields: GaussConfigFields,
+      maxIterationsLabel: 'Máximo de puntos m (de 6 a 20)',
+      defaultMaxIterations: 12,
+      hidesIterationFields: () => false,
+      resultView: GaussResult,
     },
   },
 }

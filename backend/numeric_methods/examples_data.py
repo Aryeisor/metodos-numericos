@@ -655,6 +655,61 @@ ROMBERG_EXAMPLES = [
 ]
 
 
+def _gauss_example(example_id, name, description, subintervals=1, **data):
+    """Ejemplo de cuadratura gaussiana: el de integración (sólo modo función),
+    con N subintervalos y máximo 12 puntos. Conserva n0 = 1 (así lo reconocen
+    como de integración los tests de la API); el frontend no lo envía."""
+    example = _integration_example(example_id, name, description, **data)
+    example.update({"subintervals": subintervals, "max_iterations": 12})
+    return example
+
+
+# Cuadratura gaussiana. Los valores esperados (README y tests/test_gauss.py) se
+# verificaron con un script independiente (tolerancia 0.000001, máximo 12).
+GAUSS_EXAMPLES = [
+    _gauss_example(
+        "gauss-chapra", "Polinomio de Chapra en [0, 0.8]",
+        "Exacta 1.640533. m = 2: 1.822578 (el ejemplo de Chapra); con m = 3 ya es exacta (grado 5 ≤ 2·3 − 1).",
+        function=CHAPRA_POLYNOMIAL, a=0, b=0.8,
+    ),
+    _gauss_example(
+        "gauss-gauss", "e^(−x²) en [0, 1]",
+        "Antiderivada con erf: valor de referencia 0.746824. Con 4 puntos el error ya es ≈ 3·10⁻⁷.",
+        function="exp(-x^2)", a=0, b=1,
+    ),
+    _gauss_example(
+        "gauss-seno", "sin(x) en [0, π]",
+        "Exacta 2. Con 5 evaluaciones llega a |Eₜ| ≤ 0.000001; Romberg necesita 17.",
+        function="sin(x)", a=0, b=3.141592653589793,
+    ),
+    _gauss_example(
+        "gauss-sexta", "x⁶ en [−1, 1]",
+        "Exacta 2/7. m = 3 da 0.24 (Eₜ igual a la cota); desde m = 4 es exacta (6 ≤ 2·4 − 1).",
+        function="x^6", a=-1, b=1,
+    ),
+    _gauss_example(
+        "gauss-raiz", "1/√x en [0, 1] (f no definida en 0)",
+        "Exacta 2. Gauss no evalúa los extremos y puede calcularla, pero converge lento: no llega con 12 puntos.",
+        function="1/sqrt(x)", a=0, b=1,
+    ),
+    _gauss_example(
+        "gauss-seno-x", "sin(x)/x en [0, π]",
+        "f no está definida en 0 y Gauss no la necesita. Referencia 1.851937 (antiderivada con Si(x)).",
+        function="sin(x)/x", a=0, b=3.141592653589793,
+    ),
+    _gauss_example(
+        "gauss-chapra-compuesta", "Polinomio de Chapra con N = 2 (compuesta)",
+        "Exacta 1.640533. Subintervalos [0, 0.4] y [0.4, 0.8]; m = 2 da 1.651911.",
+        subintervals=2, function=CHAPRA_POLYNOMIAL, a=0, b=0.8,
+    ),
+    _gauss_example(
+        "gauss-exponencial", "eˣ en [0, 4] con N = 4",
+        "Exacta e⁴ − 1 ≈ 53.59815, con 4 subintervalos de ancho 1.",
+        subintervals=4, function="exp(x)", a=0, b=4,
+    ),
+]
+
+
 EXAMPLES = {
     "jacobi": LINEAR_SYSTEM_EXAMPLES,
     "gauss-seidel": LINEAR_SYSTEM_EXAMPLES,
@@ -667,6 +722,7 @@ EXAMPLES = {
     "trapecio": TRAPEZOID_EXAMPLES,
     "simpson": SIMPSON_EXAMPLES,
     "romberg": ROMBERG_EXAMPLES,
+    "gauss": GAUSS_EXAMPLES,
 }
 
 

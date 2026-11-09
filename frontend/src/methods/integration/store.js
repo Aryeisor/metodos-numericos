@@ -143,3 +143,42 @@ export function createRombergStore() {
     buildPayload,
   }
 }
+
+// --- Cuadratura gaussiana ------------------------------------------------------------
+// Sólo el modo «Función» (los nodos son irracionales: no hay modo tabla), con los
+// subintervalos N (de 1 a 50; mismos valores que solvers/integration/gauss.py).
+export const GAUSS_DEFAULT_SUBINTERVALS = 1
+
+export function createGaussStore() {
+  const base = createIntegrationStore()
+  const { state } = base
+  state.subintervals = GAUSS_DEFAULT_SUBINTERVALS
+
+  function loadExample(example) {
+    base.loadExample(example)
+    state.subintervals = example.subintervals
+  }
+
+  function buildPayload() {
+    const payload = base.buildPayload()
+    delete payload.n0
+    return { ...payload, subintervals: state.subintervals }
+  }
+
+  return {
+    ...base,
+    // En lugar del selector de modo (components/FunctionTableInput.vue).
+    tableUnavailable: {
+      text:
+        'La cuadratura gaussiana necesita evaluar la función en puntos especiales (las raíces de los polinomios ' +
+        'de Legendre), que son números irracionales; por eso no funciona con una tabla de datos. Para datos, usa:',
+      links: [
+        { slug: 'trapecio', label: 'el trapecio' },
+        { slug: 'simpson', label: 'Simpson' },
+        { slug: 'romberg', label: 'Romberg' },
+      ],
+    },
+    loadExample,
+    buildPayload,
+  }
+}

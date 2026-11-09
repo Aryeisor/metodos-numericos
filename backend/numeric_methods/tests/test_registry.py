@@ -74,6 +74,7 @@ class MethodsEndpointTests(APITestCase):
                 ("trapecio", "Integración numérica"),
                 ("simpson", "Integración numérica"),
                 ("romberg", "Integración numérica"),
+                ("gauss", "Integración numérica"),
             ],
         )
 

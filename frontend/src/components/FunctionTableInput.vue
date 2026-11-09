@@ -8,14 +8,16 @@
 // Los campos numéricos aceptan fracciones, como en los demás formularios.
 //
 // Lo que cambia por categoría sale del store (opcional; por defecto, lo de
-// diferenciación): maxPoints, startFields { title, labels, errorLabels } y
-// compareHint.
+// diferenciación): maxPoints, startFields { title, labels, errorLabels },
+// compareHint y tableUnavailable { text, links } (sin modo tabla: una nota con
+// enlaces en lugar del selector de modo).
 import { computed, reactive, ref, watch } from 'vue'
 import EquationPreview from './EquationPreview.vue'
 import MathSymbolToolbar from './MathSymbolToolbar.vue'
 import MathSyntaxHelp from './MathSyntaxHelp.vue'
 import NumericFieldsInput from './NumericFieldsInput.vue'
 import { useExpressionPreviews } from '../composables/useExpressionPreviews'
+import { solveRouteName } from '../methods/routeNames'
 import { formatNumber } from '../utils/iterationSteps'
 import { INPUT_ERROR_MESSAGES, parseNumericInput } from '../utils/numberInput'
 
@@ -113,7 +115,16 @@ const sub = (n) => String(n).replace(/\d/g, (d) => SUBSCRIPTS[d])
 
 <template>
   <div>
-    <div class="mode-switch" role="radiogroup" aria-label="Modo de entrada">
+    <!-- Un método sin modo tabla (cuadratura gaussiana) explica por qué en lugar del selector. -->
+    <p v-if="store.tableUnavailable" class="table-unavailable">
+      {{ store.tableUnavailable.text }}
+      <template v-for="(link, idx) in store.tableUnavailable.links" :key="link.slug">
+        <RouterLink :to="{ name: solveRouteName(link.slug) }">{{ link.label }}</RouterLink>{{
+          idx === store.tableUnavailable.links.length - 1 ? '.' : idx === store.tableUnavailable.links.length - 2 ? ' o ' : ', '
+        }}
+      </template>
+    </p>
+    <div v-else class="mode-switch" role="radiogroup" aria-label="Modo de entrada">
       <button
         v-for="option in [
           { mode: MODES.FUNCTION, label: 'Función' },
@@ -276,6 +287,16 @@ const sub = (n) => String(n).replace(/\d/g, (d) => SUBSCRIPTS[d])
 .mode-btn:focus-visible {
   outline: none;
   box-shadow: inset var(--focus-ring);
+}
+
+.table-unavailable {
+  margin: 0 0 var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-nested);
+  background: var(--color-accent-soft);
+  font-size: var(--text-small);
+  color: var(--color-ink);
 }
 
 .points-table {
