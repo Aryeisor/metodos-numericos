@@ -1832,6 +1832,7 @@ metodos/
 └── frontend/
     ├── Dockerfile                   # Compila con Node y sirve dist/ con nginx
     ├── nginx.conf                   # Fallback a index.html, proxy /api/, gzip y caché
+    ├── public/                      # favicon y iconos del sitio
     └── src/
         ├── main.js                  # Carga el catálogo de métodos antes de montar la app
         ├── style.css                # Tipografía, espaciado y estilos base (consume los colores del tema)
