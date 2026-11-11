@@ -7,7 +7,7 @@
 import { computed, ref, watch } from 'vue'
 import InfoTip from '../../components/InfoTip.vue'
 import MathFormula from '../../components/MathFormula.vue'
-import { formatNumber } from '../../utils/iterationSteps'
+import { formatNumber, tableValue } from '../../utils/iterationSteps'
 import { CURRENT_COLOR, PREVIOUS_COLOR, colorize } from '../../utils/latexFormulas'
 import { cellText } from './rombergExplain'
 import { columnTip } from './rombergGlossary'
@@ -92,10 +92,7 @@ const label = (row, k) =>
         <tr v-for="row in rows" :key="row.i">
           <td>{{ row.i }}</td>
           <td>{{ row.n }}</td>
-          <td class="h-cell">
-            <MathFormula v-if="!row.h.exact" :expression="row.h.latex" />
-            <template v-else>{{ row.h.text }}</template>
-          </td>
+          <td class="h-cell" :title="tableValue(row.h).title">{{ tableValue(row.h).text }}</td>
           <td
             v-for="col in columns"
             :key="col.k"

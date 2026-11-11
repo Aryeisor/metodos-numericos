@@ -5,7 +5,7 @@
 import { computed, ref, watch } from 'vue'
 import GlossaryBlock from '../../components/GlossaryBlock.vue'
 import InfoTip from '../../components/InfoTip.vue'
-import MathFormula from '../../components/MathFormula.vue'
+import { tableValue } from '../../utils/iterationSteps'
 import TrapezoidStepDetail from './TrapezoidStepDetail.vue'
 import { tinyErrorNote } from './explain'
 import { boundMark, cell, percent } from './formulas'
@@ -95,10 +95,7 @@ function toggle(k) {
             </td>
             <td>{{ row.k }}</td>
             <td>{{ row.item.n }}</td>
-            <td class="h-cell">
-              <MathFormula v-if="!row.item.h.exact" :expression="row.item.h.latex" />
-              <template v-else>{{ row.item.h.text }}</template>
-            </td>
+            <td class="h-cell" :title="tableValue(row.item.h).title">{{ tableValue(row.item.h).text }}</td>
             <td>{{ cell(row.item[valueKey]) }}</td>
             <td>{{ cell(row.item.estimated_error) }}</td>
             <td v-if="showTrue">{{ cell(row.item.true_error) }}</td>

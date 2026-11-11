@@ -8,7 +8,7 @@ import jsPDF from 'jspdf'
 import autoTable from 'jspdf-autotable'
 
 import { MARGIN, sectionTitle } from '../../utils/exportPdf'
-import { formatNumber } from '../../utils/iterationSteps'
+import { H_APPROX_NOTE, formatNumber, tableValue } from '../../utils/iterationSteps'
 import { latexToText } from '../../utils/latexText'
 import { tinyErrorNote } from './explain'
 import { comparisonColumns, refinementColumns, simpsonWords } from './glossary'
@@ -184,7 +184,7 @@ export function exportSimpsonPdf({ result, methodName, chartImage, chartTitle, c
         startY: y,
         head: [head],
         body: b.rows.map((e) => {
-          const row = [e.k, e.n, e.h.exact ? e.h.text : `${e.h.text} ~ ${e.h.approx}`, num(e.S), num(e.estimated_error)]
+          const row = [e.k, e.n, tableValue(e.h, '~').text, num(e.S), num(e.estimated_error)]
           if (showTrue) row.push(num(e.true_error), pct(e.relative_error))
           if (showApprox) row.push(num(e.approx_error))
           row.push(e.bound === null ? 'no disp.' : num(e.bound))
@@ -193,6 +193,7 @@ export function exportSimpsonPdf({ result, methodName, chartImage, chartTitle, c
         }),
       })
       y = doc.lastAutoTable.finalY + 4
+      if (b.rows.some((r) => !r.h.exact)) y = write(y, H_APPROX_NOTE)
       const tinyRows = b.rows.filter((r) => tinyErrorNote(r, reference))
       if (tinyRows.length) y = write(y, `Filas ${tinyRows.map((r) => r.k).join(', ')}: ${tinyErrorNote(tinyRows[0], reference)}`)
       if (b.rows.some((r) => r.by_rounding)) {

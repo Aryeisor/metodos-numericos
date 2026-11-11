@@ -227,7 +227,7 @@ export const FIVE_POINT_ERRORS_GLOSSARY = {
 export function refinementColumns(showReal, ratio = '0.5') {
   const columns = [
     { key: 'k', label: 'k', symbol: 'k', text: 'Número de la fila de refinamiento.' },
-    { key: 'h', label: 'h', symbol: 'h', text: 'El paso de esa fila; se divide entre 2 en cada fila (h_k = h₀/2^(k−1)).' },
+    { key: 'h', label: 'h', symbol: 'h', text: 'El paso de esa fila; se divide entre 2 en cada fila (h_k = h₀/2^(k−1)); se muestra redondeado a 6 decimales; el valor exacto aparece al pasar el cursor y en el paso a paso.' },
     { key: 'D', label: 'D', symbol: 'D', text: 'La aproximación de la derivada en esa fila.' },
     {
       key: 'estimated',

@@ -5,7 +5,7 @@ import { computed, ref, watch } from 'vue'
 import GlossaryBlock from '../../components/GlossaryBlock.vue'
 import InfoTip from '../../components/InfoTip.vue'
 import MathFormula from '../../components/MathFormula.vue'
-import { formatNumber } from '../../utils/iterationSteps'
+import { formatNumber, tableValue } from '../../utils/iterationSteps'
 import { segmentSteps } from './explain'
 import { cell } from './formulas'
 import { segmentColumns } from './glossary'
@@ -17,7 +17,7 @@ const props = defineProps({
 const segments = computed(() => props.result.iterations.map((step) => step.extra))
 const hasBound = computed(() => Boolean(props.result.function))
 const headers = computed(() => segmentColumns(hasBound.value))
-const shown = (d) => (d.exact ? d.text : d.approx)
+const shown = (d) => tableValue(d).text
 
 const expanded = ref(new Set())
 watch(

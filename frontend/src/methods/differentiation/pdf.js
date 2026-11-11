@@ -8,7 +8,7 @@ import jsPDF from 'jspdf'
 import autoTable from 'jspdf-autotable'
 
 import { CONTENT_WIDTH, MARGIN, ensureSpace, paragraph, sectionTitle } from '../../utils/exportPdf'
-import { formatNumber } from '../../utils/iterationSteps'
+import { H_APPROX_NOTE, formatNumber, tableValue } from '../../utils/iterationSteps'
 import { addImage, pdfTools } from '../integration/pdf'
 import { conclusionText, functionContext, numbered, tableContext, tinyRealErrorNote } from './differenceExplain'
 import {
@@ -255,7 +255,7 @@ export function exportDifferentiationPdf({ result, methodName, chartImage, appro
         head: [head],
         body: result.iterations.map((step) => {
           const item = step.extra[f.key]
-          const row = [step.iteration, stepText(step.extra.h), num(item.D), num(item.estimated_error)]
+          const row = [step.iteration, tableValue(step.extra.h, '~').text, num(item.D), num(item.estimated_error)]
           if (result.differentiable) row.push(num(item.real_error))
           row.push(item.bound === null ? 'no disp.' : num(item.bound))
           if (result.differentiable) row.push(num(item.ratio), mark(item))
@@ -263,6 +263,7 @@ export function exportDifferentiationPdf({ result, methodName, chartImage, appro
         }),
       })
       y = doc.lastAutoTable.finalY + 4
+      if (result.iterations.some((s) => !s.extra.h.exact)) y = write(y, H_APPROX_NOTE)
     }
     y = write(
       y,

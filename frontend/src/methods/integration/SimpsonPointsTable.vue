@@ -7,7 +7,7 @@ import { computed } from 'vue'
 import GlossaryBlock from '../../components/GlossaryBlock.vue'
 import InfoTip from '../../components/InfoTip.vue'
 import MathFormula from '../../components/MathFormula.vue'
-import { formatNumber } from '../../utils/iterationSteps'
+import { formatNumber, tableValue } from '../../utils/iterationSteps'
 import { latexNumber } from '../../utils/latexFormulas'
 import {
   approxBlocks,
@@ -29,7 +29,7 @@ const props = defineProps({
 
 const combined = computed(() => props.app.key === 'combined')
 const junction = computed(() => props.app.points.find((p) => p.weights.length > 1) ?? null)
-const shown = (d) => (d.exact ? d.text : d.approx)
+const shown = (d) => tableValue(d).text
 const h = computed(() => props.result.h)
 const fn = computed(() => props.result.function)
 const partBlocks = (part) => {

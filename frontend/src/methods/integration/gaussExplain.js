@@ -216,7 +216,7 @@ export function changeOfVariable(result) {
   }
   const h = shownLatex(result.half_display)
   return [
-    String.raw`H = \frac{b - a}{N} = \frac{${shownLatex(result.width_display)}}{${N}} = ${shownLatex(result.H_display)}`,
+    String.raw`H = \frac{b - a}{N} = \frac{${shownLatex(result.width_display)}}{${N}} ${result.H_display.exact ? '=' : '\\approx'} ${shownLatex(result.H_display)}`,
     String.raw`x = c_j + \frac{H}{2}\,t = c_j + ${h}t,\qquad dx = \frac{H}{2}\,dt = ${h}\,dt`,
     String.raw`\int_{a}^{b} f(x)\,dx = \sum_{j=1}^{${N}} \int_{-1}^{1} f(c_j + ${h}t)\cdot ${h}\,dt`,
   ]

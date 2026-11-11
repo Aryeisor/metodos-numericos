@@ -13,9 +13,9 @@ import TrapezoidStepDetail from '../integration/TrapezoidStepDetail.vue'
 import DifferenceStepDetail from './DifferenceStepDetail.vue'
 import { functionContext, tinyRealErrorNote } from './differenceExplain'
 import { refinementColumns } from './differenceGlossary'
-import { boundMark, cell, stepSizeLatex, stepText } from './formulas'
+import { boundMark, cell, stepSizeLatex } from './formulas'
 import { explainSteps } from './threePointExplain'
-import { formatNumber } from '../../utils/iterationSteps'
+import { formatNumber, tableValue } from '../../utils/iterationSteps'
 
 const PAGE_SIZE = 10
 
@@ -107,10 +107,7 @@ function toggle(k) {
                 </button>
               </td>
               <td>{{ row.k }}</td>
-              <td class="h-cell">
-                <MathFormula v-if="!row.h.exact" :expression="row.h.latex" />
-                <template v-else>{{ stepText(row.h) }}</template>
-              </td>
+              <td class="h-cell" :title="tableValue(row.h).title">{{ tableValue(row.h).text }}</td>
               <td>{{ cell(row.item.D) }}</td>
               <td>{{ cell(row.item.estimated_error) }}</td>
               <td v-if="showReal">{{ cell(row.item.real_error) }}</td>

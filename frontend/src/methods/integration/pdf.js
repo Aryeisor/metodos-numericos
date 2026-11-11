@@ -8,7 +8,7 @@ import jsPDF from 'jspdf'
 import autoTable from 'jspdf-autotable'
 
 import { CONTENT_WIDTH, MARGIN, ensureSpace, paragraph, sectionTitle } from '../../utils/exportPdf'
-import { formatNumber } from '../../utils/iterationSteps'
+import { H_APPROX_NOTE, formatNumber, tableValue } from '../../utils/iterationSteps'
 import { latexToText } from '../../utils/latexText'
 import { substitutionText } from '../differentiation/formulas'
 import { conclusionText, pointSubstitution, referenceExplanation, rowSteps, segmentSteps, tinyErrorNote } from './explain'
@@ -283,7 +283,7 @@ export function exportIntegrationPdf({ result, methodName, trapezoidImage, trape
       head: [head],
       body: result.iterations.map((step) => {
         const e = step.extra
-        const row = [step.iteration, e.n, e.h.exact ? e.h.text : `${e.h.text} ~ ${e.h.approx}`, num(e.T), num(e.estimated_error)]
+        const row = [step.iteration, e.n, tableValue(e.h, '~').text, num(e.T), num(e.estimated_error)]
         if (showTrue) row.push(num(e.true_error), pct(e.relative_error))
         if (result.mean_second) row.push(num(e.approx_error))
         row.push(e.bound === null ? 'no disp.' : num(e.bound))
@@ -292,6 +292,7 @@ export function exportIntegrationPdf({ result, methodName, trapezoidImage, trape
       }),
     })
     y = doc.lastAutoTable.finalY + 4
+    if (result.iterations.some((s) => !s.extra.h.exact)) y = write(y, H_APPROX_NOTE)
     const reference = integral.kind === 'reference'
     const tinyRows = result.iterations.filter((s) => tinyErrorNote(s.extra, reference))
     if (tinyRows.length) {

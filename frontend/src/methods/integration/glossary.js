@@ -86,7 +86,7 @@ export function refinementColumns({ showTrue, showApprox, reference, words = TRA
   const columns = [
     { key: 'k', label: 'k', symbol: 'k', text: 'Número de la fila de refinamiento.' },
     { key: 'n', label: 'n', symbol: 'n', text: `Cuántos ${w.units} se usaron en esa fila; se duplica en cada fila.` },
-    { key: 'h', label: 'h', symbol: 'h', text: `Ancho de cada ${w.unit}, (b − a)/n.` },
+    { key: 'h', label: 'h', symbol: 'h', text: `Ancho de cada ${w.unit}, (b − a)/n; se muestra redondeado a 6 decimales; el valor exacto aparece al pasar el cursor y en el paso a paso.` },
     { key: V, label: V, symbol: V, text: `El área calculada con ${w.area} (la aproximación de la integral).` },
     {
       key: 'estimated',

@@ -26,6 +26,19 @@ export function formatNumber(value) {
 }
 
 /**
+ * h (o un punto) en una celda de tabla: el decimal del backend (6 decimales,
+ * con «≈» si no es exacto) y, en `title`, la forma exacta «(2 − 0)/3» o
+ * «0.1/2^12». El paso a paso sigue usando la forma exacta.
+ */
+export function tableValue(shown, approxMark = '≈') {
+  if (shown.exact) return { text: shown.text, title: undefined }
+  return { text: `${approxMark} ${shown.approx}`, title: shown.text === shown.approx ? undefined : shown.text }
+}
+
+/** Nota al pie del PDF cuando alguna h de la tabla lleva «≈» (el PDF no tiene title). */
+export const H_APPROX_NOTE = 'Los valores de h con ≈ están redondeados a 6 decimales; su valor exacto está en el paso a paso.'
+
+/**
  * Devuelve el vector de x que sirvió de base para la iteración `index`
  * (0-based): la iteración 1 parte de x0, y la iteración k de la anterior.
  */
