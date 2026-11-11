@@ -725,7 +725,11 @@ secciones).
      **exactos**: su decimal exacto es `Decimal(str(h₀)) / 2^(k−1)`. Con 12
      decimales o menos se escribe tal cual (`0.0015625`); con más, como
      `h₀/2^(k−1)` (`0.1/2^{14}` en LaTeX, `0.1/2^14` en el PDF) y, en el paso a
-     paso, «≈» con 6 decimales.
+     paso, «≈» con 6 decimales. **En las tablas** (web y PDF) `h` y los puntos
+     se muestran siempre como número: exactos tal cual, y si no, redondeados a
+     6 decimales con «≈» (`≈ 0.000024`); en la web la forma exacta
+     (`0.1/2^12`) queda en el `title` de la celda, y el PDF agrega una nota al
+     pie.
   2. **En el paso a paso**, las evaluaciones `f(·)` y la resta del numerador
      llevan `d = mín(15, 6 + ⌈−log₁₀ h⌉)` decimales si `h < 1` (6 si `h ≥ 1`),
      para que el cociente visible sea coherente con los valores que se ven
@@ -1092,7 +1096,8 @@ que con 2 puntos sólo se puede trazar la secante, por eso su error es mayor.
   con `1, 4, 2, …, 4, 1` y `h/3` (ver [Método de Simpson](#método-de-simpson)).
 - **Tabla de refinamiento:** la fila `k` usa `n_k = n₀·2^(k−1)` y
   `h_k = (b − a)/n_k`. Columnas: `k`, `n`, `h` (exacto con hasta 12 decimales;
-  si no, `(b − a)/n` con su aproximación), `T`, error estimado
+  si no, redondeado a 6 con «≈», p. ej. `≈ 0.666667`, y la forma exacta
+  `(b − a)/n` en el `title` de la celda y en el paso a paso), `T`, error estimado
   `|T_k − T_(k−1)|`, `Eₜ`, `εₜ`, `Eₐ`, cota, razón `Eₜ,k/Eₜ,(k−1)` (→ 0.25) y
   «`|Eₜ| ≤ cota`». **Marca R:** `|Eₜ| ≤ cota·(1 + 10⁻⁹)` es ✔ normal (si además
   `|Eₜ|` y la cota difieren menos de `10⁻⁹` relativo, se escribe
