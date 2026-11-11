@@ -173,3 +173,63 @@ class ChartTests(SimpleTestCase):
         for _, piece in pieces(chart):
             self.assertIsNone(piece["tangent"])
             self.assertIsNone(piece["phrase"])
+
+
+class IllustrativeViewTests(SimpleTestCase):
+    """Vista ilustrativa (h = m·h₀, sólo fila 1) y cuerda de la curvatura."""
+
+    def view(self, chart, m):
+        return next(v for v in chart["rows"][0]["illustrative"] if v["m"] == m)
+
+    def test_gauss_backward_slopes(self):
+        chart = test_three_point.example("tp-gauss")["chart"]
+        for m, expected in ((2, -0.823181), (5, -0.884797)):
+            piece = self.view(chart, m)["formulas"]["extremo_atras"]
+            self.assertAlmostEqual(piece["D"], expected, places=6)
+            self.assertAlmostEqual(piece["h"]["value"], 0.1 * m, places=12)
+            xs = [p["x"] for p in piece["points"]]
+            ys = [p["y"] for p in piece["points"]]
+            self.assertLessEqual(abs(lagrange_slope(xs, ys, 0.5) - piece["D"]), 1e-9)
+        # Los datos reales de la fila 1 no cambian.
+        self.assertAlmostEqual(chart["rows"][0]["formulas"]["extremo_atras"]["D"], -0.791208, places=6)
+
+    def test_times_ten_unavailable_by_domain(self):
+        chart = test_three_point.example("tp-ln")["chart"]
+        for m in (2, 5):
+            self.assertIn("extremo_atras", self.view(chart, m)["formulas"])
+            self.assertEqual(self.view(chart, m)["reasons"], {})
+        view = self.view(chart, 10)
+        self.assertNotIn("extremo_atras", view["formulas"])
+        self.assertIn("punto_medio", view["formulas"])
+        self.assertEqual(view["reasons"]["extremo_atras"],
+                         "con h = 1 la fórmula necesitaría f(−0.2), que no está definida")
+        self.assertIsNone(view["compare"])
+        self.assertIn("compare", view["reasons"])
+
+    def test_chord_through_first_and_last_point(self):
+        for module, example_id in FUNCTION_EXAMPLES + TABLE_EXAMPLES:
+            chart = module.example(example_id)["chart"]
+            views = chart["rows"][0].get("illustrative", [])
+            all_pieces = list(pieces(chart)) + [(None, p) for v in views for p in v["formulas"].values()]
+            for _, piece in all_pieces:
+                with self.subTest(example=example_id, key=piece["key"]):
+                    chord = piece["chord"]
+                    if len(piece["points"]) == 2:
+                        self.assertIsNone(chord)
+                        continue
+                    first, last = piece["points"][0], piece["points"][-1]
+                    self.assertTrue(close(chord["x"][0], first["x"], 1e-12))
+                    self.assertTrue(close(chord["x"][-1], last["x"], 1e-12))
+                    self.assertLessEqual(abs(chord["y"][0] - first["y"]), 1e-9)
+                    self.assertLessEqual(abs(chord["y"][-1] - last["y"]), 1e-9)
+                    self.assertTrue(set(chord["x"]) <= set(piece["interpolant"]["x"]))
+
+    def test_illustrative_only_in_row_one(self):
+        for module, example_id in FUNCTION_EXAMPLES:
+            chart = module.example(example_id)["chart"]
+            self.assertEqual([m["m"] for m in chart["rows"][0]["illustrative"]], [2, 5, 10])
+            for row in chart["rows"][1:]:
+                self.assertNotIn("illustrative", row)
+        for _, example_id in TABLE_EXAMPLES[:1]:
+            for row in test_differentiation.example(example_id)["chart"]["rows"]:
+                self.assertNotIn("illustrative", row)
