@@ -998,7 +998,7 @@ gráfico de segmentos de integración; el gráfico de convergencia sigue igual.
   definida (por ejemplo `ln x` con `x ≤ 0`) la curva se corta, sin error.
 - **Controles:** selector de **fórmula** (sólo las resueltas), opción
   **«Comparar»** (las rectas aproximadas de todas las fórmulas, cada una con su
-  color y su trazo, junto a la tangente y sin interpolantes: en el ejemplo 1 de
+  color y su nombre, junto a la tangente y sin interpolantes: en el ejemplo 1 de
   diferencias la progresiva y la regresiva quedan una a cada lado de la
   tangente) y selector de **fila** (1 a 4; por defecto la 1).
 - **Leyenda y lectura:** `h`, `D` de cada fórmula mostrada, `f'(x₀)` exacta y
@@ -1021,8 +1021,64 @@ gráfico de segmentos de integración; el gráfico de convergencia sigue igual.
 - **Datos que envía el backend** (`chart`): para cada fila 1 a 4 (o cada
   punto de la tabla, a lo sumo 20) y cada fórmula, ventana, puntos,
   interpolante muestreada (97 puntos, para que los de la fórmula sean muestras
-  exactas), rectas tangente y aproximada (dos puntos), `D`, `h` y la frase;
-  la curva `f` va una vez por fila (o una vez en la tabla).
+  exactas), la cuerda (ver abajo), rectas tangente y aproximada (dos puntos),
+  `D`, `h` y la frase; la curva `f` va una vez por fila (o una vez en la
+  tabla). La fila 1 del modo función trae además `illustrative`: una entrada
+  por cada `m` (2, 5, 10) con la misma estructura (`h`, `curve`, `formulas`,
+  `compare`) y `reasons` (fórmula → por qué no está disponible).
+
+#### Colores y estilos
+
+Tokens en `theme.css`, con valor claro y oscuro. Contraste medido sobre la
+tarjeta de la gráfica (`#f8fafc` en claro, `#1c2638` en oscuro): todos
+≥ 4.7:1 (≥ 4.9:1 sobre `#ffffff`).
+
+| Elemento | Token | Claro | Oscuro | Estilo |
+|---|---|---|---|---|
+| Curva `f(x)` | `--chart-fn` | `#475569` | `#CBD5E1` | Continua, 2 px |
+| Tangente (derivada exacta) | `--chart-tangent` | `#047857` | `#34D399` | Continua, 3 px |
+| Recta aproximada | `--chart-approx` | `#C2410C` | `#FB923C` | Continua, 3 px |
+| Curva interpolante | `--chart-interp` | `#1D4ED8` | `#60A5FA` | Discontinua (8/5), 3 px |
+| Puntos de la fórmula | `--chart-interp` | | | Círculo, borde del color de fondo |
+| Punto `x₀` | `--chart-approx` | | | Rombo, borde del color de fondo |
+| Sombreado de la curvatura | `--chart-interp-fill` | 18 % | 25 % | Relleno sin borde |
+| «Comparar»: progresiva | `--chart-f-forward` | `#C2410C` | `#FB923C` | Continua |
+| «Comparar»: regresiva | `--chart-f-backward` | `#9D174D` | `#F472B6` | Continua |
+| «Comparar»: punto medio (3 o 5) | `--chart-f-mid` | `#1D4ED8` | `#60A5FA` | Continua |
+| «Comparar»: extremo hacia adelante | `--chart-f-endfwd` | `#A16207` | `#FACC15` | Continua |
+| «Comparar»: extremo hacia atrás | `--chart-f-endbwd` | `#0E7490` | `#22D3EE` | Continua |
+| «Comparar»: referencia de 3 puntos | `--chart-f-ref3` | `#6D28D9` | `#C4B5FD` | Continua |
+
+Se dibuja de atrás hacia adelante: sombreado, `f(x)`, tangente, interpolante,
+recta aproximada, puntos y `x₀`. La leyenda muestra el trazo real de cada
+serie; en «Comparar» cada recta lleva además su nombre al final de la línea,
+en su color. El cambio de tema no vuelve a resolver y el PDF sale en claro.
+
+#### Vista ilustrativa
+
+Con el `h` real la parábola casi no se distingue de una recta (ejemplo 6 de
+3 puntos: se curva un 2 % del alto de la gráfica). El control **«Paso de la
+gráfica»** ofrece «Real (h de la fila)» (por defecto) e «Ilustrativo ×2, ×5,
+×10»: dibuja la fila 1 con `h = m·h₀` sólo para ver la forma (con ×5 la
+parábola se curva un 35 % y la recta aproximada se separa de la tangente).
+Mientras está activa, el selector de fila se deshabilita y un aviso recuerda
+que los resultados usan el `h` real; la leyenda da la `D` ilustrativa y,
+debajo, la real de la fila 1. **No cambia la tabla, el resumen, la
+comprobación ni ningún resultado.** Un múltiplo se deshabilita (con el motivo
+en su `title`) si algún punto de la fórmula queda fuera del dominio de `f` o
+la curva no está definida en la ventana: en `ln(x)` con `x₀ = 1.8`,
+`h₀ = 0.1`, el extremo hacia atrás con ×10 necesitaría `f(−0.2)`. En modo
+tabla no aplica y el control se oculta.
+
+#### Sombreado de la curvatura
+
+Para ver que la interpolante **no es una recta**, se sombrea el área entre
+ella y la **cuerda** (la recta del primer al último punto de la fórmula), en
+el tramo entre esos dos puntos, con una frase bajo la gráfica: «la zona
+sombreada muestra cuánto se dobla la parábola: esa curvatura es lo que la hace
+mejor que una recta» (lo mismo con el polinomio de grado 4 en 5 puntos). En
+diferencias la interpolante es la cuerda: no hay sombreado y una nota explica
+que con 2 puntos sólo se puede trazar la secante, por eso su error es mayor.
 
 ### Método del trapecio
 
