@@ -17,13 +17,15 @@ import RefinementTable from './RefinementTable.vue'
 import {
   ERRORS_GLOSSARY,
   ERRORS_LATEX,
+  FIVE_POINT_ERRORS_GLOSSARY,
+  FIVE_POINT_ERRORS_LATEX,
   THREE_POINT_ERRORS_GLOSSARY,
   THREE_POINT_ERRORS_LATEX,
   formulaGlossary,
 } from './differenceGlossary'
-import { derivativeName, derivativeText, listNames } from './formulas'
+import { derivativeName, derivativeText, listNames, namedSteps } from './formulas'
 import { exportDifferentiationPdf } from './pdf'
-import { COMPARISON_LEGEND, UNIFORM_NOTE } from './threePointExplain'
+import { COMPARISON_LEGEND, FIVE_POINT_COMPARISON_LEGEND, UNIFORM_NOTE } from './threePointExplain'
 
 const props = defineProps({
   result: { type: Object, required: true },
@@ -31,14 +33,20 @@ const props = defineProps({
   methodName: { type: String, required: true },
 })
 
+// Los tres métodos (diferencias, 3 y 5 puntos) muestran las explicaciones para
+// quien no conoce el método: glosarios, tooltips y paso a paso explicado. Los
+// componentes de las tablas y la comprobación las muestran con `explained`
+// (la página de Teoría los usa sin ellas).
 const isTable = computed(() => props.result.mode === 'table')
-// Explicaciones para quien no conoce el método (glosarios, tooltips, paso a
-// paso explicado): diferencias progresiva y regresiva y fórmula de 3 puntos;
-// 5 puntos se ve como siempre.
-const explained = computed(() => ['diferencias-finitas', 'tres-puntos'].includes(props.result.method))
 const isThreePoint = computed(() => props.result.method === 'tres-puntos')
-const errorsLatex = computed(() => (isThreePoint.value ? THREE_POINT_ERRORS_LATEX : ERRORS_LATEX))
-const errorsGlossary = computed(() => (isThreePoint.value ? THREE_POINT_ERRORS_GLOSSARY : ERRORS_GLOSSARY))
+const isFivePoint = computed(() => props.result.method === 'cinco-puntos')
+const errorsLatex = computed(() =>
+  isFivePoint.value ? FIVE_POINT_ERRORS_LATEX : isThreePoint.value ? THREE_POINT_ERRORS_LATEX : ERRORS_LATEX
+)
+const errorsGlossary = computed(() =>
+  isFivePoint.value ? FIVE_POINT_ERRORS_GLOSSARY : isThreePoint.value ? THREE_POINT_ERRORS_GLOSSARY : ERRORS_GLOSSARY
+)
+const comparisonLegend = computed(() => (isFivePoint.value ? FIVE_POINT_COMPARISON_LEGEND : COMPARISON_LEGEND))
 const formulas = computed(() => props.result.formulas)
 const fn = computed(() => props.result.function)
 const last = computed(() => props.result.iterations.at(-1)?.extra ?? null)
@@ -50,17 +58,20 @@ const status = computed(() => {
     : { ok: false, label: 'No alcanzó la tolerancia' }
 })
 
+// f'' en adelante: cada derivada se obtiene derivando la anterior, término a
+// término. Las muy largas (más de LONG_LATEX caracteres) se pliegan, como en Gauss.
+const ORDINALS = { 2: 'Segunda', 3: 'Tercera', 4: 'Cuarta', 5: 'Quinta' }
+const LONG_LATEX = 300
 const higher = computed(() =>
   Object.entries(fn.value?.higher_derivatives ?? {}).map(([n, d]) => ({
     n,
     latex: `${derivativeName(Number(n))}(x) = ${d.latex}`,
-    // Fórmulas de 3 y 5 puntos: cada derivada se obtiene derivando la anterior.
-    steps: d.steps ?? null,
-    from: derivativeText(Number(n) - 1),
+    steps: namedSteps(Number(n), d.steps ?? null),
+    long: d.latex.length > LONG_LATEX,
+    intro: `${ORDINALS[n]} derivada: se deriva ${derivativeText(Number(n) - 1)}(x) con el mismo desglose.`,
     name: derivativeText(Number(n)),
   }))
 )
-const higherSteps = computed(() => higher.value.filter((d) => d.steps))
 
 // --- Gráfico -------------------------------------------------------------------
 // Modo función: error estimado y error real de cada fórmula (hasta 4 series),
@@ -120,7 +131,6 @@ const boundNames = computed(() => {
   const names = [...new Set(formulas.value.map((f) => f.bound_derivative))].map((n) => `|${derivativeText(n)}(x)|`)
   return names.length > 1 ? `${names.join(' o ')} (según la fórmula)` : names[0]
 })
-const isFivePoint = computed(() => props.result.method === 'cinco-puntos')
 
 const toleranceLabel = computed(() => `Tolerancia (${formatNumber(props.result.tolerance)})`)
 
@@ -178,16 +188,24 @@ function handleExportPdf() {
       <p class="comparison-title">
         {{ result.comparison_title ?? 'Comparación con las diferencias progresiva y regresiva' }}
       </p>
-      <p v-if="explained" class="comparison-line">{{ COMPARISON_LEGEND }}</p>
+      <p class="comparison-line">{{ comparisonLegend }}</p>
       <p v-for="line in result.comparison" :key="line.k" class="comparison-line">{{ line.text }}</p>
     </div>
     <div v-for="(w, idx) in result.warnings" :key="'w' + idx" class="alert alert-warning">⚠ {{ w }}</div>
 
     <!-- 2. Derivada exacta (explicada: como en integración) -->
-    <section v-if="fn && explained" class="result-section">
+    <section v-if="fn" class="result-section">
       <h4>Derivada exacta</h4>
       <div class="formula-box"><MathFormula :expression="`f(x) = ${fn.latex}`" display-mode /></div>
-      <p v-if="isThreePoint" class="section-text">
+      <p v-if="isFivePoint" class="section-text">
+        Para qué sirve cada una: f′(x) es la derivada <strong>exacta</strong>, sólo para comparar y calcular el error
+        real. f′′(x) a f⁽⁴⁾(x) son pasos intermedios. f⁽⁵⁾(x) se usa en la cota del error, porque mide qué tanto se
+        aleja la función de un polinomio de grado 4: si f⁽⁵⁾ = 0, la fórmula es exacta.
+        <template v-if="isTable && fn.higher_derivatives[3]">
+          f′′′(x) la usa la cota del punto medio de 3 puntos de referencia.
+        </template>
+      </p>
+      <p v-else-if="isThreePoint" class="section-text">
         Para qué sirve cada una: f′(x) es la derivada <strong>exacta</strong>, sólo para comparar y calcular el error
         real. f′′(x) es un paso intermedio para llegar a f′′′(x). f′′′(x) se usa en la cota del error, porque mide qué
         tanto se aleja la función de una parábola.
@@ -199,64 +217,18 @@ function handleExportPdf() {
       </p>
       <p class="section-text">Primera derivada: se deriva f término a término, con la regla de cada término.</p>
       <DerivationSteps :steps="fn.derivative.steps" :result="`f'(x) = ${fn.derivative.latex}`" />
-      <template v-if="fn.higher_derivatives[2]">
-        <p class="section-text">Segunda derivada: se deriva f′(x) con el mismo desglose.</p>
-        <DerivationSteps
-          :steps="fn.higher_derivatives[2].steps"
-          :result="`f''(x) = ${fn.higher_derivatives[2].latex}`"
-        />
+      <template v-for="d in higher" :key="d.n">
+        <p class="section-text">{{ d.intro }}</p>
+        <details v-if="d.long" class="long-derivative">
+          <summary>Mostrar {{ d.name }}(x) (expresión larga)</summary>
+          <DerivationSteps :steps="d.steps" :result="d.latex" />
+        </details>
+        <DerivationSteps v-else :steps="d.steps" :result="d.latex" />
       </template>
-      <template v-if="isThreePoint && fn.higher_derivatives[3]">
-        <p class="section-text">Tercera derivada: se deriva f′′(x) con el mismo desglose.</p>
-        <DerivationSteps
-          :steps="fn.higher_derivatives[3].steps"
-          :result="`f'''(x) = ${fn.higher_derivatives[3].latex}`"
-        />
-      </template>
-      <p v-if="fn.uses_trigonometry" class="section-text note">
-        Las funciones trigonométricas se evalúan en radianes.
+      <p v-if="result.derivative_pattern" class="section-text">
+        Patrón: cada derivada es la anterior más <MathFormula :expression="result.derivative_pattern.latex" />, así que el
+        número que acompaña a <MathFormula :expression="result.derivative_pattern.latex" /> sube de 1 en 1.
       </p>
-    </section>
-
-    <!-- 2. Derivada exacta -->
-    <section v-else-if="fn" class="result-section">
-      <h4>Derivada exacta</h4>
-      <div class="formula-box"><MathFormula :expression="`f(x) = ${fn.latex}`" display-mode /></div>
-      <p class="section-text">Se deriva f término a término:</p>
-      <div class="partial-card">
-        <ul class="partial-terms">
-          <li v-for="(term, t) in fn.derivative.steps.terms" :key="t">
-            <div class="partial-formula"><MathFormula :expression="term.latex" /></div>
-            <span class="partial-rule">{{ term.rule }}</span>
-          </li>
-        </ul>
-        <div v-if="fn.derivative.steps.sum_latex" class="partial-sum">
-          <MathFormula :expression="fn.derivative.steps.sum_latex" />
-        </div>
-      </div>
-      <template v-for="d in higherSteps" :key="`steps-${d.n}`">
-        <p class="section-text">
-          Se deriva {{ d.from }} término a término para obtener {{ d.name }}:
-        </p>
-        <div class="partial-card">
-          <ul class="partial-terms">
-            <li v-for="(term, t) in d.steps.terms" :key="t">
-              <div class="partial-formula"><MathFormula :expression="term.latex" /></div>
-              <span class="partial-rule">{{ term.rule }}</span>
-            </li>
-          </ul>
-          <div v-if="d.steps.sum_latex" class="partial-sum">
-            <MathFormula :expression="d.steps.sum_latex" />
-          </div>
-          <div v-else class="partial-sum">
-            <MathFormula :expression="d.latex" />
-          </div>
-        </div>
-      </template>
-      <div class="formula-box">
-        <MathFormula :expression="`f'(x) = ${fn.derivative.latex}`" display-mode />
-        <MathFormula v-for="d in higher" :key="d.n" :expression="d.latex" display-mode />
-      </div>
       <p v-if="fn.uses_trigonometry" class="section-text note">
         Las funciones trigonométricas se evalúan en radianes.
       </p>
@@ -267,14 +239,15 @@ function handleExportPdf() {
       <h4>{{ isTable ? 'Derivada en cada punto' : 'Tabla de refinamiento' }}</h4>
       <p class="section-text">
         <template v-if="isTable && isFivePoint">
+          {{ UNIFORM_NOTE }}
           En cada xᵢ, cada fórmula usa los datos vecinos que necesita; donde faltan se muestra «—».
           El punto medio de 3 puntos se muestra como referencia. La columna «Recomendada» toma el
           punto medio de 5 puntos donde existe; si no, el extremo de 5 puntos (hacia adelante si
           existe; si no, hacia atrás), y el punto medio de 3 puntos sólo donde no aplica ninguna
-          fórmula de 5 puntos. Despliega una fila para ver el cálculo.
+          fórmula de 5 puntos. Despliega una fila para ver el cálculo y por qué se recomendó esa fórmula.
         </template>
         <template v-else-if="isTable && hasRecommended">
-          <template v-if="explained">{{ UNIFORM_NOTE }}</template>
+          {{ UNIFORM_NOTE }}
           En cada xᵢ, cada fórmula usa los datos vecinos que necesita; donde faltan se muestra «—».
           La columna «Recomendada» toma el punto medio donde existe (es la más precisa) y, en los
           extremos de la tabla, la fórmula de extremo. Despliega una fila para ver el cálculo.
@@ -288,9 +261,11 @@ function handleExportPdf() {
           el cálculo paso a paso.
         </template>
       </p>
-      <div v-if="explained" class="formula-column">
+      <div class="formula-column">
         <template v-for="f in formulas" :key="f.key">
-          <p class="formula-caption">{{ isThreePoint ? f.name : `Diferencia ${f.name.toLowerCase()}` }}</p>
+          <p class="formula-caption">
+            {{ result.method === 'diferencias-finitas' ? `Diferencia ${f.name.toLowerCase()}` : f.name }}
+          </p>
           <div class="formula-box"><MathFormula :expression="f.formula_latex" /></div>
           <GlossaryBlock :items="formulaGlossary(f.key).items" :summary="formulaGlossary(f.key).summary" />
         </template>
@@ -305,16 +280,10 @@ function handleExportPdf() {
           actual.
         </p>
       </div>
-      <div v-else class="formula-list">
-        <div v-for="f in formulas" :key="f.key" class="formula-box">
-          <MathFormula :expression="f.formula_latex" />
-          <MathFormula :expression="f.bound_latex" />
-        </div>
-      </div>
 
-      <DataPointsTable v-if="isTable" :result="result" :explained="explained" />
+      <DataPointsTable v-if="isTable" :result="result" explained />
       <template v-else>
-        <RefinementTable v-for="f in formulas" :key="f.key" :result="result" :formula="f" :explained="explained" />
+        <RefinementTable v-for="f in formulas" :key="f.key" :result="result" :formula="f" explained />
       </template>
 
       <p v-if="!isTable && result.differentiable && order === 1" class="section-text">
@@ -328,17 +297,11 @@ function handleExportPdf() {
         <MathFormula :expression="`O(h^{${order}})`" />, así que dividir h entre 2 divide el error entre
         {{ 2 ** order }}.
       </p>
-      <p v-if="fn && explained" class="section-text">
+      <p v-if="fn" class="section-text">
         La cota usa M, el máximo de {{ boundNames }} en el intervalo de cada {{ isTable ? 'fórmula' : 'fila' }}, estimado por
         muestreo con {{ result.sampling_points }} puntos equiespaciados. La marca <sup>R</sup> aparece sólo cuando el
         error real supera la cota (más allá de una diferencia relativa de 10⁻⁹) y el ✔ depende del margen de redondeo
         de la computadora, {{ roundingText }}.
-      </p>
-      <p v-else-if="fn" class="section-text">
-        La cota usa M, el máximo de {{ boundNames }}
-        en el intervalo de cada {{ isTable ? 'fórmula' : 'fila' }}, estimado por muestreo con
-        {{ result.sampling_points }} puntos equiespaciados. La marca <sup>R</sup> indica que el error
-        real supera la cota sólo por el redondeo de la computadora ({{ roundingText }}).
       </p>
     </section>
 
@@ -358,7 +321,7 @@ function handleExportPdf() {
     />
 
     <!-- 5. Comprobación -->
-    <DifferentiationVerification :result="result" :explained="explained" />
+    <DifferentiationVerification :result="result" explained />
   </div>
 </template>
 
@@ -460,12 +423,6 @@ function handleExportPdf() {
   margin-bottom: var(--space-3);
 }
 
-.formula-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
-  gap: var(--space-3);
-}
-
 .formula-column {
   display: flex;
   flex-direction: column;
@@ -494,46 +451,11 @@ function handleExportPdf() {
   font-weight: var(--weight-semibold);
 }
 
-.formula-list .formula-box {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-}
-
-/* Mismas tarjetas que las derivadas parciales de Newton. */
-.partial-card {
-  min-width: 0;
-  background: var(--color-surface);
-  border: 1px solid var(--color-line);
-  border-radius: var(--radius-nested);
-  padding: var(--space-3) var(--space-4);
-  margin-bottom: var(--space-3);
-}
-
-.partial-terms {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-}
-
-.partial-formula {
-  overflow-x: auto;
-}
-
-.partial-rule {
-  display: block;
+/* Derivada muy larga: plegada, como en Gauss. */
+.long-derivative summary {
+  cursor: pointer;
+  color: var(--color-accent);
   font-size: var(--text-small);
-  color: var(--color-ink-muted);
-}
-
-.partial-sum {
-  margin-top: var(--space-2);
-  padding-top: var(--space-2);
-  border-top: 1px dashed var(--color-line);
-  font-weight: var(--weight-semibold);
-  overflow-x: auto;
+  margin-bottom: var(--space-2);
 }
 </style>

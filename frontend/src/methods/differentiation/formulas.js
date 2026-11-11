@@ -22,6 +22,15 @@ export function derivativeName(n, style = LATEX_STYLE) {
   return isLatex(style) ? `f^{(${n})}` : `f^(${n})`
 }
 
+/**
+ * Desglose de f⁽ⁿ⁾ con su nombre: el backend (entry_steps, el de Newton)
+ * escribe f''''(x) para n = 4; aquí queda f^{(4)}(x), como en el resto.
+ */
+export function namedSteps(n, steps) {
+  if (n <= 3 || !steps?.sum_latex) return steps
+  return { ...steps, sum_latex: steps.sum_latex.replace(/^f'+\(x\)/, `${derivativeName(n)}(x)`) }
+}
+
 const SUPERSCRIPTS = '⁰¹²³⁴⁵⁶⁷⁸⁹'
 /** Nombre de f⁽ⁿ⁾ en un texto: f′, f′′, f′′′, f⁽⁴⁾, f⁽⁵⁾. */
 export function derivativeText(n) {

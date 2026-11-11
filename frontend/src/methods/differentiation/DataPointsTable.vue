@@ -2,8 +2,9 @@
 // Tabla del modo «Tabla de datos»: en cada xᵢ, cada fórmula con sus vecinos y,
 // si hay función para comparar, la derivada exacta, el error real y la cota.
 // Cada punto tiene su paso a paso expandible.
-// Con `explained` (diferencias progresiva y regresiva): encabezados con
-// tooltip, leyenda de columnas y el paso a paso explicado de integración.
+// Con `explained` (el Resolver; la página de Teoría no lo usa): encabezados con
+// tooltip, leyenda de columnas, el paso a paso explicado de integración y, en
+// 5 puntos, por qué se recomendó la fórmula de cada punto.
 import { computed, ref, watch } from 'vue'
 import GlossaryBlock from '../../components/GlossaryBlock.vue'
 import InfoTip from '../../components/InfoTip.vue'
@@ -12,7 +13,7 @@ import DifferenceStepDetail from './DifferenceStepDetail.vue'
 import { tableContext } from './differenceExplain'
 import { tableColumns } from './differenceGlossary'
 import { boundMark, cell } from './formulas'
-import { explainSteps } from './threePointExplain'
+import { explainSteps, isFivePoint, recommendedText } from './threePointExplain'
 
 const props = defineProps({
   result: { type: Object, required: true },
@@ -131,6 +132,9 @@ function stepLine(item, extra, i) {
           <tr v-if="expanded.has(step.iteration)" class="detail-row">
             <td :colspan="columns">
               <div :class="{ 'detail-inner': explained }">
+              <p v-if="explained && isFivePoint(result)" class="detail-why">
+                <strong>Recomendada:</strong> {{ recommendedText(result, step.iteration) }}
+              </p>
               <template v-for="f in formulas" :key="f.key">
                 <div v-if="step.extra[f.key]" class="detail-block">
                   <p class="detail-title">{{ f.name }} en x{{ step.iteration }}</p>
@@ -248,6 +252,11 @@ function stepLine(item, extra, i) {
 .detail-title {
   margin: 0 0 var(--space-2);
   font-weight: var(--weight-semibold);
+  color: var(--color-ink);
+}
+
+.detail-why {
+  margin: 0 0 var(--space-4);
   color: var(--color-ink);
 }
 

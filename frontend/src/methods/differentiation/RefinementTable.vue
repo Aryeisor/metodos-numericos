@@ -1,10 +1,10 @@
 <script setup>
 // Tabla de refinamiento de una fórmula (modo función), paginada como
 // ResultsTable, con el paso a paso expandible de cada fila.
-// Con `explained` (diferencias progresiva y regresiva): encabezados con
+// Con `explained` (el Resolver de diferencias, 3 y 5 puntos): encabezados con
 // tooltip, leyenda «¿Qué significa cada columna?» y el paso a paso explicado
-// de integración (TrapezoidStepDetail con customSteps). Sin él (3 y 5 puntos),
-// la tabla de siempre.
+// de integración (TrapezoidStepDetail con customSteps). Sin él (la página de
+// Teoría), la tabla de siempre.
 import { computed, ref, watch } from 'vue'
 import GlossaryBlock from '../../components/GlossaryBlock.vue'
 import InfoTip from '../../components/InfoTip.vue'
@@ -35,7 +35,11 @@ const rows = computed(() =>
 )
 const h0 = computed(() => props.result.iterations[0].extra.h)
 const showReal = computed(() => props.result.differentiable)
-const headers = computed(() => refinementColumns(showReal.value, formatNumber(props.formula.expected_ratio)))
+// 5 puntos: «0.0625 (1/16)», para que se lea como fracción.
+const ratioText = computed(
+  () => formatNumber(props.formula.expected_ratio) + (props.formula.order === 4 ? ' (1/16)' : '')
+)
+const headers = computed(() => refinementColumns(showReal.value, ratioText.value))
 const explainedSteps = (row) =>
   explainSteps(props.result, props.formula, row.item, functionContext(props.result, row.k), row.previous)
 // Filas donde el error real se ve 0 pero no lo es: una nota debajo de la tabla.

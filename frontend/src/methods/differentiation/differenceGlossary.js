@@ -49,8 +49,54 @@ const THREE_POINT_GLOSSARY = {
   },
 }
 
-/** Símbolos de una fórmula: progresiva, regresiva o una de 3 puntos. */
+// Fórmula de 5 puntos: un glosario por fórmula.
+const FIVE_COEFFICIENTS_TEXT =
+  'Coeficientes: salen de exigir que la fórmula sea exacta para todos los polinomios de hasta grado 4. Suman 0, así ' +
+  'que si f es constante la derivada da 0.'
+const FIVE_POINT_GLOSSARY = {
+  punto_medio_5: {
+    items: [
+      { symbol: 'D^{\\text{med},5}(h)', text: 'La aproximación de la derivada con el punto medio de 5 puntos, usando un paso h.' },
+      {
+        symbol: 'x_0 \\pm h,\\ x_0 \\pm 2h',
+        text: 'Los 4 puntos: dos a cada lado de x₀, a distancias h y 2h.',
+      },
+      {
+        symbol: '1,\\ -8,\\ 8,\\ -1',
+        text:
+          'Coeficientes: los vecinos cercanos pesan 8 y los lejanos, 1; los de la izquierda llevan signo contrario a los ' +
+          'de la derecha. Suman 0, así que si f es constante la derivada da 0.',
+      },
+      { symbol: '12h', text: 'El denominador que hace que el resultado sea una pendiente.' },
+      { symbol: 'f(x_0)', text: 'Por qué no aparece: su coeficiente es 0.' },
+    ],
+    summary:
+      'Idea clave: se pasa un polinomio de grado 4 por 5 puntos y se toma su pendiente en x₀. También se obtiene ' +
+      'combinando dos fórmulas de 3 puntos (Richardson).',
+  },
+  extremo_adelante_5: {
+    items: [
+      { symbol: 'D^{\\text{ad},5}(h)', text: 'La aproximación de la derivada con el extremo hacia adelante de 5 puntos.' },
+      { symbol: 'x_0,\\ x_0 + h,\\ \\dots,\\ x_0 + 4h', text: '5 puntos hacia la derecha: x₀ y cuatro vecinos.' },
+      { symbol: '-25,\\ 48,\\ -36,\\ 16,\\ -3', text: FIVE_COEFFICIENTS_TEXT },
+      { symbol: '12h', text: 'El denominador común.' },
+    ],
+    summary: 'Cuándo se usa: en los dos primeros datos de una tabla, donde no hay dos datos a la izquierda.',
+  },
+  extremo_atras_5: {
+    items: [
+      { symbol: 'D^{\\text{at},5}(h)', text: 'La aproximación de la derivada con el extremo hacia atrás de 5 puntos.' },
+      { symbol: 'x_0,\\ x_0 - h,\\ \\dots,\\ x_0 - 4h', text: '5 puntos hacia la izquierda: x₀ y cuatro vecinos.' },
+      { symbol: '25,\\ -48,\\ 36,\\ -16,\\ 3', text: FIVE_COEFFICIENTS_TEXT },
+      { symbol: '12h', text: 'El denominador común.' },
+    ],
+    summary: 'Cuándo se usa: en los dos últimos datos de una tabla, donde no hay dos datos a la derecha.',
+  },
+}
+
+/** Símbolos de una fórmula: progresiva, regresiva o una de 3 o 5 puntos. */
 export function formulaGlossary(key) {
+  if (FIVE_POINT_GLOSSARY[key]) return FIVE_POINT_GLOSSARY[key]
   if (THREE_POINT_GLOSSARY[key]) return THREE_POINT_GLOSSARY[key]
   const s = SIDE[key]
   const numerator = key === 'forward' ? 'f(x_0 + h) - f(x_0)' : 'f(x_0) - f(x_0 - h)'
@@ -139,6 +185,44 @@ export const THREE_POINT_ERRORS_GLOSSARY = {
   ],
 }
 
+export const FIVE_POINT_ERRORS_LATEX =
+  "|D_k - D_{k-1}|,\\qquad |D - f'(x_0)|,\\qquad \\text{cota} = \\frac{h^{4}}{30}\\,M \\text{ o } \\frac{h^{4}}{5}\\,M," +
+  '\\quad M = \\max |f^{(5)}(x)|'
+
+/** Errores, cota y razón de la fórmula de 5 puntos. */
+export const FIVE_POINT_ERRORS_GLOSSARY = {
+  items: [
+    ERRORS_GLOSSARY.items[0],
+    ERRORS_GLOSSARY.items[1],
+    { symbol: '\\frac{h^{4}}{30}\\,M', text: 'Cota del punto medio: el error máximo que predice la teoría.' },
+    { symbol: '\\frac{h^{4}}{5}\\,M', text: 'Cota de los extremos hacia adelante y hacia atrás.' },
+    {
+      symbol: 'M = \\max |f^{(5)}(x)|',
+      text:
+        'El valor más grande de |f⁽⁵⁾(x)| en el intervalo que usa cada fórmula: mide qué tanto se aleja f de un ' +
+        'polinomio de grado 4.',
+    },
+    {
+      symbol: 'h^{4}',
+      text: 'Por qué h⁴: el error es proporcional a h⁴, así que al dividir h entre 2 el error se divide entre unas 16 veces.',
+    },
+    {
+      symbol: '5 \\text{ en vez de } 30',
+      text: 'Por qué el extremo tiene 5 en vez de 30: su error es 6 veces mayor, porque x₀ está en el borde y no al centro.',
+    },
+    {
+      symbol: '\\text{Razón}',
+      text: 'El error real de una fila dividido entre el de la anterior. Debe acercarse a 0.0625 (1/16), porque el error es O(h⁴).',
+    },
+    {
+      symbol: '\\text{Redondeo}',
+      text:
+        'Como esta fórmula es tan precisa, el error de redondeo de la computadora aparece antes: en las últimas filas la ' +
+        'razón puede alejarse de 0.0625.',
+    },
+  ],
+}
+
 /** Columnas de la tabla de refinamiento (las que se muestran). `ratio`: la razón esperada. */
 export function refinementColumns(showReal, ratio = '0.5') {
   const columns = [
@@ -181,14 +265,29 @@ const TABLE_FORMULA_TEXT = {
     'Extremo hacia adelante, con los dos datos de la derecha: (−3yᵢ + 4yᵢ₊₁ − yᵢ₊₂)/(2h). No existe en los dos últimos puntos.',
   extremo_atras:
     'Extremo hacia atrás, con los dos datos de la izquierda: (3yᵢ − 4yᵢ₋₁ + yᵢ₋₂)/(2h). No existe en los dos primeros puntos.',
+  punto_medio_5:
+    'Punto medio de 5 puntos, con dos datos a cada lado: (yᵢ₋₂ − 8yᵢ₋₁ + 8yᵢ₊₁ − yᵢ₊₂)/(12h). No existe en los dos ' +
+    'primeros ni en los dos últimos puntos.',
+  extremo_adelante_5:
+    'Extremo hacia adelante de 5 puntos, con los cuatro datos de la derecha. No existe en los cuatro últimos puntos.',
+  extremo_atras_5:
+    'Extremo hacia atrás de 5 puntos, con los cuatro datos de la izquierda. No existe en los cuatro primeros puntos.',
 }
+// Tabla de 5 puntos: el punto medio de 3 puntos va como referencia.
+const REFERENCE_TEXT = 'La fórmula de 3 puntos (punto medio), como referencia, para comparar.'
 
 const RECOMMENDED_TEXT =
   'El punto medio cuando hay datos a los dos lados (es el más preciso); en el primer dato, el extremo hacia adelante; ' +
   'en el último, el extremo hacia atrás.'
+const FIVE_POINT_RECOMMENDED_TEXT =
+  'El punto medio de 5 puntos cuando hay dos datos a cada lado; si no, el extremo de 5 puntos; y el de 3 puntos sólo ' +
+  'cuando no cabe ninguna de 5 (por ejemplo, en una tabla de 5 datos).'
 
-/** Columnas del modo tabla de datos. `formulas`: las pedidas; `recommended`: columna «Recomendada» (3 puntos). */
+const isReference = (f) => f.name === 'Punto medio de 3 puntos'
+
+/** Columnas del modo tabla de datos. `formulas`: las pedidas; `recommended`: columna «Recomendada» (3 y 5 puntos). */
 export function tableColumns(formulas, hasFunction, recommended = false) {
+  const fivePoint = formulas.some((f) => f.bound_derivative === 5)
   const columns = [
     { key: 'i', label: 'i', symbol: 'i', text: 'Número del dato.' },
     { key: 'x', label: 'xᵢ', symbol: 'x_i', text: 'El punto donde se calcula la derivada.' },
@@ -197,11 +296,16 @@ export function tableColumns(formulas, hasFunction, recommended = false) {
       key: f.key,
       label: f.name,
       symbol: f.symbol_latex,
-      text: TABLE_FORMULA_TEXT[f.key],
+      text: isReference(f) ? REFERENCE_TEXT : TABLE_FORMULA_TEXT[f.key],
     })),
   ]
   if (recommended) {
-    columns.push({ key: 'recommended', label: 'Recomendada', symbol: '\\text{Recomendada}', text: RECOMMENDED_TEXT })
+    columns.push({
+      key: 'recommended',
+      label: 'Recomendada',
+      symbol: '\\text{Recomendada}',
+      text: fivePoint ? FIVE_POINT_RECOMMENDED_TEXT : RECOMMENDED_TEXT,
+    })
   }
   if (hasFunction) {
     columns.push(
@@ -217,9 +321,11 @@ export function tableColumns(formulas, hasFunction, recommended = false) {
         label: `Cota ${f.name.toLowerCase()}`,
         symbol: `\\text{Cota ${f.name.toLowerCase()}}`,
         text:
-          f.bound_derivative === 3
-            ? `El error máximo que predice la teoría: (h²/${f.bound_coefficient[1]})·M, con M el máximo de |f'''| en los datos que usa la fórmula.`
-            : "El error máximo que predice la teoría: (h/2)·M, con M el máximo de |f''| entre los dos datos.",
+          f.bound_derivative === 5
+            ? `El error máximo que predice la teoría: (h⁴/${f.bound_coefficient[1]})·M, con M el máximo de |f⁽⁵⁾| en los datos que usa la fórmula.`
+            : f.bound_derivative === 3
+              ? `El error máximo que predice la teoría: (h²/${f.bound_coefficient[1]})·M, con M el máximo de |f'''| en los datos que usa la fórmula.`
+              : "El error máximo que predice la teoría: (h/2)·M, con M el máximo de |f''| entre los dos datos.",
       })),
       { key: 'within', label: '≤ cota', symbol: '\\le \\text{cota}', text: '✔ si el error real quedó por debajo de la cota.' }
     )
@@ -227,9 +333,9 @@ export function tableColumns(formulas, hasFunction, recommended = false) {
   return columns
 }
 
-/** Columnas de la tabla de comparación (3 puntos: otra descripción de «Fórmula»). */
-export const comparisonColumns = (threePoint) =>
-  threePoint
+/** Columnas de la tabla de comparación (3 y 5 puntos: otra descripción de «Fórmula»). */
+export const comparisonColumns = (points) =>
+  points
     ? COMPARISON_COLUMNS.map((c) =>
         c.key === 'formula' ? { ...c, text: 'La fórmula usada: punto medio, extremo hacia adelante o hacia atrás.' } : c
       )

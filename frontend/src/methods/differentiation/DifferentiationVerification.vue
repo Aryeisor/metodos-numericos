@@ -19,7 +19,7 @@ import { latexNumber } from '../../utils/latexFormulas'
 import { conclusionText, tinyRealErrorNote } from './differenceExplain'
 import { comparisonColumns } from './differenceGlossary'
 import { boundMark, cell, identityLatex, substitutionLatex } from './formulas'
-import { IDENTITY_TEXTS, isThreePoint } from './threePointExplain'
+import { ENDPOINTS_NOTE, IDENTITY_TEXTS, RICHARDSON_ROUNDING_NOTE, RICHARDSON_TEXT } from './threePointExplain'
 
 const props = defineProps({
   result: { type: Object, required: true },
@@ -27,7 +27,7 @@ const props = defineProps({
 })
 
 const check = computed(() => props.result.verification)
-const COMPARISON_COLUMNS = computed(() => comparisonColumns(isThreePoint(props.result)))
+const COMPARISON_COLUMNS = computed(() => comparisonColumns(props.result.method !== 'diferencias-finitas'))
 // Identidades explicadas (3 puntos): una frase por cada tipo que aparece.
 const identityTexts = computed(() => {
   if (!props.explained || !check.value.identities) return []
@@ -61,6 +61,7 @@ const identityGroups = computed(() => {
         latex: identityLatex(item, formulas.value.find((f) => f.key === item.key)),
         ok: item.ok,
         name: item.name,
+        rounding: Boolean(item.rounding_difference),
       })),
     }))
 })
@@ -74,6 +75,8 @@ const rombergFormula = computed(
       ? 'D_{3}(h) = \\frac{y_{i+1} - y_{i-1}}{2h},\\quad D_{3}(2h) = \\frac{y_{i+2} - y_{i-2}}{4h}'
       : 'D_{3}(h) = \\frac{f(x_0 + h) - f(x_0 - h)}{2h}')
 )
+// Alguna línea con «(diferencia por redondeo)»: se explica debajo.
+const roundingCase = computed(() => identityGroups.value.some((g) => g.lines.some((l) => l.rounding)))
 
 const secantLines = computed(() =>
   (check.value.secant ?? []).map((pair) => ({
@@ -115,7 +118,15 @@ const substitutions = computed(() =>
 
     <!-- Fórmulas de 3 y 5 puntos: identidades -->
     <template v-if="identityGroups.length">
-      <p v-if="isFivePoint" class="section-text">
+      <template v-if="isFivePoint && explained">
+        <p class="section-text">
+          Identidad de Richardson
+          ({{ isTable ? 'en cada punto donde aplica el punto medio de 5 puntos, con los datos' : 'en la fila 1' }}):
+          {{ RICHARDSON_TEXT }}
+        </p>
+        <div class="formula-box"><MathFormula :expression="rombergFormula" /></div>
+      </template>
+      <p v-else-if="isFivePoint" class="section-text">
         {{ isTable ? 'En cada punto donde aplica el punto medio de 5 puntos, con los datos' : 'En la fila 1' }}:
         el punto medio de 5 puntos combina dos fórmulas de 3 puntos para eliminar su error de orden
         <MathFormula expression="h^2" />, igual que la de 3 puntos combina diferencias (es la idea de Romberg):
@@ -153,8 +164,10 @@ const substitutions = computed(() =>
           </div>
         </div>
       </div>
+      <p v-if="explained && roundingCase" class="section-text note">{{ RICHARDSON_ROUNDING_NOTE }}</p>
     </template>
-    <p v-if="isFivePoint" class="section-text note">
+    <p v-if="isFivePoint && explained" class="section-text note">{{ ENDPOINTS_NOTE }}</p>
+    <p v-else-if="isFivePoint" class="section-text note">
       Los extremos de 5 puntos no tienen una identidad de este tipo: en ellos sólo se comprueba que el
       error real quede por debajo de la cota.
     </p>
@@ -319,6 +332,11 @@ const substitutions = computed(() =>
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
+}
+
+.formula-box {
+  overflow-x: auto;
+  margin-bottom: var(--space-3);
 }
 
 .check-line {

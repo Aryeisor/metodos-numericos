@@ -191,21 +191,28 @@ def _comparison(function, formulas, x0, iterations, exact, references=DIFFERENCE
     return lines
 
 
-# --- Explicaciones del paso a paso (sólo este método) --------------------------
+# --- Explicaciones del paso a paso (3 y 5 puntos) ------------------------------
 
 def predicted_side(formula, sign):
-    """Lado que predice f''' (Taylor): punto medio D − f' ≈ +(h²/6)·f''' y
-    extremos D − f' ≈ −(h²/3)·f'''. Con f''' > 0 el punto medio sobreestima y
-    los extremos subestiman; con f''' < 0, al revés. None si f'''(x) = 0."""
+    """Lado que predice la derivada de la cota (Taylor). 3 puntos: punto medio
+    D − f' ≈ +(h²/6)·f''' y extremos D − f' ≈ −(h²/3)·f'''. 5 puntos: las tres
+    D − f' ≈ −(h⁴/30)·f⁽⁵⁾ o −(h⁴/5)·f⁽⁵⁾. Con signo > 0 el punto medio de 3
+    puntos sobreestima y las demás subestiman; con signo < 0, al revés. None si
+    la derivada vale 0."""
     if not sign:
         return None
     direction = 1 if formula.key == MIDPOINT.key else -1
     return "over" if direction * sign > 0 else "under"
 
 
-def _third_derivative(function, x):
-    """f'''(x) y su signo, o None si no está definida."""
-    value = _evaluate(function.evaluators[3], x)
+# Nombre del dato según el orden: h² o h⁴ exacto; f''' o f⁽⁵⁾ con su signo.
+POWER_KEYS = {2: "h_squared", 4: "h_fourth"}
+DERIVATIVE_KEYS = {3: "third_derivative", 5: "fifth_derivative"}
+
+
+def _derivative_sign(function, n, x):
+    """f⁽ⁿ⁾(x) y su signo, o None si no está definida."""
+    value = _evaluate(function.evaluators[n], x)
     if value is None:
         return None
     return {"value": value, "sign": (value > 0) - (value < 0)}
@@ -218,18 +225,21 @@ def _h_number(row, formula):
     return (max(xs) - min(xs)) / (max(offsets) - min(offsets))
 
 
-def _explain(function, formulas, iterations, meta, data):
-    """h², lado de la aproximación, lado que predice f''' y «= cota» en cada fila."""
+def explain(function, computed, iterations, meta, data):
+    """h² o h⁴, lado de la aproximación, lado que predice f''' o f⁽⁵⁾ y «= cota»
+    en cada fila de las fórmulas `computed`."""
     table = data["mode"] == "table"
+    orders = sorted({formula.bound_derivative for formula in computed})
     meta["min_rows"] = MIN_REFINEMENTS
     for step in iterations:
         extra = step.extra
         x = extra["x"] if table else data["x0"]
         exact = extra["exact"] if table else meta["exact"]
-        third = _third_derivative(function, x) if function else None
+        signs = {n: _derivative_sign(function, n, x) if function else None for n in orders}
         if table:
-            extra["third_derivative"] = third
-        for formula in THREE_POINT:
+            for n in orders:
+                extra[DERIVATIVE_KEYS[n]] = signs[n]
+        for formula in computed:
             row = extra.get(formula.key)
             if not row:
                 continue
@@ -239,12 +249,14 @@ def _explain(function, formulas, iterations, meta, data):
                 h_number = display.step_size(data["h0"], step.iteration)[0]
                 estimated = row["estimated_error"]
                 row["below_tolerance"] = None if estimated is None else estimated <= data["tolerance"]
-            # h² exacto, para la cota (h²/6)·M o (h²/3)·M.
-            row["h_squared"] = display.decimal(h_number * h_number)
+            # h² o h⁴ exacto, para la cota (h²/6)·M, (h⁴/30)·M...
+            row[POWER_KEYS[formula.order]] = display.decimal(h_number ** formula.order)
             row["side"] = _side(row["D"], exact)
-            row["predicted_side"] = None if third is None else predicted_side(formula, third["sign"])
+            sign = signs[formula.bound_derivative]
+            row["predicted_side"] = None if sign is None else predicted_side(formula, sign["sign"])
     if not table:
-        meta["third_derivative"] = _third_derivative(function, data["x0"])
+        for n in orders:
+            meta[DERIVATIVE_KEYS[n]] = _derivative_sign(function, n, data["x0"])
         last = iterations[-1].extra if iterations else {}
         for key, final in meta["verification"]["final"].items():
             final["equals_bound"] = last[key]["equals_bound"]
@@ -273,7 +285,7 @@ def _function(data):
     meta["verification"]["identities"] = identities
     meta["comparison"] = _comparison(function, formulas, x0, iterations, meta["exact"]) if iterations else []
     meta["rounding_text"] = ROUNDING_TEXT["function"]
-    _explain(function, formulas, iterations, meta, data)
+    explain(function, formulas, iterations, meta, data)
     return function, formulas, converged, iterations, warnings, meta
 
 
@@ -312,7 +324,7 @@ def _table(data):
         "verification": {**verification, "identities": identities},
         "rounding_text": ROUNDING_TEXT["table"],
     }
-    _explain(function, formulas, iterations, meta, data)
+    explain(function, THREE_POINT, iterations, meta, data)
     return function, formulas, True, iterations, warnings, meta
 
 

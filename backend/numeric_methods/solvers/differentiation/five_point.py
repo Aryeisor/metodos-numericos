@@ -8,15 +8,20 @@ productos de la de 3 puntos (three_point.py), y agrega lo propio:
 - la identidad de Richardson del punto medio, D₅(h) = (4·D₃(h) − D₃(2h))/3
   (los extremos no tienen identidad: sólo error ≤ cota);
 - en el modo tabla, el punto medio de 3 puntos como columna de referencia y
-  la columna «Recomendada» (medio 5 → extremo 5 → medio 3).
+  la columna «Recomendada» (medio 5 → extremo 5 → medio 3);
+- los datos del paso a paso explicado (three_point.explain: h⁴, signo de
+  f⁽⁵⁾, lado de la aproximación) y el patrón entre derivadas seguidas.
 
 No depende de Django: puede usarse y testearse de forma aislada.
 """
 
 from decimal import Decimal
 
+import sympy as sp
+
+from ...expressions.to_latex import expression_to_latex
 from . import display
-from .finite_differences import _function_mode, _table_points, build_result
+from .finite_differences import _function_mode, _table_points, bound_check_equal, build_result
 from .formulas import (
     BACKWARD_ENDPOINT_5,
     FIVE_POINT,
@@ -32,6 +37,7 @@ from .three_point import (
     ROUNDING_TEXT,
     _comparison,
     _decorate,
+    explain,
     rounding,
 )
 
@@ -84,9 +90,20 @@ def _richardson(f, h, D):
     }
 
 
+def _pattern(function):
+    """f⁽ⁿ⁺¹⁾ − f⁽ⁿ⁾ si es la misma expresión (≠ 0) de f′ a f⁽⁵⁾, para la frase
+    del patrón (en x·eˣ cada derivada es la anterior más eˣ); si no, None."""
+    d = function.derivatives
+    differences = {sp.simplify(d[n + 1] - d[n]) for n in range(1, 5)}
+    if len(differences) != 1:
+        return None
+    (difference,) = differences
+    return None if difference == 0 else {"latex": expression_to_latex(difference, order=None)}
+
+
 def _function(data):
     function, formulas, converged, iterations, warnings, meta = _function_mode(
-        data, FIVE_POINT_CHOICES, rounding, derivative_orders=DERIVATIVE_ORDERS
+        data, FIVE_POINT_CHOICES, rounding, derivative_orders=DERIVATIVE_ORDERS, bound_check=bound_check_equal
     )
     for step in iterations:
         for formula in formulas:
@@ -104,6 +121,8 @@ def _function(data):
     ) if iterations else []
     meta["comparison_title"] = COMPARISON_TITLE
     meta["rounding_text"] = ROUNDING_TEXT["function"]
+    meta["derivative_pattern"] = _pattern(function)
+    explain(function, formulas, iterations, meta, data)
     return function, formulas, converged, iterations, warnings, meta
 
 
@@ -118,7 +137,8 @@ def _recommended(extra):
 def _table(data):
     # Se calculan todas siempre: la columna «Recomendada» y la identidad las usan.
     function, formulas, xs, iterations, warnings, verification = _table_points(
-        data, TABLE_CHOICES, FIVE_POINT + (MIDPOINT_3_REFERENCE,), rounding, derivative_orders=DERIVATIVE_ORDERS
+        data, TABLE_CHOICES, FIVE_POINT + (MIDPOINT_3_REFERENCE,), rounding, derivative_orders=DERIVATIVE_ORDERS,
+        bound_check=bound_check_equal,
     )
     ys = [float(y) for _, y in data["points"]]
     identities = []
@@ -141,7 +161,9 @@ def _table(data):
         "uniform": True,
         "verification": {**verification, "identities": identities},
         "rounding_text": ROUNDING_TEXT["table"],
+        "derivative_pattern": _pattern(function) if function else None,
     }
+    explain(function, FIVE_POINT + (MIDPOINT_3_REFERENCE,), iterations, meta, data)
     return function, formulas, True, iterations, warnings, meta
 
 

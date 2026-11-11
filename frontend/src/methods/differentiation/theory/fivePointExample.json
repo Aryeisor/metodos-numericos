@@ -85,6 +85,7 @@
             "rounding": 4.0101119443870526e-13,
             "within_bound": true,
             "by_rounding": false,
+            "equals_bound": false,
             "points": [
               {
                 "offset": -2,
@@ -151,7 +152,16 @@
               "137.1916544",
               "-19.8550297"
             ],
-            "denominator_display": "1.2"
+            "denominator_display": "1.2",
+            "below_tolerance": null,
+            "h_fourth": {
+              "exact": true,
+              "text": "0.0001",
+              "latex": "0.0001",
+              "approx": null
+            },
+            "side": "under",
+            "predicted_side": "under"
           },
           "extremo_adelante_5": {
             "D": 22.165914568055097,
@@ -209,6 +219,7 @@
             "rounding": 3.6201912841898737e-12,
             "within_bound": true,
             "by_rounding": false,
+            "equals_bound": false,
             "points": [
               {
                 "offset": 0,
@@ -290,7 +301,16 @@
               "367.0499144",
               "-79.36686993"
             ],
-            "denominator_display": "1.2"
+            "denominator_display": "1.2",
+            "below_tolerance": null,
+            "h_fourth": {
+              "exact": true,
+              "text": "0.0001",
+              "latex": "0.0001",
+              "approx": null
+            },
+            "side": "under",
+            "predicted_side": "under"
           },
           "extremo_atras_5": {
             "D": 22.166311738949112,
@@ -348,6 +368,7 @@
             "rounding": 2.213785381843816e-12,
             "within_bound": true,
             "by_rounding": false,
+            "equals_bound": false,
             "points": [
               {
                 "offset": 0,
@@ -429,7 +450,16 @@
               "-148.8913696",
               "23.7745557"
             ],
-            "denominator_display": "1.2"
+            "denominator_display": "1.2",
+            "below_tolerance": null,
+            "h_fourth": {
+              "exact": true,
+              "text": "0.0001",
+              "latex": "0.0001",
+              "approx": null
+            },
+            "side": "under",
+            "predicted_side": "under"
           }
         }
       },
@@ -505,6 +535,7 @@
             "rounding": 7.911485695909154e-13,
             "within_bound": true,
             "by_rounding": false,
+            "equals_bound": false,
             "points": [
               {
                 "offset": -2,
@@ -571,7 +602,16 @@
               "127.3935784",
               "-17.1489568"
             ],
-            "denominator_display": "0.6"
+            "denominator_display": "0.6",
+            "below_tolerance": false,
+            "h_fourth": {
+              "exact": true,
+              "text": "0.00000625",
+              "latex": "0.00000625",
+              "approx": null
+            },
+            "side": "under",
+            "predicted_side": "under"
           },
           "extremo_adelante_5": {
             "D": 22.167097150989477,
@@ -629,6 +669,7 @@
             "rounding": 6.3507783874401385e-12,
             "within_bound": true,
             "by_rounding": false,
+            "equals_bound": false,
             "points": [
               {
                 "offset": 0,
@@ -710,7 +751,16 @@
               "295.3191288",
               "-59.5650891"
             ],
-            "denominator_display": "0.6"
+            "denominator_display": "0.6",
+            "below_tolerance": false,
+            "h_fourth": {
+              "exact": true,
+              "text": "0.00000625",
+              "latex": "0.00000625",
+              "approx": null
+            },
+            "side": "under",
+            "predicted_side": "under"
           },
           "extremo_atras_5": {
             "D": 22.16710949015386,
@@ -768,6 +818,7 @@
             "rounding": 4.965576536819119e-12,
             "within_bound": true,
             "by_rounding": false,
+            "equals_bound": false,
             "points": [
               {
                 "offset": 0,
@@ -849,7 +900,16 @@
               "-188.250657872",
               "32.668096308"
             ],
-            "denominator_display": "0.6"
+            "denominator_display": "0.6",
+            "below_tolerance": false,
+            "h_fourth": {
+              "exact": true,
+              "text": "0.00000625",
+              "latex": "0.00000625",
+              "approx": null
+            },
+            "side": "under",
+            "predicted_side": "under"
           }
         }
       },
@@ -925,6 +985,7 @@
             "rounding": 1.5768771866454768e-12,
             "within_bound": true,
             "by_rounding": false,
+            "equals_bound": false,
             "points": [
               {
                 "offset": -2,
@@ -991,7 +1052,16 @@
               "122.732997304",
               "-15.924197268"
             ],
-            "denominator_display": "0.3"
+            "denominator_display": "0.3",
+            "below_tolerance": false,
+            "h_fourth": {
+              "exact": true,
+              "text": "0.000000390625",
+              "latex": "0.000000390625",
+              "approx": null
+            },
+            "side": "under",
+            "predicted_side": "under"
           },
           "extremo_adelante_5": {
             "D": 22.16716405835799,
@@ -1049,6 +1119,7 @@
             "rounding": 1.1919379151244519e-11,
             "within_bound": true,
             "by_rounding": false,
+            "equals_bound": false,
             "points": [
               {
                 "offset": 0,
@@ -1130,7 +1201,16 @@
               "264.422942432",
               "-51.446870448"
             ],
-            "denominator_display": "0.3"
+            "denominator_display": "0.3",
+            "below_tolerance": false,
+            "h_fourth": {
+              "exact": true,
+              "text": "0.000000390625",
+              "latex": "0.000000390625",
+              "approx": null
+            },
+            "side": "under",
+            "predicted_side": "under"
           },
           "extremo_atras_5": {
             "D": 22.167164443391954,
@@ -1188,6 +1268,7 @@
             "rounding": 1.0539440192920146e-11,
             "within_bound": true,
             "by_rounding": false,
+            "equals_bound": false,
             "points": [
               {
                 "offset": 0,
@@ -1269,7 +1350,16 @@
               "-211.13857888",
               "38.10959832"
             ],
-            "denominator_display": "0.3"
+            "denominator_display": "0.3",
+            "below_tolerance": false,
+            "h_fourth": {
+              "exact": true,
+              "text": "0.000000390625",
+              "latex": "0.000000390625",
+              "approx": null
+            },
+            "side": "under",
+            "predicted_side": "under"
           }
         }
       },
@@ -1345,6 +1435,7 @@
             "rounding": 3.1510465131551186e-12,
             "within_bound": true,
             "by_rounding": false,
+            "equals_bound": false,
             "points": [
               {
                 "offset": -2,
@@ -1411,7 +1502,16 @@
               "120.4601836",
               "-15.34162466"
             ],
-            "denominator_display": "0.15"
+            "denominator_display": "0.15",
+            "below_tolerance": true,
+            "h_fourth": {
+              "exact": false,
+              "text": "0",
+              "latex": "0",
+              "approx": "0"
+            },
+            "side": "under",
+            "predicted_side": "under"
           },
           "extremo_adelante_5": {
             "D": 22.16716803814506,
@@ -1469,6 +1569,7 @@
             "rounding": 2.3104778173573413e-11,
             "within_bound": true,
             "by_rounding": false,
+            "equals_bound": false,
             "points": [
               {
                 "offset": 0,
@@ -1550,7 +1651,16 @@
               "250.087858064",
               "-47.772591804"
             ],
-            "denominator_display": "0.15"
+            "denominator_display": "0.15",
+            "below_tolerance": false,
+            "h_fourth": {
+              "exact": false,
+              "text": "0",
+              "latex": "0",
+              "approx": "0"
+            },
+            "side": "under",
+            "predicted_side": "under"
           },
           "extremo_atras_5": {
             "D": 22.167168050173174,
@@ -1608,6 +1718,7 @@
             "rounding": 2.1726152565403275e-11,
             "within_bound": true,
             "by_rounding": false,
+            "equals_bound": false,
             "points": [
               {
                 "offset": 0,
@@ -1689,7 +1800,16 @@
               "-223.476864224",
               "41.117822346"
             ],
-            "denominator_display": "0.15"
+            "denominator_display": "0.15",
+            "below_tolerance": false,
+            "h_fourth": {
+              "exact": false,
+              "text": "0",
+              "latex": "0",
+              "approx": "0"
+            },
+            "side": "under",
+            "predicted_side": "under"
           }
         }
       },
@@ -1765,6 +1885,7 @@
             "rounding": 6.300739360649406e-12,
             "within_bound": true,
             "by_rounding": false,
+            "equals_bound": false,
             "points": [
               {
                 "offset": -2,
@@ -1831,7 +1952,16 @@
               "119.33788624",
               "-15.05752295"
             ],
-            "denominator_display": "0.075"
+            "denominator_display": "0.075",
+            "below_tolerance": true,
+            "h_fourth": {
+              "exact": false,
+              "text": "0",
+              "latex": "0",
+              "approx": "0"
+            },
+            "side": "under",
+            "predicted_side": "under"
           },
           "extremo_adelante_5": {
             "D": 22.16716828081625,
@@ -1889,6 +2019,7 @@
             "rounding": 4.549841727245121e-11,
             "within_bound": true,
             "by_rounding": false,
+            "equals_bound": false,
             "points": [
               {
                 "offset": 0,
@@ -1970,7 +2101,16 @@
               "243.183725632",
               "-46.024873989"
             ],
-            "denominator_display": "0.075"
+            "denominator_display": "0.075",
+            "below_tolerance": true,
+            "h_fourth": {
+              "exact": false,
+              "text": "0",
+              "latex": "0",
+              "approx": "0"
+            },
+            "side": "under",
+            "predicted_side": "under"
           },
           "extremo_atras_5": {
             "D": 22.167168281195014,
@@ -2028,6 +2168,7 @@
             "rounding": 4.412011985366205e-11,
             "within_bound": true,
             "by_rounding": false,
+            "equals_bound": false,
             "points": [
               {
                 "offset": 0,
@@ -2109,7 +2250,16 @@
               "-229.88212576",
               "42.699221448"
             ],
-            "denominator_display": "0.075"
+            "denominator_display": "0.075",
+            "below_tolerance": true,
+            "h_fourth": {
+              "exact": false,
+              "text": "0",
+              "latex": "0",
+              "approx": "0"
+            },
+            "side": "under",
+            "predicted_side": "under"
           }
         }
       },
@@ -2185,6 +2335,7 @@
             "rounding": 1.260080192151586e-11,
             "within_bound": true,
             "by_rounding": false,
+            "equals_bound": false,
             "points": [
               {
                 "offset": -2,
@@ -2251,7 +2402,16 @@
               "118.780232832",
               "-14.917235776"
             ],
-            "denominator_display": "0.0375"
+            "denominator_display": "0.0375",
+            "below_tolerance": true,
+            "h_fourth": {
+              "exact": false,
+              "text": "0",
+              "latex": "0",
+              "approx": "0"
+            },
+            "side": "under",
+            "predicted_side": "under"
           },
           "extremo_adelante_5": {
             "D": 22.167168295787857,
@@ -2309,6 +2469,7 @@
             "rounding": 9.029681557930643e-11,
             "within_bound": true,
             "by_rounding": true,
+            "equals_bound": false,
             "points": [
               {
                 "offset": 0,
@@ -2390,7 +2551,16 @@
               "239.795733536",
               "-45.172568859"
             ],
-            "denominator_display": "0.0375"
+            "denominator_display": "0.0375",
+            "below_tolerance": true,
+            "h_fourth": {
+              "exact": false,
+              "text": "0",
+              "latex": "0",
+              "approx": "0"
+            },
+            "side": "under",
+            "predicted_side": "under"
           },
           "extremo_atras_5": {
             "D": 22.16716829580794,
@@ -2448,6 +2618,7 @@
             "rounding": 8.891860019860501e-11,
             "within_bound": true,
             "by_rounding": false,
+            "equals_bound": false,
             "points": [
               {
                 "offset": 0,
@@ -2529,7 +2700,16 @@
               "-233.1454206912",
               "43.5099590781"
             ],
-            "denominator_display": "0.0375"
+            "denominator_display": "0.0375",
+            "below_tolerance": true,
+            "h_fourth": {
+              "exact": false,
+              "text": "0",
+              "latex": "0",
+              "approx": "0"
+            },
+            "side": "under",
+            "predicted_side": "under"
           }
         }
       }
@@ -2593,7 +2773,9 @@
           "bound": 1.6560283459589571e-10,
           "rounding": 1.260080192151586e-11,
           "within_bound": true,
-          "by_rounding": false
+          "by_rounding": false,
+          "equals_bound": false,
+          "matching_decimals": 6
         },
         "extremo_adelante_5": {
           "D": 22.167168295787857,
@@ -2601,7 +2783,9 @@
           "bound": 1.0007384847317143e-09,
           "rounding": 9.029681557930643e-11,
           "within_bound": true,
-          "by_rounding": true
+          "by_rounding": true,
+          "equals_bound": false,
+          "matching_decimals": 6
         },
         "extremo_atras_5": {
           "D": 22.16716829580794,
@@ -2609,7 +2793,9 @@
           "bound": 9.865454233649171e-10,
           "rounding": 8.891860019860501e-11,
           "within_bound": true,
-          "by_rounding": false
+          "by_rounding": false,
+          "equals_bound": false,
+          "matching_decimals": 6
         }
       },
       "failed_rows": {
@@ -2686,6 +2872,14 @@
     ],
     "comparison_title": "Comparación con la fórmula de 3 puntos y las diferencias progresiva y regresiva",
     "rounding_text": "R = 2ε·Σ|cᵢ|·(|f(xᵢ)| + |xᵢ·f′(xᵢ)|) / (factor·h)",
+    "derivative_pattern": {
+      "latex": "e^{x}"
+    },
+    "min_rows": 6,
+    "fifth_derivative": {
+      "value": 51.72339269251455,
+      "sign": 1
+    },
     "formula": "all",
     "formulas": [
       {
@@ -3086,6 +3280,7 @@
               ],
               "value": 51.72339269251455
             },
+            "equals_bound": false,
             "products_display": [
               "-198.1213",
               "446.674128",
@@ -3093,7 +3288,15 @@
               "203.251184",
               "-44.334336"
             ],
-            "denominator_display": "1.2"
+            "denominator_display": "1.2",
+            "h_fourth": {
+              "exact": true,
+              "text": "0.0001",
+              "latex": "0.0001",
+              "approx": null
+            },
+            "side": "under",
+            "predicted_side": "under"
           },
           "extremo_atras_5": null,
           "punto_medio": null,
@@ -3101,6 +3304,14 @@
             "key": "extremo_adelante_5",
             "name": "Extremo hacia adelante",
             "D": 12.877113333333364
+          },
+          "third_derivative": {
+            "value": 22.78394915221753,
+            "sign": 1
+          },
+          "fifth_derivative": {
+            "value": 32.69001400100776,
+            "sign": 1
           }
         }
       },
@@ -3249,6 +3460,7 @@
               ],
               "value": 57.97980637923032
             },
+            "equals_bound": false,
             "products_display": [
               "-232.642775",
               "522.68952",
@@ -3256,7 +3468,15 @@
               "236.449792",
               "-51.446871"
             ],
-            "denominator_display": "1.2"
+            "denominator_display": "1.2",
+            "h_fourth": {
+              "exact": true,
+              "text": "0.0001",
+              "latex": "0.0001",
+              "approx": null
+            },
+            "side": "under",
+            "predicted_side": "under"
           },
           "extremo_atras_5": null,
           "punto_medio": {
@@ -3339,16 +3559,33 @@
               ],
               "value": 29.038307829182145
             },
+            "equals_bound": false,
             "products_display": [
               "10.889365",
               "-7.924852"
             ],
-            "denominator_display": "0.2"
+            "denominator_display": "0.2",
+            "h_squared": {
+              "exact": true,
+              "text": "0.01",
+              "latex": "0.01",
+              "approx": null
+            },
+            "side": "over",
+            "predicted_side": "over"
           },
           "recommended": {
             "key": "extremo_adelante_5",
             "name": "Extremo hacia adelante",
             "D": 14.77875166666666
+          },
+          "third_derivative": {
+            "value": 25.72755274111784,
+            "sign": 1
+          },
+          "fifth_derivative": {
+            "value": 36.67544752457224,
+            "sign": 1
           }
         }
       },
@@ -3481,13 +3718,22 @@
               ],
               "value": 51.72339269251455
             },
+            "equals_bound": false,
             "products_display": [
               "7.924852",
               "-74.445688",
               "101.625592",
               "-14.778112"
             ],
-            "denominator_display": "1.2"
+            "denominator_display": "1.2",
+            "h_fourth": {
+              "exact": true,
+              "text": "0.0001",
+              "latex": "0.0001",
+              "approx": null
+            },
+            "side": "under",
+            "predicted_side": "under"
           },
           "extremo_adelante_5": {
             "D": 16.938014166666708,
@@ -3614,6 +3860,7 @@
               ],
               "value": 64.98009719592568
             },
+            "equals_bound": false,
             "products_display": [
               "-272.234125",
               "609.753552",
@@ -3621,7 +3868,15 @@
               "274.383312",
               "-59.56509"
             ],
-            "denominator_display": "1.2"
+            "denominator_display": "1.2",
+            "h_fourth": {
+              "exact": true,
+              "text": "0.0001",
+              "latex": "0.0001",
+              "approx": null
+            },
+            "side": "under",
+            "predicted_side": "under"
           },
           "extremo_atras_5": null,
           "punto_medio": {
@@ -3704,16 +3959,33 @@
               ],
               "value": 32.76088276716841
             },
+            "equals_bound": false,
             "products_display": [
               "12.703199",
               "-9.305711"
             ],
-            "denominator_display": "0.2"
+            "denominator_display": "0.2",
+            "h_squared": {
+              "exact": true,
+              "text": "0.01",
+              "latex": "0.01",
+              "approx": null
+            },
+            "side": "over",
+            "predicted_side": "over"
           },
           "recommended": {
             "key": "punto_medio_5",
             "name": "Punto medio",
             "D": 16.93887000000002
+          },
+          "third_derivative": {
+            "value": 29.038307829182145,
+            "sign": 1
+          },
+          "fifth_derivative": {
+            "value": 41.137602758008036,
+            "sign": 1
           }
         }
       },
@@ -3846,13 +4118,22 @@
               ],
               "value": 57.97980637923032
             },
+            "equals_bound": false,
             "products_display": [
               "9.305711",
               "-87.11492",
               "118.224896",
               "-17.148957"
             ],
-            "denominator_display": "1.2"
+            "denominator_display": "1.2",
+            "h_fourth": {
+              "exact": true,
+              "text": "0.0001",
+              "latex": "0.0001",
+              "approx": null
+            },
+            "side": "under",
+            "predicted_side": "under"
           },
           "extremo_adelante_5": {
             "D": 19.387974166666684,
@@ -3979,6 +4260,7 @@
               ],
               "value": 72.81153192014744
             },
+            "equals_bound": false,
             "products_display": [
               "-317.579975",
               "709.349376",
@@ -3986,7 +4268,15 @@
               "317.68048",
               "-68.82186"
             ],
-            "denominator_display": "1.2"
+            "denominator_display": "1.2",
+            "h_fourth": {
+              "exact": true,
+              "text": "0.0001",
+              "latex": "0.0001",
+              "approx": null
+            },
+            "side": "under",
+            "predicted_side": "under"
           },
           "extremo_atras_5": null,
           "punto_medio": {
@@ -4069,16 +4359,33 @@
               ],
               "value": 36.94528049465325
             },
+            "equals_bound": false,
             "products_display": [
               "14.778112",
               "-10.889365"
             ],
-            "denominator_display": "0.2"
+            "denominator_display": "0.2",
+            "h_squared": {
+              "exact": true,
+              "text": "0.01",
+              "latex": "0.01",
+              "approx": null
+            },
+            "side": "over",
+            "predicted_side": "over"
           },
           "recommended": {
             "key": "punto_medio_5",
             "name": "Punto medio",
             "D": 19.388941666666653
+          },
+          "third_derivative": {
+            "value": 32.76088276716841,
+            "sign": 1
+          },
+          "fifth_derivative": {
+            "value": 46.13267165172695,
+            "sign": 1
           }
         }
       },
@@ -4211,13 +4518,22 @@
               ],
               "value": 64.98009719592568
             },
+            "equals_bound": false,
             "products_display": [
               "10.889365",
               "-101.625592",
               "137.191656",
               "-19.85503"
             ],
-            "denominator_display": "1.2"
+            "denominator_display": "1.2",
+            "h_fourth": {
+              "exact": true,
+              "text": "0.0001",
+              "latex": "0.0001",
+              "approx": null
+            },
+            "side": "under",
+            "predicted_side": "under"
           },
           "extremo_adelante_5": {
             "D": 22.165922499999994,
@@ -4344,6 +4660,7 @@
               ],
               "value": 81.57150521674785
             },
+            "equals_bound": false,
             "products_display": [
               "-369.4528",
               "823.149936",
@@ -4351,7 +4668,15 @@
               "367.04992",
               "-79.366869"
             ],
-            "denominator_display": "1.2"
+            "denominator_display": "1.2",
+            "h_fourth": {
+              "exact": true,
+              "text": "0.0001",
+              "latex": "0.0001",
+              "approx": null
+            },
+            "side": "under",
+            "predicted_side": "under"
           },
           "extremo_atras_5": {
             "D": 22.16630666666663,
@@ -4478,6 +4803,7 @@
               ],
               "value": 51.72339269251455
             },
+            "equals_bound": false,
             "products_display": [
               "369.4528",
               "-609.753552",
@@ -4485,7 +4811,15 @@
               "-148.891376",
               "23.774556"
             ],
-            "denominator_display": "1.2"
+            "denominator_display": "1.2",
+            "h_fourth": {
+              "exact": true,
+              "text": "0.0001",
+              "latex": "0.0001",
+              "approx": null
+            },
+            "side": "under",
+            "predicted_side": "under"
           },
           "punto_medio": {
             "D": 22.22878999999998,
@@ -4567,16 +4901,33 @@
               ],
               "value": 41.64746655409502
             },
+            "equals_bound": false,
             "products_display": [
               "17.148957",
               "-12.703199"
             ],
-            "denominator_display": "0.2"
+            "denominator_display": "0.2",
+            "h_squared": {
+              "exact": true,
+              "text": "0.01",
+              "latex": "0.01",
+              "approx": null
+            },
+            "side": "over",
+            "predicted_side": "over"
           },
           "recommended": {
             "key": "punto_medio_5",
             "name": "Punto medio",
             "D": 22.166999166666642
+          },
+          "third_derivative": {
+            "value": 36.94528049465325,
+            "sign": 1
+          },
+          "fifth_derivative": {
+            "value": 51.72339269251455,
+            "sign": 1
           }
         }
       },
@@ -4709,13 +5060,22 @@
               ],
               "value": 72.81153192014744
             },
+            "equals_bound": false,
             "products_display": [
               "12.703199",
               "-118.224896",
               "158.84024",
               "-22.94062"
             ],
-            "denominator_display": "1.2"
+            "denominator_display": "1.2",
+            "h_fourth": {
+              "exact": true,
+              "text": "0.0001",
+              "latex": "0.0001",
+              "approx": null
+            },
+            "side": "under",
+            "predicted_side": "under"
           },
           "extremo_adelante_5": null,
           "extremo_atras_5": {
@@ -4843,6 +5203,7 @@
               ],
               "value": 57.97980637923032
             },
+            "equals_bound": false,
             "products_display": [
               "428.723925",
               "-709.349376",
@@ -4850,7 +5211,15 @@
               "-174.22984",
               "27.917133"
             ],
-            "denominator_display": "1.2"
+            "denominator_display": "1.2",
+            "h_fourth": {
+              "exact": true,
+              "text": "0.0001",
+              "latex": "0.0001",
+              "approx": null
+            },
+            "side": "under",
+            "predicted_side": "under"
           },
           "punto_medio": {
             "D": 25.384589999999974,
@@ -4932,16 +5301,33 @@
               ],
               "value": 46.93007019705743
             },
+            "equals_bound": false,
             "products_display": [
               "19.85503",
               "-14.778112"
             ],
-            "denominator_display": "0.2"
+            "denominator_display": "0.2",
+            "h_squared": {
+              "exact": true,
+              "text": "0.01",
+              "latex": "0.01",
+              "approx": null
+            },
+            "side": "over",
+            "predicted_side": "over"
           },
           "recommended": {
             "key": "punto_medio_5",
             "name": "Punto medio",
             "D": 25.314935833333305
+          },
+          "third_derivative": {
+            "value": 41.64746655409502,
+            "sign": 1
+          },
+          "fifth_derivative": {
+            "value": 57.97980637923032,
+            "sign": 1
           }
         }
       },
@@ -5074,13 +5460,22 @@
               ],
               "value": 81.57150521674785
             },
+            "equals_bound": false,
             "products_display": [
               "14.778112",
               "-137.191656",
               "183.52496",
               "-26.455623"
             ],
-            "denominator_display": "1.2"
+            "denominator_display": "1.2",
+            "h_fourth": {
+              "exact": true,
+              "text": "0.0001",
+              "latex": "0.0001",
+              "approx": null
+            },
+            "side": "under",
+            "predicted_side": "under"
           },
           "extremo_adelante_5": null,
           "extremo_atras_5": {
@@ -5208,6 +5603,7 @@
               ],
               "value": 64.98009719592568
             },
+            "equals_bound": false,
             "products_display": [
               "496.37575",
               "-823.149936",
@@ -5215,7 +5611,15 @@
               "-203.251184",
               "32.668095"
             ],
-            "denominator_display": "1.2"
+            "denominator_display": "1.2",
+            "h_fourth": {
+              "exact": true,
+              "text": "0.0001",
+              "latex": "0.0001",
+              "approx": null
+            },
+            "side": "under",
+            "predicted_side": "under"
           },
           "punto_medio": {
             "D": 28.958315000000102,
@@ -5297,16 +5701,33 @@
               ],
               "value": 52.863167010518005
             },
+            "equals_bound": false,
             "products_display": [
               "22.94062",
               "-17.148957"
             ],
-            "denominator_display": "0.2"
+            "denominator_display": "0.2",
+            "h_squared": {
+              "exact": true,
+              "text": "0.01",
+              "latex": "0.01",
+              "approx": null
+            },
+            "side": "over",
+            "predicted_side": "over"
           },
           "recommended": {
             "key": "punto_medio_5",
             "name": "Punto medio",
             "D": 28.879827500000093
+          },
+          "third_derivative": {
+            "value": 46.93007019705743,
+            "sign": 1
+          },
+          "fifth_derivative": {
+            "value": 64.98009719592568,
+            "sign": 1
           }
         }
       },
@@ -5456,6 +5877,7 @@
               ],
               "value": 72.81153192014744
             },
+            "equals_bound": false,
             "products_display": [
               "573.5155",
               "-953.04144",
@@ -5463,7 +5885,15 @@
               "-236.449792",
               "38.109597"
             ],
-            "denominator_display": "1.2"
+            "denominator_display": "1.2",
+            "h_fourth": {
+              "exact": true,
+              "text": "0.0001",
+              "latex": "0.0001",
+              "approx": null
+            },
+            "side": "under",
+            "predicted_side": "under"
           },
           "punto_medio": {
             "D": 33.00296499999997,
@@ -5545,16 +5975,33 @@
               ],
               "value": 59.52515245546465
             },
+            "equals_bound": false,
             "products_display": [
               "26.455623",
               "-19.85503"
             ],
-            "denominator_display": "0.2"
+            "denominator_display": "0.2",
+            "h_squared": {
+              "exact": true,
+              "text": "0.01",
+              "latex": "0.01",
+              "approx": null
+            },
+            "side": "over",
+            "predicted_side": "over"
           },
           "recommended": {
             "key": "extremo_atras_5",
             "name": "Extremo hacia atrás",
             "D": 32.913597500000094
+          },
+          "third_derivative": {
+            "value": 52.863167010518005,
+            "sign": 1
+          },
+          "fifth_derivative": {
+            "value": 72.81153192014744,
+            "sign": 1
           }
         }
       },
@@ -5704,6 +6151,7 @@
               ],
               "value": 81.57150521674785
             },
+            "equals_bound": false,
             "products_display": [
               "661.390575",
               "-1101.14976",
@@ -5711,13 +6159,29 @@
               "-274.383312",
               "44.334336"
             ],
-            "denominator_display": "1.2"
+            "denominator_display": "1.2",
+            "h_fourth": {
+              "exact": true,
+              "text": "0.0001",
+              "latex": "0.0001",
+              "approx": null
+            },
+            "side": "under",
+            "predicted_side": "under"
           },
           "punto_medio": null,
           "recommended": {
             "key": "extremo_atras_5",
             "name": "Extremo hacia atrás",
             "D": 37.47743249999995
+          },
+          "third_derivative": {
+            "value": 59.52515245546465,
+            "sign": 1
+          },
+          "fifth_derivative": {
+            "value": 81.57150521674785,
+            "sign": 1
           }
         }
       }
@@ -6254,6 +6718,10 @@
       ]
     },
     "rounding_text": "R = 2ε·Σ|cᵢ·f(xᵢ)| / (factor·h)",
+    "derivative_pattern": {
+      "latex": "e^{x}"
+    },
+    "min_rows": 6,
     "formula": "all",
     "formulas": [
       {

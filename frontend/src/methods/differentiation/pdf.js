@@ -14,6 +14,8 @@ import { conclusionText, functionContext, numbered, tableContext, tinyRealErrorN
 import {
   ERRORS_GLOSSARY,
   ERRORS_LATEX,
+  FIVE_POINT_ERRORS_GLOSSARY,
+  FIVE_POINT_ERRORS_LATEX,
   THREE_POINT_ERRORS_GLOSSARY,
   THREE_POINT_ERRORS_LATEX,
   comparisonColumns,
@@ -21,8 +23,18 @@ import {
   refinementColumns,
   tableColumns,
 } from './differenceGlossary'
-import { derivativeName, identityText, listNames, stepText, substitutionText } from './formulas'
-import { COMPARISON_LEGEND, IDENTITY_TEXTS, UNIFORM_NOTE, explainSteps } from './threePointExplain'
+import { derivativeName, derivativeText, identityText, namedSteps, listNames, stepText, substitutionText } from './formulas'
+import {
+  COMPARISON_LEGEND,
+  ENDPOINTS_NOTE,
+  FIVE_POINT_COMPARISON_LEGEND,
+  IDENTITY_TEXTS,
+  RICHARDSON_ROUNDING_NOTE,
+  RICHARDSON_TEXT,
+  UNIFORM_NOTE,
+  explainSteps,
+  recommendedText,
+} from './threePointExplain'
 
 const HEAD = { fillColor: [37, 99, 235], halign: 'center' }
 const TABLE = {
@@ -43,6 +55,9 @@ const pdfSafe = (text) =>
   String(text)
     // 5.9×10⁻⁸ (comparación con diferencias) -> 5.9e-8
     .replace(/×10([⁻⁰¹²³⁴⁵⁶⁷⁸⁹]+)/g, (_, power) => `e${[...power].map((c) => SUPERSCRIPT_DIGITS[c]).join('')}`)
+    // f⁽⁵⁾ -> f^(5) y h⁴ -> h^4 (WinAnsi tiene ¹²³, pero no ⁴ ni ⁽⁾).
+    .replace(/⁽([⁰¹²³⁴⁵⁶⁷⁸⁹]+)⁾/g, (_, n) => `^(${[...n].map((c) => SUPERSCRIPT_DIGITS[c]).join('')})`)
+    .replace(/[⁰⁴⁵⁶⁷⁸⁹]/g, (c) => `^${SUPERSCRIPT_DIGITS[c]}`)
     .replace(/Σ/g, 'Suma')
     .replace(/[₀-₉ᵢ⁺⁻ᵏεΔξ×≈−≥≤′″✔⚠…]/g, (c) => PDF_REPLACEMENTS[c] ?? c)
 const num = (value) => (value === null || value === undefined ? '-' : formatNumber(value))
@@ -69,9 +84,10 @@ export function exportDifferentiationPdf({ result, methodName, chartImage }) {
   const isTable = result.mode === 'table'
   const fn = result.function
   const write = (y, text) => paragraph(doc, y, pdfSafe(text))
-  // Explicaciones (diferencias y 3 puntos): las mismas utilidades del PDF de integración.
+  // Explicaciones (diferencias, 3 y 5 puntos): las mismas utilidades del PDF de integración.
+  const differences = result.method === 'diferencias-finitas'
   const threePoint = result.method === 'tres-puntos'
-  const explained = result.method === 'diferencias-finitas' || threePoint
+  const fivePoint = result.method === 'cinco-puntos'
   const tools = pdfTools(doc, result)
   const safeSteps = (list) =>
     numbered(list).map((s) => ({ ...s, blocks: s.blocks.map((b) => (b.text ? { ...b, text: pdfSafe(b.text) } : b)) }))
@@ -111,36 +127,34 @@ export function exportDifferentiationPdf({ result, methodName, chartImage }) {
   for (const f of result.formulas) y = write(y, `${f.name}: ${f.formula_text}`)
 
   // --- Derivada exacta ----------------------------------------------------------
-  if (fn && explained) {
+  if (fn) {
     y = sectionTitle(doc, y + 2, 'Derivada exacta')
     y = write(
       y,
-      threePoint
-        ? "Para qué sirve cada una: f'(x) es la derivada exacta, sólo para comparar y calcular el error real. f''(x) es " +
-            "un paso intermedio para llegar a f'''(x). f'''(x) se usa en la cota del error, porque mide qué tanto se " +
-            'aleja la función de una parábola.'
-        : "Para qué se necesitan: f'(x) es la derivada exacta; el sistema la usa sólo para comparar y calcular el error real " +
-            "(el método no la necesita para aproximar). f''(x) mide qué tan curva es la función y se usa para la cota del " +
-            'error: mientras más curva, más se separa la recta secante de la tangente.'
+      fivePoint
+        ? "Para qué sirve cada una: f'(x) es la derivada exacta, sólo para comparar y calcular el error real. f''(x) a " +
+            'f⁽⁴⁾(x) son pasos intermedios. f⁽⁵⁾(x) se usa en la cota del error, porque mide qué tanto se aleja la ' +
+            'función de un polinomio de grado 4: si f⁽⁵⁾ = 0, la fórmula es exacta.'
+        : threePoint
+          ? "Para qué sirve cada una: f'(x) es la derivada exacta, sólo para comparar y calcular el error real. f''(x) es " +
+              "un paso intermedio para llegar a f'''(x). f'''(x) se usa en la cota del error, porque mide qué tanto se " +
+              'aleja la función de una parábola.'
+          : "Para qué se necesitan: f'(x) es la derivada exacta; el sistema la usa sólo para comparar y calcular el error real " +
+              "(el método no la necesita para aproximar). f''(x) mide qué tan curva es la función y se usa para la cota del " +
+              'error: mientras más curva, más se separa la recta secante de la tangente.'
     )
     y = write(y, 'Primera derivada, término a término:')
     y = tools.derivation(y, fn.derivative.steps, `f'(x) = ${fn.derivative.latex}`)
-    const second = fn.higher_derivatives[2]
-    if (second) {
-      y = write(y, "Segunda derivada: se deriva f'(x) con el mismo desglose:")
-      y = tools.derivation(y, second.steps, `f''(x) = ${second.latex}`)
-    }
-    const third = fn.higher_derivatives[3]
-    if (threePoint && third) {
-      y = write(y, "Tercera derivada: se deriva f''(x) con el mismo desglose:")
-      y = tools.derivation(y, third.steps, `f'''(x) = ${third.latex}`)
-    }
-    if (fn.uses_trigonometry) y = write(y, 'Las funciones trigonométricas se evalúan en radianes.')
-  } else if (fn) {
-    y = sectionTitle(doc, y + 2, 'Derivada exacta')
-    y = write(y, `f'(x) = ${fn.derivative.text}`)
+    const ordinals = { 2: 'Segunda', 3: 'Tercera', 4: 'Cuarta', 5: 'Quinta' }
+    const latexNames = { 2: "f''", 3: "f'''", 4: 'f^{(4)}', 5: 'f^{(5)}' }
     for (const [n, d] of Object.entries(fn.higher_derivatives)) {
-      y = write(y, `${derivativeName(Number(n), null)}(x) = ${d.text}`)
+      const from = Number(n) <= 4 ? `f${"'".repeat(n - 1)}` : derivativeText(n - 1)
+      y = write(y, `${ordinals[n]} derivada: se deriva ${from}(x) con el mismo desglose:`)
+      y = tools.derivation(y, namedSteps(Number(n), d.steps), `${latexNames[n]}(x) = ${d.latex}`)
+    }
+    if (result.derivative_pattern) {
+      y = write(y, 'Patrón: cada derivada es la anterior más el mismo término, así que el número que lo acompaña sube de 1 en 1:')
+      y = tools.writeMath(y, result.derivative_pattern.latex)
     }
     if (fn.uses_trigonometry) y = write(y, 'Las funciones trigonométricas se evalúan en radianes.')
   }
@@ -159,7 +173,7 @@ export function exportDifferentiationPdf({ result, methodName, chartImage }) {
     for (const f of result.formulas) y = write(y, `${f.name}: f'(x0) ~ ${num(lastRow[f.key].D)}`)
     y = write(y, result.differentiable ? `Valor exacto: f'(x0) = ${num(result.exact)}` : 'f no es derivable en x0.')
   }
-  if (explained && result.comparison?.length) y = write(y, COMPARISON_LEGEND)
+  if (result.comparison?.length) y = write(y, fivePoint ? FIVE_POINT_COMPARISON_LEGEND : COMPARISON_LEGEND)
   for (const line of result.comparison ?? []) y = write(y, line.text)
   for (const warning of result.warnings ?? []) y = write(y, `Advertencia: ${warning}`)
 
@@ -203,20 +217,22 @@ export function exportDifferentiationPdf({ result, methodName, chartImage }) {
       }),
     })
     y = doc.lastAutoTable.finalY + 6
-    if (explained) {
-      if (recommended) y = write(y, UNIFORM_NOTE)
-      y = tools.glossary(y, '¿Qué significa cada columna?', tableColumns(result.formulas, Boolean(fn), recommended))
-      y = explainedGlossaries(y)
-      y = sectionTitle(doc, y + 2, 'Paso a paso explicado')
-      const n = result.iterations.length
-      for (const f of result.formulas) {
-        const points = result.iterations.filter((s) => s.extra[f.key]).map((s) => s.iteration)
-        const chosen = [...new Set([points[0], points[1], points.at(-1)])].filter(Boolean)
-        for (const i of chosen) {
-          if (i === points.at(-1) && points.length > 3) y = write(y, 'El resto de los puntos sigue el mismo procedimiento.')
-          y = tools.label(y + 2, `${f.name} en x${i} (punto ${i} de ${n})`)
-          y = tools.steps(y, safeSteps(explainSteps(result, f, result.iterations[i - 1].extra[f.key], tableContext(result, f, i))))
-        }
+    if (recommended) y = write(y, UNIFORM_NOTE)
+    y = tools.glossary(y, '¿Qué significa cada columna?', tableColumns(result.formulas, Boolean(fn), recommended))
+    if (fivePoint) {
+      y = tools.label(y + 2, 'Por qué se recomendó cada fórmula')
+      for (const step of result.iterations) y = write(y, `- ${recommendedText(result, step.iteration)}`)
+    }
+    y = explainedGlossaries(y)
+    y = sectionTitle(doc, y + 2, 'Paso a paso explicado')
+    const n = result.iterations.length
+    for (const f of result.formulas) {
+      const points = result.iterations.filter((s) => s.extra[f.key]).map((s) => s.iteration)
+      const chosen = [...new Set([points[0], points[1], points.at(-1)])].filter(Boolean)
+      for (const i of chosen) {
+        if (i === points.at(-1) && points.length > 3) y = write(y, 'El resto de los puntos sigue el mismo procedimiento.')
+        y = tools.label(y + 2, `${f.name} en x${i} (punto ${i} de ${n})`)
+        y = tools.steps(y, safeSteps(explainSteps(result, f, result.iterations[i - 1].extra[f.key], tableContext(result, f, i))))
       }
     }
   } else {
@@ -247,24 +263,19 @@ export function exportDifferentiationPdf({ result, methodName, chartImage }) {
         `${result.sampling_points} puntos. "OK (R)": el error real supera la cota sólo por el redondeo ` +
         `${result.rounding_text ?? 'R = 4e·máx|f|/h'}.`
     )
-    if (explained) {
-      y = tools.glossary(
-        y + 1,
-        '¿Qué significa cada columna?',
-        refinementColumns(result.differentiable, formatNumber(result.formulas[0].expected_ratio))
-      )
-      y = explainedGlossaries(y)
-      const all = result.iterations
-      const chosen = [...new Set([0, 1, all.length - 1])].filter((i) => i < all.length)
-      y = sectionTitle(doc, y + 2, 'Paso a paso explicado')
-      for (const f of result.formulas) {
-        for (const i of chosen) {
-          if (i === all.length - 1 && i > 2) y = write(y, 'El resto de las filas sigue el mismo procedimiento.')
-          const k = all[i].iteration
-          y = tools.label(y + 2, `${f.name}: fila ${k} (h = ${stepText(all[i].extra.h)})`)
-          const steps = explainSteps(result, f, all[i].extra[f.key], functionContext(result, k), i > 0 ? all[i - 1].extra[f.key] : null)
-          y = tools.steps(y, safeSteps(steps))
-        }
+    const ratio = formatNumber(result.formulas[0].expected_ratio) + (fivePoint ? ' (1/16)' : '')
+    y = tools.glossary(y + 1, '¿Qué significa cada columna?', refinementColumns(result.differentiable, ratio))
+    y = explainedGlossaries(y)
+    const all = result.iterations
+    const chosen = [...new Set([0, 1, all.length - 1])].filter((i) => i < all.length)
+    y = sectionTitle(doc, y + 2, 'Paso a paso explicado')
+    for (const f of result.formulas) {
+      for (const i of chosen) {
+        if (i === all.length - 1 && i > 2) y = write(y, 'El resto de las filas sigue el mismo procedimiento.')
+        const k = all[i].iteration
+        y = tools.label(y + 2, `${f.name}: fila ${k} (h = ${stepText(all[i].extra.h)})`)
+        const steps = explainSteps(result, f, all[i].extra[f.key], functionContext(result, k), i > 0 ? all[i - 1].extra[f.key] : null)
+        y = tools.steps(y, safeSteps(steps))
       }
     }
   }
@@ -272,35 +283,27 @@ export function exportDifferentiationPdf({ result, methodName, chartImage }) {
   // --- Comprobación --------------------------------------------------------------
   const check = result.verification
   y = sectionTitle(doc, y + 2, 'Comprobación')
-  if (explained && !isTable && result.differentiable) {
+  if (!isTable && result.differentiable) {
     y = write(
       y,
       "La comprobación calcula la derivada exacta en x0 por otro camino (sustituyendo en f'(x)) y la compara con la aproximación."
     )
   }
-  const fivePoint = result.method === 'cinco-puntos'
   if (check.identities && fivePoint) {
     if (check.identities.some((group) => (group.items ?? [group]).length)) {
       y = write(
         y,
-        `${isTable ? 'En cada punto donde aplica el punto medio de 5 puntos, con los datos' : 'En la fila 1'}: el punto ` +
-          'medio de 5 puntos combina dos fórmulas de 3 puntos para eliminar su error de orden h² (la idea de Romberg): ' +
-          `D5(h) = (4D3(h) - D3(2h))/3, con ${isTable ? 'D3(h) = (yi+1 - yi-1)/(2h) y D3(2h) = (yi+2 - yi-2)/(4h)' : 'D3(h) = [f(x0 + h) - f(x0 - h)]/(2h)'}. ` +
-          'El OK se decide con los valores sin redondear; la sustitución usa los valores que se ven.'
+        `Identidad de Richardson (${isTable ? 'en cada punto donde aplica el punto medio de 5 puntos, con los datos' : 'en la fila 1'}): ` +
+          `${RICHARDSON_TEXT} D5(h) = (4D3(h) - D3(2h))/3, con ` +
+          `${isTable ? 'D3(h) = (yi+1 - yi-1)/(2h) y D3(2h) = (yi+2 - yi-2)/(4h)' : 'D3(h) = [f(x0 + h) - f(x0 - h)]/(2h)'}.`
       )
     }
-  } else if (check.identities && explained) {
+  } else if (check.identities) {
     y = write(
       y,
       `Las identidades comprueban el resultado por otro camino (${isTable ? 'en cada punto, con los datos' : 'en la fila 1, con los valores sin redondear'}):`
     )
     for (const t of Object.values(IDENTITY_TEXTS)) y = write(y, `- ${t}`)
-  } else if (check.identities) {
-    y = write(
-      y,
-      `${isTable ? 'En cada punto, con los datos' : 'En la fila 1, con los valores sin redondear'}: el punto medio ` +
-        'es el promedio de la progresiva y la regresiva, y cada extremo es una extrapolación de Richardson, 2D(h) - D(2h).'
-    )
   }
   if (check.identities) {
     const groups = isTable ? check.identities : [{ i: null, items: check.identities }]
@@ -309,17 +312,15 @@ export function exportDifferentiationPdf({ result, methodName, chartImage }) {
         y = write(y, `${group.i === null ? '' : `x${group.i} = ${group.x_display.text}: `}${item.name}: ${identityText(item)}`)
       }
     }
+    const groupsWithItems = isTable ? check.identities : [{ items: check.identities }]
+    if (groupsWithItems.some((g) => g.items.some((item) => item.rounding_difference))) y = write(y, RICHARDSON_ROUNDING_NOTE)
     y += 2
   }
-  if (fivePoint) {
-    y = write(y, 'Los extremos de 5 puntos no tienen identidad: en ellos sólo se comprueba que el error real quede por debajo de la cota.') + 2
-  }
+  if (fivePoint) y = write(y, ENDPOINTS_NOTE) + 2
   if (isTable && check.secant) {
     y = write(
       y,
-      explained
-        ? 'Secante común: la progresiva en xi y la regresiva en xi+1 usan la misma recta (la que une los dos puntos), por eso deben dar lo mismo.'
-        : 'Secante común: la progresiva en xi y la regresiva en xi+1 deben ser iguales.'
+      'Secante común: la progresiva en xi y la regresiva en xi+1 usan la misma recta (la que une los dos puntos), por eso deben dar lo mismo.'
     )
     for (const pair of check.secant) {
       y = write(y, `D+(x${pair.i}) = D-(x${pair.i + 1}) = ${num(pair.forward)} ${pair.equal ? 'OK' : `(!) (${num(pair.backward)})`}`)
@@ -357,16 +358,14 @@ export function exportDifferentiationPdf({ result, methodName, chartImage }) {
       }),
     })
     y = doc.lastAutoTable.finalY + 6
-    if (explained) {
-      for (const f of result.formulas) {
-        const tiny = tinyRealErrorNote(check.final[f.key])
-        if (tiny) y = write(y, `${f.name}: ${tiny}`)
-      }
-      y = tools.glossary(y, '¿Qué significa cada columna?', comparisonColumns(threePoint))
-      for (const f of result.formulas) {
-        const conclusion = conclusionText(result, f)
-        if (conclusion) y = write(y + 1, conclusion)
-      }
+    for (const f of result.formulas) {
+      const tiny = tinyRealErrorNote(check.final[f.key])
+      if (tiny) y = write(y, `${f.name}: ${tiny}`)
+    }
+    y = tools.glossary(y, '¿Qué significa cada columna?', comparisonColumns(!differences))
+    for (const f of result.formulas) {
+      const conclusion = conclusionText(result, f)
+      if (conclusion) y = write(y + 1, conclusion)
     }
   }
   if (fn && (isTable || result.differentiable)) {
@@ -380,7 +379,7 @@ export function exportDifferentiationPdf({ result, methodName, chartImage }) {
     }
   }
 
-  // Glosarios de las fórmulas y de los errores (diferencias explicadas).
+  // Glosarios de las fórmulas y de los errores.
   function explainedGlossaries(y) {
     y = sectionTitle(doc, y + 2, 'Glosario de las fórmulas')
     for (const f of result.formulas) {
@@ -389,8 +388,13 @@ export function exportDifferentiationPdf({ result, methodName, chartImage }) {
       y = tools.glossary(y, '¿Qué significa cada símbolo?', g.items, g.summary)
     }
     if (fn) {
-      y = tools.writeMath(y + 1, threePoint ? THREE_POINT_ERRORS_LATEX : ERRORS_LATEX)
-      y = tools.glossary(y, '¿Qué significa cada símbolo?', (threePoint ? THREE_POINT_ERRORS_GLOSSARY : ERRORS_GLOSSARY).items)
+      const [latex, glossary] = fivePoint
+        ? [FIVE_POINT_ERRORS_LATEX, FIVE_POINT_ERRORS_GLOSSARY]
+        : threePoint
+          ? [THREE_POINT_ERRORS_LATEX, THREE_POINT_ERRORS_GLOSSARY]
+          : [ERRORS_LATEX, ERRORS_GLOSSARY]
+      y = tools.writeMath(y + 1, latex)
+      y = tools.glossary(y, '¿Qué significa cada símbolo?', glossary.items)
     }
     return y
   }

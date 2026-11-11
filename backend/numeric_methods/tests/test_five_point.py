@@ -1,4 +1,5 @@
 import json
+from decimal import Decimal
 from pathlib import Path
 
 from django.test import SimpleTestCase
@@ -8,6 +9,9 @@ from numeric_methods.examples_data import EXAMPLES
 from numeric_methods.serializers.differentiation import FivePointSerializer
 from numeric_methods.solvers.differentiation.display import fixed
 from numeric_methods.solvers.differentiation.five_point import solve_five_point
+from numeric_methods.solvers.differentiation.formulas import FORMULAS
+from numeric_methods.solvers.differentiation.three_point import predicted_side
+from numeric_methods.tests import test_differentiation, test_three_point
 
 URL = "/api/solve/cinco-puntos/"
 EXAMPLE = {example["id"]: example for example in EXAMPLES["cinco-puntos"]}
@@ -353,3 +357,162 @@ class EndpointTests(APITestCase):
         self.assert_400(self.post(function="x^2", x0=1, max_iterations=5), "entre 6 y 30")
         self.assert_400(self.post(function="x^2", x0=1, max_iterations=31), "entre 6 y 30")
         self.assert_400(self.post(function="x^2", x0=1, formula="punto_medio"), "La fórmula debe ser")
+
+
+class ExplanationTests(SimpleTestCase):
+    """Datos del paso a paso explicado de la fórmula de 5 puntos (ejemplo 1)."""
+
+    def setUp(self):
+        self.result = example("cp-burden-xexp")
+
+    def points(self, item):
+        return [(p["role"], p["display"]["text"], p["f_display"]) for p in item["points"]]
+
+    def assert_bound(self, item, x_M, M, bound):
+        self.assertEqual(item["h_fourth"]["text"], "0.0001")
+        self.assertEqual(item["M_substitution"]["function_text"], "x*exp(x) + 5*exp(x)")
+        self.assertEqual(item["M_substitution"]["x_display"]["text"], x_M)
+        self.assertEqual((fixed(item["M_substitution"]["value"]), fixed(item["M"])), (M, M))
+        self.assertEqual(fixed(item["bound"]), bound)
+        self.assertEqual((item["within_bound"], item["equals_bound"], item["by_rounding"]), (True, False, False))
+
+    def test_row_one_midpoint(self):
+        item = row(self.result, 1, MID)
+        self.assertEqual(self.points(item), [("x_0 - 2h", "1.8", "10.8893654"), ("x_0 - h", "1.9", "12.7031994"),
+                                             ("x_0 + h", "2.1", "17.1489568"), ("x_0 + 2h", "2.2", "19.8550297")])
+        self.assertEqual(item["products_display"], ["10.8893654", "-101.6255952", "137.1916544", "-19.8550297"])
+        self.assertEqual((item["numerator_display"], item["denominator_display"]), ("26.6003949", "1.2"))
+        self.assertEqual((fixed(item["D"]), fixed(item["real_error"])), ("22.166996", "0.000173"))
+        self.assertEqual([p["text"] for p in item["interval_display"]], ["1.8", "2.2"])
+        self.assert_bound(item, "2.2", "64.980097", "0.000217")
+
+    def test_row_one_endpoints(self):
+        ahead = row(self.result, 1, AHEAD)
+        self.assertEqual(self.points(ahead), [
+            ("x_0", "2", "14.7781122"), ("x_0 + h", "2.1", "17.14895682"), ("x_0 + 2h", "2.2", "19.8550297"),
+            ("x_0 + 3h", "2.3", "22.94061965"), ("x_0 + 4h", "2.4", "26.45562331")])
+        self.assertEqual(ahead["products_display"],
+                         ["-369.452805", "823.14992736", "-714.7810692", "367.0499144", "-79.36686993"])
+        self.assertEqual((fixed(ahead["D"]), fixed(ahead["real_error"])), ("22.165915", "0.001254"))
+        self.assertEqual([p["text"] for p in ahead["interval_display"]], ["2", "2.4"])
+        self.assert_bound(ahead, "2.4", "81.571505", "0.001631")
+
+        behind = row(self.result, 1, BEHIND)
+        self.assertEqual(self.points(behind), [
+            ("x_0", "2", "14.7781122"), ("x_0 - h", "1.9", "12.7031994"), ("x_0 - 2h", "1.8", "10.8893654"),
+            ("x_0 - 3h", "1.7", "9.3057106"), ("x_0 - 4h", "1.6", "7.9248519")])
+        self.assertEqual(behind["products_display"],
+                         ["369.452805", "-609.7535712", "392.0171544", "-148.8913696", "23.7745557"])
+        self.assertEqual(behind["numerator_display"], "26.5995743")
+        self.assertEqual((fixed(behind["D"]), fixed(behind["real_error"])), ("22.166312", "0.000857"))
+        self.assertEqual([p["text"] for p in behind["interval_display"]], ["1.6", "2"])
+        self.assert_bound(behind, "2", "51.723393", "0.001034")
+
+    def test_sign_all_underestimate(self):
+        # f⁽⁵⁾ > 0 y D − f' ≈ −(h⁴/30 o h⁴/5)·f⁽⁵⁾: las tres quedan por debajo.
+        self.assertEqual(self.result["fifth_derivative"]["sign"], 1)
+        self.assertNotIn("third_derivative", self.result)
+        D = {key: row(self.result, 1, key)["D"] for key in FIVE}
+        self.assertTrue(D[AHEAD] < D[BEHIND] < D[MID] < self.result["exact"])
+        for key in FIVE:
+            item = row(self.result, 1, key)
+            self.assertEqual((item["side"], item["predicted_side"]), ("under", "under"))
+        self.assertEqual(predicted_side(FORMULAS[MID], -1), "over")
+        self.assertIsNone(predicted_side(FORMULAS[AHEAD], 0))
+
+    def test_forward_endpoint_decimal_coherence(self):
+        ahead = row(self.result, 1, AHEAD)
+        # Con 7 decimales: 26.5990959/1.2 = 22.165913 ≠ 22.165915; el paso usa 8.
+        self.assertEqual(fixed(Decimal("26.5990959") / Decimal("1.2")), "22.165913")
+        self.assertEqual(ahead["decimals"], 8)
+        self.assertEqual(ahead["numerator_display"], "26.59909763")
+        quotient = Decimal(ahead["numerator_display"]) / Decimal(ahead["denominator_display"])
+        self.assertEqual(fixed(quotient), fixed(ahead["D"]))
+
+    def test_row_two_midpoint(self):
+        item = row(self.result, 2, MID)
+        self.assertEqual(row(self.result, 2, "h")["text"], "0.05")
+        self.assertEqual(self.points(item), [("x_0 - 2h", "1.9", "12.7031994"), ("x_0 - h", "1.95", "13.7059408"),
+                                             ("x_0 + h", "2.05", "15.9241973"), ("x_0 + 2h", "2.1", "17.1489568")])
+        self.assertEqual(item["denominator_display"], "0.6")
+        self.assertEqual(fixed(item["D"]), "22.167158")
+        self.assertEqual(fixed(item["estimated_error"]), "0.000162")
+        self.assertFalse(item["below_tolerance"])
+        self.assertEqual(fixed(item["real_error"]), "0.000011")
+        self.assertEqual(item["h_fourth"]["text"], "0.00000625")
+        self.assertEqual(fixed(item["ratio"], 4), "0.0624")
+        self.assertEqual(self.result["min_rows"], 6)
+
+    def test_richardson_identity_substitution(self):
+        (identity,) = self.result["verification"]["identities"]
+        base, double = Decimal(identity["base_display"]), Decimal(identity["double_display"])
+        self.assertEqual((identity["base_display"], identity["double_display"]), ("22.228787", "22.414161"))
+        self.assertEqual(fixed((4 * base - double) / 3), identity["value_display"])
+        self.assertEqual(identity["value_display"], identity["D_display"])
+        self.assertEqual(identity["D_display"], fixed(row(self.result, 1, MID)["D"]))
+
+    def test_derivative_breakdown(self):
+        product, exponential = "regla del producto: (u·v)′ = u′·v + u·v′", "derivada de la función exponencial"
+        fn = self.result["function"]
+        self.assertEqual([fn["higher_derivatives"][n]["text"] for n in ("2", "3", "4", "5")],
+                         [f"x*exp(x) + {k}*exp(x)" for k in range(2, 6)])
+        for n in ("2", "3", "4", "5"):
+            self.assertEqual([t["rule"] for t in fn["higher_derivatives"][n]["steps"]["terms"]], [product, exponential])
+        # Cada derivada es la anterior más eˣ.
+        self.assertEqual(self.result["derivative_pattern"], {"latex": "e^{x}"})
+
+        quintic = example("cp-quintica")
+        fn = quintic["function"]
+        self.assertEqual([fn["derivative"]["text"]] + [fn["higher_derivatives"][n]["text"] for n in ("2", "3", "4", "5")],
+                         ["5*x^4", "20*x^3", "60*x^2", "120*x", "120"])
+        self.assertEqual([t["rule"] for t in fn["higher_derivatives"]["5"]["steps"]["terms"]],
+                         ["la derivada de x respecto a x es 1"])
+        self.assertIsNone(quintic["derivative_pattern"])
+
+    def test_quartic_error_and_bound_zero_equal_without_R(self):
+        result = example("cp-cuartica")
+        for step in result["iterations"]:
+            for key in FIVE:
+                item = step["extra"][key]
+                self.assertEqual(item["bound"], 0)
+                self.assertTrue(item["within_bound"])
+                self.assertTrue(item["equals_bound"])
+                self.assertFalse(item["by_rounding"])
+        self.assertTrue(result["verification"]["final"][MID]["equals_bound"])
+
+    def test_quintic_error_equals_bound_without_R(self):
+        result = example("cp-quintica")
+        for key, error in ((MID, 0.25), (AHEAD, 1.5), (BEHIND, 1.5)):
+            item = row(result, 1, key)
+            self.assertEqual((item["real_error"], item["bound"]), (error, error))
+            self.assertTrue(item["equals_bound"])
+        for step in result["iterations"]:
+            for key in FIVE:
+                self.assertFalse(step["extra"][key]["by_rounding"])
+
+    def test_table_mode_explanation(self):
+        extra = example("cp-tabla-burden")["iterations"][1]["extra"]
+        self.assertEqual((extra["fifth_derivative"]["sign"], extra["third_derivative"]["sign"]), (1, 1))
+        self.assertEqual(extra[AHEAD]["h_fourth"]["text"], "0.0001")
+        # El punto medio de 3 puntos de referencia lleva sus datos de 3 puntos.
+        self.assertEqual(extra[MID3]["h_squared"]["text"], "0.01")
+        self.assertEqual((extra[AHEAD]["side"], extra[MID3]["side"]), ("under", "over"))
+        self.assertEqual(extra["recommended"]["key"], AHEAD)
+        self.assertEqual((fixed(extra[AHEAD]["real_error"]), fixed(extra[MID3]["real_error"])), ("0.000906", "0.042907"))
+        quartics = example("cp-tabla-cuartas")["iterations"][2]["extra"]
+        self.assertIsNone(quartics["fifth_derivative"])
+        self.assertIsNone(quartics[MID]["side"])
+
+    def test_three_point_and_differences_unchanged(self):
+        # Regresión: los datos nuevos de 5 puntos no llegan a 3 puntos ni a diferencias.
+        three = test_three_point.example("tp-burden-xexp")
+        self.assertNotIn("fifth_derivative", three)
+        self.assertNotIn("derivative_pattern", three)
+        self.assertNotIn("h_fourth", three["iterations"][0]["extra"][MID3])
+        self.assertEqual(three["iterations"][0]["extra"][MID3]["h_squared"]["text"], "0.01")
+        differences = test_differentiation.example("dif-burden-ln")
+        self.assertNotIn("fifth_derivative", differences)
+        for item in differences["iterations"][0]["extra"].values():
+            if isinstance(item, dict) and "points" in item:
+                self.assertNotIn("h_fourth", item)
+                self.assertNotIn("h_squared", item)
