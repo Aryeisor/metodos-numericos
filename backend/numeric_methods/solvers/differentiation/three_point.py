@@ -15,7 +15,7 @@ redondeo, y agrega lo propio de este método:
 No depende de Django: puede usarse y testearse de forma aislada.
 """
 
-from . import display
+from . import chart, display
 from .finite_differences import (
     MACHINE_EPSILON,
     MIN_REFINEMENTS,
@@ -286,6 +286,7 @@ def _function(data):
     meta["comparison"] = _comparison(function, formulas, x0, iterations, meta["exact"]) if iterations else []
     meta["rounding_text"] = ROUNDING_TEXT["function"]
     explain(function, formulas, iterations, meta, data)
+    meta["chart"] = chart.function_chart(function, formulas, iterations, x0, meta["exact"])
     return function, formulas, converged, iterations, warnings, meta
 
 
@@ -325,6 +326,7 @@ def _table(data):
         "rounding_text": ROUNDING_TEXT["table"],
     }
     explain(function, THREE_POINT, iterations, meta, data)
+    meta["chart"] = chart.table_chart(function, THREE_POINT, iterations, xs, ys)
     return function, formulas, True, iterations, warnings, meta
 
 

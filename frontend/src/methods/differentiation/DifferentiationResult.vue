@@ -1,9 +1,11 @@
 <script setup>
 // Vista completa del resultado de diferenciación numérica (`resultView`).
-// Modo función: resumen → derivada exacta → una tabla de refinamiento por
-// fórmula (con paso a paso) → gráfico de errores → comprobación.
-// Modo tabla: resumen → derivada exacta (si hay función) → tabla de puntos
-// (con paso a paso) → gráfico de aproximaciones → comprobación.
+// Modo función: resumen → derivada exacta → gráfica de la aproximación → una
+// tabla de refinamiento por fórmula (con paso a paso) → gráfico de errores →
+// comprobación.
+// Modo tabla: resumen → derivada exacta (si hay función) → gráfica de la
+// aproximación → tabla de puntos (con paso a paso) → gráfico de aproximaciones
+// → comprobación.
 import { computed, ref } from 'vue'
 import ConvergenceChart from '../../components/ConvergenceChart.vue'
 import DerivationSteps from '../../components/DerivationSteps.vue'
@@ -12,6 +14,7 @@ import MathFormula from '../../components/MathFormula.vue'
 import { formatNumber } from '../../utils/iterationSteps'
 import { latexNumber } from '../../utils/latexFormulas'
 import DataPointsTable from './DataPointsTable.vue'
+import DifferentiationChart from './DifferentiationChart.vue'
 import DifferentiationVerification from './DifferentiationVerification.vue'
 import RefinementTable from './RefinementTable.vue'
 import {
@@ -135,11 +138,14 @@ const boundNames = computed(() => {
 const toleranceLabel = computed(() => `Tolerancia (${formatNumber(props.result.tolerance)})`)
 
 const chartRef = ref(null)
+const approxRef = ref(null)
 function handleExportPdf() {
   exportDifferentiationPdf({
     result: props.result,
     methodName: props.methodName,
     chartImage: chartRef.value?.toImage() ?? null,
+    approxImage: approxRef.value?.toImage() ?? null,
+    approxCaption: approxRef.value?.pdfCaption() ?? null,
   })
 }
 </script>
@@ -234,7 +240,10 @@ function handleExportPdf() {
       </p>
     </section>
 
-    <!-- 3. Tablas -->
+    <!-- 3. Gráfica de la aproximación -->
+    <DifferentiationChart v-if="result.chart" ref="approxRef" :chart="result.chart" :method="result.method" />
+
+    <!-- 4. Tablas -->
     <section class="result-section">
       <h4>{{ isTable ? 'Derivada en cada punto' : 'Tabla de refinamiento' }}</h4>
       <p class="section-text">
@@ -305,7 +314,7 @@ function handleExportPdf() {
       </p>
     </section>
 
-    <!-- 4. Gráfico -->
+    <!-- 5. Gráfico -->
     <ConvergenceChart
       ref="chartRef"
       :iterations="result.iterations"
@@ -320,7 +329,7 @@ function handleExportPdf() {
       :tolerance-label="toleranceLabel"
     />
 
-    <!-- 5. Comprobación -->
+    <!-- 6. Comprobación -->
     <DifferentiationVerification :result="result" explained />
   </div>
 </template>

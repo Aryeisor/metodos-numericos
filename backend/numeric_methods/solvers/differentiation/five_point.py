@@ -20,7 +20,7 @@ from decimal import Decimal
 import sympy as sp
 
 from ...expressions.to_latex import expression_to_latex
-from . import display
+from . import chart, display
 from .finite_differences import _function_mode, _table_points, bound_check_equal, build_result
 from .formulas import (
     BACKWARD_ENDPOINT_5,
@@ -123,6 +123,8 @@ def _function(data):
     meta["rounding_text"] = ROUNDING_TEXT["function"]
     meta["derivative_pattern"] = _pattern(function)
     explain(function, formulas, iterations, meta, data)
+    meta["chart"] = chart.function_chart(function, formulas, iterations, x0, meta["exact"],
+                                         reference=MIDPOINT_3_REFERENCE)
     return function, formulas, converged, iterations, warnings, meta
 
 
@@ -164,6 +166,7 @@ def _table(data):
         "derivative_pattern": _pattern(function) if function else None,
     }
     explain(function, FIVE_POINT + (MIDPOINT_3_REFERENCE,), iterations, meta, data)
+    meta["chart"] = chart.table_chart(function, FIVE_POINT + (MIDPOINT_3_REFERENCE,), iterations, xs, ys)
     return function, formulas, True, iterations, warnings, meta
 
 

@@ -9,7 +9,7 @@ import autoTable from 'jspdf-autotable'
 
 import { CONTENT_WIDTH, MARGIN, ensureSpace, paragraph, sectionTitle } from '../../utils/exportPdf'
 import { formatNumber } from '../../utils/iterationSteps'
-import { pdfTools } from '../integration/pdf'
+import { addImage, pdfTools } from '../integration/pdf'
 import { conclusionText, functionContext, numbered, tableContext, tinyRealErrorNote } from './differenceExplain'
 import {
   ERRORS_GLOSSARY,
@@ -79,7 +79,7 @@ const short = (formula) =>
 const TITLES = { 'diferencias-finitas': 'Diferencias finitas' }
 const STEMS = { 'diferencias-finitas': 'diferencias' }
 
-export function exportDifferentiationPdf({ result, methodName, chartImage }) {
+export function exportDifferentiationPdf({ result, methodName, chartImage, approxImage, approxCaption }) {
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' })
   const isTable = result.mode === 'table'
   const fn = result.function
@@ -176,6 +176,13 @@ export function exportDifferentiationPdf({ result, methodName, chartImage }) {
   if (result.comparison?.length) y = write(y, fivePoint ? FIVE_POINT_COMPARISON_LEGEND : COMPARISON_LEGEND)
   for (const line of result.comparison ?? []) y = write(y, line.text)
   for (const warning of result.warnings ?? []) y = write(y, `Advertencia: ${warning}`)
+
+  // --- Gráfica de la aproximación (la elección en pantalla; por defecto, fila 1) ---
+  if (approxImage?.dataUrl && approxCaption) {
+    y = addImage(doc, y + 2, pdfSafe(`Gráfica de la aproximación: ${approxCaption.title}`), approxImage)
+    y = write(y, approxCaption.legend.join('    ·    '))
+    if (approxCaption.phrase) y = write(y, approxCaption.phrase)
+  }
 
   // --- Gráfico ----------------------------------------------------------------
   if (chartImage?.dataUrl && chartImage.width > 0) {

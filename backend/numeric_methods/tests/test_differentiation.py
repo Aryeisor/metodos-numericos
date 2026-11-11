@@ -192,7 +192,10 @@ class TheoryExampleTests(SimpleTestCase):
         for key, example_id in (("function", "dif-burden-ln"), ("table", "dif-carro")):
             with self.subTest(example=example_id):
                 stored = saved[key]
-                self.assertEqual(json.loads(json.dumps(example(example_id))),
+                # La gráfica (chart) no se guarda en las respuestas de la página de teoría.
+                result = json.loads(json.dumps(example(example_id)))
+                result.pop("chart")
+                self.assertEqual(result,
                                  {k: v for k, v in stored.items() if k != "request"})
 
 

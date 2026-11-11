@@ -39,7 +39,7 @@ from ..nonlinear.common import to_real
 from ..nonlinear.derivative_steps import entry_steps
 from ..nonlinear.verification import verification as substitution_check
 from ..validation import MIN_ITERATIONS, InputValidationError
-from . import display
+from . import chart, display
 from .formulas import BACKWARD, CHOICES, FORWARD, public_formula
 
 CATEGORY = "differentiation"
@@ -721,6 +721,7 @@ def _explained_function_mode(data):
     output = _function_mode(data, bound_check=bound_check_equal)
     function, formulas, _, iterations, _, meta = output
     _explain(function, formulas, iterations, meta, data)
+    meta["chart"] = chart.function_chart(function, formulas, iterations, data["x0"], meta["exact"])
     return output
 
 
@@ -728,6 +729,8 @@ def _explained_table_mode(data):
     output = _table_mode(data)
     function, formulas, _, iterations, _, meta = output
     _explain(function, formulas, iterations, meta, data)
+    xs, ys = zip(*meta["points"])
+    meta["chart"] = chart.table_chart(function, (FORWARD, BACKWARD), iterations, xs, ys)
     return output
 
 
