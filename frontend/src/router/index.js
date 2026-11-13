@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import SolverView from '../views/SolverView.vue'
 import TheoryView from '../views/TheoryView.vue'
+import ManualView from '../views/ManualView.vue'
 import { hasTheory, methodRegistry, solveRouteName, theoryRouteName } from '../methods/registry'
 
 // Antes la teoría era una sola página con anclas #metodo-<slug>; esos enlaces
@@ -33,6 +34,7 @@ const router = createRouter({
         return { name: theoryRouteName(target.slug), hash: legacy ? to.hash : '' }
       },
     },
+    { path: '/manual', name: 'manual', component: ManualView },
     { path: '/:pathMatch(.*)*', redirect: '/' },
   ],
   scrollBehavior(to, from) {

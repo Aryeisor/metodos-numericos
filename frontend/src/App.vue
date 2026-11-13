@@ -1,6 +1,6 @@
 <script setup>
 import { computed } from 'vue'
-import { RouterView, useRoute } from 'vue-router'
+import { RouterLink, RouterView, useRoute } from 'vue-router'
 import NavMenu from './components/NavMenu.vue'
 import { useTheme } from './composables/useTheme'
 import { getMethod } from './methods/registry'
@@ -29,9 +29,22 @@ const footerText = computed(() => {
       <span class="brand">Métodos Iterativos</span>
       <div class="nav">
         <NavMenu />
+        <RouterLink
+          to="/manual"
+          class="header-button manual-link"
+          active-class="is-active"
+          aria-label="Manual de usuario"
+          title="Manual de usuario"
+        >
+          <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V2H6.5A2.5 2.5 0 0 0 4 4.5v15z" />
+            <path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5" />
+          </svg>
+          <span class="manual-link-text">Manual de usuario</span>
+        </RouterLink>
         <button
           type="button"
-          class="theme-toggle"
+          class="header-button theme-toggle"
           :aria-label="themeToggleLabel"
           :title="themeToggleLabel"
           @click="toggleTheme"
@@ -53,7 +66,9 @@ const footerText = computed(() => {
   </main>
 
   <footer class="app-footer">
-    <div class="container">{{ footerText }}</div>
+    <div class="container">
+      {{ footerText }} · <RouterLink to="/manual" class="footer-link">Manual de usuario</RouterLink>
+    </div>
   </footer>
 </template>
 
@@ -121,30 +136,69 @@ main:focus {
   gap: var(--space-5);
 }
 
-.theme-toggle {
+.header-button {
   align-self: center;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
+  gap: var(--space-2);
+  min-width: 36px;
   height: 36px;
   padding: 0;
   border: 1px solid var(--color-line);
   border-radius: var(--radius-control);
   background: transparent;
   color: var(--color-ink-muted);
+  font-size: var(--text-small);
+  font-weight: var(--weight-medium);
+  text-decoration: none;
   cursor: pointer;
   transition: background-color var(--transition-fast), color var(--transition-fast),
     border-color var(--transition-fast);
 }
 
-.theme-toggle:hover {
+.header-button:hover {
   background: var(--color-sunken);
   color: var(--color-ink);
   border-color: var(--color-line-strong);
 }
 
-.theme-toggle svg {
+/* Activo como «Resolver» y «Teoría»: color de acento. */
+.header-button.is-active {
+  color: var(--color-accent);
+  border-color: var(--color-accent);
+}
+
+.header-button:focus-visible {
+  box-shadow: none;
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* Con el texto visible se le da aire; por debajo de 1024 px (donde los menús
+   se juntan en «Métodos») queda sólo el icono. */
+.manual-link {
+  padding: 0 var(--space-3);
+  /* Junto al botón de tema, como un solo grupo. */
+  margin-right: calc(var(--space-3) - var(--space-5));
+}
+
+@media (max-width: 1023px) {
+  .manual-link {
+    padding: 0;
+    width: 36px;
+  }
+
+  .manual-link-text {
+    display: none;
+  }
+}
+
+.footer-link {
+  color: inherit;
+}
+
+.header-button svg {
   fill: none;
   stroke: currentColor;
   stroke-width: 2;
@@ -155,14 +209,28 @@ main:focus {
 /* En móvil el botón de tema quita espacio: se juntan los elementos para que
    el nombre de la app no se parta en dos líneas. */
 @media (max-width: 480px) {
-  .header-inner,
-  .nav {
+  .header-inner {
     gap: var(--space-3);
   }
 
-  .theme-toggle {
+  /* Con el botón del manual, «Métodos», manual y tema van más juntos. */
+  .nav {
+    gap: var(--space-2);
+  }
+
+  .brand {
+    white-space: nowrap;
+  }
+
+  .header-button,
+  .manual-link {
+    min-width: 32px;
     width: 32px;
     height: 32px;
+  }
+
+  .manual-link {
+    margin-right: 0;
   }
 }
 
