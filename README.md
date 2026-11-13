@@ -44,6 +44,13 @@ estudiar la teoría de cada método.
 
 ---
 
+## Documentación
+
+- `docs/Manual_Tecnico_Metodos_Numericos.pdf` — manual técnico.
+- `docs/manual de usuario.pdf` — manual de usuario.
+
+---
+
 ## Funcionalidades
 
 ### Vista «Resolver» (`/resolver/<método>`)
