@@ -46,8 +46,10 @@ estudiar la teoría de cada método.
 
 ## Documentación
 
-- `docs/Manual_Tecnico_Metodos_Numericos.pdf` — manual técnico.
-- `docs/manual de usuario.pdf` — manual de usuario.
+- `frontend/public/manuales/manual-tecnico.pdf` — manual técnico.
+- `frontend/public/manuales/manual-de-usuario.pdf` — manual de usuario.
+
+Desde la aplicación, el manual de usuario se abre con el botón «Manual de usuario» de la barra superior o en `/manual`.
 
 ---
 
@@ -1840,6 +1842,7 @@ metodos/
     ├── Dockerfile                   # Compila con Node y sirve dist/ con nginx
     ├── nginx.conf                   # Fallback a index.html, proxy /api/, gzip y caché
     ├── public/                      # favicon y iconos del sitio
+    │   └── manuales/                # manuales en PDF que sirve la aplicación
     └── src/
         ├── main.js                  # Carga el catálogo de métodos antes de montar la app
         ├── style.css                # Tipografía, espaciado y estilos base (consume los colores del tema)
