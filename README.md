@@ -351,6 +351,29 @@ reales del solver, tabla comparativa y referencias bibliográficas (APA).
 - El tema se aplica antes de pintar la página (sin destello blanco) y los
   gráficos de convergencia se actualizan al cambiarlo, sin volver a resolver.
 - El **PDF siempre sale en tema claro**, gráfico incluido.
+- Colores de texto del **tema claro** (`frontend/src/assets/theme.css`) y su
+  peor contraste contra los cuatro fondos claros (tarjeta, franja, hundido y
+  página). La jerarquía la dan el tamaño y el grosor, no un gris lavado:
+
+  | Token | Claro | Peor contraste |
+  | --- | --- | --- |
+  | `--color-ink` | `#111827` | 14.80:1 |
+  | `--color-ink-muted` | `#334155` | 8.64:1 |
+  | `--color-accent` | `#0b4a5a` | 8.18:1 |
+  | `--color-accent-hover` | `#083a46` | 10.28:1 |
+  | `--color-value-old` (azul del paso a paso) | `#1e40af` | 7.28:1 |
+  | `--color-value-new`, `--color-success`, `--color-tolerance` | `#116029` | 6.42:1 |
+  | `--color-warning` | `#7c3609` | 7.33:1 |
+  | `--color-danger` | `#991b1b` | 6.93:1 |
+
+- **Verificación de contraste:** desde `frontend/`, `node scripts/verificar-contraste.mjs`
+  imprime la tabla de contraste (WCAG) de cada color de texto del tema claro,
+  falla con código 1 si algún par baja de 4.5:1 y avisa si baja de 7:1.
+  Conviene ejecutarlo cada vez que se toque la paleta; no forma parte de `npm run build`.
+- En `utils/latexFormulas.js` los colores de `\textcolor` (`#2563eb`, `#15803d`,
+  `#b91c1c`) son **identificadores**: las reglas `.katex [style*='color:…']`
+  del final de `theme.css` los cambian por los tokens del tema. Si se cambia
+  un literal, hay que cambiar su selector a la vez.
 
 ---
 
