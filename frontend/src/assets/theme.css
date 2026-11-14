@@ -20,8 +20,8 @@
   --color-stripe: #f0f3f7;        /* filas alternas de las tablas           */
 
   /* ---- Texto ------------------------------------------------------------- */
-  --color-ink: #1e293b;           /* texto principal (no negro puro)        */
-  --color-ink-muted: #475569;     /* descripciones, labels, ayudas          */
+  --color-ink: #111827;           /* texto principal (no negro puro)        */
+  --color-ink-muted: #334155;     /* descripciones, labels, ayudas          */
   --color-on-accent: #ffffff;     /* texto sobre el color principal         */
 
   /* ---- Bordes ------------------------------------------------------------ */
@@ -30,32 +30,32 @@
   --color-focus-ring: rgba(14, 90, 109, 0.7);
 
   /* ---- Marca: azul petróleo --------------------------------------------- */
-  --color-accent: #0e5a6d;
-  --color-accent-hover: #0a4655;
+  --color-accent: #0b4a5a;
+  --color-accent-hover: #083a46;
   --color-accent-soft: #dceaee;   /* seleccionado / hover                   */
   --color-info-line: #a3c6cf;
 
   /* ---- Estados ----------------------------------------------------------- */
-  --color-success: #15803d;
+  --color-success: #116029;
   --color-success-bg: #dcfce7;
-  --color-warning: #92400e;
+  --color-warning: #7c3609;
   --color-warning-bg: #fef3c7;
   --color-warning-line: #f2c94c;
-  --color-danger: #b91c1c;
+  --color-danger: #991b1b;
   --color-danger-bg: #fee2e2;
   --color-danger-line: #f5a3a3;
 
   /* ---- Significado matemático --------------------------------------------
      Valor de la iteración anterior (azul) y valor ya recalculado (verde).  */
-  --color-value-old: #2563eb;
-  --color-value-new: #15803d;
+  --color-value-old: #1e40af;
+  --color-value-new: #116029;
   --color-series-1: #2563eb;      /* ε_r de Bairstow / error por iteración  */
   --color-series-2: #9333ea;      /* ε_s de Bairstow                        */
   --color-series-3: #c2410c;      /* 3.ª y 4.ª serie (diferencias finitas)  */
   --color-series-4: #0e7490;
   --color-series-5: #be185d;      /* 5.ª y 6.ª serie (fórmula de 3 puntos)  */
   --color-series-6: #4d7c0f;
-  --color-tolerance: #15803d;
+  --color-tolerance: #116029;
 
   /* ---- Gráfico ----------------------------------------------------------- */
   --color-chart-grid: rgba(30, 41, 59, 0.1);
