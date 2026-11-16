@@ -57,6 +57,19 @@ Desde la aplicación, el manual de usuario se abre con el botón «Manual de usu
 
 ### Vista «Resolver» (`/resolver/<método>`)
 
+- **Encabezado** sobre el fondo de la página, igual en Resolver y en Teoría:
+  la categoría en mayúsculas pequeñas, el nombre del método como único título
+  principal (`--text-display`) y su resumen de una línea.
+- **Los ejemplos son una sección plegable**, más liviana que las tarjetas del
+  formulario (borde, sin superficie ni sombra). Empieza abierta y **se pliega
+  sola** al cargar un ejemplo o al escribir en cualquier campo del formulario
+  (el selector «Método» no cuenta). Plegada ocupa una fila: «Ejemplos
+  precargados · *nombre del ejemplo*» con «Cambiar», o «Ejemplos precargados
+  (9)» con «Mostrar» si no hay ninguno cargado. Se abre y se cierra a mano
+  cuando se quiera, «Limpiar» la vuelve a abrir y el estado no se guarda entre
+  visitas. Las descripciones se cortan a dos líneas (el texto completo sale al
+  pasar el cursor) y la última fila se alinea al inicio: 3 columnas con 3, 6 o
+  9 ejemplos y 4 con el resto.
 - **Ejemplos precargados** por método (78 en total: 6 lineales compartidos por
   Jacobi y Gauss-Seidel, 4 de Punto Fijo, 3 de Newton, 9 de Bairstow, 8 de
   diferencias finitas, 8 de la fórmula de 3 puntos, 8 de la de 5 puntos, 8
