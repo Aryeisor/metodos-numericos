@@ -38,7 +38,7 @@ const FORMULAS = [forwardFormula, backwardFormula]
 
 <template>
   <div id="metodo-diferencias" class="card">
-    <h2>Diferencias progresiva y regresiva</h2>
+    <h2 class="visually-hidden">Diferencias progresiva y regresiva</h2>
 
     <!-- 2. Definición formal -->
     <h3 class="first-heading">Definición formal</h3>

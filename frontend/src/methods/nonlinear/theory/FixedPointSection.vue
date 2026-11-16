@@ -18,7 +18,7 @@ import {
 
 <template>
   <div id="metodo-punto-fijo" class="card">
-    <h2>Método de Punto Fijo (iterativo secuencial)</h2>
+    <h2 class="visually-hidden">Método de Punto Fijo (iterativo secuencial)</h2>
     <h3 class="first-heading">Definición formal</h3>
     <p>
       Una vez reescrito el sistema como <MathFormula :expression="tex.fixedPointForm" />, cada

@@ -58,7 +58,7 @@ const groups = (item) => rombergRowGroups(FUNCTION_EXAMPLE, item.row, item.previ
 
 <template>
   <div id="metodo-romberg" class="card">
-    <h2>Integración de Romberg</h2>
+    <h2 class="visually-hidden">Integración de Romberg</h2>
 
     <!-- 1. Introducción (el fundamento común va arriba, en la página) -->
     <ul>

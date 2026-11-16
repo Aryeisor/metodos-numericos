@@ -392,15 +392,6 @@ const sub = (n) => String(n).replace(/\d/g, (d) => SUBSCRIPTS[d])
   box-shadow: 0 0 0 3px var(--color-danger-bg);
 }
 
-.visually-hidden {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip: rect(0 0 0 0);
-  white-space: nowrap;
-}
-
 @media (max-width: 480px) {
   .points-table input {
     width: 92px;

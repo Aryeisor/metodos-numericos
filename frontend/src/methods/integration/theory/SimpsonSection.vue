@@ -55,7 +55,7 @@ const reason38 = (i, count) => weightReason(BLOCK_38.rule, i, count)
 
 <template>
   <div id="metodo-simpson" class="card">
-    <h2>Método de Simpson</h2>
+    <h2 class="visually-hidden">Método de Simpson</h2>
 
     <!-- 1. Introducción (el fundamento común va arriba, en la página) -->
     <p>

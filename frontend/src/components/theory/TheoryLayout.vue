@@ -21,6 +21,12 @@
   margin-top: var(--space-5);
 }
 
+/* La sección propia del método lleva su h2 oculto (el nombre ya está en el
+   encabezado de la página): lo que viene después arranca pegado al borde. */
+.theory .card > .visually-hidden:first-child + * {
+  margin-top: 0;
+}
+
 .theory ul,
 .theory ol {
   padding-left: var(--space-5);

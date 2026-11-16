@@ -65,7 +65,7 @@ const HEADERS = gaussColumns({ showTrue: true, reference: false })
 
 <template>
   <div id="metodo-gauss" class="card">
-    <h2>Cuadratura gaussiana</h2>
+    <h2 class="visually-hidden">Cuadratura gaussiana</h2>
 
     <!-- 1. Introducción (el fundamento común va arriba, en la página) -->
     <ul>

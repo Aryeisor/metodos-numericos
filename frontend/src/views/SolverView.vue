@@ -2,6 +2,7 @@
 import { computed, nextTick, ref, shallowRef, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import ConfirmDialog from '../components/ConfirmDialog.vue'
+import MethodHeader from '../components/MethodHeader.vue'
 import ResultsTable from '../components/ResultsTable.vue'
 import { fetchExamples, solveSystem } from '../api/client'
 import { getMethod, siblingMethods, solveRouteName } from '../methods/registry'
@@ -40,6 +41,12 @@ const defaultMaxIterations = () => ui.value?.defaultMaxIterations ?? DEFAULT_MAX
 
 const examples = ref([])
 const selectedExampleId = ref('')
+const selectedExample = computed(
+  () => examples.value.find((ex) => ex.id === selectedExampleId.value) ?? null
+)
+// Sección de ejemplos plegable: abierta al entrar; se pliega sola al cargar un
+// ejemplo o al escribir en el formulario. No se guarda entre visitas.
+const examplesOpen = ref(true)
 
 const loading = ref(false)
 const formErrors = ref([])
@@ -105,6 +112,7 @@ function loadExample(example) {
   selectedExampleId.value = example.id
   result.value = null
   formErrors.value = []
+  examplesOpen.value = false
 }
 
 // Cada petición de resolver lleva un número; «Limpiar» lo incrementa, así que
@@ -186,6 +194,15 @@ const formIsInitial = computed(
       tolerance.value === defaultTolerance() &&
       maxIterations.value === defaultMaxIterations())
 )
+// Al cambiar de método los ejemplos vuelven a abrirse, salvo que el formulario
+// conserve datos (Jacobi y Gauss-Seidel lo comparten).
+watch(
+  () => props.method,
+  () => {
+    examplesOpen.value = formIsInitial.value && !selectedExampleId.value
+  }
+)
+
 // Con datos escritos o un resultado en pantalla se pide confirmación; sólo
 // con errores o una marca de ejemplo se limpia directamente.
 const clearNeedsConfirm = computed(() => !formIsInitial.value || Boolean(result.value))
@@ -216,6 +233,7 @@ async function clearExercise() {
   solvedSystem.value = null
   formErrors.value = []
   selectedExampleId.value = ''
+  examplesOpen.value = true
   formKey.value++
 
   await nextTick()
@@ -246,56 +264,84 @@ function handleExportPdf(chartImage) {
   </div>
 
   <div v-else>
-    <div class="card">
-      <h2>Ejemplos precargados</h2>
-      <p class="hint">Selecciona un ejemplo para cargarlo en el formulario.</p>
-      <div class="examples-grid">
+    <MethodHeader :method="activeMethod" />
+
+    <section class="examples">
+      <h2 class="examples-heading">
         <button
-          v-for="ex in examples"
-          :key="ex.id"
-          class="example-btn"
-          :class="{ active: ex.id === selectedExampleId }"
           type="button"
-          @click="loadExample(ex)"
+          class="examples-toggle"
+          :aria-expanded="examplesOpen"
+          aria-controls="examples-panel"
+          @click="examplesOpen = !examplesOpen"
         >
-          <span class="example-name">{{ ex.name }}</span>
-          <span class="example-desc">{{ ex.description }}</span>
+          <span class="examples-caret" aria-hidden="true">{{ examplesOpen ? '▾' : '▸' }}</span>
+          <span class="examples-title">
+            Ejemplos precargados<template v-if="!examplesOpen && !selectedExample"> ({{ examples.length }})</template>
+            <template v-if="!examplesOpen && selectedExample">
+              · <em class="examples-current">{{ selectedExample.name }}</em>
+            </template>
+          </span>
+          <span class="examples-action">
+            {{ examplesOpen ? 'Ocultar' : selectedExample ? 'Cambiar' : 'Mostrar' }}
+          </span>
         </button>
-      </div>
-    </div>
-
-    <div class="card">
-      <h2>{{ ui.configTitle }}</h2>
-      <div class="grid-2">
-        <component
-          :is="ui.configFields"
-          v-if="ui.configFields"
-          :key="formKey"
-          :store="store"
-          @structure-changed="selectedExampleId = ''"
-        />
-        <div class="field">
-          <label>Método</label>
-          <select v-model="selectedMethod">
-            <option v-for="m in siblings" :key="m.slug" :value="m.slug">{{ m.name }}</option>
-          </select>
-        </div>
-        <div v-if="showIterationFields" class="field">
-          <label>{{ ui.toleranceLabel ?? 'Tolerancia (criterio de parada)' }}</label>
-          <input type="number" step="any" v-model.number="tolerance" />
-        </div>
-        <div v-if="showIterationFields" class="field">
-          <label>{{ ui.maxIterationsLabel ?? 'Máximo de iteraciones (mínimo real: 6)' }}</label>
-          <input type="number" min="1" v-model.number="maxIterations" />
+      </h2>
+      <div v-show="examplesOpen" id="examples-panel" class="examples-panel">
+        <p class="hint">Selecciona un ejemplo para cargarlo en el formulario.</p>
+        <div class="examples-grid" :class="{ 'is-four': examples.length % 3 !== 0 }">
+          <button
+            v-for="ex in examples"
+            :key="ex.id"
+            class="example-btn"
+            :class="{ active: ex.id === selectedExampleId }"
+            type="button"
+            @click="loadExample(ex)"
+          >
+            <span class="example-name">{{ ex.name }}</span>
+            <span class="example-desc" :title="ex.description">{{ ex.description }}</span>
+          </button>
         </div>
       </div>
+    </section>
 
-      <component :is="ui.configExtras" v-if="ui.configExtras" :key="formKey" :store="store" />
-    </div>
+    <!-- «Escribir en el formulario» = cualquier evento input de sus campos
+         (teclear, elegir una opción, marcar una casilla); pliega los ejemplos.
+         El selector de método no cuenta: sólo cambia de ruta. -->
+    <div @input="examplesOpen = false">
+      <div class="card input-card">
+        <h2>{{ ui.configTitle }}</h2>
+        <div class="grid-2">
+          <component
+            :is="ui.configFields"
+            v-if="ui.configFields"
+            :key="formKey"
+            :store="store"
+            @structure-changed="selectedExampleId = ''"
+          />
+          <div class="field" @input.stop>
+            <label>Método</label>
+            <select v-model="selectedMethod">
+              <option v-for="m in siblings" :key="m.slug" :value="m.slug">{{ m.name }}</option>
+            </select>
+          </div>
+          <div v-if="showIterationFields" class="field">
+            <label>{{ ui.toleranceLabel ?? 'Tolerancia (criterio de parada)' }}</label>
+            <input type="number" step="any" v-model.number="tolerance" />
+          </div>
+          <div v-if="showIterationFields" class="field">
+            <label>{{ ui.maxIterationsLabel ?? 'Máximo de iteraciones (mínimo real: 6)' }}</label>
+            <input type="number" min="1" v-model.number="maxIterations" />
+          </div>
+        </div>
 
-    <div ref="formCardRef" class="card form-card">
-      <h2>{{ ui.formTitle }}</h2>
-      <component :is="ui.form" :key="formKey" v-bind="ui.formBindings(store)" />
+        <component :is="ui.configExtras" v-if="ui.configExtras" :key="formKey" :store="store" />
+      </div>
+
+      <div ref="formCardRef" class="card input-card form-card">
+        <h2>{{ ui.formTitle }}</h2>
+        <component :is="ui.form" :key="formKey" v-bind="ui.formBindings(store)" />
+      </div>
     </div>
 
     <div v-if="formErrors.length" class="alert alert-danger">
@@ -370,35 +416,88 @@ function handleExportPdf(chartImage) {
 </template>
 
 <style scoped>
+/* Los ejemplos son ayuda opcional: un escalón por debajo de las tarjetas del
+   formulario. Fondo de la página y borde, sin superficie ni sombra. */
+.examples {
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-container);
+  margin-bottom: var(--space-5);
+}
+
+.examples-heading {
+  margin: 0;
+  font-size: var(--text-subsection);
+}
+
+/* Mismo patrón de plegado que el paso a paso: ▸ / ▾ y aria-expanded. Toda la
+   fila es el control. */
+.examples-toggle {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  border: none;
+  border-radius: var(--radius-container);
+  background: transparent;
+  font: inherit;
+  letter-spacing: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.examples-caret {
+  color: var(--color-accent);
+  font-size: var(--text-small);
+}
+
+.examples-title {
+  flex: 1;
+  min-width: 0;
+}
+
+.examples-current {
+  font-weight: var(--weight-regular);
+}
+
+.examples-action {
+  font-size: var(--text-small);
+  font-weight: var(--weight-medium);
+  letter-spacing: 0;
+  color: var(--color-accent);
+}
+
+.examples-toggle:hover .examples-action {
+  text-decoration: underline;
+}
+
+.examples-panel {
+  padding: 0 var(--space-4) var(--space-4);
+}
+
 .hint {
   color: var(--color-ink-muted);
   font-size: var(--text-small);
-  margin: 0 0 var(--space-5);
+  margin: 0 0 var(--space-3);
 }
 
-/* Flexbox en vez de grid: con columnas de grid los tracks ocupan todo el
-   ancho y no hay espacio libre que repartir, así que las tarjetas sobrantes
-   de la última fila quedan siempre pegadas a la izquierda. */
+/* Grid: la última fila queda alineada al inicio, nunca centrada. Columnas por
+   ancho: 1, 2, 3 y, desde 1024px, 4 si el total no es múltiplo de 3 (4, 7 u
+   8 ejemplos); con 3, 6 o 9 se queda en 3 y no deja tarjetas huérfanas. */
 .examples-grid {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-3);
 }
 
 /* Elementos clicables: única familia con sombra, para diferenciarlos de los
-   contenedores estáticos que sólo llevan borde.
-
-   El ancho se fija por breakpoint (ver abajo) en vez de dejar que crezcan:
-   así una fila completa llena el ancho igual que antes, y las tarjetas
-   sobrantes de la última fila conservan su tamaño y sólo quedan centradas. */
+   contenedores estáticos que sólo llevan borde. */
 .example-btn {
-  flex: 0 1 100%;
   text-align: left;
   border: 1px solid var(--color-line);
   background: var(--color-surface);
   border-radius: var(--radius-nested);
-  padding: var(--space-3) var(--space-4);
+  padding: var(--space-3);
   cursor: pointer;
   display: flex;
   flex-direction: column;
@@ -435,10 +534,21 @@ function handleExportPdf(chartImage) {
   color: var(--color-accent-hover);
 }
 
+/* Dos líneas como máximo; el texto completo va en el title. */
 .example-desc {
   font-size: var(--text-small);
   line-height: 1.45;
   color: var(--color-ink-muted);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+}
+
+/* Separación entre secciones de la mitad de entrada. */
+.input-card {
+  margin-bottom: var(--space-5);
 }
 
 /* Aire entre el título de sección y su contenido (formulario o matriz). */
@@ -446,24 +556,21 @@ function handleExportPdf(chartImage) {
   margin-top: var(--space-5);
 }
 
-/* Tarjetas por fila según el ancho de pantalla. El ancho es
-   (100% - huecos) / columnas, de modo que una fila completa llena
-   exactamente el contenedor, como hacía la grilla anterior. */
 @media (min-width: 641px) {
-  .example-btn {
-    flex-basis: calc(50% - var(--space-3) * 0.5);
+  .examples-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
 @media (min-width: 800px) {
-  .example-btn {
-    flex-basis: calc(33.3333% - var(--space-3) * 0.6667);
+  .examples-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 
 @media (min-width: 1024px) {
-  .example-btn {
-    flex-basis: calc(25% - var(--space-3) * 0.75);
+  .examples-grid.is-four {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
 

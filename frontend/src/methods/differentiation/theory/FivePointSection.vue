@@ -51,7 +51,7 @@ const firstRow = rowSummary(1)
 
 <template>
   <div id="metodo-cinco-puntos" class="card">
-    <h2>Fórmula de 5 puntos</h2>
+    <h2 class="visually-hidden">Fórmula de 5 puntos</h2>
 
     <!-- 1. Introducción (el fundamento común va arriba, en la página) -->
     <p>

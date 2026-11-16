@@ -1,2 +1,10 @@
 # Variables de entorno reales de Docker (usar .env.example como plantilla)
 .env
+
+# Capturas de trabajo de cada etapa de diseño (docs/img/etapa-2/, etapa-3/…):
+# solo para comparar en local.
+docs/img/etapa-*/
+
+# Figuras del manual de usuario: viven solo en local; al repo sube el texto
+# (docs/manual-usuario.md).
+docs/img/usuario/

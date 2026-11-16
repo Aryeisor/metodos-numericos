@@ -8,7 +8,7 @@ import { ALGORITHM_STEPS, jacobiSteps, tex, vectorLatex } from './content'
 
 <template>
   <div id="metodo-jacobi" class="card">
-    <h2>Método de Jacobi</h2>
+    <h2 class="visually-hidden">Método de Jacobi</h2>
     <h3 class="first-heading">Definición formal</h3>
     <p>
       Se descompone <MathFormula :expression="tex.decomposition" />, donde

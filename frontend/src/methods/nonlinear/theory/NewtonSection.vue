@@ -21,7 +21,7 @@ import {
 
 <template>
   <div id="metodo-newton" class="card">
-    <h2>Método de Newton</h2>
+    <h2 class="visually-hidden">Método de Newton</h2>
     <h3 class="first-heading">De dónde sale el método</h3>
     <p>
       Para una sola ecuación <MathFormula expression="f(x) = 0" />, Newton reemplaza la curva por

@@ -35,6 +35,6 @@ const html = computed(() => {
 
 .math-fallback {
   font-family: var(--font-mono);
-  font-size: 0.85rem;
+  font-size: var(--text-small);
 }
 </style>

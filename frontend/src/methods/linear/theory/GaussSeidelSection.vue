@@ -17,7 +17,7 @@ import {
 
 <template>
   <div id="metodo-gauss-seidel" class="card">
-    <h2>Método de Gauss-Seidel</h2>
+    <h2 class="visually-hidden">Método de Gauss-Seidel</h2>
     <h3 class="first-heading">Definición formal</h3>
     <p>
       Es una variante de Jacobi que acelera la convergencia reutilizando, dentro de la misma

@@ -27,7 +27,7 @@ import {
 
 <template>
   <div id="metodo-bairstow" class="card">
-    <h2>Método de Bairstow</h2>
+    <h2 class="visually-hidden">Método de Bairstow</h2>
 
     <!-- 2. Definición formal -->
     <h3 class="first-heading">Definición formal</h3>

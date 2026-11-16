@@ -55,7 +55,7 @@ const SQUARE_TICKS = [0, 1, 2].map((x) => ({ x, label: String(x) }))
 
 <template>
   <div id="metodo-trapecio" class="card">
-    <h2>Método del trapecio</h2>
+    <h2 class="visually-hidden">Método del trapecio</h2>
 
     <!-- 1. Introducción (el fundamento común va arriba, en la página) -->
     <p>

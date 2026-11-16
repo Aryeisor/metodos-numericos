@@ -154,6 +154,17 @@ select {
   box-shadow: var(--focus-ring);
 }
 
+/* Fuera de la vista, pero lo leen los lectores de pantalla (títulos que la
+   página ya muestra en otro sitio, encabezados de columna sin texto). */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
 /* ==========================================================================
    Layout
    ========================================================================== */
