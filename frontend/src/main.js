@@ -1,4 +1,12 @@
 import { createApp } from 'vue'
+// Fuentes autoalojadas (subconjunto latino: cubre ñ, tildes, ¿ y ¡): la
+// interfaz funciona sin conexión. Sólo los pesos que se usan.
+import '@fontsource/ibm-plex-sans/latin-400.css'
+import '@fontsource/ibm-plex-sans/latin-400-italic.css'
+import '@fontsource/ibm-plex-sans/latin-500.css'
+import '@fontsource/ibm-plex-sans/latin-600.css'
+import '@fontsource/ibm-plex-sans/latin-700.css'
+import '@fontsource/ibm-plex-mono/latin-400.css'
 import 'katex/dist/katex.min.css'
 import './assets/theme.css'
 import './style.css'

@@ -34,7 +34,7 @@ const html = computed(() => {
 }
 
 .math-fallback {
-  font-family: 'Consolas', 'Courier New', monospace;
+  font-family: var(--font-mono);
   font-size: 0.85rem;
 }
 </style>

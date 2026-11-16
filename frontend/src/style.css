@@ -9,15 +9,20 @@
 :root {
   /* ---- Tipografía --------------------------------------------------------
      Una sola familia sans-serif para la interfaz; KaTeX usa su propia fuente
-     matemática. La jerarquía se construye con tamaño y peso.               */
-  --font-sans: 'Segoe UI', system-ui, -apple-system, 'Helvetica Neue', Arial, sans-serif;
+     matemática. La jerarquía se construye con tamaño y peso.
+     IBM Plex va autoalojada (Fontsource, importada en main.js) para que
+     funcione sin conexión; el respaldo deja la interfaz como antes.       */
+  --font-sans: 'IBM Plex Sans', 'Segoe UI', system-ui, -apple-system, 'Helvetica Neue', Arial, sans-serif;
+  --font-mono: 'IBM Plex Mono', 'Consolas', 'Courier New', monospace;
 
+  --text-display: 1.75rem;        /* 28px · 600 · título de la página       */
   --text-app-title: 1.125rem;     /* 18px · 700 · nombre de la aplicación   */
   --text-section: 1.375rem;       /* 22px · 600 · títulos de sección        */
-  --text-subsection: 1.0625rem;   /* 17px · 600 · subtítulos dentro de tarjeta */
-  --text-card-title: 0.9375rem;   /* 15px · 600 · nombre de ejemplo, etc.   */
+  --text-subsection: 1.125rem;    /* 18px · 600 · subtítulos dentro de tarjeta */
+  --text-card-title: 1rem;        /* 16px · 600 · nombre de ejemplo, etc.   */
   --text-body: 0.9375rem;         /* 15px · 400 · cuerpo                    */
   --text-small: 0.8125rem;        /* 13px · 400/500 · labels y secundario   */
+  --text-micro: 0.75rem;          /* 12px · insignias, unidades, pies; nunca prosa */
 
   --weight-regular: 400;
   --weight-medium: 500;
@@ -25,7 +30,11 @@
   --weight-bold: 700;
 
   --leading-tight: 1.3;
+  --leading-snug: 1.45;           /* texto de tarjeta y celdas de tabla     */
   --leading-body: 1.6;
+
+  --tracking-tight: -0.01em;      /* display y títulos de sección           */
+  --tracking-wide: 0.02em;        /* labels en mayúsculas de 12px           */
 
   /* ---- Espaciado: escala de 4px ----------------------------------------- */
   --space-1: 4px;
@@ -98,7 +107,14 @@ h3,
 h4 {
   color: var(--color-ink);
   line-height: var(--leading-tight);
-  letter-spacing: -0.01em;
+  letter-spacing: var(--tracking-tight);
+}
+
+h1 {
+  font-size: var(--text-display);
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-tight);
 }
 
 h2 {
@@ -355,7 +371,16 @@ table {
   border-collapse: collapse;
   width: 100%;
   font-size: var(--text-small);
-  line-height: 1.4;
+  line-height: var(--leading-snug);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Cifras tabulares fuera de las tablas: resúmenes del resultado y campos
+   numéricos. Todas las cifras miden igual y las columnas quedan a plomo. */
+.summary,
+.summary-grid,
+input[type='number'],
+input[inputmode='decimal'] {
   font-variant-numeric: tabular-nums;
 }
 
@@ -436,7 +461,7 @@ input[type='checkbox'] {
 input[type='checkbox']:focus-visible {
   outline: none;
   box-shadow: var(--focus-ring);
-  border-radius: 3px;
+  border-radius: 3px; /* casilla de 13px: un radio de la escala la volvería un círculo */
 }
 
 .field {

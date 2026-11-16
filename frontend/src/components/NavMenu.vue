@@ -466,7 +466,7 @@ onBeforeUnmount(() => {
 }
 
 .nav-caret {
-  font-size: 0.75em;
+  font-size: 0.75em; /* relativo a propósito: la flecha escala con el texto del botón */
 }
 
 .nav-mobile-trigger {
@@ -509,7 +509,7 @@ svg {
 
 .nav-link:focus-visible {
   outline-offset: 4px;
-  border-radius: 2px;
+  border-radius: var(--radius-control);
 }
 
 .nav-panel .nav-item:focus-visible,
@@ -626,7 +626,7 @@ svg {
   min-height: 32px;
   padding: 0 var(--space-4);
   border: none;
-  border-radius: 4px;
+  border-radius: calc(var(--radius-control) - 2px); /* radio interior: el del contenedor menos su padding */
   background: transparent;
   color: var(--color-ink-muted);
   font-size: var(--text-small);

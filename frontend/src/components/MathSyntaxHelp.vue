@@ -64,10 +64,10 @@ dd {
 }
 
 code {
-  font-family: 'Consolas', 'Courier New', monospace;
+  font-family: var(--font-mono);
   color: var(--color-ink);
   background: var(--color-sunken);
-  border-radius: 4px;
+  border-radius: var(--radius-control);
   padding: 0 4px;
 }
 

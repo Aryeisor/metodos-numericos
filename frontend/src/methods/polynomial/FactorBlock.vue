@@ -392,6 +392,6 @@ const quadraticFormLatex = computed(() => {
 }
 
 .formula-box :deep(.katex) {
-  font-size: 1em;
+  font-size: 1em; /* relativo a propósito: KaTeX hereda el tamaño del contenedor */
 }
 </style>

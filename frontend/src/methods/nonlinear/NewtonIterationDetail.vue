@@ -227,7 +227,7 @@ const singular = computed(() => props.result.failure?.reason === 'singular' && !
 
 .step-card :deep(.katex),
 .formula-box :deep(.katex) {
-  font-size: 1em;
+  font-size: 1em; /* relativo a propósito: KaTeX hereda el tamaño del contenedor */
 }
 
 .formula-box {

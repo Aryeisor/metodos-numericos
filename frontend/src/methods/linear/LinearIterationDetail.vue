@@ -150,6 +150,6 @@ const detail = computed(() =>
 
 .substitution-card :deep(.katex),
 .error-card :deep(.katex) {
-  font-size: 1em;
+  font-size: 1em; /* relativo a propósito: KaTeX hereda el tamaño del contenedor */
 }
 </style>

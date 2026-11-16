@@ -61,6 +61,6 @@ const latex = computed(() => {
 }
 
 .equation-preview :deep(.katex) {
-  font-size: 1.1em;
+  font-size: 1.1em; /* relativo a propósito: la vista previa de KaTeX, un poco mayor que el campo */
 }
 </style>

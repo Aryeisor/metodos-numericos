@@ -55,7 +55,7 @@ const id = `glossary-${Math.random().toString(36).slice(2, 9)}`
 .glossary-toggle:focus-visible {
   outline: none;
   box-shadow: var(--focus-ring);
-  border-radius: 2px;
+  border-radius: var(--radius-control);
 }
 
 .glossary-list {

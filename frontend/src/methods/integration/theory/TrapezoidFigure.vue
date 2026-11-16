@@ -375,7 +375,7 @@ svg {
   display: inline-block;
   width: 14px;
   height: 14px;
-  border-radius: 2px;
+  border-radius: 2px; /* muestra de color de 14px: un radio de la escala la volvería un círculo */
 }
 
 .box-trap {

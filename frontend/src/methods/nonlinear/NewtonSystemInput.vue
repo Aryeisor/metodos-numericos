@@ -150,7 +150,7 @@ function removeEquation(index) {
 
 .variables-input {
   max-width: 320px;
-  font-family: 'Consolas', 'Courier New', monospace;
+  font-family: var(--font-mono);
 }
 
 .equation-toolbar {
@@ -190,7 +190,7 @@ function removeEquation(index) {
 }
 
 .equation-input {
-  font-family: 'Consolas', 'Courier New', monospace;
+  font-family: var(--font-mono);
 }
 
 /* Vista previa debajo del campo de la ecuación, en la misma columna. */
@@ -234,8 +234,8 @@ function removeEquation(index) {
 }
 
 .input-hint code {
-  font-family: 'Consolas', 'Courier New', monospace;
-  font-size: 0.95em;
+  font-family: var(--font-mono);
+  font-size: var(--text-micro);
   color: var(--color-ink);
 }
 

@@ -190,7 +190,7 @@ const degrees = Array.from({ length: MAX_DEGREE - MIN_DEGREE + 1 }, (_, i) => MI
 }
 
 .polynomial-input {
-  font-family: 'Consolas', 'Courier New', monospace;
+  font-family: var(--font-mono);
 }
 
 /* La vista previa va pegada bajo el campo. */
@@ -209,8 +209,8 @@ const degrees = Array.from({ length: MAX_DEGREE - MIN_DEGREE + 1 }, (_, i) => MI
 }
 
 .input-hint code {
-  font-family: 'Consolas', 'Courier New', monospace;
-  font-size: 0.95em;
+  font-family: var(--font-mono);
+  font-size: var(--text-micro);
   color: var(--color-ink);
 }
 

@@ -248,7 +248,7 @@ onBeforeUnmount(() => {
 }
 
 .more-caret {
-  font-size: 0.75em;
+  font-size: 0.75em; /* relativo a propósito: la flecha escala con el texto del botón */
 }
 
 /* Mismo aspecto que los menús del nav (NavMenu.vue). */

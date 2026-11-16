@@ -532,7 +532,7 @@ onBeforeUnmount(() => {
   margin: var(--space-3) 0;
   padding: var(--space-2) var(--space-3);
   border-left: 3px solid var(--color-info-line);
-  border-radius: var(--radius-sm, 4px);
+  border-radius: var(--radius-nested);
   background: var(--color-accent-soft);
   font-size: var(--text-small);
   color: var(--color-ink);

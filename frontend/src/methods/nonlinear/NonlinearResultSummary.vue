@@ -233,7 +233,7 @@ function toggle(i) {
 }
 
 .step-formula :deep(.katex) {
-  font-size: 1.05em;
+  font-size: 1.05em; /* relativo a propósito: KaTeX inline sin agrandar el interlineado */
 }
 
 .visually-hidden {

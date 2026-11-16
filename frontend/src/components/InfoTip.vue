@@ -100,7 +100,7 @@ onBeforeUnmount(hide)
 .info-tip:focus-visible {
   outline: none;
   box-shadow: var(--focus-ring);
-  border-radius: 2px;
+  border-radius: var(--radius-control);
 }
 
 .info-tip-bubble {

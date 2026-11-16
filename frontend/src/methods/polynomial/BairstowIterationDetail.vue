@@ -204,7 +204,7 @@ const toleranceLatex = computed(() => `${latexNumber(props.tolerance)}\\,\\%`)
 }
 
 .step-card :deep(.katex) {
-  font-size: 1em;
+  font-size: 1em; /* relativo a propósito: KaTeX hereda el tamaño del contenedor */
 }
 
 .tolerance-check {

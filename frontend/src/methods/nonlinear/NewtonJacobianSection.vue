@@ -100,7 +100,7 @@ const PARTIAL = '\\partial f_i / \\partial x_j'
 }
 
 .formula-box :deep(.katex) {
-  font-size: 1em;
+  font-size: 1em; /* relativo a propósito: KaTeX hereda el tamaño del contenedor */
 }
 
 /* Una tarjeta por entrada del Jacobiano, en el orden de la matriz. */
