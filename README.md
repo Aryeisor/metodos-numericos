@@ -1904,6 +1904,31 @@ metodos/
                                      # entrada con fracciones
 ```
 
+### Sistema de diseño
+
+Los tokens de tipografía, espaciado y radios están en `frontend/src/style.css`;
+los colores, en `frontend/src/assets/theme.css`.
+
+**Familia:** IBM Plex Sans para la interfaz e IBM Plex Mono para entradas de
+función y código. Va **autoalojada** en el proyecto (paquetes Fontsource,
+importados en `main.js`, subconjunto latino), así que funciona sin conexión,
+también dentro de Docker. Si no carga, se usa Segoe UI / la fuente del sistema.
+El PDF no depende de ella: jsPDF usa `helvetica`.
+
+| Token | Tamaño | Uso |
+|---|---|---|
+| `--text-display` | 28 px | Título de la página (uno por pantalla) |
+| `--text-section` | 22 px | Títulos de sección |
+| `--text-subsection` | 18 px | Subtítulos dentro de una tarjeta |
+| `--text-app-title` | 18 px | Nombre en la barra superior |
+| `--text-card-title` | 16 px | Nombre de ejemplo, título de tarjeta |
+| `--text-body` | 15 px | Cuerpo |
+| `--text-small` | 13 px | Labels y texto secundario |
+| `--text-micro` | 12 px | Insignias, unidades, pies (nunca prosa) |
+
+Tablas, resúmenes del resultado y campos numéricos usan cifras tabulares
+(`font-variant-numeric: tabular-nums`) para que las columnas queden alineadas.
+
 ---
 
 ## Arquitectura: cómo agregar un método
