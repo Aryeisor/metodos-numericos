@@ -1,6 +1,7 @@
 <script setup>
 import { computed } from 'vue'
 import { RouterLink, RouterView, useRoute } from 'vue-router'
+import BrandMark from './components/BrandMark.vue'
 import NavMenu from './components/NavMenu.vue'
 import { useTheme } from './composables/useTheme'
 import { getMethod } from './methods/registry'
@@ -13,20 +14,24 @@ const themeToggleLabel = computed(() =>
   theme.value === 'dark' ? 'Activar modo claro' : 'Activar modo oscuro'
 )
 
-const DEFAULT_FOOTER = 'Métodos numéricos iterativos'
+const REPO_URL = 'https://github.com/Aryeisor/metodos-numericos'
 
-// Pie de página: categoría y nombre del método que se está resolviendo.
-const footerText = computed(() => {
-  const method = getMethod(route.meta.method ?? null)
-  return method ? `${method.categoryLabel} · ${method.name}` : DEFAULT_FOOTER
-})
+// Diferenciación e integración ya dicen junto al campo de la función que se
+// usan radianes; en el resto de vistas lo recuerda el pie.
+const FORM_NOTES_RADIANS = new Set(['differentiation', 'integration'])
+const showRadiansNote = computed(
+  () => !FORM_NOTES_RADIANS.has(getMethod(route.meta.method ?? null)?.category)
+)
 </script>
 
 <template>
   <header class="app-header">
     <a class="skip-link" href="#contenido">Saltar al contenido</a>
     <div class="container header-inner">
-      <span class="brand">Métodos Iterativos</span>
+      <RouterLink to="/" class="brand">
+        <BrandMark />
+        <span class="brand-name">Métodos Iterativos</span>
+      </RouterLink>
       <div class="nav">
         <NavMenu />
         <RouterLink
@@ -67,7 +72,12 @@ const footerText = computed(() => {
 
   <footer class="app-footer">
     <div class="container">
-      {{ footerText }} · <RouterLink to="/manual" class="footer-link">Manual de usuario</RouterLink>
+      Métodos Iterativos ·
+      <RouterLink to="/manual" class="footer-link">Manual de usuario</RouterLink> ·
+      <a :href="REPO_URL" class="footer-link" target="_blank" rel="noopener">Repositorio</a>
+      <template v-if="showRadiansNote">
+        · Las funciones trigonométricas se evalúan en radianes.
+      </template>
     </div>
   </footer>
 </template>
@@ -123,12 +133,23 @@ main:focus {
 }
 
 .brand {
+  align-self: center;
   display: flex;
   align-items: center;
+  gap: var(--space-2);
   font-size: var(--text-app-title);
   font-weight: var(--weight-bold);
   letter-spacing: -0.015em;
   color: var(--color-ink);
+  text-decoration: none;
+  white-space: nowrap;
+  border-radius: var(--radius-control);
+}
+
+.brand:focus-visible {
+  box-shadow: none;
+  outline: 2px solid var(--color-accent);
+  outline-offset: 4px;
 }
 
 .nav {
@@ -218,9 +239,6 @@ main:focus {
     gap: var(--space-2);
   }
 
-  .brand {
-    white-space: nowrap;
-  }
 
   .header-button,
   .manual-link {
@@ -231,6 +249,17 @@ main:focus {
 
   .manual-link {
     margin-right: 0;
+  }
+}
+
+/* Si no cabe, se queda la marca: el nombre sigue ahí para el lector de pantalla. */
+@media (max-width: 419px) {
+  .brand-name {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
   }
 }
 

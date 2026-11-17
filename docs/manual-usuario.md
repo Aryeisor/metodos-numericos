@@ -12,9 +12,9 @@
 | **Asignatura** | _[completar]_ |
 | **Docente** | _[completar]_ |
 | **Institución** | _[completar]_ |
-| **Versión del documento** | 1.1 |
+| **Versión del documento** | 1.2 |
 | **Fecha** | 16 de noviembre de 2026 |
-| **Estado del código documentado** | rama `main`, commit `c97d1c4` |
+| **Estado del código documentado** | rama `main`, commit `9aff3ae` |
 
 # Control de versiones del documento
 
@@ -22,6 +22,7 @@
 |---|---|---|---|
 | 1.0 | 13 de noviembre de 2026 | _[completar]_ | Versión inicial |
 | 1.1 | 16 de noviembre de 2026 | _[completar]_ | Nueva vista del resultado (tarjeta de respuesta, franja fija y botones «Descargar PDF» y «Limpiar»), botón «Manual de usuario» en la barra superior y figuras tomadas con el navegador en español |
+| 1.2 | 16 de noviembre de 2026 | _[completar]_ | Marca del sistema en la barra superior y en la pestaña, título propio de la pestaña en cada página, aviso «Resolviendo…» en los cálculos largos, página «Esta página no existe» para las direcciones desconocidas y nuevo pie de página; figuras de la barra superior y del menú rehechas |
 
 # 1. Antes de empezar
 
@@ -129,11 +130,11 @@ Cuando abres el sistema ves una pantalla como la de la Figura 3. Está formada p
 
 La barra superior está siempre visible, aunque bajes por la página. La Figura 4 la muestra de cerca.
 
-![Figura 4 — La barra superior: el nombre del sistema, los menús «Resolver» y «Teoría», el botón «Manual de usuario» y el botón del tema](img/usuario/U-04-barra-superior.png)
+![Figura 4 — La barra superior: la marca y el nombre del sistema, los menús «Resolver» y «Teoría», el botón «Manual de usuario» y el botón del tema](img/usuario/U-04-barra-superior.png)
 
 De izquierda a derecha tiene estas partes:
 
-- **El nombre del sistema**, «Métodos Iterativos». Es solo un título; no es un botón.
+- **La marca y el nombre del sistema**: un cuadrito azul petróleo con el signo de integral (∫), el mismo dibujo que ves en la pestaña del navegador, seguido de «Métodos Iterativos». Los dos juntos son un enlace: al pulsarlos vuelves al inicio, el método de Jacobi. En pantallas muy angostas, como un celular, queda solo el cuadrito.
 - **El menú «Resolver ▾».** Abre la lista de los doce métodos para trabajar un ejercicio. Mientras estás resolviendo, aparece subrayado para indicarte en qué sección estás.
 - **El menú «Teoría ▾».** Abre la misma lista, pero cada método te lleva a su página de explicación teórica. Mientras lees teoría, el subrayado pasa a este menú.
 - **El botón «Manual de usuario»**, con el dibujo de un libro. Abre este manual dentro del sistema, sin salir de él. El mismo enlace está en el pie de página.
@@ -153,7 +154,7 @@ En **«Teoría»** el área central empieza con el mismo encabezado (categoría,
 
 ## 3.3 El pie de página
 
-Al final de cada página hay un pie de página. Cuando estás en «Resolver», el pie dice la categoría y el método en el que estás, separados por un punto, por ejemplo «Sistemas lineales · Jacobi» o «Integración numérica · Método del trapecio». Sirve para comprobar de un vistazo que estás en el método correcto antes de resolver, sobre todo cuando cambias de método con el selector y los formularios se parecen mucho (los de Jacobi y Gauss-Seidel, por ejemplo, son idénticos). En las páginas de teoría el pie dice simplemente «Métodos numéricos iterativos».
+Al final de cada página hay un pie de página de una sola línea con el nombre del sistema, un enlace a este **manual de usuario** y otro al **repositorio**, la página de internet donde está publicado el código del sistema. Cuando no lo dice ya el formulario, el pie recuerda además que «Las funciones trigonométricas se evalúan en radianes»: en los métodos de diferenciación e integración esa nota aparece debajo del campo de la función, así que el pie no la repite. Para comprobar en qué método estás, mira el encabezado de arriba o el título de la pestaña (apartado 3.4).
 
 ## 3.4 La dirección del navegador
 
@@ -164,9 +165,9 @@ http://localhost:8080/resolver/trapecio
 http://localhost:8080/teoria/trapecio
 ```
 
-La primera abre el formulario del método del trapecio y la segunda su página de teoría. Esto tiene dos ventajas prácticas. La primera es que puedes guardar en favoritos los métodos que más usas y abrirlos directamente. La segunda es que puedes compartir la dirección con un compañero que esté en la misma red, cambiando `localhost` por la dirección del computador donde está encendido el sistema (consulta las preguntas frecuentes del capítulo 11). Ten en cuenta que la dirección lleva al método, no a tus datos: quien la abra verá el formulario vacío.
+La primera abre el formulario del método del trapecio y la segunda su página de teoría. Esto tiene dos ventajas prácticas. La primera es que puedes guardar en favoritos los métodos que más usas y abrirlos directamente. Cada página tiene además su propio título en la pestaña del navegador, que es el nombre con el que queda guardado el favorito: «Método del trapecio · Resolver · Métodos Iterativos», «Método del trapecio · Teoría · Métodos Iterativos» o «Manual de usuario · Métodos Iterativos». El título cambia solo cada vez que pasas de un método o de una sección a otra. La segunda es que puedes compartir la dirección con un compañero que esté en la misma red, cambiando `localhost` por la dirección del computador donde está encendido el sistema (consulta las preguntas frecuentes del capítulo 11). Ten en cuenta que la dirección lleva al método, no a tus datos: quien la abra verá el formulario vacío.
 
-Si escribes `http://localhost:8080` sin nada más, o una dirección que no existe, el sistema te lleva al primer método, Jacobi.
+Si escribes `http://localhost:8080` sin nada más, el sistema te lleva al primer método, Jacobi. Si escribes una dirección que no existe (por ejemplo, un favorito viejo o una dirección con un error de escritura), verás la página «Esta página no existe»; el apartado 10.2 explica qué hacer.
 
 # 4. Moverte por el sistema
 
@@ -274,7 +275,7 @@ Su solución exacta es $x_1 = 1$, $x_2 = 2$ y $x_3 = -1$. Lo interesante no es l
 
 **Paso 6. Resuelve.**
 *Qué hacer:* haz clic en el botón «Resolver», que está debajo del formulario.
-*Qué vas a ver:* el botón cambia a «Resolviendo...» durante un instante y **la página baja sola** hasta el resultado, que aparece debajo del formulario. No tienes que buscarlo.
+*Qué vas a ver:* **la página baja sola** hasta el resultado, que aparece debajo del formulario. No tienes que buscarlo. Antes de resolver, en ese lugar hay una línea gris que dice «Al pulsar Resolver, aquí aparecen la respuesta y el detalle de cada iteración.». Si el cálculo tarda más de un tercio de segundo, el botón muestra un círculo que gira y cambia a «Resolviendo…»; mientras tanto no se puede volver a pulsar. Con este ejemplo la respuesta llega antes, así que no alcanzas a verlo.
 *Por qué:* al pulsar «Resolver», el sistema envía los datos al servidor, que hace todos los cálculos y devuelve el resultado completo. Con este ejemplo tarda menos de un segundo.
 
 **Paso 7. Lee la tarjeta de respuesta.**
@@ -847,7 +848,7 @@ Algunos recuadros amarillos no avisan de ningún problema, sino que informan sob
 
 **La página no abre.** Escribes `http://localhost:8080` y el navegador dice que no puede acceder al sitio. Casi siempre es porque el sistema no está encendido: Docker Desktop está cerrado o no ejecutaste `iniciar.bat`. Abre Docker Desktop, espera a que diga «Engine running» y ejecuta `iniciar.bat`. Revisa también que hayas escrito `http://` y no `https://`, y el número 8080 completo.
 
-**Se queda cargando y no pasa nada.** Pulsas «Resolver», el botón dice «Resolviendo...» y no aparece nada durante muchos segundos. Si pasan más de diez segundos y después aparece un recuadro rojo con letras sueltas, el servidor se apagó (ver la tabla anterior). Si en cambio el botón vuelve a decir «Resolver» y aparece el resultado, solo era un cálculo pesado: la primera integral de una función complicada puede tardar unos segundos mientras el sistema busca su integral exacta, y las repeticiones son más rápidas. Si quieres cancelar la espera, pulsa «Limpiar».
+**Se queda cargando y no pasa nada.** Pulsas «Resolver», el botón muestra un círculo que gira y dice «Resolviendo…», y no aparece nada durante muchos segundos. Algunos cálculos son lentos de verdad: la integración de Romberg con 20 filas y una tolerancia muy pequeña puede tardar casi un minuto. Si pasan más de diez segundos y después aparece un recuadro rojo con letras sueltas, el servidor se apagó (ver la tabla anterior). Si en cambio el botón vuelve a decir «Resolver» y aparece el resultado, solo era un cálculo pesado: la primera integral de una función complicada puede tardar unos segundos mientras el sistema busca su integral exacta, y las repeticiones son más rápidas. Si quieres cancelar la espera, pulsa «Limpiar».
 
 **El resultado tiene muchas más filas de las que esperabas.** Tu libro llega a la respuesta en 8 vueltas y el sistema hace 40. Normalmente es porque la tolerancia es más exigente que la del libro: con 0.000001 el método sigue hasta tener seis decimales correctos, mientras que muchos libros paran con dos o tres. Escribe en «Tolerancia» la misma que usa el libro. También puede ser que el punto de partida sea distinto: revisa el vector inicial.
 
@@ -858,6 +859,8 @@ Algunos recuadros amarillos no avisan de ningún problema, sino que informan sob
 **La gráfica se ve casi recta.** En la gráfica de diferenciación, la curva, la tangente y la recta aproximada parecen una sola línea. Es lo esperado: con un paso pequeño las tres casi coinciden, y por eso la aproximación es buena. Para ver la forma, usa la vista ilustrativa (apartado 7.6). En la gráfica de convergencia, una línea recta que baja es lo normal por la escala logarítmica; una línea horizontal significa que el error no está bajando.
 
 **El PDF no se descarga.** Pulsas «Descargar PDF» y no pasa nada visible. Revisa la carpeta de descargas: muchos navegadores descargan sin preguntar y solo muestran un pequeño aviso en una esquina. Si el navegador tiene bloqueadas las descargas automáticas, aparece un icono en la barra de direcciones para permitirlas; permítelas para `localhost`. Si usas un modo de navegación con restricciones, prueba en una ventana normal.
+
+**Aparece «Esta página no existe».** Abriste un favorito o una dirección que el sistema no reconoce: un método escrito con otra palabra, una letra de más o una dirección de una versión anterior. Debajo del mensaje hay dos botones: «Ver los métodos» abre el menú para que elijas el método, e «Ir al inicio» te lleva a Jacobi. Si era un favorito, vuelve a guardarlo desde la página correcta.
 
 **El navegador sigue mostrando el icono o la versión anterior.** Después de que alguien actualiza el sistema, ves el icono viejo en la pestaña o pantallas que ya no deberían existir. El navegador guarda copias de las páginas para cargarlas más rápido. Recarga forzando una copia nueva con Ctrl + F5. Si quien actualizó no reconstruyó el sistema con `reconstruir.bat`, recargar no basta (apartado 2.4).
 
@@ -939,7 +942,7 @@ Algunos recuadros amarillos no avisan de ningún problema, sino que informan sob
 | Figura 1 — La carpeta del proyecto, con los archivos de doble clic | U-01-carpeta-del-proyecto.png | 2.1 | Usuario (marcador) |
 | Figura 2 — La ventana de iniciar.bat cuando el sistema ya está listo | U-02-ventana-iniciar.png | 2.1 | Usuario (marcador) |
 | Figura 3 — El sistema recién abierto en el navegador | U-03-aplicacion-abierta.png | 2.1 | Claude |
-| Figura 4 — La barra superior | U-04-barra-superior.png | 3.1 | Claude |
+| Figura 4 — La barra superior, con la marca | U-04-barra-superior.png | 3.1 | Claude |
 | Figura 5 — El menú «Resolver» desplegado | U-05-menu-resolver.png | 4.1 | Claude |
 | Figura 6 — El buscador del menú con la palabra «derivada» | U-06-buscador.png | 4.2 | Claude |
 | Figura 7 — El menú en una pantalla angosta | U-07-menu-pantalla-angosta.png | 4.4 | Claude |

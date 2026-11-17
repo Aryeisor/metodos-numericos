@@ -7,7 +7,6 @@ const USER_MANUAL = '/manuales/manual-de-usuario.pdf'
 const TECH_MANUAL = '/manuales/manual-tecnico.pdf'
 // shortcut: número de páginas escrito a mano; actualizarlo si se reemplaza el PDF.
 const USER_MANUAL_PAGES = 70
-const PAGE_TITLE = 'Manual de usuario · Métodos Iterativos'
 
 // Muchos navegadores de celular dejan el iframe en blanco y no se puede
 // detectar: por debajo de 768 px se ofrece abrirlo a pantalla completa.
@@ -17,14 +16,10 @@ const onMediaChange = (event) => {
   isWide.value = event.matches
 }
 
-let previousTitle = ''
 onMounted(() => {
-  previousTitle = document.title
-  document.title = PAGE_TITLE
   wideMedia.addEventListener('change', onMediaChange)
 })
 onBeforeUnmount(() => {
-  document.title = previousTitle
   wideMedia.removeEventListener('change', onMediaChange)
 })
 </script>

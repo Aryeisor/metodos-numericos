@@ -1,5 +1,5 @@
 <script setup>
-import { computed, nextTick, ref, shallowRef, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, ref, shallowRef, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import ConfirmDialog from '../components/ConfirmDialog.vue'
 import MethodHeader from '../components/MethodHeader.vue'
@@ -52,6 +52,18 @@ const selectedExample = computed(
 const examplesOpen = ref(true)
 
 const loading = ref(false)
+// El estado «Resolviendo…» sólo se ve si el cálculo pasa de BUSY_DELAY_MS: por
+// debajo, un indicador que aparece y desaparece molesta más que no poner nada.
+// Mientras tanto `loading` ya impide volver a enviar.
+const BUSY_DELAY_MS = 300
+const busy = ref(false)
+let busyTimer = null
+watch(loading, (isLoading) => {
+  clearTimeout(busyTimer)
+  busy.value = false
+  if (isLoading) busyTimer = setTimeout(() => (busy.value = true), BUSY_DELAY_MS)
+})
+onBeforeUnmount(() => clearTimeout(busyTimer))
 const formErrors = ref([])
 const result = ref(null)
 // Datos de entrada tal como se resolvieron: permiten reconstruir en el
@@ -138,6 +150,7 @@ async function revealOutcome() {
 }
 
 async function handleSolve() {
+  if (loading.value) return
   formErrors.value = []
   result.value = null
   solvedSystem.value = null
@@ -371,9 +384,18 @@ function handleExportPdf(chartImage) {
     </div>
 
     <div class="solve-actions">
-      <button class="btn btn-primary solve-btn" type="button" :disabled="loading" @click="handleSolve">
-        {{ loading ? 'Resolviendo...' : 'Resolver' }}
+      <button
+        class="btn btn-primary solve-btn"
+        :class="{ 'is-busy': busy }"
+        type="button"
+        :disabled="busy"
+        :aria-disabled="loading || undefined"
+        @click="handleSolve"
+      >
+        <span v-if="busy" class="solve-spinner" aria-hidden="true"></span>
+        {{ busy ? 'Resolviendo…' : 'Resolver' }}
       </button>
+      <span class="visually-hidden" role="status" aria-live="polite">{{ busy ? 'Resolviendo…' : '' }}</span>
       <button
         class="btn btn-outline solve-btn"
         type="button"
@@ -393,6 +415,10 @@ function handleExportPdf(chartImage) {
       @confirm="confirmClear"
       @cancel="confirmOpen = false"
     />
+
+    <p v-if="!result && !busy" class="result-placeholder">
+      Al pulsar Resolver, aquí aparecen la respuesta y el detalle de cada iteración.
+    </p>
 
     <template v-if="result">
       <!-- Lo primero: la respuesta. Sus botones actúan sobre el detalle de abajo
@@ -624,6 +650,41 @@ function handleExportPdf(chartImage) {
   justify-content: center;
   padding: var(--space-3) var(--space-6);
   font-size: 1rem;
+}
+
+/* Ocupado: deshabilitado pero legible (sin la opacidad de .btn:disabled, que
+   dejaría el texto sin contraste). */
+.solve-btn.is-busy:disabled {
+  opacity: 1;
+  cursor: progress;
+}
+
+.solve-spinner {
+  width: 1em;
+  height: 1em;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: solve-spin 0.8s linear infinite;
+}
+
+@keyframes solve-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Sin giro: el texto «Resolviendo…» basta para saber que está trabajando. */
+@media (prefers-reduced-motion: reduce) {
+  .solve-spinner {
+    animation: none;
+  }
+}
+
+.result-placeholder {
+  margin: 0;
+  font-size: var(--text-small);
+  color: var(--color-ink-muted);
 }
 
 /* Al limpiar, la página sube hasta el formulario; el margen deja ver el título. */

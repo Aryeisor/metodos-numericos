@@ -180,3 +180,103 @@ describe('después de resolver', () => {
     app.unmount()
   })
 })
+
+describe('marca y título de la pestaña', () => {
+  it('la marca va dentro del enlace al inicio, sin una segunda parada de tabulación', async () => {
+    const app = await open('/resolver/jacobi')
+    const brand = app.get('header a.brand')
+    expect(brand.attributes('href')).toBe('/')
+    const mark = brand.get('svg.brand-mark')
+    expect(mark.attributes('aria-hidden')).toBe('true')
+    expect(mark.attributes('focusable')).toBe('false')
+    expect(brand.text()).toBe('Métodos Iterativos')
+    expect(brand.findAll('a, button, [tabindex]')).toHaveLength(0)
+    app.unmount()
+  })
+
+  it('cambia al navegar entre métodos y entre Resolver y Teoría', async () => {
+    const app = await open('/resolver/jacobi')
+    expect(document.title).toBe('Jacobi · Resolver · Métodos Iterativos')
+    await router.push('/resolver/newton')
+    expect(document.title).toBe('Newton · Resolver · Métodos Iterativos')
+    await router.push('/teoria/newton')
+    expect(document.title).toBe('Newton · Teoría · Métodos Iterativos')
+    await router.push('/manual')
+    expect(document.title).toBe('Manual de usuario · Métodos Iterativos')
+    app.unmount()
+  }, 20_000)
+})
+
+describe('mientras calcula', () => {
+  const button = (app) => app.get('.solve-actions .btn-primary')
+  const status = (app) => app.get('.solve-actions [role="status"]')
+
+  afterEach(() => {
+    vi.useRealTimers()
+    solveSystem.mockImplementation(() => new Promise(() => {}))
+  })
+
+  async function startSolving(outcome) {
+    solveSystem.mockClear()
+    solveSystem.mockImplementation(outcome)
+    const app = await open('/resolver/jacobi', { ResultsTable: true })
+    await app.get('.example-btn').trigger('click')
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] })
+    await button(app).trigger('click')
+    return app
+  }
+
+  it('pasa a ocupado tras 300 ms y no se puede reenviar', async () => {
+    const app = await startSolving(() => new Promise(() => {}))
+    // Antes del umbral no cambia nada a la vista, pero un segundo clic no envía.
+    expect(button(app).text()).toBe('Resolver')
+    await button(app).trigger('click')
+    expect(solveSystem).toHaveBeenCalledTimes(1)
+
+    vi.advanceTimersByTime(300)
+    await flushPromises()
+    expect(button(app).text()).toBe('Resolviendo…')
+    expect(button(app).attributes('disabled')).toBeDefined()
+    expect(button(app).find('.solve-spinner').exists()).toBe(true)
+    expect(status(app).attributes('aria-live')).toBe('polite')
+    expect(status(app).text()).toBe('Resolviendo…')
+    app.unmount()
+  })
+
+  it('con un cálculo rápido el indicador no llega a mostrarse', async () => {
+    const app = await startSolving(() => Promise.resolve({
+      method: 'jacobi', category: 'linear_system', converged: true, iterations_used: 1,
+      iterations: [{ iteration: 1, x: [1, 1, 1], error: 0 }], solution: [1, 1, 1],
+      variables: ['x1', 'x2', 'x3'], warnings: [],
+    }))
+    await flushPromises()
+    vi.advanceTimersByTime(1000)
+    await flushPromises()
+    expect(app.find('.solve-spinner').exists()).toBe(false)
+    expect(button(app).text()).toBe('Resolver')
+    expect(status(app).text()).toBe('')
+    app.unmount()
+  })
+})
+
+describe('lo que no existe', () => {
+  it.each(['/resolver/no-existe', '/cualquier-cosa'])('%s muestra la página de «no encontrado»', async (path) => {
+    const app = await open(path)
+    expect(router.currentRoute.value.name).toBe('not-found')
+    expect(app.get('h1').text()).toBe('Esta página no existe')
+    expect(app.get('.not-found').text()).toContain('Ver los métodos')
+    expect(app.get('.not-found a[href="/"]').text()).toBe('Ir al inicio')
+    expect(document.title).toBe('Métodos Iterativos')
+    app.unmount()
+  })
+
+  it('el buscador sin coincidencias lo dice dentro del panel', async () => {
+    const app = await open('/resolver/jacobi')
+    await app.get('.nav-link').trigger('click')
+    await app.get('.nav-search input').setValue('zzzz')
+    expect(app.get('.nav-status').text()).toBe(
+      'No hay métodos que coincidan con «zzzz». Prueba con «integral», «derivada» o «sistema».'
+    )
+    app.unmount()
+  })
+})
