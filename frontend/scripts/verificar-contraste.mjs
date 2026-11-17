@@ -18,6 +18,11 @@ export const TEXT_TOKENS = [
   'color-danger',
 ]
 export const BACKGROUND_TOKENS = ['color-surface', 'color-stripe', 'color-sunken', 'color-page']
+// El pie tiene fondo propio y sólo lleva texto atenuado y enlaces.
+export const FOOTER_PAIRS = [
+  ['color-ink-muted', 'color-footer'],
+  ['color-accent', 'color-footer'],
+]
 
 const MIN = 4.5
 const GOOD = 7
@@ -68,6 +73,12 @@ function main() {
     if (worst < MIN) failed = true
     return row
   })
+  for (const [text, bg] of FOOTER_PAIRS) {
+    const ratio = contrast(tokens[text], tokens[bg])
+    rows.push({ token: `--${text} (pie)`, valor: tokens[text], 'peor caso': ratio.toFixed(2),
+      estado: ratio < MIN ? 'FALLA (< 4.5)' : ratio < GOOD ? 'aviso (< 7)' : 'ok' })
+    if (ratio < MIN) failed = true
+  }
   console.log('Contraste de texto del tema claro (WCAG):')
   console.table(rows)
   if (failed) {

@@ -14,6 +14,7 @@
      Menos brillo que el blanco puro: página gris azulada y tarjetas en
      blanco roto. Los campos sí son blancos para destacar sobre la tarjeta. */
   --color-page: #e6ebf1;          /* fondo de la página                     */
+  --color-footer: #d7dfe9;        /* franja del pie, un escalón más oscura  */
   --color-surface: #f8fafc;       /* tarjetas, menús, cajas de fórmula      */
   --color-input: #ffffff;         /* campos de entrada y selects            */
   --color-sunken: #e8edf3;        /* cabeceras de tabla, zonas hundidas     */
@@ -117,6 +118,7 @@
   /* Carbón azulado, no negro: la tarjeta es un escalón más clara que la
      página y los campos un escalón más oscuros que la tarjeta. */
   --color-page: #0f172a;
+  --color-footer: #090f1b;
   --color-surface: #1c2638;
   --color-input: #111a2b;
   --color-sunken: #263247;

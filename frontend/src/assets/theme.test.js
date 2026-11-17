@@ -1,5 +1,6 @@
 // @vitest-environment node
 import { describe, expect, it } from 'vitest'
+import { readFileSync } from 'node:fs'
 import { contrast, lightTokens, readBlock, readTheme } from '../../scripts/verificar-contraste.mjs'
 
 const css = readTheme()
@@ -73,5 +74,26 @@ describe('tema claro con más contraste', () => {
     ['color-value-new', 'color-page'],
   ])('%s sobre %s da al menos 4,5:1', (text, bg) => {
     expect(contrast(light[text], light[bg])).toBeGreaterThanOrEqual(4.5)
+  })
+})
+
+describe('pie de página con franja propia', () => {
+  it('define --color-footer en los dos temas', () => {
+    expect(light['color-footer']).toBe('#d7dfe9')
+    expect(dark['color-footer']).toBe('#090f1b')
+  })
+
+  it('.app-footer usa --color-footer como fondo', () => {
+    const app = readFileSync(new URL('../App.vue', import.meta.url), 'utf8')
+    expect(app).toMatch(/\.app-footer \{[^}]*background: var\(--color-footer\);/)
+  })
+
+  it.each([
+    [light, 'color-ink-muted', 7],
+    [light, 'color-accent', 7],
+    [dark, 'color-ink-muted', 7],
+    [dark, 'color-accent', 7],
+  ])('el texto del pie sigue por encima de 7:1', (theme, text, min) => {
+    expect(contrast(theme[text], theme['color-footer'])).toBeGreaterThanOrEqual(min)
   })
 })

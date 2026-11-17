@@ -269,6 +269,7 @@ main:focus {
   color: var(--color-ink-muted);
   font-size: var(--text-small);
   text-align: center;
+  background: var(--color-footer);
   border-top: 1px solid var(--color-line);
 }
 
