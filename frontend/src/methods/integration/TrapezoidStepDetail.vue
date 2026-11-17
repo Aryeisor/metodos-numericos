@@ -7,7 +7,7 @@
 import { computed, ref, watch } from 'vue'
 import MathFormula from '../../components/MathFormula.vue'
 import { substitutionLatex } from '../differentiation/formulas'
-import { canShowAll, divisionPointLatex, foldedPoints, pointSubstitution, rowSteps } from './explain'
+import { canShowAll, divisionPointLatex, foldedPoints, pointOrigin, pointSubstitution, rowSteps } from './explain'
 
 const props = defineProps({
   result: { type: Object, required: true },
@@ -31,7 +31,9 @@ watch(
 )
 const points = computed(() => foldedPoints(step.value, showAll.value))
 const hidden = computed(() => step.value.count - step.value.points.length)
-const columns = computed(() => (isFirst.value ? 6 : 4) + (props.weightReason ? 1 : 0))
+// Trapecio y Romberg marcan cada punto como nuevo o ya contado (Simpson no manda `new`).
+const hasOrigin = computed(() => step.value.points[0]?.new !== undefined)
+const columns = computed(() => (isFirst.value ? 6 : 4) + (props.weightReason ? 1 : 0) + (hasOrigin.value ? 1 : 0))
 const substitution = (p) => substitutionLatex(pointSubstitution(props.result, p), 'f')
 </script>
 
@@ -68,6 +70,7 @@ const substitution = (p) => substitutionLatex(pointSubstitution(props.result, p)
                   <th>{{ isFirst ? 'xᵢ' : 'xᵢ = a + i·h' }}</th>
                   <th>Sustitución</th>
                   <th>f(xᵢ)</th>
+                  <th v-if="hasOrigin">En esta fila</th>
                   <th v-if="isFirst">Peso</th>
                   <th v-if="isFirst && weightReason">Por qué</th>
                   <th v-if="isFirst">Peso × f(xᵢ)</th>
@@ -83,7 +86,10 @@ const substitution = (p) => substitutionLatex(pointSubstitution(props.result, p)
                       />
                     </td>
                     <td class="substitution"><MathFormula :expression="substitution(p)" /></td>
-                    <td :class="{ 'value-new': !isFirst }">{{ p.f_display }}</td>
+                    <td :class="{ 'value-new': !isFirst && p.new }">{{ p.f_display }}</td>
+                    <td v-if="hasOrigin" class="origin" :class="{ 'value-new': !isFirst && p.new }">
+                      {{ pointOrigin(p, block.previous) }}
+                    </td>
                     <td v-if="isFirst">{{ p.weight }}</td>
                     <td v-if="isFirst && weightReason" class="reason">{{ weightReason(p.i, row.n) }}</td>
                     <td v-if="isFirst">{{ p.product }}</td>
@@ -176,7 +182,8 @@ const substitution = (p) => substitutionLatex(pointSubstitution(props.result, p)
 }
 
 .eval-table .substitution,
-.eval-table .reason {
+.eval-table .reason,
+.eval-table .origin {
   text-align: left;
 }
 

@@ -199,24 +199,25 @@ def _first_step(rule, values, a, b, h_number, T, f_terms):
     for i in _shown_indices(n + 1, FOLD_FIRST_ROW):
         f_display = display.fixed(values[i], step["decimals"])
         step["points"].append({
-            "i": i, "x": _x(a, b, i, n), "x_display": _x_display(a, b, i, n), "f": values[i],
+            "i": i, "x": _x(a, b, i, n), "x_display": _x_display(a, b, i, n), "new": True, "f": values[i],
             "f_display": f_display, "terms": f_terms(_x(a, b, i, n)), "weight": weights[i],
             "product": display.product(weights[i], f_display),
         })
     return step
 
 
-def _recurrence_step(previous_T, new_values, a, b, n, h_number, T, f_terms):
-    """Paso a paso de T_k = T_(k−1)/2 + h_k·Σ f(nuevos), con los puntos nuevos (i impar)."""
-    width = b - a
+def _recurrence_step(previous_T, old_values, new_values, a, b, n, h_number, T, f_terms):
+    """Paso a paso de T_k = T_(k−1)/2 + h_k·Σ f(nuevos). La tabla lleva todos los
+    puntos x₀…xₙ: los de i impar son nuevos; los de i par vienen de la fila
+    anterior (`old_values`) y ya están dentro de T_(k−1)."""
     step = _recurrence_display(previous_T, new_values, h_number, T)
-    step.update({"count": len(new_values), "fold": FOLD_NEW_POINTS})
-    step["points"] = [
-        {"i": 2 * j + 1, "x": a + (2 * j + 1) * width / n, "x_display": _x_display(a, b, 2 * j + 1, n),
-         "f": new_values[j], "f_display": display.fixed(new_values[j], step["decimals"]),
-         "terms": f_terms(a + (2 * j + 1) * width / n)}
-        for j in _shown_indices(len(new_values), FOLD_NEW_POINTS)
-    ]
+    step.update({"count": n + 1, "new_count": len(new_values), "fold": FOLD_FIRST_ROW, "points": []})
+    for i in _shown_indices(n + 1, FOLD_FIRST_ROW):
+        value = new_values[i // 2] if i % 2 else old_values[i // 2]
+        step["points"].append({
+            "i": i, "x": _x(a, b, i, n), "x_display": _x_display(a, b, i, n), "new": bool(i % 2),
+            "f": value, "f_display": display.fixed(value, step["decimals"]), "terms": f_terms(_x(a, b, i, n)),
+        })
     return step
 
 
@@ -300,14 +301,15 @@ def _integral(function, a, b):
     check = None
     if result["kind"] == "exact":
         F, x = result["F"], function.symbol
+        decimal = integral_module.written_decimals(function.expr)
         info["antiderivative"] = {
-            **integral_module.antiderivative_info(F, x),
+            **integral_module.antiderivative_info(F, x, decimal),
             "steps": integral_module.antiderivative_steps(function.expr, F, x),
             "check": integral_module.derivative_check(function.expr, F, x),
         }
         check = {
-            "upper": integral_module.substitution(F, x, b, display.data_value(b)),
-            "lower": integral_module.substitution(F, x, a, display.data_value(a)),
+            "upper": integral_module.substitution(F, x, b, display.data_value(b), decimal),
+            "lower": integral_module.substitution(F, x, a, display.data_value(a), decimal),
         }
     return info, check, notes
 
@@ -397,11 +399,11 @@ def _function_mode(data, rule=TRAPEZOID):
                 break
             T = previous["T"] / 2 + h * math.fsum(new_values)
             abs_sum += 2 * sum(abs(v) for v in new_values)
-            step = _recurrence_step(previous["T"], new_values, a, b, n, h_number, T, f_terms)
-            if grid is not None and n <= CHART_MAX_N:
-                grid = [grid[i // 2] if i % 2 == 0 else new_values[i // 2] for i in range(n + 1)]
-            else:
-                grid = None
+            step = _recurrence_step(previous["T"], values, new_values, a, b, n, h_number, T, f_terms)
+            merged = [None] * (n + 1)
+            merged[0::2], merged[1::2] = values, new_values
+            values = merged
+            grid = values if grid is not None and n <= CHART_MAX_N else None
         if grid is not None:
             chart_rows.append({"k": k, "n": n, "x": [_x(a, b, i, n) for i in range(n + 1)], "y": list(grid)})
 

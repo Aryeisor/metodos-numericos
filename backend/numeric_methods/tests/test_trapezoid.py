@@ -340,8 +340,9 @@ class ExplanationTests(SimpleTestCase):
 
     def test_square_rows_two_and_three(self):
         second, third = rows(self.square)[1:3]
-        self.assertEqual([p["x_display"]["text"] for p in second["step"]["points"]], ["1"])
-        self.assertEqual([p["x_display"]["text"] for p in third["step"]["points"]], ["0.5", "1.5"])
+        new = lambda row: [p["x_display"]["text"] for p in row["step"]["points"] if p["new"]]
+        self.assertEqual(new(second), ["1"])
+        self.assertEqual(new(third), ["0.5", "1.5"])
         self.assertEqual((second["step"]["sum"], third["step"]["sum"]), ("1", "2.5"))
         self.assertEqual((second["T"], third["T"]), (3, 2.75))
         self.assertFalse(second["below_tolerance"])
@@ -384,6 +385,25 @@ class ExplanationTests(SimpleTestCase):
         self.assertEqual(chapra["check"]["sum_latex"],
                          "F'(x) = 0.2 + 25 x - 200 x^{2} + 675 x^{3} - 900 x^{4} + 400 x^{5}")
 
+    def test_antiderivative_fractions(self):
+        # Coeficientes racionales en fracción; decimales sólo si el usuario los escribió.
+        for function, F in (("x^3", r"\frac{1}{4} x^{4}"), ("x^2", r"\frac{1}{3} x^{3}"),
+                            ("x^4", r"\frac{1}{5} x^{5}"), ("x", r"\frac{1}{2} x^{2}"), ("0.2*x", "0.1 x^{2}")):
+            with self.subTest(function=function):
+                anti = solve(function=function, a=0, b=2)["integral"]["antiderivative"]
+                self.assertEqual(anti["latex"], F)
+                self.assertEqual(anti["steps"]["terms"][-1]["latex"].rsplit(" = ", 1)[1], F)
+                self.assertTrue(anti["check"]["ok"])
+        cube = solve(function="x^3", a=0, b=2)
+        check = cube["integral"]["antiderivative"]["check"]["terms"][0]["latex"]
+        self.assertEqual(check, r"\frac{d}{dx}\left(\frac{1}{4} x^{4}\right) = \frac{1}{4} \cdot 4 \cdot x^{3} = x^{3}")
+        upper, lower = cube["verification"]["upper"], cube["verification"]["lower"]
+        self.assertEqual(upper["terms"][0]["template"], r"\frac{1}{4} \cdot @@0@@^{4}")
+        self.assertEqual((upper["value"], lower["value"]), (4, 0))
+        decimal = solve(function="0.2*x", a=0, b=2)["integral"]["antiderivative"]
+        self.assertEqual(decimal["steps"]["terms"][0]["latex"],
+                         r"\int 0.2 x\,dx = 0.2 \cdot \frac{x^{1 + 1}}{1 + 1} = 0.1 x^{2}")
+
     def test_not_detailed_antiderivative(self):
         result = solve(function="x*exp(x)", a=0, b=1)
         antiderivative = result["integral"]["antiderivative"]
@@ -410,12 +430,39 @@ class ExplanationTests(SimpleTestCase):
         self.assertTrue(self.chapra["function"]["is_sum"])
 
     def test_large_rows_send_sixteen_points(self):
+        # La tabla lleva los n + 1 puntos de la fila; con más de 1024, sólo 8 + 8.
         last = rows(self.chapra)[-1]
-        self.assertEqual(last["step"]["count"], 2048)
+        self.assertEqual((last["step"]["count"], last["step"]["new_count"]), (4097, 2048))
         self.assertEqual(len(last["step"]["points"]), 16)
-        row_12 = rows(self.chapra)[11]
-        self.assertEqual(row_12["step"]["count"], 1024)
-        self.assertEqual(len(row_12["step"]["points"]), 1024)
+        self.assertEqual(len(rows(self.chapra)[10]["step"]["points"]), 16)  # n = 1024: 1025 puntos
+        row_10 = rows(self.chapra)[9]
+        self.assertEqual(row_10["step"]["count"], 513)
+        self.assertEqual(len(row_10["step"]["points"]), 513)
+
+    def test_full_point_table_marks_new_points(self):
+        # x³ en [0, 2], verificado con fracciones exactas.
+        cube = rows(solve(function="x^3", a=0, b=2))
+        expected = [
+            (1, 8, [(0, "0"), (2, "8")], None),
+            (2, 5, [(0, "0"), (1, "1"), (2, "8")], "1"),
+            (4, 4.25, [(0, "0"), (0.5, "0.125"), (1, "1"), (1.5, "3.375"), (2, "8")], "3.5"),
+            (8, 4.0625, None, "7.75"),
+        ]
+        for k, (row, (n, T, table, total)) in enumerate(zip(cube, expected), start=1):
+            with self.subTest(fila=k):
+                points = row["step"]["points"]
+                self.assertEqual((row["n"], row["T"]), (n, T))
+                self.assertEqual([p["i"] for p in points], list(range(n + 1)))
+                if table:
+                    self.assertEqual([(p["x"], p["f_display"]) for p in points], [(x, f) for x, f in table])
+                if k == 1:
+                    self.assertTrue(all(p["new"] for p in points))
+                    continue
+                self.assertEqual([p["new"] for p in points], [i % 2 == 1 for i in range(n + 1)])
+                self.assertEqual(row["step"]["sum"], total)
+                self.assertEqual(row["step"]["new_count"], n // 2)
+        self.assertEqual([p["x"] for p in cube[3]["step"]["points"] if p["new"]], [0.25, 0.75, 1.25, 1.75])
+        self.assertEqual(cube[2]["step"]["previous"], "5")
 
 
 def trimmed(result):

@@ -70,6 +70,9 @@ export function foldedPoints(step, showAll = false) {
   return [...points.slice(0, 8), null, ...points.slice(-8)]
 }
 
+/** Columna «En esta fila» del trapecio: si el punto es nuevo o ya estaba en la fila anterior (`previous`, p. ej. T₂). */
+export const pointOrigin = (p, previous) => (p.new || !previous ? 'nuevo' : `ya contado en ${previous}`)
+
 /** Todos los puntos llegaron del backend (≤ 1024) y se pueden mostrar. */
 export const canShowAll = (step) => step.points.length === step.count && step.count > (step.fold ?? 16)
 
@@ -145,15 +148,17 @@ export function firstRowSteps(result, row, names = TRAPEZOID_NAMES) {
 function newSumLatex(row) {
   const step = row.step
   const sum = colorize(paren(step.sum), CURRENT_COLOR)
-  if (step.points.length !== step.count || step.count > step.fold) return `\\sum_{\\text{nuevos}} f(x_i) = ${sum}`
+  // La tabla trae todos los puntos de la fila; la suma usa sólo los nuevos (i impar).
+  const fresh = step.points.filter((p) => p.new)
+  if (fresh.length !== step.new_count || step.new_count > 16) return `\\sum_{\\text{nuevos}} f(x_i) = ${sum}`
   const at = (p) => `f(${shownLatex(p.x_display)})`
-  const symbolic = step.points.map(at).join(' + ')
-  const values = step.points.map((p, i) => {
+  const symbolic = fresh.map(at).join(' + ')
+  const values = fresh.map((p, i) => {
     const v = colorize(p.f_display.startsWith('-') ? p.f_display.slice(1) : p.f_display, CURRENT_COLOR)
     if (i === 0) return p.f_display.startsWith('-') ? `-${v}` : v
     return `${p.f_display.startsWith('-') ? '-' : '+'} ${v}`
   })
-  const middle = step.points.length > 1 ? ` = ${values.join(' ')}` : ''
+  const middle = fresh.length > 1 ? ` = ${values.join(' ')}` : ''
   return `\\sum_{\\text{nuevos}} f(x_i) = ${symbolic}${middle} = ${sum}`
 }
 
@@ -198,10 +203,13 @@ export function recurrenceSteps(result, row, k, previous, names = TRAPEZOID_NAME
       ],
     },
     {
-      title: 'Paso 3. Puntos nuevos y su altura',
+      title: 'Paso 3. Puntos de la fila y su altura',
       blocks: [
-        text('Cada punto nuevo es xᵢ = a + i·h con i impar (la mitad de un trapecio anterior); se reemplaza en f(x).'),
-        { kind: 'points' },
+        text(
+          `Todos los puntos de la fila, xᵢ = a + i·h, reemplazados en f(x). Los de i impar son nuevos (la mitad de un ` +
+            `trapecio anterior); los de i par ya están contados en ${names.text(k - 1)}.`
+        ),
+        { kind: 'points', previous: names.text(k - 1) },
       ],
     },
     { title: 'Paso 4. Suma de los puntos nuevos', blocks: [math(newSumLatex(row))] },

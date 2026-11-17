@@ -333,7 +333,7 @@ def _function_mode(data):
                 stopped = True
                 break
             T = previous["values"][0] / 2 + h * math.fsum(new)
-            step = _recurrence_step(previous["values"][0], new, a, b, n, h_number, T, f_terms)
+            step = _recurrence_step(previous["values"][0], values, new, a, b, n, h_number, T, f_terms)
             merged = [None] * (n + 1)
             merged[0::2], merged[1::2] = values, new
             values = merged

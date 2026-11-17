@@ -11,7 +11,7 @@ import { CONTENT_WIDTH, MARGIN, ensureSpace, paragraph, sectionTitle } from '../
 import { H_APPROX_NOTE, formatNumber, tableValue } from '../../utils/iterationSteps'
 import { latexToText } from '../../utils/latexText'
 import { substitutionText } from '../differentiation/formulas'
-import { conclusionText, pointSubstitution, referenceExplanation, rowSteps, segmentSteps, tinyErrorNote } from './explain'
+import { conclusionText, pointOrigin, pointSubstitution, referenceExplanation, rowSteps, segmentSteps, tinyErrorNote } from './explain'
 import {
   APPROX_GLOSSARY,
   BOUND_GLOSSARY,
@@ -81,11 +81,12 @@ export function pdfTools(doc, result, { weightReason = null } = {}) {
     for (const item of items) y = write(y, `- ${latexToText(item.symbol)}: ${item.text}`)
     return summary ? write(y, summary) : y
   }
-  const pointsTable = (y, row) => {
+  const pointsTable = (y, row, previous) => {
     const first = row.step.kind === 'formula'
+    const origin = row.step.points[0]?.new !== undefined
     const head = first
-      ? ['i', 'xi', 'Sustitución', 'f(xi)', 'Peso', ...(weightReason ? ['Por qué'] : []), 'Peso x f(xi)']
-      : ['i', 'xi', 'Sustitución', 'f(xi)']
+      ? ['i', 'xi', 'Sustitución', 'f(xi)', ...(origin ? ['En esta fila'] : []), 'Peso', ...(weightReason ? ['Por qué'] : []), 'Peso x f(xi)']
+      : ['i', 'xi', 'Sustitución', 'f(xi)', 'En esta fila']
     const points = row.step.points.length > 16 ? [...row.step.points.slice(0, 8), ...row.step.points.slice(-8)] : row.step.points
     autoTable(doc, {
       ...TABLE,
@@ -94,6 +95,7 @@ export function pdfTools(doc, result, { weightReason = null } = {}) {
       head: [head],
       body: points.map((p) => {
         const line = [p.i, shown(p.x_display), pdfSafe(substitutionText(pointSubstitution(result, p)).replace(/^f'/, 'f')), p.f_display]
+        if (origin || !first) line.push(pdfSafe(pointOrigin(p, previous)))
         const reason = weightReason ? [pdfSafe(weightReason(p.i, row.n))] : []
         return first ? [...line, p.weight, ...reason, p.product] : line
       }),
@@ -114,7 +116,7 @@ export function pdfTools(doc, result, { weightReason = null } = {}) {
           const markText = block.ok === true ? ' OK' : block.ok === false ? ' (!)' : ''
           if (block.latex) y = writeMath(y, `${block.latex}${markText ? ` \\text{${markText}}` : ''}`)
           y = write(y, block.text)
-        } else if (block.kind === 'points') y = pointsTable(y, row)
+        } else if (block.kind === 'points') y = pointsTable(y, row, block.previous)
         else if (block.kind === 'division') {
           const points = row.step.points.length > 16 ? [...row.step.points.slice(0, 8), ...row.step.points.slice(-8)] : row.step.points
           for (const p of points) {

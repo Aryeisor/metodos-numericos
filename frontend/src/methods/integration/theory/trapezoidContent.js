@@ -211,7 +211,7 @@ export const eulerCheck = {
 }
 
 /* Recurrencia T₂ (sección 4.5), con f(0.4) de la fila 2 del solver. */
-const f04 = row(2).step.points[0]
+const f04 = row(2).step.points.find((p) => p.new)
 export const recurrenceCheck = `T_2 = \\frac{${n(row(1).T)}}{2} + 0.4 \\cdot f(0.4) = ${n(row(1).T / 2)} + 0.4 \\cdot ${f04.f_display} = ${n(row(2).T)}`
 
 /* Escalera de Richardson con los T del solver. */
