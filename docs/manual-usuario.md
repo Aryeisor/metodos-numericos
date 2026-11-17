@@ -8,10 +8,10 @@
 |---|---|
 | **Sistema** | Métodos Numéricos Iterativos (aplicación web) |
 | **Repositorio** | https://github.com/Aryeisor/metodos-numericos |
-| **Autores** | _[completar]_ |
-| **Asignatura** | _[completar]_ |
-| **Docente** | _[completar]_ |
-| **Institución** | _[completar]_ |
+| **Autores** | Miguel Ángel Madariaga Cantor, Cristhian Orlando Robles Pico, Dani Alejandro Carvajal Rabelo |
+| **Asignatura** | Métodos numéricos |
+| **Docente** | Dr. Geinner Giovanny Barbosa Casanova |
+| **Institución** | FESC |
 | **Versión del documento** | 1.2 |
 | **Fecha** | 16 de noviembre de 2026 |
 | **Estado del código documentado** | rama `main`, commit `9aff3ae` |
@@ -20,9 +20,9 @@
 
 | Versión | Fecha | Autor | Cambios |
 |---|---|---|---|
-| 1.0 | 13 de noviembre de 2026 | _[completar]_ | Versión inicial |
-| 1.1 | 16 de noviembre de 2026 | _[completar]_ | Nueva vista del resultado (tarjeta de respuesta, franja fija y botones «Descargar PDF» y «Limpiar»), botón «Manual de usuario» en la barra superior y figuras tomadas con el navegador en español |
-| 1.2 | 16 de noviembre de 2026 | _[completar]_ | Marca del sistema en la barra superior y en la pestaña, título propio de la pestaña en cada página, aviso «Resolviendo…» en los cálculos largos, página «Esta página no existe» para las direcciones desconocidas y nuevo pie de página; figuras de la barra superior y del menú rehechas |
+| 1.0 | 13 de noviembre de 2026 | Miguel Ángel Madariaga Cantor | Versión inicial |
+| 1.1 | 16 de noviembre de 2026 | Miguel Ángel Madariaga Cantor | Nueva vista del resultado (tarjeta de respuesta, franja fija y botones «Descargar PDF» y «Limpiar»), botón «Manual de usuario» en la barra superior y figuras tomadas con el navegador en español |
+| 1.2 | 16 de noviembre de 2026 | Miguel Ángel Madariaga Cantor | Marca del sistema en la barra superior y en la pestaña, título propio de la pestaña en cada página, aviso «Resolviendo…» en los cálculos largos, página «Esta página no existe» para las direcciones desconocidas y nuevo pie de página; figuras de la barra superior y del menú rehechas |
 
 # 1. Antes de empezar
 
@@ -72,35 +72,17 @@ En todo el manual vas a encontrar estas convenciones:
 Sigue estos pasos cada vez que quieras usar el sistema.
 
 1. **Abre Docker Desktop.** Búscalo en el menú Inicio de Windows y ábrelo. Espera a que en su ventana aparezca el mensaje «Engine running» (motor funcionando), que suele estar en la esquina inferior izquierda. Puede tardar uno o dos minutos después de encender el computador. Mientras no aparezca, el sistema no puede arrancar.
-2. **Abre la carpeta del proyecto** en el Explorador de archivos de Windows. Dentro vas a ver, entre otras cosas, tres archivos que se abren con doble clic: `iniciar.bat`, `detener.bat` y `reconstruir.bat`, como en la Figura 1. Son los únicos que necesitas tocar.
+2. **Abre la carpeta del proyecto** en el Explorador de archivos de Windows. Dentro vas a ver, entre otras cosas, tres archivos que se abren con doble clic: `iniciar.bat`, `detener.bat` y `reconstruir.bat`. Son los únicos que necesitas tocar.
 
-> **CAPTURA U-01 — Carpeta del proyecto**
->
-> - **Archivo:** `docs/img/usuario/U-01-carpeta-del-proyecto.png`
-> - **Qué debe verse:** la ventana del Explorador de archivos de Windows abierta en la carpeta raíz del proyecto, con las carpetas `backend`, `docs` y `frontend` y los archivos `iniciar.bat`, `detener.bat`, `reconstruir.bat`, `docker-compose.yml` y `README.md` a la vista.
-> - **Cómo llegar:** abrir el Explorador de archivos, entrar en la carpeta donde se descargó o copió el proyecto y elegir la vista «Detalles» para que se lean bien los nombres.
-> - **Qué resaltar:** los tres archivos `.bat`, con un recuadro o una flecha sobre `iniciar.bat`.
-> - **Recorte sugerido:** solo la ventana del Explorador, sin la barra de tareas ni el escritorio; que la lista de archivos se lea completa y sin barras de desplazamiento.
-
-![Figura 1 — La carpeta del proyecto, con los archivos de doble clic para iniciar, detener y reconstruir](img/usuario/U-01-carpeta-del-proyecto.png)
 
 3. **Haz doble clic en `iniciar.bat`.** Se abre una ventana negra con el título «Metodos Numericos - Iniciar» y el mensaje «Iniciando la aplicacion (la primera vez tarda varios minutos)...».
 4. **Espera.** La primera vez que lo hagas, el sistema se construye desde cero: Docker descarga los componentes de internet, los instala y prepara la aplicación. Eso puede tardar entre cinco y quince minutos, según tu conexión y tu computador, y vas a ver pasar muchas líneas de texto. No cierres la ventana. Las veces siguientes ya no hay nada que construir y el arranque toma pocos segundos.
-5. **Comprueba que terminó.** Cuando el sistema está listo, la ventana muestra el mensaje «Lista en http://localhost:8080», como en la Figura 2, y unos segundos después se cierra sola. Al mismo tiempo se abre tu navegador en esa dirección.
+5. **Comprueba que terminó.** Cuando el sistema está listo, la ventana muestra el mensaje «Lista en http://localhost:8080» y unos segundos después se cierra sola. Al mismo tiempo se abre tu navegador en esa dirección.
 
-> **CAPTURA U-02 — Ventana de iniciar.bat al terminar**
->
-> - **Archivo:** `docs/img/usuario/U-02-ventana-iniciar.png`
-> - **Qué debe verse:** la ventana negra de la consola con el título «Metodos Numericos - Iniciar», la línea «Iniciando la aplicacion (la primera vez tarda varios minutos)...», las líneas de Docker que indican que los contenedores `metodos-backend-1` y `metodos-frontend-1` quedaron «Healthy» o «Started», y al final la línea «Lista en http://localhost:8080».
-> - **Cómo llegar:** con Docker Desktop abierto y en «Engine running», hacer doble clic en `iniciar.bat` y tomar la captura justo cuando aparece «Lista en http://localhost:8080» (la ventana se cierra sola a los tres segundos; si no alcanzas, usa la tecla Impr Pant apenas aparezca el mensaje).
-> - **Qué resaltar:** la última línea, «Lista en http://localhost:8080».
-> - **Recorte sugerido:** solo la ventana de la consola, con su barra de título; sin el escritorio alrededor.
 
-![Figura 2 — La ventana de iniciar.bat cuando el sistema ya está listo](img/usuario/U-02-ventana-iniciar.png)
+6. **Usa el navegador.** Si el navegador no se abrió solo, ábrelo tú y escribe en la barra de direcciones `http://localhost:8080` y pulsa Enter. «localhost» es el nombre con el que tu computador se llama a sí mismo, y 8080 es la «puerta» (el puerto) por la que atiende el sistema. Vas a ver la pantalla de la Figura 1: el sistema abre directamente el método de Jacobi, listo para trabajar. Arriba de todo, la página dice en qué método estás: la categoría en letras pequeñas («SISTEMAS LINEALES»), el nombre del método en grande («Jacobi») y una línea que explica qué hace.
 
-6. **Usa el navegador.** Si el navegador no se abrió solo, ábrelo tú y escribe en la barra de direcciones `http://localhost:8080` y pulsa Enter. «localhost» es el nombre con el que tu computador se llama a sí mismo, y 8080 es la «puerta» (el puerto) por la que atiende el sistema. Vas a ver la pantalla de la Figura 3: el sistema abre directamente el método de Jacobi, listo para trabajar. Arriba de todo, la página dice en qué método estás: la categoría en letras pequeñas («SISTEMAS LINEALES»), el nombre del método en grande («Jacobi») y una línea que explica qué hace.
-
-![Figura 3 — El sistema recién abierto en el navegador](img/usuario/U-03-aplicacion-abierta.png)
+![Figura 1 — El sistema recién abierto en el navegador](img/usuario/U-03-aplicacion-abierta.png)
 
 > **Nota.** Si no apagaste el sistema con `detener.bat` la última vez, vuelve a encenderse solo cuando abres Docker Desktop. En ese caso basta con abrir el navegador en `http://localhost:8080`.
 
@@ -124,13 +106,13 @@ Si alguien cambia el código del sistema, tiene que volver a construirlo con un 
 
 # 3. Un recorrido por la pantalla
 
-Cuando abres el sistema ves una pantalla como la de la Figura 3. Está formada por tres franjas: la barra superior, el área central y el pie de página.
+Cuando abres el sistema ves una pantalla como la de la Figura 1. Está formada por tres franjas: la barra superior, el área central y el pie de página.
 
 ## 3.1 La barra superior
 
-La barra superior está siempre visible, aunque bajes por la página. La Figura 4 la muestra de cerca.
+La barra superior está siempre visible, aunque bajes por la página. La Figura 2 la muestra de cerca.
 
-![Figura 4 — La barra superior: la marca y el nombre del sistema, los menús «Resolver» y «Teoría», el botón «Manual de usuario» y el botón del tema](img/usuario/U-04-barra-superior.png)
+![Figura 2 — La barra superior: la marca y el nombre del sistema, los menús «Resolver» y «Teoría», el botón «Manual de usuario» y el botón del tema](img/usuario/U-04-barra-superior.png)
 
 De izquierda a derecha tiene estas partes:
 
@@ -175,9 +157,9 @@ Si escribes `http://localhost:8080` sin nada más, el sistema te lleva al primer
 
 El sistema tiene dos menús en la barra superior. Usa **«Resolver»** cuando quieras trabajar un ejercicio: escribir datos y obtener un resultado. Usa **«Teoría»** cuando quieras leer sobre el método: de dónde sale, cuándo se puede usar y un ejemplo resuelto.
 
-Para abrir un menú, haz clic en su nombre. Se despliega un panel, como en la Figura 5, con las cinco categorías en columnas: «Sistemas lineales», «Ecuaciones no lineales», «Polinomios», «Diferenciación numérica» e «Integración numérica». Cada columna lleva arriba una fórmula que identifica la categoría (por ejemplo $Ax = b$ para los sistemas lineales), su nombre, una frase que la describe y, debajo, sus métodos. Cada método tiene su nombre en negrita y una línea que dice en qué consiste, por ejemplo «Usa cada valor nuevo apenas se calcula» bajo Gauss-Seidel. El método en el que estás aparece resaltado con un fondo de color y una raya a la izquierda.
+Para abrir un menú, haz clic en su nombre. Se despliega un panel, como en la Figura 3, con las cinco categorías en columnas: «Sistemas lineales», «Ecuaciones no lineales», «Polinomios», «Diferenciación numérica» e «Integración numérica». Cada columna lleva arriba una fórmula que identifica la categoría (por ejemplo $Ax = b$ para los sistemas lineales), su nombre, una frase que la describe y, debajo, sus métodos. Cada método tiene su nombre en negrita y una línea que dice en qué consiste, por ejemplo «Usa cada valor nuevo apenas se calcula» bajo Gauss-Seidel. El método en el que estás aparece resaltado con un fondo de color y una raya a la izquierda.
 
-![Figura 5 — El menú «Resolver» desplegado, con las cinco categorías en columnas](img/usuario/U-05-menu-resolver.png)
+![Figura 3 — El menú «Resolver» desplegado, con las cinco categorías en columnas](img/usuario/U-05-menu-resolver.png)
 
 Para ir a un método, haz clic en su nombre. El panel se cierra solo y el área central cambia al método elegido.
 
@@ -185,9 +167,9 @@ Para cerrar el menú sin elegir nada, pulsa la tecla Esc, haz clic fuera del pan
 
 ## 4.2 El buscador
 
-En la parte superior derecha del panel hay una casilla con una lupa y el texto «Buscar método…». Cuando abres el menú, el cursor ya está dentro de ella, así que puedes empezar a escribir de inmediato. A medida que escribes, el panel deja solo los métodos que coinciden y te dice cuántos encontró, por ejemplo «3 métodos». Las letras que coinciden se resaltan en el nombre del método. La Figura 6 muestra el resultado de escribir «derivada».
+En la parte superior derecha del panel hay una casilla con una lupa y el texto «Buscar método…». Cuando abres el menú, el cursor ya está dentro de ella, así que puedes empezar a escribir de inmediato. A medida que escribes, el panel deja solo los métodos que coinciden y te dice cuántos encontró, por ejemplo «3 métodos». Las letras que coinciden se resaltan en el nombre del método. La Figura 4 muestra el resultado de escribir «derivada».
 
-![Figura 6 — El buscador del menú con la palabra «derivada» y sus tres resultados](img/usuario/U-06-buscador.png)
+![Figura 4 — El buscador del menú con la palabra «derivada» y sus tres resultados](img/usuario/U-06-buscador.png)
 
 El buscador no solo mira el nombre del método, sino también su descripción, su categoría y palabras relacionadas. Por eso «derivada» encuentra los tres métodos de diferenciación aunque ninguno se llame así, e «integral» encuentra los cuatro de integración.
 
@@ -205,9 +187,9 @@ Dentro del panel también hay dos botones, «Resolver» y «Teoría», en la esq
 
 ## 4.4 En pantallas pequeñas
 
-Si la ventana del navegador mide menos de 1024 píxeles de ancho (un celular, una tableta, o una ventana de escritorio angosta), la barra superior muestra un solo botón, «Métodos». Al tocarlo, el menú ocupa toda la pantalla, como en la Figura 7.
+Si la ventana del navegador mide menos de 1024 píxeles de ancho (un celular, una tableta, o una ventana de escritorio angosta), la barra superior muestra un solo botón, «Métodos». Al tocarlo, el menú ocupa toda la pantalla, como en la Figura 5.
 
-![Figura 7 — El menú en una pantalla angosta, con las categorías como acordeones](img/usuario/U-07-menu-pantalla-angosta.png)
+![Figura 5 — El menú en una pantalla angosta, con las categorías como acordeones](img/usuario/U-07-menu-pantalla-angosta.png)
 
 Arriba están el título «Métodos» y el botón «Cerrar». Debajo, los botones «Resolver» y «Teoría», que eligen a dónde llevan los enlaces, y el buscador. Las categorías aparecen una debajo de otra como **acordeones**: filas que se abren y se cierran al tocarlas, con una flechita a la derecha que apunta hacia abajo cuando están cerradas y hacia arriba cuando están abiertas. Al abrir el menú, la categoría del método en el que estás ya aparece abierta. Toca la categoría que te interesa para ver sus métodos y toca el método para ir a él. Si escribes en el buscador, todas las categorías con coincidencias se abren solas.
 
@@ -240,31 +222,31 @@ Su solución exacta es $x_1 = 1$, $x_2 = 2$ y $x_3 = -1$. Lo interesante no es l
 
 **Paso 1. Abre el método de Jacobi.**
 *Qué hacer:* haz clic en «Resolver ▾» y, en la columna «Sistemas lineales», haz clic en «Jacobi». Si acabas de encender el sistema, ya estás ahí, porque Jacobi es el método que se abre por defecto.
-*Qué vas a ver:* arriba de la página, el encabezado dice «SISTEMAS LINEALES», «Jacobi» y «Actualiza todas las variables a la vez con los valores anteriores» (Figura 3). El pie de página dice «Sistemas lineales · Jacobi» y la dirección del navegador termina en `/resolver/jacobi`.
+*Qué vas a ver:* arriba de la página, el encabezado dice «SISTEMAS LINEALES», «Jacobi» y «Actualiza todas las variables a la vez con los valores anteriores» (Figura 1). El pie de página dice «Sistemas lineales · Jacobi» y la dirección del navegador termina en `/resolver/jacobi`.
 *Por qué:* siempre conviene confirmar en qué método estás antes de escribir datos.
 
 **Paso 2. Mira el formulario vacío.**
 *Qué hacer:* baja un poco por la página, hasta las tarjetas «Configuración del sistema» y «Sistema A·x = b». No escribas nada todavía.
-*Qué vas a ver:* lo de la Figura 8. En «Configuración del sistema» hay cinco controles: «Número de variables (n ≥ 3)», que vale 3; «Método», un selector que dice «Jacobi»; «Tolerancia (criterio de parada)», que vale 0.000001; «Máximo de iteraciones (mínimo real: 6)», que vale 100; y una casilla marcada, «Reordenar filas automáticamente si mejora la convergencia». En «Sistema A·x = b» hay una cuadrícula de casillas vacías: tres columnas para los coeficientes de $x_1$, $x_2$ y $x_3$, un signo igual y una columna «b» para los términos independientes. Debajo está «Vector inicial x0 (opcional, por defecto ceros)», con tres casillas en cero.
+*Qué vas a ver:* lo de la Figura 6. En «Configuración del sistema» hay cinco controles: «Número de variables (n ≥ 3)», que vale 3; «Método», un selector que dice «Jacobi»; «Tolerancia (criterio de parada)», que vale 0.000001; «Máximo de iteraciones (mínimo real: 6)», que vale 100; y una casilla marcada, «Reordenar filas automáticamente si mejora la convergencia». En «Sistema A·x = b» hay una cuadrícula de casillas vacías: tres columnas para los coeficientes de $x_1$, $x_2$ y $x_3$, un signo igual y una columna «b» para los términos independientes. Debajo está «Vector inicial x0 (opcional, por defecto ceros)», con tres casillas en cero.
 *Por qué:* así conoces el formulario antes de que se llene solo. Cada campo se explica a fondo en el apartado 6.1.
 
-![Figura 8 — El formulario de Jacobi vacío: la configuración y la cuadrícula del sistema](img/usuario/U-08-formulario-jacobi-vacio.png)
+![Figura 6 — El formulario de Jacobi vacío: la configuración y la cuadrícula del sistema](img/usuario/U-08-formulario-jacobi-vacio.png)
 
 > **Nota.** Según el idioma de tu sistema, el navegador puede mostrar el separador decimal de la tolerancia como coma (0,000001, como en las figuras) o como punto (0.000001). Es el mismo número y se escribe igual: el campo acepta las dos formas.
 
 **Paso 3. Mira los ejemplos precargados.**
 *Qué hacer:* sube hasta la sección «Ejemplos precargados», justo debajo del encabezado del método.
-*Qué vas a ver:* lo de la Figura 9: la sección está abierta, porque acabas de entrar al método, y muestra seis ejemplos en forma de tarjetas, cada uno con su nombre en negrita y una descripción corta debajo. Las descripciones largas se cortan en la segunda línea con puntos suspensivos (…); para leerlas completas, deja el puntero quieto sobre la descripción. Por ejemplo, «Sistema 3x3 sin dominancia diagonal (advertencia)» te avisa de que es un caso en el que el método puede no funcionar. A la derecha del título está «Ocultar», que pliega la sección si quieres hacerle sitio al formulario.
+*Qué vas a ver:* lo de la Figura 7: la sección está abierta, porque acabas de entrar al método, y muestra seis ejemplos en forma de tarjetas, cada uno con su nombre en negrita y una descripción corta debajo. Las descripciones largas se cortan en la segunda línea con puntos suspensivos (…); para leerlas completas, deja el puntero quieto sobre la descripción. Por ejemplo, «Sistema 3x3 sin dominancia diagonal (advertencia)» te avisa de que es un caso en el que el método puede no funcionar. A la derecha del título está «Ocultar», que pliega la sección si quieres hacerle sitio al formulario.
 *Por qué:* los ejemplos sirven para ver el método funcionando sin tener que escribir nada, y para comparar con los ejercicios del libro. Cada método tiene los suyos.
 
-![Figura 9 — La lista de ejemplos precargados de Jacobi](img/usuario/U-09-ejemplos-precargados.png)
+![Figura 7 — La lista de ejemplos precargados de Jacobi](img/usuario/U-09-ejemplos-precargados.png)
 
 **Paso 4. Carga el ejemplo.**
 *Qué hacer:* haz clic en la tarjeta «Sistema clásico 3x3 (libro de texto)».
-*Qué vas a ver:* el formulario se llena solo y la sección de ejemplos **se pliega sola**: queda una sola fila que dice «Ejemplos precargados · *Sistema clásico 3x3 (libro de texto)*», con el botón «Cambiar» a la derecha, como en la Figura 10. Así el formulario sube y lo tienes a la vista.
+*Qué vas a ver:* el formulario se llena solo y la sección de ejemplos **se pliega sola**: queda una sola fila que dice «Ejemplos precargados · *Sistema clásico 3x3 (libro de texto)*», con el botón «Cambiar» a la derecha, como en la Figura 8. Así el formulario sube y lo tienes a la vista.
 *Por qué:* cargar un ejemplo llena todos los campos a la vez, incluidas la tolerancia y el máximo de iteraciones que el ejemplo necesita. Una vez cargado, ya no necesitas la lista, y por eso se recoge.
 
-![Figura 10 — El formulario de Jacobi con el ejemplo «Sistema clásico 3x3 (libro de texto)» ya cargado y la sección de ejemplos plegada](img/usuario/U-10-formulario-con-ejemplo.png)
+![Figura 8 — El formulario de Jacobi con el ejemplo «Sistema clásico 3x3 (libro de texto)» ya cargado y la sección de ejemplos plegada](img/usuario/U-10-formulario-con-ejemplo.png)
 
 > **Nota.** Para volver a ver los ejemplos, haz clic en la fila plegada. Si hay un ejemplo cargado, el botón dice «Cambiar»; si no lo hay, dice «Mostrar» y la fila indica cuántos ejemplos tiene el método, por ejemplo «Ejemplos precargados (6)». Al abrirla, el ejemplo que cargaste sigue resaltado con un borde de color. La sección también se pliega sola cuando empiezas a escribir en cualquier campo del formulario; cambiar de método con el selector «Método» no la pliega. Cada vez que entras a un método, la sección empieza abierta.
 
@@ -279,16 +261,16 @@ Su solución exacta es $x_1 = 1$, $x_2 = 2$ y $x_3 = -1$. Lo interesante no es l
 *Por qué:* al pulsar «Resolver», el sistema envía los datos al servidor, que hace todos los cálculos y devuelve el resultado completo. Con este ejemplo tarda menos de un segundo.
 
 **Paso 7. Lee la tarjeta de respuesta.**
-*Qué hacer:* mira la primera tarjeta del resultado, la que quedó arriba de la pantalla (parte superior de la Figura 11).
+*Qué hacer:* mira la primera tarjeta del resultado, la que quedó arriba de la pantalla (parte superior de la Figura 9).
 *Qué vas a ver:* el título «Resultado (Jacobi)»; debajo, la solución en letra grande, cada valor con su nombre: $x_1$ vale 1, $x_2$ vale 2 y $x_3$ vale −1. Después, una línea con una marca de visto: «✔ Alcanzó la tolerancia en 12 iteraciones. Error final: 4.01e-7.». Y al final, dos botones: «Descargar PDF» y «Limpiar».
 *Por qué:* la tarjeta de respuesta contesta las dos preguntas más importantes: cuál es la respuesta y si el método llegó a ella. «12 iteraciones» quiere decir que el método necesitó dar doce vueltas para que la respuesta dejara de cambiar más de lo que permite la tolerancia. «4.01e-7» es la forma corta de escribir 0.000000401: el cambio de la última vuelta, ya menor que la tolerancia.
 
-![Figura 11 — El resultado de Jacobi: la tarjeta de respuesta arriba y, debajo, la gráfica y la tabla de iteraciones](img/usuario/U-11-resultado-jacobi.png)
+![Figura 9 — El resultado de Jacobi: la tarjeta de respuesta arriba y, debajo, la gráfica y la tabla de iteraciones](img/usuario/U-11-resultado-jacobi.png)
 
 > **Nota.** Cuando bajas por el resultado y la tarjeta de respuesta sale de la pantalla, aparece una franja delgada bajo la barra superior con el nombre del método, la respuesta resumida («3 incógnitas»), los botones «Descargar PDF» y «Limpiar» y el enlace «Ir arriba». Así no tienes que subir para descargar o limpiar. La franja solo aparece en ventanas de 1024 píxeles de ancho o más; el apartado 7.1 la describe.
 
 **Paso 8. Lee la tabla de iteraciones.**
-*Qué hacer:* baja hasta «Detalle de iteraciones» (parte inferior de la Figura 11). Entre la tarjeta de respuesta y la tabla hay una gráfica que verás en el paso 12; sáltala por ahora.
+*Qué hacer:* baja hasta «Detalle de iteraciones» (parte inferior de la Figura 9). Entre la tarjeta de respuesta y la tabla hay una gráfica que verás en el paso 12; sáltala por ahora.
 *Qué vas a ver:* una tabla con las columnas «Iter.», «x1», «x2», «x3» y «Error». Cada fila es una vuelta del método. En la fila 1, el método calculó $x_1 = 0.6$, $x_2 = 2$, $x_3 = -1$ y el error fue 2. En la fila 2, los valores pasaron a 1, 1.963636 y −0.92, y el error bajó a 0.4. Fila tras fila, los valores se acercan a 1, 2 y −1, y el error se hace cada vez más pequeño.
 *Por qué:* la tabla es el corazón del método: te muestra el camino, no solo el destino. La columna «Error» dice cuánto cambió la respuesta entre una vuelta y la anterior (el cambio más grande entre las tres incógnitas). Cuando ese cambio queda por debajo de la tolerancia, el método se detiene. El apartado 7.2 explica la tabla con más detalle.
 
@@ -303,39 +285,39 @@ Su solución exacta es $x_1 = 1$, $x_2 = 2$ y $x_3 = -1$. Lo interesante no es l
 *Por qué:* este es el paso a paso que necesitas para copiar el ejercicio en tu cuaderno o comprobar una cuenta que no te dio. Puedes abrir tantas filas como quieras.
 
 **Paso 11. Lee la comprobación.**
-*Qué hacer:* baja hasta el final del resultado, a la sección «Comprobación» (Figura 12).
+*Qué hacer:* baja hasta el final del resultado, a la sección «Comprobación» (Figura 10).
 *Qué vas a ver:* el texto «Se reemplaza la solución en cada ecuación del sistema original; el lado izquierdo debe dar el término independiente b.», la solución usada y, para cada ecuación, la cuenta completa: por ejemplo, en la ecuación 1, $10(1) - (2) + 2(-1) = 10 - 2 - 2 = 6$, y al lado, entre paréntesis, el valor que debía dar, $(b_1 = 6)$, seguido de una marca de visto verde ✔. Al final, «Residuo máximo: 0».
 *Por qué:* la comprobación es la prueba de que la respuesta es correcta: si reemplazas la solución en las ecuaciones originales y todo cuadra, el ejercicio está bien. El «residuo» es lo que sobra o falta en cada ecuación; si es 0 o muy pequeño, la solución es buena. El apartado 7.5 explica qué significa cuando no aparece el visto.
 
-![Figura 12 — La sección «Comprobación», con la marca de visto en cada ecuación](img/usuario/U-14-comprobacion.png)
+![Figura 10 — La sección «Comprobación», con la marca de visto en cada ecuación](img/usuario/U-14-comprobacion.png)
 
 **Paso 12. Mira la gráfica.**
-*Qué hacer:* sube hasta «Convergencia del error», la gráfica que está entre la tarjeta de respuesta y la tabla (Figura 13).
+*Qué hacer:* sube hasta «Convergencia del error», la gráfica que está entre la tarjeta de respuesta y la tabla (Figura 11).
 *Qué vas a ver:* una línea azul que baja de izquierda a derecha, con un punto por cada iteración, y una línea verde punteada horizontal casi al fondo. Debajo, la leyenda: «Error por iteración» y «Tolerancia (1×10⁻⁶)». La línea azul cruza la verde entre las iteraciones 11 y 12.
 *Por qué:* la gráfica resume la tabla en una imagen. Si la línea azul baja, el método se está acercando a la respuesta; el momento en que cruza la línea verde es cuando se cumple la tolerancia. La escala vertical es especial (cada raya es diez veces más pequeña que la anterior); el apartado 7.6 lo explica.
 
-![Figura 13 — La gráfica «Convergencia del error» del ejemplo](img/usuario/U-15-grafica-convergencia.png)
+![Figura 11 — La gráfica «Convergencia del error» del ejemplo](img/usuario/U-15-grafica-convergencia.png)
 
 **Paso 13. Descarga el PDF.**
 *Qué hacer:* haz clic en «Descargar PDF». El botón está en la tarjeta de respuesta y también en la franja fija de arriba, así que no hace falta subir.
-*Qué vas a ver:* el navegador descarga un archivo llamado `jacobi-3x3-` seguido de la fecha de hoy, por ejemplo `jacobi-3x3-2026-11-13.pdf`. Ábrelo desde la carpeta Descargas o desde el aviso de descarga del navegador. Verás algo como la Figura 14: un documento de dos páginas con el título «Sistemas de ecuaciones lineales — Métodos iterativos», los datos del sistema, el resultado, la gráfica, el «Detalle completo de iteraciones» y la comprobación.
+*Qué vas a ver:* el navegador descarga un archivo llamado `jacobi-3x3-` seguido de la fecha de hoy, por ejemplo `jacobi-3x3-2026-11-13.pdf`. Ábrelo desde la carpeta Descargas o desde el aviso de descarga del navegador. Verás algo como la Figura 12: un documento de dos páginas con el título «Sistemas de ecuaciones lineales — Métodos iterativos», los datos del sistema, el resultado, la gráfica, el «Detalle completo de iteraciones» y la comprobación.
 *Por qué:* el PDF es la forma de guardar el ejercicio, imprimirlo o entregarlo, porque el sistema no guarda nada por sí solo.
 
-![Figura 14 — El PDF del ejercicio abierto en el visor del navegador](img/usuario/U-16-pdf-descargado.png)
+![Figura 12 — El PDF del ejercicio abierto en el visor del navegador](img/usuario/U-16-pdf-descargado.png)
 
 **Paso 14. Compara con Gauss-Seidel sin volver a escribir nada.**
 *Qué hacer:* sube a «Configuración del sistema», cambia el selector «Método» de «Jacobi» a «Gauss-Seidel» y pulsa «Resolver». Después despliega la fila 2 de la tabla.
-*Qué vas a ver:* los datos del sistema siguen ahí, porque Jacobi y Gauss-Seidel comparten el formulario. La página baja otra vez hasta el resultado, que ahora dice «Resultado (Gauss-Seidel)» y «Alcanzó la tolerancia en 7 iteraciones»: llega a la misma solución en casi la mitad de vueltas. Al desplegar la fila 2 (Figura 15) verás que ahora hay números de **dos colores**: en **azul**, los valores de la iteración anterior, y en **verde**, los valores que ya se recalcularon en esta misma iteración. La leyenda lo dice: «■ valores de la iteración anterior · ■ valores ya recalculados en esta misma iteración». Fíjate en $x_2^{(2)}$: usa el $x_1$ nuevo (0.988364, en verde) y el $x_3$ viejo (−0.914545, en azul).
+*Qué vas a ver:* los datos del sistema siguen ahí, porque Jacobi y Gauss-Seidel comparten el formulario. La página baja otra vez hasta el resultado, que ahora dice «Resultado (Gauss-Seidel)» y «Alcanzó la tolerancia en 7 iteraciones»: llega a la misma solución en casi la mitad de vueltas. Al desplegar la fila 2 (Figura 13) verás que ahora hay números de **dos colores**: en **azul**, los valores de la iteración anterior, y en **verde**, los valores que ya se recalcularon en esta misma iteración. La leyenda lo dice: «■ valores de la iteración anterior · ■ valores ya recalculados en esta misma iteración». Fíjate en $x_2^{(2)}$: usa el $x_1$ nuevo (0.988364, en verde) y el $x_3$ viejo (−0.914545, en azul).
 *Por qué:* esa es exactamente la diferencia entre los dos métodos. Jacobi solo usa valores azules (todos de la vuelta anterior); Gauss-Seidel aprovecha cada valor nuevo apenas lo tiene, y por eso suele llegar antes. Los colores te muestran de dónde sale cada número.
 
-![Figura 15 — Una iteración de Gauss-Seidel desplegada, con los valores anteriores en azul y los recién calculados en verde](img/usuario/U-13-paso-a-paso-colores.png)
+![Figura 13 — Una iteración de Gauss-Seidel desplegada, con los valores anteriores en azul y los recién calculados en verde](img/usuario/U-13-paso-a-paso-colores.png)
 
 **Paso 15. Limpia para empezar otro ejercicio.**
 *Qué hacer:* haz clic en «Limpiar». Hay uno debajo del formulario, al lado de «Resolver», otro en la tarjeta de respuesta y otro en la franja fija; los tres hacen lo mismo.
-*Qué vas a ver:* aparece el diálogo de la Figura 16, con la pregunta «¿Borrar el ejercicio actual? Se perderán los datos y el resultado.» y dos botones, «Cancelar» y «Limpiar». Si pulsas «Limpiar», el formulario vuelve a estar como en la Figura 8, el resultado desaparece y la página sube hasta el formulario con el cursor en la primera casilla. Si pulsas «Cancelar», no pasa nada.
+*Qué vas a ver:* aparece el diálogo de la Figura 14, con la pregunta «¿Borrar el ejercicio actual? Se perderán los datos y el resultado.» y dos botones, «Cancelar» y «Limpiar». Si pulsas «Limpiar», el formulario vuelve a estar como en la Figura 6, el resultado desaparece y la página sube hasta el formulario con el cursor en la primera casilla. Si pulsas «Cancelar», no pasa nada.
 *Por qué:* el diálogo existe para que no borres tu trabajo por accidente. Si no has descargado el PDF y quieres conservar el ejercicio, pulsa «Cancelar» y descárgalo primero.
 
-![Figura 16 — El diálogo de confirmación del botón «Limpiar»](img/usuario/U-17-dialogo-limpiar.png)
+![Figura 14 — El diálogo de confirmación del botón «Limpiar»](img/usuario/U-17-dialogo-limpiar.png)
 
 Si entendiste este recorrido, ya sabes usar todo el sistema: todos los demás métodos funcionan igual. Siempre eliges el método, cargas un ejemplo o escribes tus datos, pulsas «Resolver», lees la respuesta, la tabla, el paso a paso, la comprobación y la gráfica, y descargas el PDF. Lo único que cambia de un método a otro es el formulario, y eso es lo que explica el capítulo siguiente.
 
@@ -357,7 +339,7 @@ El formulario es el que conociste en el capítulo 5 (Figuras 8 y 10).
 
 **«Tolerancia (criterio de parada)».** Explicada al comienzo del capítulo. Debe ser un número mayor o igual que cero. Si no sabes qué poner, deja 0.000001, que da seis decimales correctos. Según el idioma de tu sistema, el campo puede mostrarlo con coma (0,000001); es el mismo número y puedes escribirlo con punto o con coma.
 
-**«Máximo de iteraciones (mínimo real: 6)».** El límite de vueltas. Si el método no alcanza la tolerancia antes de ese número, se detiene igual y te avisa (Figura 30, en el capítulo 10). Debe ser un número entero de 1 en adelante. Si no sabes qué poner, deja 100; si el método no llega, súbelo a 500.
+**«Máximo de iteraciones (mínimo real: 6)».** El límite de vueltas. Si el método no alcanza la tolerancia antes de ese número, se detiene igual y te avisa (Figura 28, en el capítulo 10). Debe ser un número entero de 1 en adelante. Si no sabes qué poner, deja 100; si el método no llega, súbelo a 500.
 
 **«Reordenar filas automáticamente si mejora la convergencia».** Si está marcada y tu sistema no cumple la condición de «diagonal dominante» (ver el glosario), el sistema intenta cambiar el orden de las ecuaciones para que la cumpla. Cambiar el orden de las ecuaciones no cambia la solución, como dice el texto de ayuda, pero sí puede hacer que el método funcione donde antes no. Déjala marcada salvo que tu profesor te pida resolver el sistema en el orden exacto en que está escrito.
 
@@ -371,9 +353,9 @@ Hay una regla que el sistema exige: **ningún número de la diagonal principal p
 
 ## 6.2 Sistemas de ecuaciones no lineales (Punto Fijo y Newton)
 
-En estos métodos las ecuaciones no caben en una cuadrícula de números, así que se escriben como texto. La Figura 17 muestra el formulario de Newton con el ejemplo «Clásico 2x2 (Chapra)» cargado.
+En estos métodos las ecuaciones no caben en una cuadrícula de números, así que se escriben como texto. La Figura 15 muestra el formulario de Newton con el ejemplo «Clásico 2x2 (Chapra)» cargado.
 
-![Figura 17 — El formulario de un sistema no lineal (Newton), con el teclado de símbolos y la vista previa de cada ecuación](img/usuario/U-19-formulario-no-lineal.png)
+![Figura 15 — El formulario de un sistema no lineal (Newton), con el teclado de símbolos y la vista previa de cada ecuación](img/usuario/U-19-formulario-no-lineal.png)
 
 **La configuración** tiene «Método» (con las opciones «Punto Fijo (Iterativo Secuencial)» y «Newton»), «Tolerancia (criterio de parada)» y «Máximo de iteraciones (mínimo real: 6)», que funcionan igual que en el apartado anterior.
 
@@ -383,7 +365,7 @@ En estos métodos las ecuaciones no caben en una cuadrícula de números, así q
 
 **El teclado de símbolos.** Encima de las ecuaciones hay una fila de botones: «√», «xⁿ», «log», «ln», «exp», «sin», «cos», «tan», «π», «e», «|x|», «( )» y «Más funciones ▾». Cada uno escribe por ti la función correspondiente en la ecuación donde está el cursor; a la derecha te recuerda dónde se insertará, por ejemplo «Se inserta en la ecuación 1». Si dejas el puntero quieto sobre un botón, aparece qué hace, por ejemplo «Raíz cuadrada: sqrt()». «Más funciones» despliega las funciones menos usadas (trigonométricas inversas e hiperbólicas).
 
-**La vista previa.** Debajo de cada ecuación aparece, en una franja gris, cómo la entendió el sistema, escrita como en un libro. En la Figura 17, `x^2 + x*y - 10 = 0` se ve como $x^2 + xy - 10 = 0$. Revísala siempre: es la forma más rápida de descubrir un paréntesis mal puesto. Si la ecuación tiene un error, la casilla se pone roja y la franja muestra el problema en rojo, por ejemplo «'seno' no es una variable declarada ni una función conocida.».
+**La vista previa.** Debajo de cada ecuación aparece, en una franja gris, cómo la entendió el sistema, escrita como en un libro. En la Figura 15, `x^2 + x*y - 10 = 0` se ve como $x^2 + xy - 10 = 0$. Revísala siempre: es la forma más rápida de descubrir un paréntesis mal puesto. Si la ecuación tiene un error, la casilla se pone roja y la franja muestra el problema en rojo, por ejemplo «'seno' no es una variable declarada ni una función conocida.».
 
 **«Punto inicial x0 (opcional, por defecto ceros)».** Una casilla por incógnita, con el valor desde el que el método empieza a buscar. Admite fracciones. En los sistemas no lineales el punto de partida importa mucho: desde un punto puede funcionar y desde otro no, porque estas ecuaciones pueden tener varias soluciones o zonas donde las cuentas no se pueden hacer (por ejemplo, una raíz cuadrada de un número negativo). Si no sabes qué poner, usa el valor que te da el enunciado; si no te da ninguno, prueba con valores pequeños distintos de cero, como 1 y 1, porque desde el cero algunas ecuaciones dejan a Newton sin poder avanzar.
 
@@ -393,9 +375,9 @@ En estos métodos las ecuaciones no caben en una cuadrícula de números, así q
 
 ## 6.3 Raíces de polinomios (Bairstow)
 
-La Figura 18 muestra el formulario de Bairstow con el ejemplo «Cúbica con raíces reales» cargado y la pestaña «Coeficientes» elegida.
+La Figura 16 muestra el formulario de Bairstow con el ejemplo «Cúbica con raíces reales» cargado y la pestaña «Coeficientes» elegida.
 
-![Figura 18 — El formulario de Bairstow con los coeficientes del polinomio](img/usuario/U-20-formulario-bairstow.png)
+![Figura 16 — El formulario de Bairstow con los coeficientes del polinomio](img/usuario/U-20-formulario-bairstow.png)
 
 **La configuración** tiene «Método» (solo «Bairstow»), «Tolerancia εs (%)» y «Máximo de iteraciones por factor (mínimo real: 6)».
 
@@ -414,9 +396,9 @@ El grado debe estar entre 3 y 10. Para grados 1 y 2 no hace falta un método ite
 
 ## 6.4 Diferenciación numérica (diferencias, 3 puntos y 5 puntos)
 
-Los tres métodos de diferenciación comparten formulario. Calculan $f'(x_0)$, la derivada de una función en un punto, es decir, la pendiente de la curva justo en ese punto. La Figura 19 muestra el formulario de la «Fórmula de 3 puntos» con el ejemplo «x·eˣ en x₀ = 2 (Burden y Faires)» cargado.
+Los tres métodos de diferenciación comparten formulario. Calculan $f'(x_0)$, la derivada de una función en un punto, es decir, la pendiente de la curva justo en ese punto. La Figura 17 muestra el formulario de la «Fórmula de 3 puntos» con el ejemplo «x·eˣ en x₀ = 2 (Burden y Faires)» cargado.
 
-![Figura 19 — El formulario de diferenciación en modo «Función»](img/usuario/U-21-diferenciacion-funcion.png)
+![Figura 17 — El formulario de diferenciación en modo «Función»](img/usuario/U-21-diferenciacion-funcion.png)
 
 **«Fórmula».** Elige qué fórmula usar. En «Diferencias progresiva y regresiva» las opciones son «Progresiva» (usa el punto y otro a su derecha), «Regresiva» (el punto y otro a su izquierda) y «Ambas». En «Fórmula de 3 puntos» y «Fórmula de 5 puntos» son «Punto medio» (usa puntos a ambos lados; la más precisa), «Extremo hacia adelante» (solo puntos a la derecha; útil al comienzo de una tabla), «Extremo hacia atrás» (solo a la izquierda; útil al final) y «Todas». **«Ambas» o «Todas»** calcula todas las fórmulas a la vez y las muestra lado a lado, con una tabla para cada una y una comparación al final; es lo más útil para estudiar, porque ves cuál se acerca más.
 
@@ -431,9 +413,9 @@ Los tres métodos de diferenciación comparten formulario. Calculan $f'(x_0)$, l
 - **x₀** es el punto donde quieres la derivada. La función tiene que estar definida en ese punto y en los puntos vecinos que la fórmula usa; por ejemplo, `ln(x)` no sirve en $x_0 = 0$.
 - **h₀** es el paso inicial: la distancia entre $x_0$ y los puntos vecinos que la fórmula usa. Tiene que ser mayor que 0. Conviene que sea pequeño (0.1 está bien en casi todos los ejercicios), porque las fórmulas de derivación son más exactas cuanto más cerca están los puntos. Pero tampoco debe ser diminuto: con pasos extremadamente pequeños el computador empieza a perder decimales al restar números casi iguales, y el resultado empeora. El sistema detecta ese momento y te avisa en el resultado.
 
-**Modo «Tabla de datos».** La Figura 20 muestra el mismo método con el ejemplo «Tabla de x·eˣ (Burden y Faires, tabla + función)».
+**Modo «Tabla de datos».** La Figura 18 muestra el mismo método con el ejemplo «Tabla de x·eˣ (Burden y Faires, tabla + función)».
 
-![Figura 20 — El formulario de diferenciación en modo «Tabla de datos»](img/usuario/U-22-diferenciacion-tabla.png)
+![Figura 18 — El formulario de diferenciación en modo «Tabla de datos»](img/usuario/U-22-diferenciacion-tabla.png)
 
 Escribes los puntos medidos en una tabla con las columnas «xᵢ» y «f(xᵢ)». Pulsa «+ Agregar punto» para añadir una fila y la «×» de la derecha para quitarla. Lo que exige el modo tabla:
 
@@ -445,9 +427,9 @@ El sistema calcula la derivada en cada punto de la tabla con la fórmula que cor
 
 ## 6.5 Integración numérica (trapecio, Simpson, Romberg y cuadratura gaussiana)
 
-Los cuatro métodos calculan la integral definida $\int_a^b f(x)\,dx$, el área bajo la curva entre $a$ y $b$. La Figura 21 muestra el formulario del trapecio con el ejemplo «Polinomio de Chapra en [0, 0.8]» y, debajo, la gráfica de trapecios que aparece en el resultado.
+Los cuatro métodos calculan la integral definida $\int_a^b f(x)\,dx$, el área bajo la curva entre $a$ y $b$. La Figura 19 muestra el formulario del trapecio con el ejemplo «Polinomio de Chapra en [0, 0.8]» y, debajo, la gráfica de trapecios que aparece en el resultado.
 
-![Figura 21 — El formulario del método del trapecio y su gráfica de trapecios sombreados](img/usuario/U-24-trapecio-formulario-y-grafica.png)
+![Figura 19 — El formulario del método del trapecio y su gráfica de trapecios sombreados](img/usuario/U-24-trapecio-formulario-y-grafica.png)
 
 **«Método».** Cambia entre «Método del trapecio», «Método de Simpson», «Integración de Romberg» y «Cuadratura gaussiana» sin perder los datos.
 
@@ -530,10 +512,10 @@ Cuando pulsas «Resolver», el resultado aparece debajo del formulario y **la p�
 
 ## 7.1 La tarjeta de respuesta, la franja fija y el resumen
 
-**La tarjeta de respuesta** es lo primero que ves (parte superior de la Figura 11). Contiene solo tres cosas:
+**La tarjeta de respuesta** es lo primero que ves (parte superior de la Figura 9). Contiene solo tres cosas:
 
 - **La respuesta, en letra grande.** Debajo del título «Resultado (…)», que lleva el nombre del método que produjo el resultado, está cada valor con su nombre encima. En los sistemas, un valor por incógnita. En Bairstow, las raíces, llamadas x1, x2, x3… En diferenciación, la derivada, una por cada fórmula que elegiste (con «Todas» verás varias, cada una con el nombre de su fórmula); si trabajas con una tabla de datos, la derivada en cada punto, como «f′(1.8)». En integración, el valor de la integral, uno por regla (con «Ambas» en Simpson verás «Simpson 1/3» y «Simpson 3/8»). Cuando hay más de cuatro valores se muestran en letra un poco más pequeña, para que quepan.
-- **Una línea de estado.** Si todo salió bien, lleva una marca de visto y dice, por ejemplo, «✔ Alcanzó la tolerancia en 12 iteraciones. Error final: 4.01e-7.» (en diferenciación e integración dice «filas» en vez de «iteraciones»). El error final es el de la última vuelta; los errores muy pequeños se escriben en forma corta: 4.01e-7 es 0.000000401. Con una tabla de datos no hay vueltas que contar, y la línea dice «Calculado directamente con los datos de la tabla.». Si el método **no** alcanzó la tolerancia, la línea pasa a un recuadro amarillo: «⚠ No alcanzó la tolerancia: se detuvo tras 6 iteraciones. Error final: 0.001299. Los valores mostrados son los últimos calculados, no una solución.» (Figura 30). Los valores siguen ahí, pero son solo lo último que alcanzó a calcular el método.
+- **Una línea de estado.** Si todo salió bien, lleva una marca de visto y dice, por ejemplo, «✔ Alcanzó la tolerancia en 12 iteraciones. Error final: 4.01e-7.» (en diferenciación e integración dice «filas» en vez de «iteraciones»). El error final es el de la última vuelta; los errores muy pequeños se escriben en forma corta: 4.01e-7 es 0.000000401. Con una tabla de datos no hay vueltas que contar, y la línea dice «Calculado directamente con los datos de la tabla.». Si el método **no** alcanzó la tolerancia, la línea pasa a un recuadro amarillo: «⚠ No alcanzó la tolerancia: se detuvo tras 6 iteraciones. Error final: 0.001299. Los valores mostrados son los últimos calculados, no una solución.» (Figura 28). Los valores siguen ahí, pero son solo lo último que alcanzó a calcular el método.
 - **Los botones «Descargar PDF»** (apartado 7.8) **y «Limpiar»** (apartado 7.9).
 
 **La franja fija.** El detalle del resultado puede ser largo. Cuando bajas y la tarjeta de respuesta sale de la pantalla, aparece bajo la barra superior una franja delgada con el nombre del método, la respuesta resumida (el valor, si es uno solo, o cuántos hay: «3 incógnitas», «3 raíces», «2 reglas»), los botones «Descargar PDF» y «Limpiar» y el enlace «Ir arriba», que te devuelve al comienzo de la página. Cuando vuelves a subir hasta la tarjeta, la franja desaparece. Solo aparece en ventanas de 1024 píxeles de ancho o más; en un celular o una ventana angosta no hay franja, y los botones están en la tarjeta de respuesta.
@@ -550,13 +532,13 @@ En Jacobi, Gauss-Seidel y Newton, si no hay avisos, el resumen no tiene nada que
 
 **Qué es una iteración.** Un método iterativo no encuentra la respuesta de una vez: parte de un valor inicial, aplica una regla para obtener un valor mejor, vuelve a aplicar la regla a ese valor, y así sucesivamente. Cada aplicación de la regla es una **iteración** (una vuelta). En diferenciación e integración la idea es parecida, pero cada fila repite el cálculo con un paso más pequeño o con más segmentos; a esas filas se les llama **refinamientos**.
 
-**Cómo se lee una fila.** Cada fila es una vuelta, y se lee de izquierda a derecha: primero el número de la vuelta, después los valores calculados en esa vuelta y al final el error. En la Figura 11, la fila 3 dice que en la tercera vuelta el método calculó $x_1 = 0.980364$, $x_2 = 2.007273$ y $x_3 = -1.003636$, y que la respuesta cambió como mucho 0.083636 respecto a la vuelta 2. Leyendo la tabla de arriba abajo ves cómo los valores se acercan a la respuesta y cómo el error se achica.
+**Cómo se lee una fila.** Cada fila es una vuelta, y se lee de izquierda a derecha: primero el número de la vuelta, después los valores calculados en esa vuelta y al final el error. En la Figura 9, la fila 3 dice que en la tercera vuelta el método calculó $x_1 = 0.980364$, $x_2 = 2.007273$ y $x_3 = -1.003636$, y que la respuesta cambió como mucho 0.083636 respecto a la vuelta 2. Leyendo la tabla de arriba abajo ves cómo los valores se acercan a la respuesta y cómo el error se achica.
 
 **Qué significa cada columna en los sistemas.** «Iter.» es el número de la vuelta. «x1», «x2», «x3» (o los nombres de tus variables, como «x» e «y») son los valores de las incógnitas al terminar esa vuelta. «Error» es el cambio más grande entre una vuelta y la anterior; en la primera fila se compara con el vector inicial. La flechita «▸» de la izquierda abre el paso a paso de esa fila (apartado 7.3).
 
-**Qué significa cada columna en diferenciación e integración.** Estas tablas tienen más columnas, y cada encabezado tiene una explicación propia: si pasas el puntero sobre él (o lo tocas en el celular), aparece un globo con su significado. Además, debajo de cada tabla hay un recuadro desplegable, «¿Qué significa cada columna?», que reúne todas las explicaciones juntas. La Figura 22 lo muestra abierto bajo la tabla del método del trapecio. Por ejemplo, ahí se explica que «Error estimado» es «Cuánto cambió T respecto a la fila anterior, |T_k − T_(k−1)|. Decide cuándo parar: cuando ya casi no cambia (es menor que la tolerancia), se considera que se llegó a la precisión pedida.», y que la columna «≤ cota» lleva «✔ si el error verdadero quedó por debajo de la cota, como predice la teoría.». Los encabezados con explicación se reconocen porque están subrayados con una línea punteada.
+**Qué significa cada columna en diferenciación e integración.** Estas tablas tienen más columnas, y cada encabezado tiene una explicación propia: si pasas el puntero sobre él (o lo tocas en el celular), aparece un globo con su significado. Además, debajo de cada tabla hay un recuadro desplegable, «¿Qué significa cada columna?», que reúne todas las explicaciones juntas. La Figura 20 lo muestra abierto bajo la tabla del método del trapecio. Por ejemplo, ahí se explica que «Error estimado» es «Cuánto cambió T respecto a la fila anterior, |T_k − T_(k−1)|. Decide cuándo parar: cuando ya casi no cambia (es menor que la tolerancia), se considera que se llegó a la precisión pedida.», y que la columna «≤ cota» lleva «✔ si el error verdadero quedó por debajo de la cota, como predice la teoría.». Los encabezados con explicación se reconocen porque están subrayados con una línea punteada.
 
-![Figura 22 — La tabla de refinamiento del trapecio con la leyenda «¿Qué significa cada columna?» abierta](img/usuario/U-12-leyenda-columnas.png)
+![Figura 20 — La tabla de refinamiento del trapecio con la leyenda «¿Qué significa cada columna?» abierta](img/usuario/U-12-leyenda-columnas.png)
 
 > **Nota.** Las tablas de Jacobi, Gauss-Seidel, Punto Fijo y Newton no tienen la leyenda «¿Qué significa cada columna?», porque sus columnas son solo las incógnitas y el error, explicadas arriba.
 
@@ -566,7 +548,7 @@ En Jacobi, Gauss-Seidel y Newton, si no hay avisos, el resumen no tiene nada que
 
 En casi todas las tablas, cada fila empieza con una flechita «▸» («Ver cálculo» al pasar el puntero). Al hacer clic, la fila se despliega y muestra la cuenta completa de esa vuelta; la flechita cambia a «▾», y un segundo clic la cierra. En los sistemas lineales el paso a paso tiene tres bloques, como viste en el capítulo 5: «Fórmula», con la fórmula general; «Sustitución numérica», con los números reemplazados en la fórmula para cada incógnita; y «Error de la iteración», con la cuenta del error. En los demás métodos los bloques cambian (por ejemplo, Newton muestra la matriz Jacobiana evaluada y la regla de Cramer; el trapecio, cada punto evaluado y la suma), pero la idea es la misma: no hay ningún número de la tabla que no puedas rastrear hasta su origen.
 
-**Los colores.** En la sustitución numérica los números llevan color según de dónde vienen, como se ve en la Figura 15:
+**Los colores.** En la sustitución numérica los números llevan color según de dónde vienen, como se ve en la Figura 13:
 
 - **Azul:** el valor viene de la vuelta anterior.
 - **Verde:** el valor ya se recalculó en esta misma vuelta.
@@ -579,9 +561,9 @@ En Punto Fijo hay además una tabla previa con las ecuaciones despejadas, cada u
 
 ## 7.4 Los glosarios de símbolos
 
-Debajo de muchas fórmulas del resultado y de la teoría hay un recuadro desplegable titulado «¿Qué significa cada símbolo?». Al abrirlo, lista cada símbolo de la fórmula con una explicación en palabras. La Figura 23 muestra el de la fórmula del error aproximado del trapecio: explica, por ejemplo, que el signo menos aparece porque «si la curva es convexa (f'' > 0), el trapecio queda por encima de la curva, así que el error I − T es negativo».
+Debajo de muchas fórmulas del resultado y de la teoría hay un recuadro desplegable titulado «¿Qué significa cada símbolo?». Al abrirlo, lista cada símbolo de la fórmula con una explicación en palabras. La Figura 21 muestra el de la fórmula del error aproximado del trapecio: explica, por ejemplo, que el signo menos aparece porque «si la curva es convexa (f'' > 0), el trapecio queda por encima de la curva, así que el error I − T es negativo».
 
-![Figura 23 — El glosario «¿Qué significa cada símbolo?» abierto bajo una fórmula](img/usuario/U-26-glosario-simbolos.png)
+![Figura 21 — El glosario «¿Qué significa cada símbolo?» abierto bajo una fórmula](img/usuario/U-26-glosario-simbolos.png)
 
 Sirven para que no tengas que adivinar qué es cada letra ni buscarlo en el libro. Algunos se muestran abiertos al aparecer y otros cerrados; haz clic en el título para abrirlos o cerrarlos. Algunos terminan con una línea en cursiva que resume la fórmula en una frase, por ejemplo «En resumen: se suman las áreas de los n trapecios.».
 
@@ -589,7 +571,7 @@ En las gráficas y tablas más elaboradas hay recuadros parecidos con otros tít
 
 ## 7.5 La comprobación
 
-Al final de cada resultado hay una sección «Comprobación» (Figura 12). Su objetivo es verificar la respuesta por un camino distinto al del método, como harías tú para estar seguro de un ejercicio.
+Al final de cada resultado hay una sección «Comprobación» (Figura 10). Su objetivo es verificar la respuesta por un camino distinto al del método, como harías tú para estar seguro de un ejercicio.
 
 **Qué verifica, según el método.** En los sistemas, reemplaza la solución en cada ecuación original y comprueba que el lado izquierdo dé el término independiente (lineales) o cero (no lineales). En Bairstow, reemplaza cada raíz en el polinomio y comprueba que dé cero. En integración, calcula la integral exacta por otro camino, con la antiderivada (la función cuya derivada es la del problema), y la compara con la aproximación. En diferenciación, compara las aproximaciones con la derivada exacta.
 
@@ -601,17 +583,17 @@ El **residuo máximo** que aparece al final es lo más que se aleja una ecuació
 
 ## 7.6 Las gráficas
 
-**La gráfica de convergencia** (Figura 13), titulada «Convergencia del error», aparece en todos los métodos. El eje horizontal es el número de la iteración o de la fila; el vertical, el error. La línea azul con puntos es el error de cada vuelta («Error por iteración») y la línea verde punteada es la tolerancia que pediste. Si la línea azul baja, el método se acerca a la respuesta; donde cruza la verde, se cumple la tolerancia. Si sube o se queda horizontal, el método no está convergiendo.
+**La gráfica de convergencia** (Figura 11), titulada «Convergencia del error», aparece en todos los métodos. El eje horizontal es el número de la iteración o de la fila; el vertical, el error. La línea azul con puntos es el error de cada vuelta («Error por iteración») y la línea verde punteada es la tolerancia que pediste. Si la línea azul baja, el método se acerca a la respuesta; donde cruza la verde, se cumple la tolerancia. Si sube o se queda horizontal, el método no está convergiendo.
 
 El eje vertical está en **escala logarítmica**, como dice su rótulo «Error (escala log)»: cada raya es diez veces más pequeña que la de arriba (1, 0.1, 0.01, 0.001…, escritos como 1×10⁰, 1×10⁻¹, 1×10⁻², …). Se usa esta escala porque el error se hace muy pequeño muy rápido, y en una escala normal todos los puntos después de la tercera vuelta se verían pegados al cero. En esta escala, una línea recta que baja significa que el error se divide por el mismo número en cada vuelta, que es lo que se espera de un buen método.
 
-**La gráfica de trapecios** (parte inferior de la Figura 21), titulada «Gráfico de los trapecios», dibuja la función en naranja y, debajo, los trapecios en azul sombreado. El área azul es lo que calculó el método; la diferencia entre la curva naranja y el borde de los trapecios es el error. Con los botones «Segmentos: n = 1», «n = 2», «n = 4»… cambias la fila que se dibuja y ves cómo, al haber más trapecios, se ajustan mejor a la curva. Solo se pueden ver las filas con hasta 64 segmentos, porque con más ya no se distinguen de la curva. La leyenda de abajo da el valor exacto y el área de los trapecios, por ejemplo «Trapecios (n = 4): área T = 1.4848». En Simpson la gráfica se llama «Gráfico de las parábolas y cúbicas» y dibuja, en vez de rectas, las parábolas (regla 1/3) o las cúbicas (regla 3/8); unos botones «Simpson 1/3» y «Simpson 3/8» eligen cuál ver.
+**La gráfica de trapecios** (parte inferior de la Figura 19), titulada «Gráfico de los trapecios», dibuja la función en naranja y, debajo, los trapecios en azul sombreado. El área azul es lo que calculó el método; la diferencia entre la curva naranja y el borde de los trapecios es el error. Con los botones «Segmentos: n = 1», «n = 2», «n = 4»… cambias la fila que se dibuja y ves cómo, al haber más trapecios, se ajustan mejor a la curva. Solo se pueden ver las filas con hasta 64 segmentos, porque con más ya no se distinguen de la curva. La leyenda de abajo da el valor exacto y el área de los trapecios, por ejemplo «Trapecios (n = 4): área T = 1.4848». En Simpson la gráfica se llama «Gráfico de las parábolas y cúbicas» y dibuja, en vez de rectas, las parábolas (regla 1/3) o las cúbicas (regla 3/8); unos botones «Simpson 1/3» y «Simpson 3/8» eligen cuál ver.
 
-**La gráfica de segmentos de Romberg**, titulada por ejemplo «Gráfico de segmentos: Trapecio (columna 1)», funciona igual que la del trapecio, pero con unos botones adicionales, «Trapecio (columna 1)», «Simpson 1/3 (columna 2)» y «Boole (columna 3)», que dibujan cómo aproxima la curva cada columna de la tabla triangular. La tabla triangular misma (Figura 24) es la pieza central de Romberg: la primera columna son los trapecios con 1, 2, 4, 8… segmentos, y cada columna siguiente combina dos valores de la anterior para eliminar parte del error. Los valores de la diagonal, resaltados en amarillo, son la mejor aproximación de cada fila. Si pasas el puntero sobre una celda, se marcan las dos celdas de las que sale. Debajo hay una gráfica más, «Convergencia de la diagonal», y un botón «Ver tabla de errores».
+**La gráfica de segmentos de Romberg**, titulada por ejemplo «Gráfico de segmentos: Trapecio (columna 1)», funciona igual que la del trapecio, pero con unos botones adicionales, «Trapecio (columna 1)», «Simpson 1/3 (columna 2)» y «Boole (columna 3)», que dibujan cómo aproxima la curva cada columna de la tabla triangular. La tabla triangular misma (Figura 22) es la pieza central de Romberg: la primera columna son los trapecios con 1, 2, 4, 8… segmentos, y cada columna siguiente combina dos valores de la anterior para eliminar parte del error. Los valores de la diagonal, resaltados en amarillo, son la mejor aproximación de cada fila. Si pasas el puntero sobre una celda, se marcan las dos celdas de las que sale. Debajo hay una gráfica más, «Convergencia de la diagonal», y un botón «Ver tabla de errores».
 
-![Figura 24 — La tabla triangular de Romberg, con la diagonal resaltada](img/usuario/U-25-tabla-romberg.png)
+![Figura 22 — La tabla triangular de Romberg, con la diagonal resaltada](img/usuario/U-25-tabla-romberg.png)
 
-**La gráfica de diferenciación** (Figura 25), titulada «Gráfica de la aproximación», muestra por qué una fórmula de diferencias aproxima la derivada. Tiene tres selectores encima: «Fórmula» (cuál ver, o «Comparar» para verlas juntas), «Fila» (qué refinamiento dibujar, por ejemplo «Fila 1 (h = 0.1)») y «Paso de la gráfica». En el dibujo aparecen:
+**La gráfica de diferenciación** (Figura 23), titulada «Gráfica de la aproximación», muestra por qué una fórmula de diferencias aproxima la derivada. Tiene tres selectores encima: «Fórmula» (cuál ver, o «Comparar» para verlas juntas), «Fila» (qué refinamiento dibujar, por ejemplo «Fila 1 (h = 0.1)») y «Paso de la gráfica». En el dibujo aparecen:
 
 - **La curva $f(x)$**, en gris oscuro: la función.
 - **La recta tangente**, en verde («Tangente (derivada exacta)»): la recta que toca la curva en $x_0$; su inclinación es la derivada que buscamos.
@@ -622,7 +604,7 @@ El eje vertical está en **escala logarítmica**, como dice su rótulo «Error (
 
 Debajo de la gráfica, una línea compara los valores (por ejemplo «D real (fila 1, h = 0.1) = 22.228787 f′(x₀) exacta = 22.167168») y una frase en negrita dice si la fórmula se pasó o se quedó corta.
 
-![Figura 25 — La gráfica de diferenciación con la vista ilustrativa «Ilustrativo ×5»](img/usuario/U-23-grafica-vista-ilustrativa.png)
+![Figura 23 — La gráfica de diferenciación con la vista ilustrativa «Ilustrativo ×5»](img/usuario/U-23-grafica-vista-ilustrativa.png)
 
 **La vista ilustrativa.** Con pasos pequeños, como 0.1, las rectas verde y naranja quedan una encima de la otra y no se ve nada. Por eso el selector «Paso de la gráfica» tiene, además de «Real (h de la fila)», las opciones «Ilustrativo ×2», «Ilustrativo ×5» e «Ilustrativo ×10», que dibujan la primera fila con un paso 2, 5 o 10 veces más grande, solo para que se vea la forma. Mientras está activa, un recuadro lo advierte, por ejemplo: «Vista ilustrativa: el paso es h = 0.5 (5 veces el paso real) solo para que se vea la forma de la curva. Los resultados del ejercicio usan h = 0.1.»
 
@@ -634,7 +616,7 @@ El sistema calcula con toda la precisión del computador (unos 15 o 16 dígitos)
 
 - **Como máximo seis decimales.** 2.0072727… se muestra 2.007273, redondeado.
 - **Sin ceros de relleno.** Se muestra 0.4 y no 0.400000.
-- **Los enteros, sin decimales.** Si el valor redondeado a seis decimales es entero, se muestra 1 y no 1.000000. Por eso la solución de la Figura 11 se ve como 1, 2 y −1, aunque el valor interno sea 0.99999998.
+- **Los enteros, sin decimales.** Si el valor redondeado a seis decimales es entero, se muestra 1 y no 1.000000. Por eso la solución de la Figura 9 se ve como 1, 2 y −1, aunque el valor interno sea 0.99999998.
 - **Los negativos entre paréntesis al sustituir.** En el paso a paso, un número negativo que se reemplaza en una fórmula va entre paréntesis para que no se confunda con una resta: $(-1)(2.054545)$.
 - **El símbolo ≈ cuando un valor está redondeado y eso importa.** Por ejemplo, en la columna h de Romberg verás «≈ 3.141593», porque el paso exacto es $\pi$ y lo que ves es solo una aproximación. El valor exacto aparece en el paso a paso o al pasar el puntero.
 - **Los números muy pequeños** que con seis decimales se verían como 0 van acompañados de una nota que da su tamaño real, como «Filas 13: Eₜ es menor que 0.0000005 y con 6 decimales se ve 0».
@@ -642,7 +624,7 @@ El sistema calcula con toda la precisión del computador (unos 15 o 16 dígitos)
 
 ## 7.8 Descargar el PDF
 
-El botón «Descargar PDF», que está en la tarjeta de respuesta y en la franja fija, genera un documento con el ejercicio completo y lo descarga a tu computador (Figura 14). Incluye los datos de entrada, la configuración (tolerancia y máximo), el estado y el número de iteraciones, la solución, la gráfica de convergencia, la tabla completa de iteraciones (todas las filas, no solo las de la página que estabas viendo) y la comprobación. En diferenciación e integración incluye además las fórmulas usadas con sus glosarios y las tablas de comparación. No incluye el paso a paso desplegable de cada fila.
+El botón «Descargar PDF», que está en la tarjeta de respuesta y en la franja fija, genera un documento con el ejercicio completo y lo descarga a tu computador (Figura 12). Incluye los datos de entrada, la configuración (tolerancia y máximo), el estado y el número de iteraciones, la solución, la gráfica de convergencia, la tabla completa de iteraciones (todas las filas, no solo las de la página que estabas viendo) y la comprobación. En diferenciación e integración incluye además las fórmulas usadas con sus glosarios y las tablas de comparación. No incluye el paso a paso desplegable de cada fila.
 
 El archivo queda en la carpeta de descargas del navegador (normalmente la carpeta «Descargas» de Windows), con un nombre que combina el método y la fecha, por ejemplo `jacobi-3x3-2026-11-13.pdf` o `trapecio-funcion-2026-11-13.pdf`. Si descargas dos veces el mismo día, el navegador añade un número al segundo, como `(1)`.
 
@@ -652,13 +634,13 @@ El PDF **siempre sale en modo claro**, con fondo blanco, aunque estés usando el
 
 El botón «Limpiar» está en tres sitios: al lado de «Resolver», en la tarjeta de respuesta y en la franja fija. En los tres hace lo mismo: deja el método como cuando lo abriste: **borra** todos los datos que escribiste, devuelve la tolerancia y el máximo a sus valores por defecto, quita la marca del ejemplo cargado, vuelve a abrir la sección «Ejemplos precargados» y elimina el resultado y los mensajes de error. **No cambia** el método ni la categoría en la que estás, ni el modo claro u oscuro, y no afecta a los PDF que ya descargaste.
 
-Si hay datos escritos o un resultado en pantalla, antes de borrar aparece el diálogo de la Figura 16: «¿Borrar el ejercicio actual? Se perderán los datos y el resultado.», con los botones «Cancelar» y «Limpiar». Si no hay nada que perder (por ejemplo, solo hay un mensaje de error), limpia directamente sin preguntar. Si el formulario ya está vacío, el botón aparece apagado y no hace nada. Después de limpiar, la página sube hasta el formulario y deja el cursor en la primera casilla, lista para escribir.
+Si hay datos escritos o un resultado en pantalla, antes de borrar aparece el diálogo de la Figura 14: «¿Borrar el ejercicio actual? Se perderán los datos y el resultado.», con los botones «Cancelar» y «Limpiar». Si no hay nada que perder (por ejemplo, solo hay un mensaje de error), limpia directamente sin preguntar. Si el formulario ya está vacío, el botón aparece apagado y no hace nada. Después de limpiar, la página sube hasta el formulario y deja el cursor en la primera casilla, lista para escribir.
 
 # 8. Las páginas de teoría
 
-Cada método tiene una página de teoría, a la que llegas desde el menú «Teoría ▾». La Figura 26 muestra el comienzo de la de Jacobi.
+Cada método tiene una página de teoría, a la que llegas desde el menú «Teoría ▾». La Figura 24 muestra el comienzo de la de Jacobi.
 
-![Figura 26 — La página de teoría de Jacobi, desde arriba](img/usuario/U-27-pagina-teoria.png)
+![Figura 24 — La página de teoría de Jacobi, desde arriba](img/usuario/U-27-pagina-teoria.png)
 
 Arriba de todo está el mismo encabezado que en «Resolver»: la categoría, el nombre del método y una línea que dice en qué consiste. Debajo empieza un texto largo, organizado con títulos, que se lee de arriba abajo como el capítulo de un libro. Los nombres exactos de las secciones varían de un método a otro, pero todas cubren lo mismo:
 
@@ -676,11 +658,11 @@ Las fórmulas de la teoría también tienen sus glosarios «¿Qué significa cad
 
 # 9. Modo claro y modo oscuro
 
-El sistema tiene dos juegos de colores: el modo claro, con fondo blanco, y el modo oscuro, con fondo azul oscuro, que cansa menos la vista de noche o en salas con poca luz. La Figura 27 muestra el resultado del capítulo 5 en modo oscuro.
+El sistema tiene dos juegos de colores: el modo claro, con fondo blanco, y el modo oscuro, con fondo azul oscuro, que cansa menos la vista de noche o en salas con poca luz. La Figura 25 muestra el resultado del capítulo 5 en modo oscuro.
 
-![Figura 27 — El resultado de Jacobi en modo oscuro](img/usuario/U-18-modo-oscuro.png)
+![Figura 25 — El resultado de Jacobi en modo oscuro](img/usuario/U-18-modo-oscuro.png)
 
-**Dónde está el botón.** Es el cuadrito del extremo derecho de la barra superior (Figura 4). En modo claro muestra una luna y su texto de ayuda dice «Activar modo oscuro»; en modo oscuro muestra un sol y dice «Activar modo claro». Un clic cambia de uno a otro al instante, sin perder nada de lo que tienes en pantalla.
+**Dónde está el botón.** Es el cuadrito del extremo derecho de la barra superior (Figura 2). En modo claro muestra una luna y su texto de ayuda dice «Activar modo oscuro»; en modo oscuro muestra un sol y dice «Activar modo claro». Un clic cambia de uno a otro al instante, sin perder nada de lo que tienes en pantalla.
 
 **Qué recuerda el sistema.** La primera vez, el sistema usa el mismo modo que tenga configurado tu Windows o tu celular. Si eliges uno con el botón, el navegador lo recuerda y la próxima vez que abras el sistema, en ese mismo navegador, aparecerá en el modo que elegiste. Si usas otro navegador u otro computador, o borras los datos de navegación, vuelve a seguir la configuración del equipo.
 
@@ -700,9 +682,9 @@ Las tablas siguientes recogen los mensajes que puede mostrar el sistema, copiado
 
 ### Problemas al escribir la función o la ecuación
 
-La Figura 28 muestra cómo se ven estos mensajes: la casilla en rojo con el mensaje debajo, mientras escribes, y el mismo mensaje en el recuadro rojo si pulsas «Resolver».
+La Figura 26 muestra cómo se ven estos mensajes: la casilla en rojo con el mensaje debajo, mientras escribes, y el mismo mensaje en el recuadro rojo si pulsas «Resolver».
 
-![Figura 28 — El mensaje de error de una función mal escrita («sen» en vez de «sin»)](img/usuario/U-28-error-expresion.png)
+![Figura 26 — El mensaje de error de una función mal escrita («sen» en vez de «sin»)](img/usuario/U-28-error-expresion.png)
 
 | Lo que dice el sistema | Por qué aparece | Qué hacer |
 |---|---|---|
@@ -756,9 +738,9 @@ La Figura 28 muestra cómo se ven estos mensajes: la casilla en rojo con el mens
 
 ### Datos que no cumplen una condición del método
 
-La Figura 29 muestra un ejemplo: en Simpson, con la regla «Ambas», se escribió 3 como «n₀ de Simpson 1/3», que debe ser par.
+La Figura 27 muestra un ejemplo: en Simpson, con la regla «Ambas», se escribió 3 como «n₀ de Simpson 1/3», que debe ser par.
 
-![Figura 29 — El mensaje de una condición del método que no se cumple (número de segmentos impar en Simpson 1/3)](img/usuario/U-29-error-validacion.png)
+![Figura 27 — El mensaje de una condición del método que no se cumple (número de segmentos impar en Simpson 1/3)](img/usuario/U-29-error-validacion.png)
 
 | Lo que dice el sistema | Por qué aparece | Qué hacer |
 |---|---|---|
@@ -800,9 +782,9 @@ La Figura 29 muestra un ejemplo: en Simpson, con la regla «Ambas», se escribi�
 
 ### El método no llega al resultado
 
-Estos mensajes aparecen dentro del resultado: el método corrió, pero no terminó como esperabas. La Figura 30 muestra el caso más común: el método de Jacobi del capítulo 5 con una tolerancia de 0.000000001 y un máximo de 6 iteraciones.
+Estos mensajes aparecen dentro del resultado: el método corrió, pero no terminó como esperabas. La Figura 28 muestra el caso más común: el método de Jacobi del capítulo 5 con una tolerancia de 0.000000001 y un máximo de 6 iteraciones.
 
-![Figura 30 — El aviso de que el método no alcanzó la tolerancia en el máximo de iteraciones](img/usuario/U-30-aviso-no-convergencia.png)
+![Figura 28 — El aviso de que el método no alcanzó la tolerancia en el máximo de iteraciones](img/usuario/U-30-aviso-no-convergencia.png)
 
 | Lo que dice el sistema | Por qué aparece | Qué hacer |
 |---|---|---|
@@ -939,36 +921,34 @@ Algunos recuadros amarillos no avisan de ningún problema, sino que informan sob
 
 | Figura | Archivo | Apartado | Tomada por |
 |---|---|---|---|
-| Figura 1 — La carpeta del proyecto, con los archivos de doble clic | U-01-carpeta-del-proyecto.png | 2.1 | Usuario (marcador) |
-| Figura 2 — La ventana de iniciar.bat cuando el sistema ya está listo | U-02-ventana-iniciar.png | 2.1 | Usuario (marcador) |
-| Figura 3 — El sistema recién abierto en el navegador | U-03-aplicacion-abierta.png | 2.1 | Claude |
-| Figura 4 — La barra superior, con la marca | U-04-barra-superior.png | 3.1 | Claude |
-| Figura 5 — El menú «Resolver» desplegado | U-05-menu-resolver.png | 4.1 | Claude |
-| Figura 6 — El buscador del menú con la palabra «derivada» | U-06-buscador.png | 4.2 | Claude |
-| Figura 7 — El menú en una pantalla angosta | U-07-menu-pantalla-angosta.png | 4.4 | Claude |
-| Figura 8 — El formulario de Jacobi vacío | U-08-formulario-jacobi-vacio.png | 5 (paso 2) | Claude |
-| Figura 9 — La lista de ejemplos precargados de Jacobi | U-09-ejemplos-precargados.png | 5 (paso 3) | Claude |
-| Figura 10 — El formulario de Jacobi con el ejemplo cargado y los ejemplos plegados | U-10-formulario-con-ejemplo.png | 5 (paso 4) | Claude |
-| Figura 11 — El resultado de Jacobi: tarjeta de respuesta, gráfica y tabla | U-11-resultado-jacobi.png | 5 (paso 7) | Claude |
-| Figura 12 — La sección «Comprobación» | U-14-comprobacion.png | 5 (paso 11) | Claude |
-| Figura 13 — La gráfica «Convergencia del error» | U-15-grafica-convergencia.png | 5 (paso 12) | Claude |
-| Figura 14 — El PDF del ejercicio abierto | U-16-pdf-descargado.png | 5 (paso 13) | Claude |
-| Figura 15 — Una iteración de Gauss-Seidel en azul y verde | U-13-paso-a-paso-colores.png | 5 (paso 14) | Claude |
-| Figura 16 — El diálogo de confirmación de «Limpiar» | U-17-dialogo-limpiar.png | 5 (paso 15) | Claude |
-| Figura 17 — El formulario de un sistema no lineal | U-19-formulario-no-lineal.png | 6.2 | Claude |
-| Figura 18 — El formulario de Bairstow con los coeficientes | U-20-formulario-bairstow.png | 6.3 | Claude |
-| Figura 19 — Diferenciación en modo «Función» | U-21-diferenciacion-funcion.png | 6.4 | Claude |
-| Figura 20 — Diferenciación en modo «Tabla de datos» | U-22-diferenciacion-tabla.png | 6.4 | Claude |
-| Figura 21 — El formulario del trapecio y su gráfica | U-24-trapecio-formulario-y-grafica.png | 6.5 | Claude |
-| Figura 22 — La leyenda «¿Qué significa cada columna?» | U-12-leyenda-columnas.png | 7.2 | Claude |
-| Figura 23 — El glosario «¿Qué significa cada símbolo?» | U-26-glosario-simbolos.png | 7.4 | Claude |
-| Figura 24 — La tabla triangular de Romberg | U-25-tabla-romberg.png | 7.6 | Claude |
-| Figura 25 — La gráfica de diferenciación con la vista ilustrativa | U-23-grafica-vista-ilustrativa.png | 7.6 | Claude |
-| Figura 26 — La página de teoría de Jacobi | U-27-pagina-teoria.png | 8 | Claude |
-| Figura 27 — El resultado de Jacobi en modo oscuro | U-18-modo-oscuro.png | 9 | Claude |
-| Figura 28 — El error de una función mal escrita | U-28-error-expresion.png | 10.1 | Claude |
-| Figura 29 — Una condición del método que no se cumple | U-29-error-validacion.png | 10.1 | Claude |
-| Figura 30 — El aviso de no convergencia | U-30-aviso-no-convergencia.png | 10.1 | Claude |
+| Figura 1 — El sistema recién abierto en el navegador | U-03-aplicacion-abierta.png | 2.1 | Claude |
+| Figura 2 — La barra superior, con la marca | U-04-barra-superior.png | 3.1 | Claude |
+| Figura 3 — El menú «Resolver» desplegado | U-05-menu-resolver.png | 4.1 | Claude |
+| Figura 4 — El buscador del menú con la palabra «derivada» | U-06-buscador.png | 4.2 | Claude |
+| Figura 5 — El menú en una pantalla angosta | U-07-menu-pantalla-angosta.png | 4.4 | Claude |
+| Figura 6 — El formulario de Jacobi vacío | U-08-formulario-jacobi-vacio.png | 5 (paso 2) | Claude |
+| Figura 7 — La lista de ejemplos precargados de Jacobi | U-09-ejemplos-precargados.png | 5 (paso 3) | Claude |
+| Figura 8 — El formulario de Jacobi con el ejemplo cargado y los ejemplos plegados | U-10-formulario-con-ejemplo.png | 5 (paso 4) | Claude |
+| Figura 9 — El resultado de Jacobi: tarjeta de respuesta, gráfica y tabla | U-11-resultado-jacobi.png | 5 (paso 7) | Claude |
+| Figura 10 — La sección «Comprobación» | U-14-comprobacion.png | 5 (paso 11) | Claude |
+| Figura 11 — La gráfica «Convergencia del error» | U-15-grafica-convergencia.png | 5 (paso 12) | Claude |
+| Figura 12 — El PDF del ejercicio abierto | U-16-pdf-descargado.png | 5 (paso 13) | Claude |
+| Figura 13 — Una iteración de Gauss-Seidel en azul y verde | U-13-paso-a-paso-colores.png | 5 (paso 14) | Claude |
+| Figura 14 — El diálogo de confirmación de «Limpiar» | U-17-dialogo-limpiar.png | 5 (paso 15) | Claude |
+| Figura 15 — El formulario de un sistema no lineal | U-19-formulario-no-lineal.png | 6.2 | Claude |
+| Figura 16 — El formulario de Bairstow con los coeficientes | U-20-formulario-bairstow.png | 6.3 | Claude |
+| Figura 17 — Diferenciación en modo «Función» | U-21-diferenciacion-funcion.png | 6.4 | Claude |
+| Figura 18 — Diferenciación en modo «Tabla de datos» | U-22-diferenciacion-tabla.png | 6.4 | Claude |
+| Figura 19 — El formulario del trapecio y su gráfica | U-24-trapecio-formulario-y-grafica.png | 6.5 | Claude |
+| Figura 20 — La leyenda «¿Qué significa cada columna?» | U-12-leyenda-columnas.png | 7.2 | Claude |
+| Figura 21 — El glosario «¿Qué significa cada símbolo?» | U-26-glosario-simbolos.png | 7.4 | Claude |
+| Figura 22 — La tabla triangular de Romberg | U-25-tabla-romberg.png | 7.6 | Claude |
+| Figura 23 — La gráfica de diferenciación con la vista ilustrativa | U-23-grafica-vista-ilustrativa.png | 7.6 | Claude |
+| Figura 24 — La página de teoría de Jacobi | U-27-pagina-teoria.png | 8 | Claude |
+| Figura 25 — El resultado de Jacobi en modo oscuro | U-18-modo-oscuro.png | 9 | Claude |
+| Figura 26 — El error de una función mal escrita | U-28-error-expresion.png | 10.1 | Claude |
+| Figura 27 — Una condición del método que no se cumple | U-29-error-validacion.png | 10.1 | Claude |
+| Figura 28 — El aviso de no convergencia | U-30-aviso-no-convergencia.png | 10.1 | Claude |
 
 Para reemplazar los marcadores de las Figuras 1 y 2, guarda la captura real con el mismo nombre de archivo que indica esta tabla.
 

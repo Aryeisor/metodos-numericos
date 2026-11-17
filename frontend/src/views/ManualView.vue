@@ -3,10 +3,11 @@
 // nginx en Docker) los sirve tal cual desde la raíz del sitio.
 import { onBeforeUnmount, onMounted, ref } from 'vue'
 
-const USER_MANUAL = '/manuales/manual-de-usuario.pdf'
+// Al reemplazar el PDF: subir ?v= (el visor de PDF del navegador guarda la copia
+// vieja aunque se recargue la página) y actualizar el número de páginas.
+const USER_MANUAL = '/manuales/manual-de-usuario.pdf?v=1.2'
 const TECH_MANUAL = '/manuales/manual-tecnico.pdf'
-// shortcut: número de páginas escrito a mano; actualizarlo si se reemplaza el PDF.
-const USER_MANUAL_PAGES = 70
+const USER_MANUAL_PAGES = 71
 
 // Muchos navegadores de celular dejan el iframe en blanco y no se puede
 // detectar: por debajo de 768 px se ofrece abrirlo a pantalla completa.

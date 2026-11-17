@@ -4,7 +4,7 @@ import App from '../App.vue'
 import router from '../router'
 import ManualView from './ManualView.vue'
 
-const PDF = '/manuales/manual-de-usuario.pdf'
+const PDF = '/manuales/manual-de-usuario.pdf?v=1.2'
 
 function setWidth(width) {
   window.happyDOM.setViewport({ width, height: 900 })
