@@ -63,6 +63,7 @@
   /* ---- Layout ------------------------------------------------------------ */
   --container-width: 1100px;
   --header-height: 61px;          /* barra superior fija (60 + borde)       */
+  --result-bar-height: 44px;      /* franja fija del resultado (ResultAnswer) */
 
   font-family: var(--font-sans);
 }
@@ -78,6 +79,11 @@
 /* La barra superior es fija: lo enfocado o enlazado por ancla no queda debajo. */
 html {
   scroll-padding-top: calc(var(--header-height) + var(--space-4));
+}
+
+/* Con la franja del resultado a la vista, también se deja libre su alto. */
+html.has-result-bar {
+  scroll-padding-top: calc(var(--header-height) + var(--result-bar-height) + var(--space-4));
 }
 
 html,
@@ -110,7 +116,10 @@ h4 {
   letter-spacing: var(--tracking-tight);
 }
 
-h1 {
+/* --text-display tiene dos usos, uno por momento de la página: el nombre del
+   método (h1) y el valor de la tarjeta de respuesta. Ningún otro. */
+h1,
+.answer-value {
   font-size: var(--text-display);
   font-weight: var(--weight-semibold);
   line-height: var(--leading-tight);

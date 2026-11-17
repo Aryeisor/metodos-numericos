@@ -35,13 +35,6 @@ const finalErrors = computed(() =>
   isTable.value ? props.result.verification.final : last.value
 )
 
-const status = computed(() => {
-  if (isTable.value) return { ok: true, label: 'Calculado' }
-  return props.result.converged
-    ? { ok: true, label: 'Alcanzó la tolerancia' }
-    : { ok: false, label: 'No alcanzó la tolerancia' }
-})
-
 const integralName = computed(() => {
   const i = integral.value
   if (!i || i.kind === null) return null
@@ -108,17 +101,13 @@ function handleExportPdf() {
     convergenceImage: convergenceRef.value?.toImage() ?? null,
   })
 }
+// El botón de PDF está en la tarjeta de respuesta (SolverView).
+defineExpose({ exportPdf: handleExportPdf })
 </script>
 
 <template>
   <div class="results">
-    <div class="summary-header">
-      <h3>Resultado ({{ methodName }})</h3>
-      <div class="summary-actions">
-        <span class="badge" :class="status.ok ? 'badge-success' : 'badge-danger'">{{ status.label }}</span>
-        <button type="button" class="btn btn-outline" @click="handleExportPdf">Exportar PDF</button>
-      </div>
-    </div>
+    <h3 class="summary-title">Resumen</h3>
 
     <!-- 1. Resumen -->
     <div class="summary-grid">
@@ -279,23 +268,8 @@ function handleExportPdf() {
 </template>
 
 <style scoped>
-.summary-header {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-3);
-  margin-bottom: var(--space-4);
-}
-
-.summary-header h3 {
-  margin: 0;
-}
-
-.summary-actions {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
+.summary-title {
+  margin: 0 0 var(--space-4);
 }
 
 .summary-grid {

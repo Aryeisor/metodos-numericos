@@ -54,13 +54,6 @@ const formulas = computed(() => props.result.formulas)
 const fn = computed(() => props.result.function)
 const last = computed(() => props.result.iterations.at(-1)?.extra ?? null)
 
-const status = computed(() => {
-  if (isTable.value) return { ok: true, label: 'Calculado' }
-  return props.result.converged
-    ? { ok: true, label: 'Alcanzó la tolerancia' }
-    : { ok: false, label: 'No alcanzó la tolerancia' }
-})
-
 // f'' en adelante: cada derivada se obtiene derivando la anterior, término a
 // término. Las muy largas (más de LONG_LATEX caracteres) se pliegan, como en Gauss.
 const ORDINALS = { 2: 'Segunda', 3: 'Tercera', 4: 'Cuarta', 5: 'Quinta' }
@@ -148,17 +141,13 @@ function handleExportPdf() {
     approxCaption: approxRef.value?.pdfCaption() ?? null,
   })
 }
+// El botón de PDF está en la tarjeta de respuesta (SolverView).
+defineExpose({ exportPdf: handleExportPdf })
 </script>
 
 <template>
   <div class="results">
-    <div class="summary-header">
-      <h3>Resultado ({{ methodName }})</h3>
-      <div class="summary-actions">
-        <span class="badge" :class="status.ok ? 'badge-success' : 'badge-danger'">{{ status.label }}</span>
-        <button type="button" class="btn btn-outline" @click="handleExportPdf">Exportar PDF</button>
-      </div>
-    </div>
+    <h3 class="summary-title">Resumen</h3>
 
     <!-- 1. Resumen -->
     <div v-if="!isTable && last" class="summary-grid">
@@ -335,23 +324,8 @@ function handleExportPdf() {
 </template>
 
 <style scoped>
-.summary-header {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-3);
-  margin-bottom: var(--space-4);
-}
-
-.summary-header h3 {
-  margin: 0;
-}
-
-.summary-actions {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
+.summary-title {
+  margin: 0 0 var(--space-4);
 }
 
 .summary-grid {

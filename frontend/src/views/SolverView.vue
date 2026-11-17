@@ -3,10 +3,13 @@ import { computed, nextTick, ref, shallowRef, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import ConfirmDialog from '../components/ConfirmDialog.vue'
 import MethodHeader from '../components/MethodHeader.vue'
+import ResultAnswer from '../components/ResultAnswer.vue'
 import ResultsTable from '../components/ResultsTable.vue'
 import { fetchExamples, solveSystem } from '../api/client'
+import { resultAnswer } from '../methods/answer'
 import { getMethod, siblingMethods, solveRouteName } from '../methods/registry'
 import { exportResultToPdf } from '../utils/exportPdf'
+import { scrollBehavior } from '../utils/motion'
 
 const props = defineProps({
   // Slug del método activo; lo fija la ruta /resolver/<slug>.
@@ -119,6 +122,21 @@ function loadExample(example) {
 // una respuesta que llega después (de una petición ya descartada) se ignora.
 let solveRequestId = 0
 
+// Al terminar de resolver la página va sola a lo que apareció, y el foco con
+// ella (así lo anuncia un lector de pantalla): el encabezado del resultado o,
+// si falló, el mensaje de error.
+const answerRef = ref(null)
+const detailRef = ref(null)
+const errorsRef = ref(null)
+const answer = computed(() => (result.value ? resultAnswer(result.value) : null))
+
+async function revealOutcome() {
+  await nextTick()
+  if (result.value) return answerRef.value?.reveal()
+  errorsRef.value?.scrollIntoView({ behavior: scrollBehavior(), block: 'center' })
+  errorsRef.value?.focus({ preventScroll: true })
+}
+
 async function handleSolve() {
   formErrors.value = []
   result.value = null
@@ -126,6 +144,7 @@ async function handleSolve() {
 
   if (store.value.hasInvalidValues()) {
     formErrors.value = [ui.value.invalidMessage]
+    revealOutcome()
     return
   }
 
@@ -163,7 +182,10 @@ async function handleSolve() {
       formErrors.value = ['No fue posible conectar con el servidor. Verifica que el backend esté corriendo.']
     }
   } finally {
-    if (isCurrent()) loading.value = false
+    if (isCurrent()) {
+      loading.value = false
+      revealOutcome()
+    }
   }
 }
 
@@ -344,7 +366,7 @@ function handleExportPdf(chartImage) {
       </div>
     </div>
 
-    <div v-if="formErrors.length" class="alert alert-danger">
+    <div v-if="formErrors.length" ref="errorsRef" class="alert alert-danger" role="alert" tabindex="-1">
       <div v-for="(msg, idx) in formErrors" :key="idx">{{ msg }}</div>
     </div>
 
@@ -372,19 +394,32 @@ function handleExportPdf(chartImage) {
       @cancel="confirmOpen = false"
     />
 
-    <div v-if="result" class="card results-card">
+    <template v-if="result">
+      <!-- Lo primero: la respuesta. Sus botones actúan sobre el detalle de abajo
+           (el PDF necesita las gráficas que éste dibuja). -->
+      <ResultAnswer
+        ref="answerRef"
+        :method-name="resultMethodName"
+        :answer="answer"
+        @export-pdf="detailRef?.exportPdf()"
+        @clear="requestClear"
+      />
+
+      <div class="result-detail">
       <!-- Una categoría cuyo resultado no es una sola tabla de iteraciones
            (Bairstow: varios factores, cada uno con su tabla y su gráfico)
            aporta su propia vista completa, PDF incluido. -->
       <component
         :is="ui.resultView"
         v-if="ui.resultView && solvedSystem"
+        ref="detailRef"
         :result="result"
         :system="solvedSystem"
         :method-name="resultMethodName"
       />
       <ResultsTable
         v-else-if="!ui.resultView"
+        ref="detailRef"
         :result="result"
         :method-name="resultMethodName"
         :tolerance="solvedSystem ? solvedSystem.tolerance : null"
@@ -411,7 +446,8 @@ function handleExportPdf(chartImage) {
           <component :is="ui.afterIterations" :result="result" />
         </template>
       </ResultsTable>
-    </div>
+      </div>
+    </template>
   </div>
 </template>
 
@@ -611,7 +647,49 @@ function handleExportPdf(chartImage) {
   }
 }
 
-.results-card {
+/* El mensaje de error recibe el foco cuando la resolución falla. */
+.alert-danger:focus-visible {
+  box-shadow: var(--focus-ring);
+}
+
+/* El detalle del resultado, un escalón por debajo de la tarjeta de respuesta
+   (como los ejemplos): fondo de la página y borde, sin superficie ni sombra.
+   La jerarquía la dan la superficie, el peso y el espacio, no el color. */
+.result-detail {
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-container);
+  padding: var(--space-5) var(--space-6);
+}
+
+/* Secciones del detalle (cada componente trae la suya): separadas --space-5. */
+.result-detail :deep(.result-section),
+.result-detail :deep(.chart-block),
+.result-detail :deep(.verification),
+.result-detail :deep(.jacobian-section),
+.result-detail :deep(.iterations-title) {
+  margin-top: var(--space-5);
+}
+
+/* Las gráficas conservan debajo la superficie sobre la que se midió el
+   contraste de sus colores. Sombra y no borde: un borde cambiaría el tamaño
+   del lienzo, que es la imagen que va al PDF. */
+.result-detail :deep(.chart-canvas-wrapper) {
+  background: var(--color-surface);
+  border-radius: var(--radius-nested);
+  box-shadow: 0 0 0 1px var(--color-line);
+}
+
+/* La primera no necesita la línea que la separa de la anterior. */
+.result-detail :deep(.results > :first-child),
+.result-detail :deep(.results > .summary:empty + *) {
   margin-top: 0;
+  padding-top: 0;
+  border-top: none;
+}
+
+@media (max-width: 640px) {
+  .result-detail {
+    padding: var(--space-5) var(--space-4);
+  }
 }
 </style>

@@ -1,7 +1,7 @@
 import { readdirSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { flushPromises, mount } from '@vue/test-utils'
-import { beforeAll, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
 
 // Forma de GET /api/methods/. Los cinco primeros, uno por categoría, son los
 // que se prueban; el resto existe porque la teoría enlaza a sus rutas.
@@ -35,10 +35,14 @@ const EXAMPLES = [
   { id: 'otro', name: 'Otro', description: '', n: 3, A: [[4, 1, 1], [2, 5, 2], [1, 2, 4]], b: [1, 2, 3], x0: [0, 0, 0], tolerance: 1e-6, max_iterations: 100 },
 ]
 
+// Por defecto la petición de resolver no termina; los tests del resultado la
+// resuelven o la rechazan.
+const solveSystem = vi.hoisted(() => vi.fn(() => new Promise(() => {})))
+
 vi.mock('../api/client', () => ({
   fetchMethods: () => Promise.resolve(CATALOG),
   fetchExamples: () => Promise.resolve(EXAMPLES),
-  solveSystem: () => new Promise(() => {}),
+  solveSystem,
   previewExpression: () => Promise.resolve(''),
 }))
 
@@ -51,10 +55,10 @@ beforeAll(async () => {
   addMethodRoutes(methodRegistry.methods)
 })
 
-async function open(path) {
+async function open(path, stubs = {}) {
   await router.push(path)
   await router.isReady()
-  const app = mount(App, { global: { plugins: [router] }, attachTo: document.body })
+  const app = mount(App, { global: { plugins: [router], stubs }, attachTo: document.body })
   await flushPromises()
   return app
 }
@@ -81,6 +85,12 @@ describe('encabezado de la vista', () => {
       .filter((file) => /\.(vue|css)$/.test(file))
       .flatMap((file) => readFileSync(join(src, file), 'utf8').match(/var\(--text-display\)/g) ?? [])
     expect(uses).toHaveLength(1)
+  })
+
+  it('esa única regla alcanza al h1 y al valor de la tarjeta de respuesta, nada más', () => {
+    const css = readFileSync(join(process.cwd(), 'src', 'style.css'), 'utf8')
+    const selectors = css.match(/([^{}]+)\{[^}]*var\(--text-display\)/)[1]
+    expect(selectors.replace(/\/\*[^]*?\*\//g, '').split(',').map((sel) => sel.trim())).toEqual(['h1', '.answer-value'])
   })
 })
 
@@ -113,6 +123,60 @@ describe('ejemplos plegables', () => {
     expect(isOpen(app)).toBe(false)
     await toggle(app).trigger('click')
     expect(isOpen(app)).toBe(true)
+    app.unmount()
+  })
+})
+
+describe('después de resolver', () => {
+  // Respuesta mínima de Jacobi; el detalle (gráfico y tabla) no se monta.
+  const RESULT = {
+    method: 'jacobi',
+    category: 'linear_system',
+    converged: true,
+    iterations_used: 40,
+    iterations: [{ iteration: 40, x: [1, 1, 1], error: 8.04e-7 }],
+    solution: [1, 1, 1],
+    variables: ['x1', 'x2', 'x3'],
+    warnings: [],
+  }
+  const stubs = { ResultsTable: true }
+  // Los tamaños de --text-display en la página: el h1 y el bloque de valores.
+  const displayUses = (app) => app.findAll('h1').length + app.findAll('.answer-values:not(.is-compact)').length
+
+  afterEach(() => solveSystem.mockImplementation(() => new Promise(() => {})))
+
+  async function solve(outcome) {
+    const scrolled = vi.spyOn(HTMLElement.prototype, 'scrollIntoView').mockImplementation(() => {})
+    solveSystem.mockImplementation(outcome)
+    const app = await open('/resolver/jacobi', stubs)
+    await app.get('.example-btn').trigger('click')
+    expect(displayUses(app)).toBe(1) // sin resultado: sólo el nombre del método
+    await app.get('.solve-btn').trigger('click')
+    await flushPromises()
+    const target = scrolled.mock.contexts.at(-1)
+    scrolled.mockRestore()
+    return { app, target }
+  }
+
+  it('la página se desplaza al resultado y el foco queda en su encabezado', async () => {
+    const { app, target } = await solve(() => Promise.resolve(RESULT))
+    const heading = app.get('.answer-card h2')
+    expect(target).toBe(app.get('.answer-card').element)
+    expect(document.activeElement).toBe(heading.element)
+    expect(heading.text()).toBe('Resultado (Jacobi)')
+    expect(heading.attributes('tabindex')).toBe('-1')
+    expect(app.findAll('.answer-value').map((v) => v.text())).toEqual(['1', '1', '1'])
+    expect(displayUses(app)).toBe(2) // el nombre del método y la respuesta
+    app.unmount()
+  })
+
+  it('con un error de validación, el desplazamiento y el foco van al mensaje', async () => {
+    const { app, target } = await solve(() => Promise.reject({ response: { data: { detail: 'La matriz es singular.' } } }))
+    const alert = app.get('.alert-danger')
+    expect(alert.text()).toBe('La matriz es singular.')
+    expect(target).toBe(alert.element)
+    expect(document.activeElement).toBe(alert.element)
+    expect(app.find('.answer-card').exists()).toBe(false)
     app.unmount()
   })
 })

@@ -1,7 +1,8 @@
 <script setup>
-// Vista genérica del resultado de cualquier método: resumen, gráfico de
-// convergencia, tabla paginada de iteraciones y exportación a PDF. No asume
-// que la entrada sea una matriz: lo propio de cada categoría llega por slots.
+// Vista genérica del detalle del resultado: resumen, gráfico de convergencia y
+// tabla paginada de iteraciones. La solución, el estado y los botones van en
+// la tarjeta de respuesta (ResultAnswer). No asume que la entrada sea una
+// matriz: lo propio de cada categoría llega por slots.
 //
 // Slots:
 //   summary                         bloque extra en el resumen (ej. reordenamiento)
@@ -89,6 +90,8 @@ function goToPage(page) {
 function handleExportPdf() {
   emit('export-pdf', chartRef.value?.toImage() ?? null)
 }
+// El botón de PDF está en la tarjeta de respuesta (SolverView).
+defineExpose({ exportPdf: handleExportPdf })
 
 function toggleRow(iteration) {
   const next = new Set(expanded.value)
@@ -100,35 +103,10 @@ function toggleRow(iteration) {
 
 <template>
   <div class="results">
+    <!-- Sin reordenamiento ni advertencias queda vacío y no ocupa lugar. -->
     <div class="summary">
-      <div class="summary-header">
-        <h3>Resultado ({{ methodName }})</h3>
-        <div class="summary-actions">
-          <span class="badge" :class="result.converged ? 'badge-success' : 'badge-danger'">
-            {{ result.converged ? 'Convergió' : 'No convergió' }}
-          </span>
-          <button type="button" class="btn btn-outline" @click="handleExportPdf">
-            Exportar PDF
-          </button>
-        </div>
-      </div>
-
       <slot name="summary" />
-
-      <div v-for="(w, idx) in result.warnings" :key="idx" class="alert alert-warning">
-        ⚠ {{ w }}
-      </div>
-
-      <p class="meta">
-        Iteraciones ejecutadas: <strong>{{ result.iterations_used }}</strong>
-      </p>
-
-      <div class="solution-grid">
-        <div v-for="(value, i) in result.solution" :key="i" class="solution-item">
-          <span class="solution-label">{{ variables[i] }}</span>
-          <span class="solution-value">{{ formatNumber(value) }}</span>
-        </div>
-      </div>
+      <div v-for="(w, idx) in result.warnings" :key="idx" class="alert alert-warning">⚠ {{ w }}</div>
     </div>
 
     <ConvergenceChart
@@ -235,60 +213,8 @@ function toggleRow(iteration) {
 </template>
 
 <style scoped>
-.summary-header {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-3);
-  margin-bottom: var(--space-4);
-}
-
-.summary-header h3 {
-  margin: 0;
-  font-size: var(--text-section);
-}
-
-.summary-actions {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-}
-
-.meta {
-  color: var(--color-ink-muted);
-  font-size: var(--text-small);
-  margin: var(--space-4) 0 var(--space-2);
-}
-
-.solution-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-3);
-}
-
-.solution-item {
-  background: var(--color-sunken);
-  border: 1px solid var(--color-line);
-  border-radius: var(--radius-nested);
-  padding: var(--space-2) var(--space-4);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-width: 96px;
-}
-
-.solution-label {
-  font-size: var(--text-small);
-  font-style: italic;
-  color: var(--color-ink-muted);
-}
-
-.solution-value {
-  font-weight: var(--weight-semibold);
-  font-size: var(--text-subsection);
-  font-variant-numeric: tabular-nums;
-  color: var(--color-ink);
+.summary:empty {
+  display: none;
 }
 
 .iterations-title {

@@ -138,19 +138,13 @@ function handleExportPdf() {
     chartImages,
   })
 }
+// El botón de PDF está en la tarjeta de respuesta (SolverView).
+defineExpose({ exportPdf: handleExportPdf })
 </script>
 
 <template>
   <div class="results">
-    <div class="summary-header">
-      <h3>Resultado ({{ methodName }})</h3>
-      <div class="summary-actions">
-        <span class="badge" :class="result.converged ? 'badge-success' : 'badge-danger'">
-          {{ result.converged ? 'Convergió' : 'No convergió' }}
-        </span>
-        <button type="button" class="btn btn-outline" @click="handleExportPdf">Exportar PDF</button>
-      </div>
-    </div>
+    <h3 class="summary-title">Resumen</h3>
 
     <div v-for="(w, idx) in result.warnings" :key="'w' + idx" class="alert alert-warning">⚠ {{ w }}</div>
     <div v-for="(note, idx) in result.notes" :key="'n' + idx" class="alert alert-info">{{ note }}</div>
@@ -339,24 +333,8 @@ function handleExportPdf() {
 </template>
 
 <style scoped>
-/* Encabezado con el mismo aspecto que el de ResultsTable. */
-.summary-header {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-3);
-  margin-bottom: var(--space-4);
-}
-
-.summary-header h3 {
-  margin: 0;
-}
-
-.summary-actions {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
+.summary-title {
+  margin: 0 0 var(--space-4);
 }
 
 .meta {

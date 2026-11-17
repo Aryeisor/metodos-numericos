@@ -33,7 +33,9 @@ const html = computed(() => {
   display: block;
 }
 
-.math-fallback {
+/* El respaldo entra por v-html y no lleva el atributo de `scoped`: sin
+   :deep() esta regla no lo alcanzaba. */
+.math :deep(.math-fallback) {
   font-family: var(--font-mono);
   font-size: var(--text-small);
 }
