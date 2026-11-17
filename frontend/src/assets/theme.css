@@ -36,7 +36,7 @@
   --color-info-line: #a3c6cf;
 
   /* ---- Estados ----------------------------------------------------------- */
-  --color-success: #116029;
+  --color-success: #007228;
   --color-success-bg: #dcfce7;
   --color-warning: #7c3609;
   --color-warning-bg: #fef3c7;
@@ -46,16 +46,20 @@
   --color-danger-line: #f5a3a3;
 
   /* ---- Significado matemático --------------------------------------------
-     Valor de la iteración anterior (azul) y valor ya recalculado (verde).  */
-  --color-value-old: #1e40af;
-  --color-value-new: #116029;
+     Valor de la iteración anterior (azul) y valor ya recalculado (verde).
+     Deliberadamente por debajo del contraste del resto de la paleta: su
+     trabajo es distinguirse del texto del cuerpo, no maximizar el contraste
+     contra el fondo; oscurecerlos más los vuelve negros y rompe el código de
+     color.                                                                  */
+  --color-value-old: #1d4ed8;
+  --color-value-new: #007228;
   --color-series-1: #2563eb;      /* ε_r de Bairstow / error por iteración  */
   --color-series-2: #9333ea;      /* ε_s de Bairstow                        */
   --color-series-3: #c2410c;      /* 3.ª y 4.ª serie (diferencias finitas)  */
   --color-series-4: #0e7490;
   --color-series-5: #be185d;      /* 5.ª y 6.ª serie (fórmula de 3 puntos)  */
   --color-series-6: #4d7c0f;
-  --color-tolerance: #116029;
+  --color-tolerance: #007228;
 
   /* ---- Gráfico ----------------------------------------------------------- */
   --color-chart-grid: rgba(30, 41, 59, 0.1);

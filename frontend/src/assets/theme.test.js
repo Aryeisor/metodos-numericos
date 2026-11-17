@@ -13,10 +13,10 @@ describe('tema claro con más contraste', () => {
       'color-ink-muted': '#334155',
       'color-accent': '#0b4a5a',
       'color-accent-hover': '#083a46',
-      'color-value-old': '#1e40af',
-      'color-value-new': '#116029',
-      'color-success': '#116029',
-      'color-tolerance': '#116029',
+      'color-value-old': '#1d4ed8',
+      'color-value-new': '#007228',
+      'color-success': '#007228',
+      'color-tolerance': '#007228',
       'color-warning': '#7c3609',
       'color-danger': '#991b1b',
     })
@@ -59,12 +59,19 @@ describe('tema claro con más contraste', () => {
 
   it.each([
     ['color-ink-muted', 'color-page'],
+    ['color-danger', 'color-surface'],
+  ])('%s sobre %s da al menos 6:1', (text, bg) => {
+    expect(contrast(light[text], light[bg])).toBeGreaterThanOrEqual(6)
+  })
+
+  // El azul y el verde del paso a paso solo exigen el mínimo de la norma (4,5:1):
+  // pedirles más los empuja hacia el negro y dejan de distinguirse del texto.
+  it.each([
     ['color-value-old', 'color-sunken'],
     ['color-value-old', 'color-page'],
     ['color-value-new', 'color-sunken'],
     ['color-value-new', 'color-page'],
-    ['color-danger', 'color-surface'],
-  ])('%s sobre %s da al menos 6:1', (text, bg) => {
-    expect(contrast(light[text], light[bg])).toBeGreaterThanOrEqual(6)
+  ])('%s sobre %s da al menos 4,5:1', (text, bg) => {
+    expect(contrast(light[text], light[bg])).toBeGreaterThanOrEqual(4.5)
   })
 })
