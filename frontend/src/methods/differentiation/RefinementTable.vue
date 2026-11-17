@@ -123,22 +123,23 @@ function toggle(k) {
                 <div v-if="explained" class="detail-inner">
                   <TrapezoidStepDetail :result="result" :row="row.item" :k="row.k" :custom-steps="explainedSteps(row)" />
                 </div>
-                <DifferenceStepDetail
-                  v-else
-                  :formula="formula"
-                  :item="row.item"
-                  :label="row.k"
-                  :step-line="stepSizeLatex(row.k, row.h, h0)"
-                  :h="row.h"
-                  :template="result.function.template"
-                  :exact="result.exact"
-                  :exact-source="result.verification.substitution"
-                  :derivative-latex="result.function.derivative.latex"
-                  :bound-derivative-latex="result.function.higher_derivatives[formula.bound_derivative]?.latex ?? null"
-                  :previous="row.previous"
-                  :samples="result.sampling_points"
-                  :rounding-text="result.rounding_text ?? undefined"
-                />
+                <div v-else class="detail-panel">
+                  <DifferenceStepDetail
+                    :formula="formula"
+                    :item="row.item"
+                    :label="row.k"
+                    :step-line="stepSizeLatex(row.k, row.h, h0)"
+                    :h="row.h"
+                    :template="result.function.template"
+                    :exact="result.exact"
+                    :exact-source="result.verification.substitution"
+                    :derivative-latex="result.function.derivative.latex"
+                    :bound-derivative-latex="result.function.higher_derivatives[formula.bound_derivative]?.latex ?? null"
+                    :previous="row.previous"
+                    :samples="result.sampling_points"
+                    :rounding-text="result.rounding_text ?? undefined"
+                  />
+                </div>
               </td>
             </tr>
           </template>
@@ -220,7 +221,7 @@ function toggle(k) {
 }
 
 .iterations-table .detail-row td {
-  background: var(--color-page);
+  background: var(--color-surface);
   text-align: left;
   padding: var(--space-4);
   font-size: 0.9rem;
@@ -236,6 +237,15 @@ function toggle(k) {
   position: sticky;
   left: var(--space-4);
   width: calc(100cqw - 2 * var(--space-4));
+}
+
+/* Mismo panel que las filas de Romberg (.row-details): marca el límite del bloque desplegado. */
+.detail-inner,
+.detail-panel {
+  padding: var(--space-3);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-nested);
+  background: var(--color-surface);
 }
 
 .table-note {

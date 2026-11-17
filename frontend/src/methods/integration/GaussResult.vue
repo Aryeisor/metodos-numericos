@@ -516,6 +516,5 @@ defineExpose({ exportPdf: handleExportPdf })
 .row-body {
   padding: var(--space-3) var(--space-4) var(--space-4);
   border-top: 1px solid var(--color-line);
-  background: var(--color-page);
 }
 </style>

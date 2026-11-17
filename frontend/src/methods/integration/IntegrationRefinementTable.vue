@@ -185,7 +185,7 @@ function toggle(k) {
 }
 
 .iterations-table .detail-row td {
-  background: var(--color-page);
+  background: var(--color-surface);
   text-align: left;
   padding: var(--space-4);
   font-size: 0.9rem;
@@ -201,6 +201,14 @@ function toggle(k) {
   position: sticky;
   left: var(--space-4);
   width: calc(100cqw - 2 * var(--space-4));
+}
+
+/* Mismo panel que las filas de Romberg (.row-details): marca el límite del bloque desplegado. */
+.detail-inner {
+  padding: var(--space-3);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-nested);
+  background: var(--color-surface);
 }
 
 .table-note {
