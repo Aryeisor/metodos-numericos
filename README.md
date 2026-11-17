@@ -60,6 +60,22 @@ Desde la aplicación, el manual de usuario se abre con el botón «Manual de usu
 - **Encabezado** sobre el fondo de la página, igual en Resolver y en Teoría:
   la categoría en mayúsculas pequeñas, el nombre del método como único título
   principal (`--text-display`) y su resumen de una línea.
+- **Al resolver, la página va sola al resultado** (desplazamiento suave, o un
+  salto si el sistema pide menos movimiento) y el foco del teclado queda en su
+  encabezado; si la resolución falla, van al mensaje de error.
+- **Tarjeta de respuesta**, lo primero del resultado: el valor o los valores
+  en `--text-display` (el vector solución, las raíces, una derivada por
+  fórmula o una integral por regla; con más de cuatro bajan a
+  `--text-section`), una línea de estado («Alcanzó la tolerancia en 12
+  iteraciones. Error final: …», o el aviso de que no la alcanzó y el valor es
+  el último calculado) y los botones «Descargar PDF» y «Limpiar». El resto del
+  resultado (resumen, gráficas, tablas, paso a paso y comprobación) va debajo
+  en un recuadro más liviano, sin superficie ni sombra.
+- **Franja fija del resultado**, de 44 px, bajo la barra superior: aparece
+  cuando la tarjeta de respuesta sale de la pantalla y desaparece al volver,
+  solo en ventanas de 1024 px o más. Lleva el nombre del método, la respuesta
+  resumida (un valor, o «3 raíces», «2 reglas»), «Descargar PDF», «Limpiar» e
+  «Ir arriba».
 - **Los ejemplos son una sección plegable**, más liviana que las tarjetas del
   formulario (borde, sin superficie ni sombra). Empieza abierta y **se pliega
   sola** al cargar un ejemplo o al escribir en cualquier campo del formulario
@@ -77,7 +93,8 @@ Desde la aplicación, el manual de usuario se abre con el botón «Manual de usu
   cuadratura gaussiana),
   que se cargan en el
   formulario con un clic.
-- **Botón «Limpiar»** al lado de «Resolver», en los doce métodos: deja la
+- **Botón «Limpiar»** al lado de «Resolver» (y en la tarjeta de respuesta y la
+  franja fija), en los doce métodos: deja la
   vista como al abrir el método (formulario con su tamaño y valores
   iniciales, tolerancia, máximo de iteraciones y opciones por defecto del
   método) y borra el resultado, los errores, las advertencias, las vistas
