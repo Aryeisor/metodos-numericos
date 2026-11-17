@@ -391,8 +391,8 @@ reales del solver, tabla comparativa y referencias bibliográficas (APA).
   | `--color-ink-muted` | `#334155` | 8.64:1 |
   | `--color-accent` | `#0b4a5a` | 8.18:1 |
   | `--color-accent-hover` | `#083a46` | 10.28:1 |
-  | `--color-value-old` (azul del paso a paso) | `#1e40af` | 7.28:1 |
-  | `--color-value-new`, `--color-success`, `--color-tolerance` | `#116029` | 6.42:1 |
+  | `--color-value-old` (azul del paso a paso) | `#1d4ed8` | 5.59:1 |
+  | `--color-value-new`, `--color-success`, `--color-tolerance` | `#007228` | 5.10:1 |
   | `--color-warning` | `#7c3609` | 7.33:1 |
   | `--color-danger` | `#991b1b` | 6.93:1 |
 
@@ -400,6 +400,12 @@ reales del solver, tabla comparativa y referencias bibliográficas (APA).
   imprime la tabla de contraste (WCAG) de cada color de texto del tema claro,
   falla con código 1 si algún par baja de 4.5:1 y avisa si baja de 7:1.
   Conviene ejecutarlo cada vez que se toque la paleta; no forma parte de `npm run build`.
+  El aviso «< 7» de `--color-value-old` y `--color-value-new` (y de `success` y
+  `tolerance`, que comparten el verde) es **esperado y deliberado**: el trabajo
+  de esos colores es distinguirse del texto del cuerpo, no maximizar el
+  contraste contra el fondo. Oscurecerlos más los vuelve casi negros y rompe el
+  código de color del paso a paso; por eso su test exige 4.5:1 y no 6:1.
+  **No los «arregles» subiéndoles el contraste.**
 - En `utils/latexFormulas.js` los colores de `\textcolor` (`#2563eb`, `#15803d`,
   `#b91c1c`) son **identificadores**: las reglas `.katex [style*='color:…']`
   del final de `theme.css` los cambian por los tokens del tema. Si se cambia
