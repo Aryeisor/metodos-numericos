@@ -395,6 +395,7 @@ reales del solver, tabla comparativa y referencias bibliográficas (APA).
   | `--color-value-new`, `--color-success`, `--color-tolerance` | `#007228` | 5.10:1 |
   | `--color-warning` | `#7c3609` | 7.33:1 |
   | `--color-danger` | `#991b1b` | 6.93:1 |
+  | `--color-footer` (fondo del pie; oscuro `#090f1b`) | `#d7dfe9` | 7.29:1 (texto del pie encima) |
 
 - **Verificación de contraste:** desde `frontend/`, `node scripts/verificar-contraste.mjs`
   imprime la tabla de contraste (WCAG) de cada color de texto del tema claro,
