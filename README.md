@@ -1894,7 +1894,7 @@ metodos/
 └── frontend/
     ├── Dockerfile                   # Compila con Node y sirve dist/ con nginx
     ├── nginx.conf                   # Fallback a index.html, proxy /api/, gzip y caché
-    ├── public/                      # favicon y iconos del sitio
+    ├── public/                      # favicon, iconos del sitio y marca-integral.svg
     │   └── manuales/                # manuales en PDF que sirve la aplicación
     └── src/
         ├── main.js                  # Carga el catálogo de métodos antes de montar la app
@@ -1902,7 +1902,7 @@ metodos/
         ├── assets/theme.css         # Paleta de colores del tema claro y del oscuro (variables CSS)
         ├── api/client.js            # Cliente Axios
         ├── router/index.js          # Rutas /resolver/<slug> y /teoria/<slug>, generadas desde el registro
-        ├── views/                   # SolverView (genérica para todos los métodos) y TheoryView
+        ├── views/                   # SolverView (genérica para todos los métodos), TheoryView, ManualView y NotFoundView
         ├── methods/
         │   ├── registry.js          # Asocia cada categoría (y método) con su interfaz
         │   ├── linear/              # Formulario, detalle de iteración, PDF y teoría de Jacobi / Gauss-Seidel
@@ -1958,6 +1958,19 @@ El PDF no depende de ella: jsPDF usa `helvetica`.
 
 Tablas, resúmenes del resultado y campos numéricos usan cifras tabulares
 (`font-variant-numeric: tabular-nums`) para que las columnas queden alineadas.
+
+**Marca:** el signo de integral (∫) blanco sobre una baldosa redondeada de color
+`#0b4a5a`, el mismo `--color-accent` del tema claro: el sistema tiene un solo
+color de marca. Se usa en la pestaña del navegador (`frontend/public/`:
+`favicon.svg`, `favicon.ico`, `favicon-16x16.png`, `favicon-32x32.png`,
+`apple-touch-icon.png`, `icon-192.png` e `icon-512.png`; `theme-color` del
+`index.html` también es `#0b4a5a`) y en la barra superior, a la izquierda del
+nombre (`components/BrandMark.vue`, copia en línea de `marca-integral.svg`, a
+24 px). La baldosa es **fija en los dos temas**: sus colores no están
+conectados a los tokens, como cualquier logotipo. Marca y nombre son un solo
+enlace al inicio; por debajo de 420 px de ancho se oculta el nombre y queda la
+marca. Si se cambia algún icono, hay que subir el `?v=` de los `href` en
+`index.html`: los navegadores guardan el favicon en caché.
 
 ---
 
