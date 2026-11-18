@@ -40,7 +40,7 @@ const router = createRouter({
     { path: '/manual', name: 'manual', component: ManualView, meta: { title: 'Manual de usuario' } },
     // Las rutas de los métodos se agregan después (addMethodRoutes) y tienen
     // prioridad: aquí sólo cae lo que no existe, por ejemplo una dirección vieja.
-    { path: '/:pathMatch(.*)*', name: 'not-found', component: NotFoundView },
+    { path: '/:pathMatch(.*)*', name: 'not-found', component: NotFoundView, meta: { title: 'Página no encontrada' } },
   ],
   scrollBehavior(to, from) {
     // 77 = alto de la barra fija (--header-height) + 16 de aire.

@@ -8,6 +8,7 @@
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
 import MathFormula from './MathFormula.vue'
+import { fold } from '../utils/text'
 import {
   hasTheory,
   methodRegistry,
@@ -62,8 +63,6 @@ const catalogSummary = computed(
     plural(allGroups.value.length, 'categoría', 'categorías')
 )
 
-/** Minúsculas y sin tildes: «Diferenciación» y «diferenciacion» son iguales. */
-const fold = (text) => text.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
 
 const tokens = computed(() => fold(query.value).split(/\s+/).filter(Boolean))
 

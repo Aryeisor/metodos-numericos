@@ -264,9 +264,9 @@ describe('lo que no existe', () => {
     const app = await open(path)
     expect(router.currentRoute.value.name).toBe('not-found')
     expect(app.get('h1').text()).toBe('Esta página no existe')
-    expect(app.get('.not-found').text()).toContain('Ver los métodos')
+    expect(app.get('.not-found').text()).toContain(`Ver los ${CATALOG.length} métodos`)
     expect(app.get('.not-found a[href="/"]').text()).toBe('Ir al inicio')
-    expect(document.title).toBe('Métodos Iterativos')
+    expect(document.title).toBe('Página no encontrada · Métodos Iterativos')
     app.unmount()
   })
 
